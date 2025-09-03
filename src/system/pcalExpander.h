@@ -111,7 +111,7 @@ class IOExpander
 
   private:
     // I/O expander interal register copy to avoid read-modify-write.
-    
+
 
     // I/O expander registered 7-bit I2C address.
     // Use default as fallback.

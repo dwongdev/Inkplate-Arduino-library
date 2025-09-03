@@ -20,19 +20,19 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     internalIO.beginIO(0x20);
     externalIO.beginIO(0x21);
 
-    internalIO.digitalWriteIO( 9, LOW);
+    internalIO.digitalWriteIO(9, LOW);
 
 
     memset(internalIO._ioExpanderRegs, 0, 22);
     memset(externalIO._ioExpanderRegs, 0, 22);
 
-    internalIO.pinModeIO( VCOM, OUTPUT);
-    internalIO.pinModeIO( PWRUP, OUTPUT);
-    internalIO.pinModeIO( WAKEUP, OUTPUT);
-    internalIO.pinModeIO( GPIO0_ENABLE, OUTPUT);
-    internalIO.digitalWriteIO( GPIO0_ENABLE, 1);
+    internalIO.pinModeIO(VCOM, OUTPUT);
+    internalIO.pinModeIO(PWRUP, OUTPUT);
+    internalIO.pinModeIO(WAKEUP, OUTPUT);
+    internalIO.pinModeIO(GPIO0_ENABLE, OUTPUT);
+    internalIO.digitalWriteIO(GPIO0_ENABLE, 1);
 
-    internalIO.digitalWriteIO( WAKEUP, 1);
+    internalIO.digitalWriteIO(WAKEUP, 1);
     WAKEUP_SET;
     delay(1);
     Wire.beginTransmission(0x48);
@@ -43,7 +43,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     Wire.write(0B00000000); // Power down delay (6mS per rail)
     Wire.endTransmission();
     delay(1);
-    internalIO.digitalWriteIO( WAKEUP, 0);
+    internalIO.digitalWriteIO(WAKEUP, 0);
     WAKEUP_CLEAR;
 
     // Set all pins of seconds I/O expander to outputs, low.
@@ -54,18 +54,18 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
         pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
                     (((i & B11100000) >> 5) << 25);
 
-    for(int i = 0; i < 15; i++)
+    for (int i = 0; i < 15; i++)
     {
-        externalIO.pinModeIO( i, OUTPUT);
-        externalIO.digitalWriteIO( i, LOW);
+        externalIO.pinModeIO(i, OUTPUT);
+        externalIO.digitalWriteIO(i, LOW);
     }
 
     // For same reason, unused pins of first I/O expander have to be also set as
     // outputs, low.
-    internalIO.pinModeIO( 14, OUTPUT);
-    internalIO.pinModeIO( 15, OUTPUT);
-    internalIO.digitalWriteIO( 14, LOW);
-    internalIO.digitalWriteIO( 15, LOW);
+    internalIO.pinModeIO(14, OUTPUT);
+    internalIO.pinModeIO(15, OUTPUT);
+    internalIO.digitalWriteIO(14, LOW);
+    internalIO.digitalWriteIO(15, LOW);
 
     // Set SPI pins to input to reduce power consumption in deep sleep
     pinMode(12, INPUT);
@@ -74,16 +74,16 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     pinMode(15, INPUT);
 
     // And also disable uSD card supply
-    internalIO.pinModeIO( SD_PMOS_PIN, INPUT);
+    internalIO.pinModeIO(SD_PMOS_PIN, INPUT);
 
     // CONTROL PINS
     pinMode(0, OUTPUT);
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
     pinMode(33, OUTPUT);
-    internalIO.pinModeIO( OE, OUTPUT);
-    internalIO.pinModeIO( GMOD, OUTPUT);
-    internalIO.pinModeIO( SPV, OUTPUT);
+    internalIO.pinModeIO(OE, OUTPUT);
+    internalIO.pinModeIO(GMOD, OUTPUT);
+    internalIO.pinModeIO(SPV, OUTPUT);
 
     // DATA PINS
     pinMode(4, OUTPUT); // D0
@@ -95,15 +95,15 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     pinMode(26, OUTPUT);
     pinMode(27, OUTPUT); // D7
 
-    internalIO.pinModeIO( 10, OUTPUT);
-    internalIO.pinModeIO( 11, OUTPUT);
-    internalIO.pinModeIO( 12, OUTPUT);
-    internalIO.digitalWriteIO( 10, LOW);
-    internalIO.digitalWriteIO(  11, LOW);
-    internalIO.digitalWriteIO( 12, LOW);
+    internalIO.pinModeIO(10, OUTPUT);
+    internalIO.pinModeIO(11, OUTPUT);
+    internalIO.pinModeIO(12, OUTPUT);
+    internalIO.digitalWriteIO(10, LOW);
+    internalIO.digitalWriteIO(11, LOW);
+    internalIO.digitalWriteIO(12, LOW);
     // Battery voltage Switch MOSFET
-    internalIO.pinModeIO( 9, OUTPUT);
-    internalIO.digitalWriteIO(  9, LOW);
+    internalIO.pinModeIO(9, OUTPUT);
+    internalIO.digitalWriteIO(9, LOW);
 
     DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _partial = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
@@ -525,7 +525,7 @@ int EPDDriver::einkOn()
     OE_CLEAR;
     PWRUP_SET;
     setPanelState(1);
-    
+
     unsigned long timer = millis();
     do
     {
@@ -584,9 +584,9 @@ void EPDDriver::pinsAsOutputs()
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
     pinMode(33, OUTPUT);
-    internalIO.pinModeIO( OE, OUTPUT);
-    internalIO.pinModeIO( GMOD, OUTPUT);
-    internalIO.pinModeIO( SPV, OUTPUT);
+    internalIO.pinModeIO(OE, OUTPUT);
+    internalIO.pinModeIO(GMOD, OUTPUT);
+    internalIO.pinModeIO(SPV, OUTPUT);
     pinMode(0, OUTPUT);
     pinMode(4, OUTPUT);
     pinMode(5, OUTPUT);
@@ -604,7 +604,7 @@ uint8_t EPDDriver::getPanelState()
 }
 void EPDDriver::setPanelState(uint8_t state)
 {
-    _panelState=state;
+    _panelState = state;
 }
 
 /**

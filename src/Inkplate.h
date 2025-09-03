@@ -21,17 +21,17 @@
 #define __INKPLATE_H__
 
 #include "Arduino.h"
-#include "Wire.h"
 #include "SPI.h"
+#include "Wire.h"
 #include "graphics/Graphics.h"
 //#include "include/System.h"
 //#include "libs/SdFat/SdFat.h"
-#include "system/defines.h"
-#include "system/InkplateBoards.h"
 #include "boardSelect.h"
+#include "system/InkplateBoards.h"
+#include "system/defines.h"
 
-//extern SPIClass spi2;
-//extern SdFat sd;
+// extern SPIClass spi2;
+// extern SdFat sd;
 
 class Inkplate : public Graphics, public InkplateBoardClass
 {
@@ -40,7 +40,7 @@ class Inkplate : public Graphics, public InkplateBoardClass
     void begin();
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void setRotation(uint8_t r);
-    
+
 
   protected:
   private:

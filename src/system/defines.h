@@ -21,8 +21,8 @@
 
 #include "Arduino.h"
 #include "InkplateBoards.h"
-#include "soc/gpio_struct.h"
 #include "soc/gpio_reg.h"
+#include "soc/gpio_struct.h"
 
 #define INKPLATE6_WAVEFORM1     0
 #define INKPLATE10_WAVEFORM1    20

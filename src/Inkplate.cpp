@@ -22,7 +22,7 @@
 //--------------------------USER FUNCTIONS--------------------------------------------
 Inkplate::Inkplate(uint8_t mode) : Adafruit_GFX(E_INK_WIDTH, E_INK_HEIGHT), Graphics(E_INK_WIDTH, E_INK_HEIGHT)
 {
-    _mode=mode;
+    _mode = mode;
 }
 
 void Inkplate::begin()
@@ -39,7 +39,7 @@ void Inkplate::begin()
     // Init low level driver for EPD.
     initDriver(this);
 
-    //Forward the display mode to the EPD driver
+    // Forward the display mode to the EPD driver
     selectDisplayMode(_mode);
 
     // Clean frame buffers.
@@ -47,7 +47,6 @@ void Inkplate::begin()
 
     // Block multiple inits.
     _beginDone = 1;
-
 }
 void Inkplate::writePixel(int16_t x, int16_t y, uint16_t color)
 {
@@ -92,6 +91,8 @@ void Inkplate::writePixel(int16_t x, int16_t y, uint16_t color)
 
 void Inkplate::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
-    writePixel(x,y,color);
+    writePixel(x, y, color);
 }
-void Inkplate::setRotation(uint8_t r){}
+void Inkplate::setRotation(uint8_t r)
+{
+}

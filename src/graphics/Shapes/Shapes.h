@@ -19,9 +19,9 @@
 #ifndef __SHAPES_H__
 #define __SHAPES_H__
 
+#include "../../system/defines.h"
 #include "../Adafruit_GFX/Adafruit_GFX.h"
 #include "Arduino.h"
-#include "../../system/defines.h"
 
 #define maxVer 100
 #define maxHt  E_INK_HEIGHT
