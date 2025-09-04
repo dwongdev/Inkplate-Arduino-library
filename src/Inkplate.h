@@ -24,16 +24,13 @@
 #include "Wire.h"
 #include "SPI.h"
 #include "graphics/Graphics.h"
-//#include "include/System.h"
-//#include "libs/SdFat/SdFat.h"
+#include "system/NetworkController/NetworkController.h"
 #include "system/defines.h"
 #include "system/InkplateBoards.h"
 #include "boardSelect.h"
 
-//extern SPIClass spi2;
-//extern SdFat sd;
 
-class Inkplate : public Graphics, public InkplateBoardClass
+class Inkplate : public Graphics, public InkplateBoardClass, public NetworkController
 {
   public:
     Inkplate(uint8_t mode);

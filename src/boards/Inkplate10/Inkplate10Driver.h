@@ -11,7 +11,7 @@
 #include "Arduino.h"
 
 // Include library for PCAL6416A GPIO expander.
-#include "../../system/pcalExpander.h"
+#include "../../system/pcalExpander/pcalExpander.h"
 
 #include "pins.h"
 
@@ -24,61 +24,16 @@
 
 #include "../../graphics/GraphicsDefs.h"
 
+#include "../../features/featureSelect.h"
 
-#define WAKEUP_SET                                                                                                     \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(WAKEUP, HIGH);                                                    \
-    }
-#define WAKEUP_CLEAR                                                                                                   \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(WAKEUP, LOW);                                                     \
-    }
-#define PWRUP_SET                                                                                                      \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(PWRUP, HIGH);                                                     \
-    }
-#define PWRUP_CLEAR                                                                                                    \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(PWRUP, LOW);                                                      \
-    }
-#define VCOM_SET                                                                                                       \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(VCOM, HIGH);                                                      \
-    }
-#define VCOM_CLEAR                                                                                                     \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(VCOM, LOW);                                                       \
-    }
-#define OE_SET                                                                                                         \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(OE, HIGH);                                                        \
-    }
-#define OE_CLEAR                                                                                                       \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(OE, LOW);                                                         \
-    }
-#define GMOD_SET                                                                                                       \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(GMOD, HIGH);                                                      \
-    }
-#define GMOD_CLEAR                                                                                                     \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(GMOD, LOW);                                                       \
-    }
-#define SPV_SET                                                                                                        \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(SPV, HIGH);                                                       \
-    }
-#define SPV_CLEAR                                                                                                      \
-    {                                                                                                                  \
-        internalIO.digitalWriteIO(SPV, LOW);                                                        \
-    }
+#include "../../system/defines.h"
+
 
 class Inkplate;
 
 
 
-class EPDDriver
+class EPDDriver:public RTC
 {
     public: 
         int initDriver(Inkplate *_inkplatePtr);
@@ -88,6 +43,18 @@ class EPDDriver
         uint32_t partialUpdate(bool _forced = false, bool leaveOn = false);
         void setFullUpdateThreshold(uint16_t _numberOfPartialUpdates);
         uint8_t getDisplayMode();
+
+
+        void setSdCardOk(int16_t s);
+        int16_t getSdCardOk();
+        int16_t sdCardInit();
+        void sdCardSleep();
+        SdFat getSdFat();
+        SPIClass *getSPIptr();
+
+        int8_t readTemperature();
+
+        double readBattery();
 
 
         IOExpander internalIO;
@@ -108,6 +75,7 @@ class EPDDriver
         uint16_t _partialUpdateLimiter = 10;
         uint16_t _partialUpdateCounter = 0;
         uint8_t _blockPartial = 1;
+        int16_t _sdCardOk = 0;
 
 
 
@@ -128,8 +96,6 @@ class EPDDriver
         void vscan_end();
         uint8_t _panelState = 0;
 };
-
-
 
 #endif
 #endif

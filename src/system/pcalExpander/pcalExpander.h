@@ -96,15 +96,15 @@
 class IOExpander
 {
   public:
-    bool beginIO(uint8_t _addr);
-    void pinModeIO(uint8_t _pin, uint8_t _mode, bool _bypassCheck = false);
-    void digitalWriteIO(uint8_t _pin, uint8_t _state, bool _bypassCheck = false);
-    uint8_t digitalReadIO(uint8_t _pin, bool _bypassCheck = false);
-    void setIntPinIO(uint8_t _pin);
-    void setPortsIO(uint16_t _d);
-    void removeIntPinIO(uint8_t _pin);
-    uint16_t getIntIO();
-    uint16_t getPortsIO();
+    bool begin(uint8_t _addr);
+    void pinMode(uint8_t _pin, uint8_t _mode, bool _bypassCheck = false);
+    void digitalWrite(uint8_t _pin, uint8_t _state, bool _bypassCheck = false);
+    uint8_t digitalRead(uint8_t _pin, bool _bypassCheck = false);
+    void setIntPin(uint8_t _pin);
+    void setPorts(uint16_t _d);
+    void removeIntPin(uint8_t _pin);
+    uint16_t getInt();
+    uint16_t getPorts();
     void blockPinUsage(uint8_t _pin);
     void unblockPinUsage(uint8_t _pin);
     uint8_t _ioExpanderRegs[23];
@@ -112,10 +112,6 @@ class IOExpander
   private:
     // I/O expander interal register copy to avoid read-modify-write.
     
-
-    // I/O expander registered 7-bit I2C address.
-    // Use default as fallback.
-    uint8_t _ioExpanderI2CAddress = 0x20;
 
     // IO expander pins that are blocked for user usage )for safety resons.
     // User can override this by setting _bypassCheck to true AT IT'S OWN RISK!
@@ -128,6 +124,8 @@ class IOExpander
         PCAL6416A_INLAT_REG0,     PCAL6416A_INLAT_REG1,     PCAL6416A_PUPDEN_REG0,    PCAL6416A_PUPDEN_REG1,
         PCAL6416A_PUPDSEL_REG0,   PCAL6416A_PUPDSEL_REG1,   PCAL6416A_INTMSK_REG0,    PCAL6416A_INTMSK_REG1,
         PCAL6416A_INTSTAT_REG0,   PCAL6416A_INTSTAT_REG1,   PCAL6416A_OUTPORT_CONF};
+    
+    uint8_t _ioExpanderI2CAddress;
 
     void pinModeInternal(uint8_t _pin, uint8_t _mode);
     void digitalWriteInternal(uint8_t _pin, uint8_t _state);

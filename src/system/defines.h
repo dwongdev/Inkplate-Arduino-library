@@ -40,12 +40,6 @@
 #define PWR_GOOD_OK            0b11111010
 #define INKPLATE_FORCE_PARTIAL true
 
-#define WAKEUP 3
-
-#define PWRUP 4
-
-#define VCOM 5
-
 #ifndef _swap_int16_t
 #define _swap_int16_t(a, b)                                                                                            \
     {                                                                                                                  \
@@ -72,48 +66,6 @@
 #define RED8(a)   (((a) >> 16) & 0xff)
 #define GREEN8(a) (((a) >> 8) & 0xff)
 #define BLUE8(a)  (((a)) & 0xff)
-
-#define CL 0x01
-#define CL_SET                                                                                                         \
-    {                                                                                                                  \
-        GPIO.out_w1ts = CL;                                                                                            \
-    }
-#define CL_CLEAR                                                                                                       \
-    {                                                                                                                  \
-        GPIO.out_w1tc = CL;                                                                                            \
-    }
-#define CKV 0x01
-#define CKV_SET                                                                                                        \
-    {                                                                                                                  \
-        GPIO.out1_w1ts.val = CKV;                                                                                      \
-    }
-#define CKV_CLEAR                                                                                                      \
-    {                                                                                                                  \
-        GPIO.out1_w1tc.val = CKV;                                                                                      \
-    }
-#define SPH 0x02
-#define SPH_SET                                                                                                        \
-    {                                                                                                                  \
-        GPIO.out1_w1ts.val = SPH;                                                                                      \
-    }
-#define SPH_CLEAR                                                                                                      \
-    {                                                                                                                  \
-        GPIO.out1_w1tc.val = SPH;                                                                                      \
-    }
-#define LE 0x04
-#define LE_SET                                                                                                         \
-    {                                                                                                                  \
-        GPIO.out_w1ts = LE;                                                                                            \
-    }
-#define LE_CLEAR                                                                                                       \
-    {                                                                                                                  \
-        GPIO.out_w1tc = LE;                                                                                            \
-    }
-#define OE 0
-
-#define GMOD 1
-
-#define SPV 2
 
 
 #define GPIO0_ENABLE 8

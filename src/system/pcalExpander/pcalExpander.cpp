@@ -26,7 +26,7 @@
  *
  * @return      true if successful, false otherwise
  */
-bool IOExpander::beginIO(uint8_t _addr)
+bool IOExpander::begin(uint8_t _addr)
 {
     // Copy the address into local variable.
     _ioExpanderI2CAddress = _addr;
@@ -136,7 +136,7 @@ void IOExpander::updatePCALRegister(uint8_t _regIndex, uint8_t _d)
  * @param       bool _bypassCheck
  *              Setting this to true will bypass user block on this GPIO pin.
  */
-void IOExpander::pinModeIO(uint8_t _pin, uint8_t _mode, bool _bypassCheck)
+void IOExpander::pinMode(uint8_t _pin, uint8_t _mode, bool _bypassCheck)
 {
     // If the usage of the pin is blocked, return without register modify.
     if (checkForBlockedPins(_pin) && !_bypassCheck)
@@ -158,7 +158,7 @@ void IOExpander::pinModeIO(uint8_t _pin, uint8_t _mode, bool _bypassCheck)
  *              Setting this to true will bypass user block on this GPIO pin.
  *
  */
-void IOExpander::digitalWriteIO(uint8_t _pin, uint8_t _state, bool _bypassCheck)
+void IOExpander::digitalWrite(uint8_t _pin, uint8_t _state, bool _bypassCheck)
 {
     // If the usage of the pin is blocked, return without register modify.
     if (checkForBlockedPins(_pin) && !_bypassCheck)
@@ -178,7 +178,7 @@ void IOExpander::digitalWriteIO(uint8_t _pin, uint8_t _state, bool _bypassCheck)
  *
  * @return      HIGH or LOW (1 or 0) value
  */
-uint8_t IOExpander::digitalReadIO(uint8_t _pin, bool _bypassCheck)
+uint8_t IOExpander::digitalRead(uint8_t _pin, bool _bypassCheck)
 {
     // If the usage of the pin is blocked, return without register modify.
     if (checkForBlockedPins(_pin) && !_bypassCheck)
@@ -194,7 +194,7 @@ uint8_t IOExpander::digitalReadIO(uint8_t _pin, bool _bypassCheck)
  * @param       uint8_t _pin
  *              pin to set interrupt mode to
  */
-void IOExpander::setIntPinIO(uint8_t _pin)
+void IOExpander::setIntPin(uint8_t _pin)
 {
     setIntPinInternal(_pin);
 }
@@ -207,7 +207,7 @@ void IOExpander::setIntPinIO(uint8_t _pin)
  * @note        Every bit represents interrupt pin, MSB is  PORTB PIN7, LSB is
  * PORTA PIN1
  */
-uint16_t IOExpander::getIntIO()
+uint16_t IOExpander::getInt()
 {
     return getINTInternal();
 }
@@ -218,7 +218,7 @@ uint16_t IOExpander::getIntIO()
  * @param       uint8_t _pin
  *              pin to remove interrupt from
  */
-void IOExpander::removeIntPinIO(uint8_t _pin)
+void IOExpander::removeIntPin(uint8_t _pin)
 {
     removeIntPinInternal(_pin);
 }
@@ -230,7 +230,7 @@ void IOExpander::removeIntPinIO(uint8_t _pin)
  *              GPIO pin state of all IO Expander pins.
  *
  */
-void IOExpander::setPortsIO(uint16_t _d)
+void IOExpander::setPorts(uint16_t _d)
 {
     setPortsInternal(_d);
 }
@@ -239,7 +239,7 @@ void IOExpander::setPortsIO(uint16_t _d)
  * @brief       getPorts reads GPIO pin state on every IO Expander pin at once.
  *
  */
-uint16_t IOExpander::getPortsIO()
+uint16_t IOExpander::getPorts()
 {
     return getPortsInternal();
 }

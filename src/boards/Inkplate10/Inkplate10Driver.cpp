@@ -1,5 +1,7 @@
 #include "Inkplate10Driver.h"
-#include "../../system/defines.h"
+
+SPIClass spi2(2);  
+SdFat sd(&spi2);
 
 /**
  * @brief       begin function initialize Inkplate object with predefined
@@ -15,24 +17,26 @@
  */
 int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 {
+    // If the driver was already initialized, skip current initialization
     if (_beginDone == 1)
         return 0;
-    internalIO.beginIO(0x20);
-    externalIO.beginIO(0x21);
 
-    internalIO.digitalWriteIO( 9, LOW);
+    internalIO.begin(IO_INT_ADDR);
+    externalIO.begin(IO_EXT_ADDR);
+
+    internalIO.digitalWrite( 9, LOW);
 
 
     memset(internalIO._ioExpanderRegs, 0, 22);
     memset(externalIO._ioExpanderRegs, 0, 22);
 
-    internalIO.pinModeIO( VCOM, OUTPUT);
-    internalIO.pinModeIO( PWRUP, OUTPUT);
-    internalIO.pinModeIO( WAKEUP, OUTPUT);
-    internalIO.pinModeIO( GPIO0_ENABLE, OUTPUT);
-    internalIO.digitalWriteIO( GPIO0_ENABLE, 1);
+    internalIO.pinMode( VCOM, OUTPUT);
+    internalIO.pinMode( PWRUP, OUTPUT);
+    internalIO.pinMode( WAKEUP, OUTPUT);
+    internalIO.pinMode( GPIO0_ENABLE, OUTPUT);
+    internalIO.digitalWrite( GPIO0_ENABLE, 1);
 
-    internalIO.digitalWriteIO( WAKEUP, 1);
+    internalIO.digitalWrite( WAKEUP, 1);
     WAKEUP_SET;
     delay(1);
     Wire.beginTransmission(0x48);
@@ -43,7 +47,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     Wire.write(0B00000000); // Power down delay (6mS per rail)
     Wire.endTransmission();
     delay(1);
-    internalIO.digitalWriteIO( WAKEUP, 0);
+    internalIO.digitalWrite( WAKEUP, 0);
     WAKEUP_CLEAR;
 
     // Set all pins of seconds I/O expander to outputs, low.
@@ -56,16 +60,16 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 
     for(int i = 0; i < 15; i++)
     {
-        externalIO.pinModeIO( i, OUTPUT);
-        externalIO.digitalWriteIO( i, LOW);
+        externalIO.pinMode( i, OUTPUT);
+        externalIO.digitalWrite( i, LOW);
     }
 
     // For same reason, unused pins of first I/O expander have to be also set as
     // outputs, low.
-    internalIO.pinModeIO( 14, OUTPUT);
-    internalIO.pinModeIO( 15, OUTPUT);
-    internalIO.digitalWriteIO( 14, LOW);
-    internalIO.digitalWriteIO( 15, LOW);
+    internalIO.pinMode( 14, OUTPUT);
+    internalIO.pinMode( 15, OUTPUT);
+    internalIO.digitalWrite( 14, LOW);
+    internalIO.digitalWrite( 15, LOW);
 
     // Set SPI pins to input to reduce power consumption in deep sleep
     pinMode(12, INPUT);
@@ -74,16 +78,16 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     pinMode(15, INPUT);
 
     // And also disable uSD card supply
-    internalIO.pinModeIO( SD_PMOS_PIN, INPUT);
+    internalIO.pinMode( SD_PMOS_PIN, INPUT);
 
     // CONTROL PINS
     pinMode(0, OUTPUT);
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
     pinMode(33, OUTPUT);
-    internalIO.pinModeIO( OE, OUTPUT);
-    internalIO.pinModeIO( GMOD, OUTPUT);
-    internalIO.pinModeIO( SPV, OUTPUT);
+    internalIO.pinMode( OE, OUTPUT);
+    internalIO.pinMode( GMOD, OUTPUT);
+    internalIO.pinMode( SPV, OUTPUT);
 
     // DATA PINS
     pinMode(4, OUTPUT); // D0
@@ -95,16 +99,17 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     pinMode(26, OUTPUT);
     pinMode(27, OUTPUT); // D7
 
-    internalIO.pinModeIO( 10, OUTPUT);
-    internalIO.pinModeIO( 11, OUTPUT);
-    internalIO.pinModeIO( 12, OUTPUT);
-    internalIO.digitalWriteIO( 10, LOW);
-    internalIO.digitalWriteIO(  11, LOW);
-    internalIO.digitalWriteIO( 12, LOW);
+    internalIO.pinMode( 10, OUTPUT);
+    internalIO.pinMode( 11, OUTPUT);
+    internalIO.pinMode( 12, OUTPUT);
+    internalIO.digitalWrite( 10, LOW);
+    internalIO.digitalWrite(  11, LOW);
+    internalIO.digitalWrite( 12, LOW);
     // Battery voltage Switch MOSFET
-    internalIO.pinModeIO( 9, OUTPUT);
-    internalIO.digitalWriteIO(  9, LOW);
+    internalIO.pinMode( 9, OUTPUT);
+    internalIO.digitalWrite(  9, LOW);
 
+    // Initialize all the framebuffers
     DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _partial = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _pBuffer = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 4);
@@ -116,6 +121,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     {
         return 0;
     }
+    // Set all the framebuffers to White at start
     memset(DMemoryNew, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
     memset(_partial, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
     memset(_pBuffer, 0, E_INK_WIDTH * E_INK_HEIGHT / 4);
@@ -127,6 +133,11 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     return 1;
 }
 
+
+/**
+ * @brief       Calculates the values of the lookup table to
+ *              speed up rendering
+ */
 void EPDDriver::calculateLUTs()
 {
     for (int j = 0; j < 9; ++j)
@@ -584,9 +595,9 @@ void EPDDriver::pinsAsOutputs()
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
     pinMode(33, OUTPUT);
-    internalIO.pinModeIO( OE, OUTPUT);
-    internalIO.pinModeIO( GMOD, OUTPUT);
-    internalIO.pinModeIO( SPV, OUTPUT);
+    internalIO.pinMode( OE, OUTPUT);
+    internalIO.pinMode( GMOD, OUTPUT);
+    internalIO.pinMode( SPV, OUTPUT);
     pinMode(0, OUTPUT);
     pinMode(4, OUTPUT);
     pinMode(5, OUTPUT);
@@ -631,9 +642,9 @@ void EPDDriver::pinsZstate()
     pinMode(2, INPUT);
     pinMode(32, INPUT);
     pinMode(33, INPUT);
-    internalIO.pinModeIO(OE, INPUT);
-    internalIO.pinModeIO(GMOD, INPUT);
-    internalIO.pinModeIO(SPV, INPUT);
+    internalIO.pinMode(OE, INPUT);
+    internalIO.pinMode(GMOD, INPUT);
+    internalIO.pinMode(SPV, INPUT);
 
     // Set up the EPD Data and CL pins for I2S .
     pinMode(0, INPUT);
@@ -717,4 +728,159 @@ void EPDDriver::hscan_start(uint32_t _d)
 uint8_t EPDDriver::getDisplayMode()
 {
     return _displayMode;
+}
+
+/**
+ * @brief       sdCardInit initializes sd card trough SPI
+ *
+ * @return      0 if failed to initialise, 1 if successful
+ */
+int16_t EPDDriver::sdCardInit()
+{
+    internalIO.pinMode(SD_PMOS_PIN, OUTPUT);
+    internalIO.digitalWrite(SD_PMOS_PIN, LOW);
+    delay(50);
+    spi2.begin(14, 12, 13, 15);
+    setSdCardOk(sd.begin(15, SD_SCK_MHZ(25)));
+    return getSdCardOk();
+}
+
+/**
+ * @brief       sdCardSleep turns off the P-MOS which powers the sd card to save energy in deep sleep
+ */
+void EPDDriver::sdCardSleep()
+{
+    // Set SPI pins to input to reduce power consumption in deep sleep
+    pinMode(12, INPUT);
+    pinMode(13, INPUT);
+    pinMode(14, INPUT);
+    pinMode(15, INPUT);
+
+    // And also disable uSD card supply
+    internalIO.pinMode( SD_PMOS_PIN, INPUT);
+}
+
+/**
+ * @brief       getSdFat gets sd card object
+ *
+ * @return      sd card class object
+ */
+SdFat EPDDriver::getSdFat()
+{
+    return sd;
+}
+
+/**
+ * @brief       getSPIptr gets SPI class object pointer
+ *
+ * @return      SPI class object
+ */
+SPIClass *EPDDriver::getSPIptr()
+{
+    return &spi2;
+}
+
+/**
+ * @brief       setSdCardOk sets sd card OK status
+ *
+ * @param       int16_t s
+ *              sd card OK status, can be 1 or 0
+ */
+void EPDDriver::setSdCardOk(int16_t s)
+{
+    _sdCardOk = s;
+}
+
+
+/**
+ * @brief       setSdCardOk gets sd card OK status
+ *
+ * @return      sd card OK status, can be 1 or 0
+ */
+int16_t EPDDriver::getSdCardOk()
+{
+    return _sdCardOk;
+}
+
+
+
+/**
+ * @brief       readBattery reads voltage of the battery
+ *
+ * @return      returns battery voltage value
+ */
+double EPDDriver::readBattery()
+{
+    // Read the pin on the battery MOSFET. If is high, that means is older version of the board
+    // that uses PMOS only. If it's low, newer board with both PMOS and NMOS.
+    internalIO.pinMode(9, INPUT);
+    int state = internalIO.digitalRead(9);
+    internalIO.pinMode(9, OUTPUT);
+
+    // If the input is pulled high, it's PMOS only.
+    // If it's pulled low, it's PMOS and NMOS.
+    if (state)
+    {
+        internalIO.digitalWrite(9, LOW);
+    }
+    else
+    {
+        internalIO.digitalWrite(9, HIGH);
+    }
+
+    // Wait a little bit after a MOSFET enable.
+    delay(5);
+
+    // Set to the highest resolution and read the voltage.
+    analogReadResolution(12);
+    int adc = analogReadMilliVolts(35);
+
+    // Turn off the MOSFET (and voltage divider).
+    if(state)
+    {
+        internalIO.digitalWrite(9, HIGH);
+    }
+    else
+    {
+        internalIO.digitalWrite(9, LOW);
+    }
+
+    // Calculate the voltage at the battery terminal (voltage is divided in half by voltage divider).
+    return (double(adc) * 2.0 / 1000);
+}
+
+/**
+ * @brief       readTemperature reads panel temperature
+ *
+ * @return      returns  temperature in range from -10 to 85 degree C with
+ * accuracy of +-1 in range from 0 to 50
+ */
+int8_t EPDDriver::readTemperature()
+{
+    int8_t temp;
+    if (getPanelState() == 0)
+    {
+        WAKEUP_SET;
+        PWRUP_SET;
+        delay(5);
+    }
+    Wire.beginTransmission(0x48);
+    Wire.write(0x0D);
+    Wire.write(B10000000);
+    Wire.endTransmission();
+    delay(5);
+
+    Wire.beginTransmission(0x48);
+    Wire.write(0x00);
+    Wire.endTransmission();
+
+    Wire.requestFrom(0x48, 1);
+    temp = Wire.read();
+    if (getPanelState() == 0)
+    {
+        PWRUP_CLEAR;
+        WAKEUP_CLEAR;
+        delay(5);
+    }
+    return temp;
 }
