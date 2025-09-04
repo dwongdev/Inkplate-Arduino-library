@@ -111,7 +111,7 @@ class IOExpander
 
   private:
     // I/O expander interal register copy to avoid read-modify-write.
-    
+
 
     // IO expander pins that are blocked for user usage )for safety resons.
     // User can override this by setting _bypassCheck to true AT IT'S OWN RISK!

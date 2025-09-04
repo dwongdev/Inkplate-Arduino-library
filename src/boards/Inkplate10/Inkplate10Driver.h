@@ -35,14 +35,14 @@ class Inkplate;
 
 class EPDDriver:public RTC
 {
-    public: 
-        int initDriver(Inkplate *_inkplatePtr);
-        void display(bool _leaveOn = 0);
-        void selectDisplayMode(uint8_t displayMode);
-        void clearDisplay();
-        uint32_t partialUpdate(bool _forced = false, bool leaveOn = false);
-        void setFullUpdateThreshold(uint16_t _numberOfPartialUpdates);
-        uint8_t getDisplayMode();
+  public:
+    int initDriver(Inkplate *_inkplatePtr);
+    void display(bool _leaveOn = 0);
+    void selectDisplayMode(uint8_t displayMode);
+    void clearDisplay();
+    uint32_t partialUpdate(bool _forced = false, bool leaveOn = false);
+    void setFullUpdateThreshold(uint16_t _numberOfPartialUpdates);
+    uint8_t getDisplayMode();
 
 
         void setSdCardOk(int16_t s);
@@ -60,8 +60,8 @@ class EPDDriver:public RTC
         IOExpander internalIO;
         IOExpander externalIO;
 
-        uint8_t _beginDone = 0;
-        uint8_t _displayMode;
+    uint8_t _beginDone = 0;
+    uint8_t _displayMode;
 
 
         uint32_t pinLUT[256];
@@ -78,23 +78,22 @@ class EPDDriver:public RTC
         int16_t _sdCardOk = 0;
 
 
-
-    private:
-        void calculateLUTs();
-        uint8_t readPowerGood();
-        void pinsAsOutputs();
-        int einkOn();
-        void einkOff();
-        void display1b(bool _leaveOn);
-        void display3b(bool _leaveOn);
-        void pinsZstate();
-        uint8_t getPanelState();
-        void setPanelState(uint8_t state);
-        void clean(uint8_t c, uint8_t rep);
-        void vscan_start();
-        void hscan_start(uint32_t _d);
-        void vscan_end();
-        uint8_t _panelState = 0;
+  private:
+    void calculateLUTs();
+    uint8_t readPowerGood();
+    void pinsAsOutputs();
+    int einkOn();
+    void einkOff();
+    void display1b(bool _leaveOn);
+    void display3b(bool _leaveOn);
+    void pinsZstate();
+    uint8_t getPanelState();
+    void setPanelState(uint8_t state);
+    void clean(uint8_t c, uint8_t rep);
+    void vscan_start();
+    void hscan_start(uint32_t _d);
+    void vscan_end();
+    uint8_t _panelState = 0;
 };
 
 #endif

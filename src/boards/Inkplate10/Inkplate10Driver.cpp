@@ -58,7 +58,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
         pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
                     (((i & B11100000) >> 5) << 25);
 
-    for(int i = 0; i < 15; i++)
+    for (int i = 0; i < 15; i++)
     {
         externalIO.pinMode( i, OUTPUT);
         externalIO.digitalWrite( i, LOW);
@@ -536,7 +536,7 @@ int EPDDriver::einkOn()
     OE_CLEAR;
     PWRUP_SET;
     setPanelState(1);
-    
+
     unsigned long timer = millis();
     do
     {
@@ -615,7 +615,7 @@ uint8_t EPDDriver::getPanelState()
 }
 void EPDDriver::setPanelState(uint8_t state)
 {
-    _panelState=state;
+    _panelState = state;
 }
 
 /**

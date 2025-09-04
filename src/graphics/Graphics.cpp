@@ -296,5 +296,3 @@ void Graphics::drawTextBox(int16_t x0, int16_t y0, int16_t x1, int16_t y1, const
             return;
     }
 }
-
-

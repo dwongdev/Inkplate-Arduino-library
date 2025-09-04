@@ -21,14 +21,13 @@
 #define __INKPLATE_H__
 
 #include "Arduino.h"
-#include "Wire.h"
 #include "SPI.h"
+#include "Wire.h"
 #include "graphics/Graphics.h"
 #include "system/NetworkController/NetworkController.h"
 #include "system/defines.h"
 #include "system/InkplateBoards.h"
 #include "boardSelect.h"
-
 
 class Inkplate : public Graphics, public InkplateBoardClass, public NetworkController
 {
@@ -37,7 +36,7 @@ class Inkplate : public Graphics, public InkplateBoardClass, public NetworkContr
     void begin();
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void setRotation(uint8_t r);
-    
+
 
   protected:
   private:
