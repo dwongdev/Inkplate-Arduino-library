@@ -20,7 +20,6 @@
 #define __DEFINES_H__
 
 #include "Arduino.h"
-#include "InkplateBoards.h"
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
 

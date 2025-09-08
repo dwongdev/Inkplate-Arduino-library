@@ -24,7 +24,6 @@
 #include "WiFi.h"
 #include "WiFiClientSecure.h"
 #include "WiFiMulti.h"
-#include "../defines.h"
 #include "time.h"
 #include <string.h>
 

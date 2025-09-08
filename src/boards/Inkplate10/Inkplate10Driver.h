@@ -18,9 +18,9 @@
 // Include waveforms for EPD
 #include "waveforms.h"
 
-#include "Wire.h"
+#include "../../graphics/Image/Image.h"
 
-#include "EEPROM.h"
+#include "Wire.h"
 
 #include "../../graphics/GraphicsDefs.h"
 
@@ -32,11 +32,12 @@
 class Inkplate;
 
 
-
-class EPDDriver:public RTC
+class EPDDriver:public RTC, public Image
 {
   public:
+    void writePixelInternal(int16_t x, int16_t y, uint16_t color);
     int initDriver(Inkplate *_inkplatePtr);
+
     void display(bool _leaveOn = 0);
     void selectDisplayMode(uint8_t displayMode);
     void clearDisplay();
@@ -94,6 +95,7 @@ class EPDDriver:public RTC
     void hscan_start(uint32_t _d);
     void vscan_end();
     uint8_t _panelState = 0;
+    Inkplate *_inkplate;
 };
 
 #endif

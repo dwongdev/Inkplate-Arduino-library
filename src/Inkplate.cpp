@@ -48,51 +48,31 @@ void Inkplate::begin()
     // Block multiple inits.
     _beginDone = 1;
 }
-void Inkplate::writePixel(int16_t x, int16_t y, uint16_t color)
-{
-    int16_t x0 = x;
-    int16_t y0 = y;
-    if (x0 > width() - 1 || y0 > height() - 1 || x0 < 0 || y0 < 0)
-        return;
-
-    switch (rotation)
-    {
-    case 1:
-        _swap_int16_t(x0, y0);
-        x0 = height() - x0 - 1;
-        break;
-    case 2:
-        x0 = width() - x0 - 1;
-        y0 = height() - y0 - 1;
-        break;
-    case 3:
-        _swap_int16_t(x0, y0);
-        y0 = width() - y0 - 1;
-        break;
-    }
-
-    if (getDisplayMode() == 0)
-    {
-        int x = x0 >> 3;
-        int x_sub = x0 & 7;
-        uint8_t temp = *(_partial + ((E_INK_WIDTH >> 3) * y0) + x);
-        *(_partial + (E_INK_WIDTH / 8 * y0) + x) = (~pixelMaskLUT[x_sub] & temp) | (color ? pixelMaskLUT[x_sub] : 0);
-    }
-    else
-    {
-        color &= 7;
-        int x = x0 >> 1;
-        int x_sub = x0 & 1;
-        uint8_t temp;
-        temp = *(DMemory4Bit + (E_INK_WIDTH >> 1) * y0 + x);
-        *(DMemory4Bit + (E_INK_WIDTH >> 1) * y0 + x) = (pixelMaskGLUT[x_sub] & temp) | (x_sub ? color : color << 4);
-    }
-}
 
 void Inkplate::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
-    writePixel(x, y, color);
+    writePixel(x,y,color);
 }
+
+void Inkplate::writePixel(int16_t x, int16_t y, uint16_t color)
+{
+    writePixelInternal(x, y, color);
+}
+
 void Inkplate::setRotation(uint8_t r)
 {
+    rotation = (r & 3);
+    switch (rotation)
+    {
+    case 0:
+    case 2:
+        _width = E_INK_WIDTH;
+        _height = E_INK_HEIGHT;
+        break;
+    case 1:
+    case 3:
+        _width = E_INK_HEIGHT;
+        _height = E_INK_WIDTH;
+        break;
+    }
 }

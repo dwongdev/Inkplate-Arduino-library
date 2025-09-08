@@ -23,10 +23,10 @@
 #include "Arduino.h"
 #include "SPI.h"
 #include "Wire.h"
+#include "system/InkplateBoards.h"
 #include "graphics/Graphics.h"
 #include "system/NetworkController/NetworkController.h"
 #include "system/defines.h"
-#include "system/InkplateBoards.h"
 #include "boardSelect.h"
 
 class Inkplate : public Graphics, public InkplateBoardClass, public NetworkController

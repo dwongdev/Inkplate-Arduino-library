@@ -1,7 +1,52 @@
 #include "Inkplate10Driver.h"
+#include "Inkplate.h"
+
 
 SPIClass spi2(2);  
 SdFat sd(&spi2);
+
+
+void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
+{
+    int16_t x0 = x;
+    int16_t y0 = y;
+    if (x0 > E_INK_WIDTH - 1 || y0 > E_INK_HEIGHT - 1 || x0 < 0 || y0 < 0)
+        return;
+
+    switch (_inkplate->getRotation())
+    {
+    case 1:
+        _swap_int16_t(x0, y0);
+        x0 = E_INK_HEIGHT - x0 - 1;
+        break;
+    case 2:
+        x0 = E_INK_WIDTH - x0 - 1;
+        y0 = E_INK_HEIGHT - y0 - 1;
+        break;
+    case 3:
+        _swap_int16_t(x0, y0);
+        y0 = E_INK_WIDTH - y0 - 1;
+        break;
+    }
+
+    if (_inkplate->getDisplayMode() == 0)
+    {
+        int x = x0 >> 3;
+        int x_sub = x0 & 7;
+        uint8_t temp = *(_partial + ((E_INK_WIDTH >> 3) * y0) + x);
+        *(_partial + (E_INK_WIDTH / 8 * y0) + x) = (~pixelMaskLUT[x_sub] & temp) | (color ? pixelMaskLUT[x_sub] : 0);
+    }
+    else
+    {
+        color &= 7;
+        int x = x0 >> 1;
+        int x_sub = x0 & 1;
+        uint8_t temp;
+        temp = *(DMemory4Bit + (E_INK_WIDTH >> 1) * y0 + x);
+        *(DMemory4Bit + (E_INK_WIDTH >> 1) * y0 + x) = (pixelMaskGLUT[x_sub] & temp) | (x_sub ? color : color << 4);
+    }
+}
+
 
 /**
  * @brief       begin function initialize Inkplate object with predefined
@@ -21,10 +66,16 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     if (_beginDone == 1)
         return 0;
 
+    _inkplate = _inkplatePtr;
+
     internalIO.begin(IO_INT_ADDR);
     externalIO.begin(IO_EXT_ADDR);
 
     internalIO.digitalWrite( 9, LOW);
+
+    beginImage(_inkplatePtr);
+
+    _inkplate = _inkplatePtr;
 
 
     memset(internalIO._ioExpanderRegs, 0, 22);

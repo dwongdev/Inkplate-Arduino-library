@@ -20,9 +20,6 @@
 // Include Inkplate10 board header file.
 #include "Inkplate10Driver.h"
 
-// Include main Arduino header file.
-#include <Arduino.h>
-
 // Wrapper for different Inkplate boards.
 class InkplateBoardClass : public EPDDriver
 {
