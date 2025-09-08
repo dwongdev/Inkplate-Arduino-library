@@ -28,52 +28,53 @@
  * \class SdSpiBaseDriver
  * \brief SPI base driver.
  */
-class SdSpiBaseDriver {
- public:
-  /** Set SPI options for access to SD/SDHC cards.
-   *
-   */
-  virtual void activate() = 0;
-  /** Initialize the SPI bus.
-   *
-   * \param[in] chipSelectPin SD card chip select pin.
-   */
-  virtual void begin(uint8_t chipSelectPin) = 0;
-  /**
-   * End SPI transaction.
-   */
-  virtual void deactivate() = 0;
-  /** Receive a byte.
-   *
-   * \return The byte.
-   */
-  virtual uint8_t receive() = 0;
-  /** Receive multiple bytes.
-   *
-   * \param[out] buf Buffer to receive the data.
-   * \param[in] n Number of bytes to receive.
-   *
-   * \return Zero for no error or nonzero error code.
-   */
-  virtual uint8_t receive(uint8_t* buf, size_t n) = 0;
-  /** Send a byte.
-   *
-   * \param[in] data Byte to send
-   */
-  virtual void send(uint8_t data) = 0;
-  /** Send multiple bytes.
-  *
-  * \param[in] buf Buffer for data to be sent.
-  * \param[in] n Number of bytes to send.
-  */
-  virtual void send(const uint8_t* buf, size_t n) = 0;
-  /** Set CS low. */
-  virtual void select() = 0;
-  /** Save SPI settings.
-   * \param[in] spiSettings SPI speed, mode, and bit order.
-   */
-  virtual void setSpiSettings(SPISettings spiSettings) = 0;
-  /** Set CS high. */
-  virtual void unselect() = 0;
+class SdSpiBaseDriver
+{
+  public:
+    /** Set SPI options for access to SD/SDHC cards.
+     *
+     */
+    virtual void activate() = 0;
+    /** Initialize the SPI bus.
+     *
+     * \param[in] chipSelectPin SD card chip select pin.
+     */
+    virtual void begin(uint8_t chipSelectPin) = 0;
+    /**
+     * End SPI transaction.
+     */
+    virtual void deactivate() = 0;
+    /** Receive a byte.
+     *
+     * \return The byte.
+     */
+    virtual uint8_t receive() = 0;
+    /** Receive multiple bytes.
+     *
+     * \param[out] buf Buffer to receive the data.
+     * \param[in] n Number of bytes to receive.
+     *
+     * \return Zero for no error or nonzero error code.
+     */
+    virtual uint8_t receive(uint8_t *buf, size_t n) = 0;
+    /** Send a byte.
+     *
+     * \param[in] data Byte to send
+     */
+    virtual void send(uint8_t data) = 0;
+    /** Send multiple bytes.
+     *
+     * \param[in] buf Buffer for data to be sent.
+     * \param[in] n Number of bytes to send.
+     */
+    virtual void send(const uint8_t *buf, size_t n) = 0;
+    /** Set CS low. */
+    virtual void select() = 0;
+    /** Save SPI settings.
+     * \param[in] spiSettings SPI speed, mode, and bit order.
+     */
+    virtual void setSpiSettings(SPISettings spiSettings) = 0;
+    /** Set CS high. */
+    virtual void unselect() = 0;
 };
-#endif  // SdSpiBaseDriver_h
+#endif // SdSpiBaseDriver_h

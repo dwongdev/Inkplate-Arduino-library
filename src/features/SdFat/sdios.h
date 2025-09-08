@@ -28,6 +28,6 @@
  * \file
  * \brief C++ IO Streams features.
  */
-#include "FatLib/fstream.h"
 #include "FatLib/ArduinoStream.h"
-#endif  // sdios_h
+#include "FatLib/fstream.h"
+#endif // sdios_h

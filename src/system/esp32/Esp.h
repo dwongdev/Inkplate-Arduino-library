@@ -21,8 +21,8 @@
 
 #include "Arduino.h"
 
-#include "../defines.h"
 #include "../InkplateBoards.h"
+#include "../defines.h"
 #include "driver/periph_ctrl.h"
 #include "rom/lldesc.h"
 #include "soc/gpio_reg.h"

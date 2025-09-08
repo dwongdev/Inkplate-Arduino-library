@@ -32,7 +32,7 @@
 class Inkplate;
 
 
-class EPDDriver:public RTC, public Image
+class EPDDriver : public RTC, public Image
 {
   public:
     void writePixelInternal(int16_t x, int16_t y, uint16_t color);
@@ -46,37 +46,37 @@ class EPDDriver:public RTC, public Image
     uint8_t getDisplayMode();
 
 
-        void setSdCardOk(int16_t s);
-        int16_t getSdCardOk();
-        int16_t sdCardInit();
-        void sdCardSleep();
-        SdFat getSdFat();
-        SPIClass *getSPIptr();
+    void setSdCardOk(int16_t s);
+    int16_t getSdCardOk();
+    int16_t sdCardInit();
+    void sdCardSleep();
+    SdFat getSdFat();
+    SPIClass *getSPIptr();
 
-        int8_t readTemperature();
+    int8_t readTemperature();
 
-        double readBattery();
+    double readBattery();
 
 
-        IOExpander internalIO;
-        IOExpander externalIO;
+    IOExpander internalIO;
+    IOExpander externalIO;
 
     uint8_t _beginDone = 0;
     uint8_t _displayMode;
 
 
-        uint32_t pinLUT[256];
-        uint32_t *GLUT;
-        uint32_t *GLUT2;
-        uint8_t *DMemoryNew;
-        uint8_t *_partial;
-        uint8_t *DMemory4Bit;
-        uint8_t *_pBuffer;
-        uint8_t waveform3Bit[8][9] = WAVEFORM3BIT;
-        uint16_t _partialUpdateLimiter = 10;
-        uint16_t _partialUpdateCounter = 0;
-        uint8_t _blockPartial = 1;
-        int16_t _sdCardOk = 0;
+    uint32_t pinLUT[256];
+    uint32_t *GLUT;
+    uint32_t *GLUT2;
+    uint8_t *DMemoryNew;
+    uint8_t *_partial;
+    uint8_t *DMemory4Bit;
+    uint8_t *_pBuffer;
+    uint8_t waveform3Bit[8][9] = WAVEFORM3BIT;
+    uint16_t _partialUpdateLimiter = 10;
+    uint16_t _partialUpdateCounter = 0;
+    uint8_t _blockPartial = 1;
+    int16_t _sdCardOk = 0;
 
 
   private:

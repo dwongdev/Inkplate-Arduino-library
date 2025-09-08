@@ -231,7 +231,7 @@ void RTC::rtcEnableAlarm() // datasheet 8.5.6.
  * @param uint8_t rtcAlarmWeekday Set the alarm rtcWeekday
  */
 void RTC::rtcSetAlarm(uint8_t rtcAlarmSecond, uint8_t rtcAlarmMinute, uint8_t rtcAlarmHour, uint8_t rtcAlarmDay,
-                         uint8_t rtcAlarmWeekday)
+                      uint8_t rtcAlarmWeekday)
 {
     if (rtcAlarmSecond < 99)
     { // rtcSecond

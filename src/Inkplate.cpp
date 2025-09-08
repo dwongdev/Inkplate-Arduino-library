@@ -51,7 +51,7 @@ void Inkplate::begin()
 
 void Inkplate::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
-    writePixel(x,y,color);
+    writePixel(x, y, color);
 }
 
 void Inkplate::writePixel(int16_t x, int16_t y, uint16_t color)

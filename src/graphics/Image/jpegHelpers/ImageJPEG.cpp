@@ -15,10 +15,10 @@
  *
  * @authors     Soldered
  ***************************************************/
-#include "Inkplate.h"
+#include "../../../system/defines.h"
 #include "../Image.h"
 #include "../TJpeg/TJpg_Decoder.h"
-#include "../../../system/defines.h"
+#include "Inkplate.h"
 
 extern Image *_imagePtrJpeg;
 

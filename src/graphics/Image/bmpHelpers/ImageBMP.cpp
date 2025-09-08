@@ -15,8 +15,8 @@
  *
  * @authors     Soldered.com
  ***************************************************/
-#include "Inkplate.h"
 #include "../Image.h"
+#include "Inkplate.h"
 
 
 /**
@@ -335,7 +335,7 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
         case 1: {
 
             _inkplate->drawPixel(x + j, (h - y - 1),
-                       (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
+                                 (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
             break;
         }
 
@@ -382,7 +382,7 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
                 val = ditherGetPixelBmp(RGB8BIT(r, g, b), j, y, w, 0);
             else
             {
-                    val = RGB3BIT(r, g, b);
+                val = RGB3BIT(r, g, b);
             }
 
             val = RGB3BIT(r, g, b);

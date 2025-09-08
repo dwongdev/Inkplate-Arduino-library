@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
- /**
+/**
  * \file
  * \brief Define block driver.
  */
@@ -36,5 +36,5 @@
 typedef BaseBlockDriver BlockDriver;
 #else  // ENABLE_EXTENDED_TRANSFER_CLASS || ENABLE_SDIO_CLASS
 typedef SdSpiCard BlockDriver;
-#endif  // ENABLE_EXTENDED_TRANSFER_CLASS || ENABLE_SDIO_CLASS
-#endif  // BlockDriver_h
+#endif // ENABLE_EXTENDED_TRANSFER_CLASS || ENABLE_SDIO_CLASS
+#endif // BlockDriver_h

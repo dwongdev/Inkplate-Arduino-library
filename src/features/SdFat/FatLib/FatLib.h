@@ -25,12 +25,12 @@
 #ifndef FatLib_h
 #define FatLib_h
 #include "ArduinoFiles.h"
+#include "FatFile.h"
 #include "FatFileSystem.h"
 #include "FatLibConfig.h"
 #include "FatVolume.h"
-#include "FatFile.h"
 #include "StdioStream.h"
 //------------------------------------------------------------------------------
 /** FatFileSystem version YYYYMMDD */
 #define FAT_LIB_VERSION 20150131
-#endif  // FatLib_h
+#endif // FatLib_h

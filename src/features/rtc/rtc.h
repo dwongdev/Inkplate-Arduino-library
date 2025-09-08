@@ -63,15 +63,15 @@
 #define RTC_ALARM_MATCH_MMSS    0b00000011
 #define RTC_ALARM_MATCH_HHMMSS  0b00000111
 #define RTC_ALARM_MATCH_DHHMMSS 0b00001111
-#define RTC_ALARM_MATCH_WHHMMSS  0b00010111
+#define RTC_ALARM_MATCH_WHHMMSS 0b00010111
 
 // Rtc internal capacitors
 #define RTC_7PF    0
 #define RTC_12_5PF 1
 
-class RTC{
-public:
-
+class RTC
+{
+  public:
     enum rtcCountdownSrcClock
     {
         TIMER_CLOCK_4096HZ = 0,
@@ -116,9 +116,8 @@ public:
     uint8_t rtcGetAlarmDay();
     uint8_t rtcGetAlarmWeekday();
 
-    
 
-private:
+  private:
     uint8_t rtcDecToBcd(uint8_t val);
     uint8_t rtcBcdToDec(uint8_t val);
     /* alarm */

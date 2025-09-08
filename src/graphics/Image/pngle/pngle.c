@@ -42,8 +42,8 @@
 #endif
 
 #define PNGLE_ERROR(s) (pngle->error = (s), pngle->state = PNGLE_STATE_ERROR, -1)
-#define PNGLE_CALLOC(a, b, name)                                                               \
-    (debug_printf("[pngle] Allocating %zu bytes for %s\n", (size_t)(a) * (size_t)(b), (name)), \
+#define PNGLE_CALLOC(a, b, name)                                                                                       \
+    (debug_printf("[pngle] Allocating %zu bytes for %s\n", (size_t)(a) * (size_t)(b), (name)),                         \
      calloc((size_t)(a), (size_t)(b)))
 
 #define PNGLE_UNUSED(x) (void)(x)
@@ -338,15 +338,13 @@ static int pngle_draw_pixels(pngle_t *pngle, size_t scanline_ringbuf_xidx)
             else
             {
                 // true color: 2, and 6
-                v[3] = (pngle->hdr.color_type & 4) ? v[3] : is_trans_color(pngle, v, 3) ? 0
-                                                                                        : maxval;
+                v[3] = (pngle->hdr.color_type & 4) ? v[3] : is_trans_color(pngle, v, 3) ? 0 : maxval;
             }
         }
         else
         {
             // alpha, tRNS, or opaque
-            v[3] = (pngle->hdr.color_type & 4) ? v[1] : is_trans_color(pngle, v, 1) ? 0
-                                                                                    : maxval;
+            v[3] = (pngle->hdr.color_type & 4) ? v[1] : is_trans_color(pngle, v, 1) ? 0 : maxval;
 
             // monochrome
             v[1] = v[2] = v[0];

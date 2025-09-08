@@ -29,31 +29,35 @@
  *
  * \param[in] chipSelectPin SD card chip select pin.
  */
-void SdSpiAltDriver::begin(uint8_t csPin) {
-  m_csPin = csPin;
-  pinMode(m_csPin, OUTPUT);
-  digitalWrite(m_csPin, HIGH);
-  SPI.begin();
+void SdSpiAltDriver::begin(uint8_t csPin)
+{
+    m_csPin = csPin;
+    pinMode(m_csPin, OUTPUT);
+    digitalWrite(m_csPin, HIGH);
+    SPI.begin();
 }
 //------------------------------------------------------------------------------
 /** Set SPI options for access to SD/SDHC cards.
  *
  */
-void SdSpiAltDriver::activate() {
-  SPI.beginTransaction(m_spiSettings);
+void SdSpiAltDriver::activate()
+{
+    SPI.beginTransaction(m_spiSettings);
 }
 //------------------------------------------------------------------------------
-void SdSpiAltDriver::deactivate() {
-  // Note: endTransaction is an empty function on ESP8266.
-  SPI.endTransaction();
+void SdSpiAltDriver::deactivate()
+{
+    // Note: endTransaction is an empty function on ESP8266.
+    SPI.endTransaction();
 }
 //------------------------------------------------------------------------------
 /** Receive a byte.
  *
  * \return The byte.
  */
-uint8_t SdSpiAltDriver::receive() {
-  return SPI.transfer(0XFF);
+uint8_t SdSpiAltDriver::receive()
+{
+    return SPI.transfer(0XFF);
 }
 //------------------------------------------------------------------------------
 /** Receive multiple bytes.
@@ -63,29 +67,33 @@ uint8_t SdSpiAltDriver::receive() {
  *
  * \return Zero for no error or nonzero error code.
  */
-uint8_t SdSpiAltDriver::receive(uint8_t* buf, size_t n) {
-  // Adjust to 32-bit alignment.
-  while ((reinterpret_cast<uintptr_t>(buf) & 0X3) && n) {
-    *buf++ = SPI.transfer(0xff);
-    n--;
-  }
-  // Do multiple of four byte transfers.
-  size_t n4 = 4*(n/4);
-  SPI.transferBytes(0, buf, n4);
+uint8_t SdSpiAltDriver::receive(uint8_t *buf, size_t n)
+{
+    // Adjust to 32-bit alignment.
+    while ((reinterpret_cast<uintptr_t>(buf) & 0X3) && n)
+    {
+        *buf++ = SPI.transfer(0xff);
+        n--;
+    }
+    // Do multiple of four byte transfers.
+    size_t n4 = 4 * (n / 4);
+    SPI.transferBytes(0, buf, n4);
 
-  // Transfer up to three remaining bytes.
-  for (buf += n4, n -= n4; n; n--) {
-    *buf++ = SPI.transfer(0xff);
-  }
-  return 0;
+    // Transfer up to three remaining bytes.
+    for (buf += n4, n -= n4; n; n--)
+    {
+        *buf++ = SPI.transfer(0xff);
+    }
+    return 0;
 }
 //------------------------------------------------------------------------------
 /** Send a byte.
  *
  * \param[in] b Byte to send
  */
-void SdSpiAltDriver::send(uint8_t b) {
-  SPI.transfer(b);
+void SdSpiAltDriver::send(uint8_t b)
+{
+    SPI.transfer(b);
 }
 //------------------------------------------------------------------------------
 /** Send multiple bytes.
@@ -93,12 +101,14 @@ void SdSpiAltDriver::send(uint8_t b) {
  * \param[in] buf Buffer for data to be sent.
  * \param[in] n Number of bytes to send.
  */
-void SdSpiAltDriver::send(const uint8_t* buf , size_t n) {
-  // Adjust to 32-bit alignment.
-  while ((reinterpret_cast<uintptr_t>(buf) & 0X3) && n) {
-    SPI.transfer(*buf++);
-    n--;
-  }
-  SPI.transferBytes(const_cast<uint8_t*>(buf), 0, n);
+void SdSpiAltDriver::send(const uint8_t *buf, size_t n)
+{
+    // Adjust to 32-bit alignment.
+    while ((reinterpret_cast<uintptr_t>(buf) & 0X3) && n)
+    {
+        SPI.transfer(*buf++);
+        n--;
+    }
+    SPI.transferBytes(const_cast<uint8_t *>(buf), 0, n);
 }
-#endif  // defined(ESP8266)
+#endif // defined(ESP8266)

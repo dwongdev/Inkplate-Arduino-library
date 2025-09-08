@@ -26,7 +26,8 @@
 #include "SdSpiDriver.h"
 static volatile bool SPI_DMA_TransferCompleted = false;
 //-----------------------------------------------------------------------------
-static void SD_SPI_DMA_TransferComplete_Callback(void) {
+static void SD_SPI_DMA_TransferComplete_Callback(void)
+{
     SPI_DMA_TransferCompleted = true;
 }
 //------------------------------------------------------------------------------
@@ -34,34 +35,38 @@ static void SD_SPI_DMA_TransferComplete_Callback(void) {
  *
  * \param[in] divisor SCK clock divider relative to the APB1 or APB2 clock.
  */
-void SdSpiAltDriver::activate() {
-  m_spi->beginTransaction(m_spiSettings);
+void SdSpiAltDriver::activate()
+{
+    m_spi->beginTransaction(m_spiSettings);
 }
 //------------------------------------------------------------------------------
 /** Initialize the SPI bus.
  *
  * \param[in] chipSelectPin SD card chip select pin.
  */
-void SdSpiAltDriver::begin(uint8_t csPin) {
-  m_csPin = csPin;
-  m_spi->begin();
-  pinMode(m_csPin, OUTPUT);
-  digitalWrite(m_csPin, HIGH);
+void SdSpiAltDriver::begin(uint8_t csPin)
+{
+    m_csPin = csPin;
+    m_spi->begin();
+    pinMode(m_csPin, OUTPUT);
+    digitalWrite(m_csPin, HIGH);
 }
 //------------------------------------------------------------------------------
 /**
  * End SPI transaction.
  */
-void SdSpiAltDriver::deactivate() {
-  m_spi->endTransaction();
+void SdSpiAltDriver::deactivate()
+{
+    m_spi->endTransaction();
 }
 //------------------------------------------------------------------------------
 /** Receive a byte.
  *
  * \return The byte.
  */
-uint8_t SdSpiAltDriver::receive() {
-  return m_spi->transfer(0XFF);
+uint8_t SdSpiAltDriver::receive()
+{
+    return m_spi->transfer(0XFF);
 }
 //------------------------------------------------------------------------------
 /** Receive multiple bytes.
@@ -71,19 +76,23 @@ uint8_t SdSpiAltDriver::receive() {
  *
  * \return Zero for no error or nonzero error code.
  */
-uint8_t SdSpiAltDriver::receive(uint8_t* buf, size_t n) {
-  SPI_DMA_TransferCompleted = false;
-  m_spi->transfer(nullptr, buf, n, SD_SPI_DMA_TransferComplete_Callback);
-  while (!SPI_DMA_TransferCompleted) {}
-  return 0;
+uint8_t SdSpiAltDriver::receive(uint8_t *buf, size_t n)
+{
+    SPI_DMA_TransferCompleted = false;
+    m_spi->transfer(nullptr, buf, n, SD_SPI_DMA_TransferComplete_Callback);
+    while (!SPI_DMA_TransferCompleted)
+    {
+    }
+    return 0;
 }
 //------------------------------------------------------------------------------
 /** Send a byte.
  *
  * \param[in] b Byte to send
  */
-void SdSpiAltDriver::send(uint8_t b) {
-  m_spi->transfer(b);
+void SdSpiAltDriver::send(uint8_t b)
+{
+    m_spi->transfer(b);
 }
 //------------------------------------------------------------------------------
 /** Send multiple bytes.
@@ -91,12 +100,14 @@ void SdSpiAltDriver::send(uint8_t b) {
  * \param[in] buf Buffer for data to be sent.
  * \param[in] n Number of bytes to send.
  */
-void SdSpiAltDriver::send(const uint8_t* buf , size_t n) {
-  SPI_DMA_TransferCompleted = false;
+void SdSpiAltDriver::send(const uint8_t *buf, size_t n)
+{
+    SPI_DMA_TransferCompleted = false;
 
-  m_spi->transfer(const_cast<uint8_t*>(buf), nullptr, n,
-                            SD_SPI_DMA_TransferComplete_Callback);
+    m_spi->transfer(const_cast<uint8_t *>(buf), nullptr, n, SD_SPI_DMA_TransferComplete_Callback);
 
-  while (!SPI_DMA_TransferCompleted) {}
+    while (!SPI_DMA_TransferCompleted)
+    {
+    }
 }
-#endif  // defined(PLATFORM_ID)
+#endif // defined(PLATFORM_ID)

@@ -113,7 +113,7 @@ bool NetworkController::connectWiFi(const char *ssid, const char *pass, int time
  * @return      True if successful, false if failed
  */
 bool NetworkController::connectWiFiMulti(int numNetworks, const char **ssids, const char **passwords, int timeout,
-                                     bool printToSerial)
+                                         bool printToSerial)
 {
     // Create the WiFiMulti object
     WiFiMulti wifiMulti;

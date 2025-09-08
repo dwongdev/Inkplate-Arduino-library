@@ -19,8 +19,8 @@
 #ifndef __SHAPES_H__
 #define __SHAPES_H__
 
-#include "../../system/defines.h"
 #include "../../system/InkplateBoards.h"
+#include "../../system/defines.h"
 #include "../Adafruit_GFX/Adafruit_GFX.h"
 #include "Arduino.h"
 

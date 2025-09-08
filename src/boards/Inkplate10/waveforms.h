@@ -9,7 +9,7 @@
      {0, 0, 0, 0, 0, 2, 1, 2, 0}, {0, 0, 0, 2, 2, 2, 2, 2, 0}};
 
 #ifndef E_INK_WIDTH
-#define E_INK_WIDTH  1200
+#define E_INK_WIDTH 1200
 #endif
 #ifndef E_INK_HEIGHT
 #define E_INK_HEIGHT 825

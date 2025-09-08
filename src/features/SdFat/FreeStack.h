@@ -36,26 +36,30 @@ extern char __bss_end;
 /** Amount of free stack space.
  * \return The number of free bytes.
  */
-static int FreeStack() {
-  char* sp = reinterpret_cast<char*>(SP);
-  return __brkval ? sp - __brkval : sp - &__bss_end;
-//  char top;
-//  return __brkval ? &top - __brkval : &top - &__bss_end;
+static int FreeStack()
+{
+    char *sp = reinterpret_cast<char *>(SP);
+    return __brkval ? sp - __brkval : sp - &__bss_end;
+    //  char top;
+    //  return __brkval ? &top - __brkval : &top - &__bss_end;
 }
-#elif defined(PLATFORM_ID)  // Particle board
-static int FreeStack() {
-  return System.freeMemory();
+#elif defined(PLATFORM_ID) // Particle board
+static int FreeStack()
+{
+    return System.freeMemory();
 }
 #elif defined(__arm__)
-extern "C" char* sbrk(int incr);
-static int FreeStack() {
-  char top = 't';
-  return &top - reinterpret_cast<char*>(sbrk(0));
+extern "C" char *sbrk(int incr);
+static int FreeStack()
+{
+    char top = 't';
+    return &top - reinterpret_cast<char *>(sbrk(0));
 }
 #else
 #warning FreeStack is not defined for this system.
-static int FreeStack() {
-  return 0;
+static int FreeStack()
+{
+    return 0;
 }
 #endif
-#endif  // FreeStack_h
+#endif // FreeStack_h

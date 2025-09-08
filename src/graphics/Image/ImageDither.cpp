@@ -15,8 +15,8 @@
  *
  * @authors     Soldered
  ***************************************************/
-#include "Inkplate.h"
 #include "Image.h"
+#include "Inkplate.h"
 
 /**
  * @brief       ditherGetPixelBmp calculates dither for given pixel in bmp
@@ -142,4 +142,3 @@ void Image::ditherSwapBlockJpeg(int x)
 
     jpegDitherBuffer[17][1] = 0;
 }
-
