@@ -16,9 +16,10 @@
  * @authors     Soldered
  ***************************************************/
 #include "../../../system/defines.h"
+#include "Inkplate.h"
 #include "../Image.h"
 #include "../TJpeg/TJpg_Decoder.h"
-#include "Inkplate.h"
+
 
 extern Image *_imagePtrJpeg;
 
@@ -126,11 +127,11 @@ bool Image::drawJpegFromWeb(const char *url, int x, int y, bool dither, bool inv
 
     if (strncmp(url, "http://", 7) == 0)
     {
-        buf = downloadFile(url, &defaultLen);
+        buf = _inkplate->downloadFile(url, &defaultLen);
     }
     else if (strncmp(url, "https://", 8) == 0)
     {
-        buf = downloadFileHTTPS(url, &defaultLen);
+        buf = _inkplate->downloadFileHTTPS(url, &defaultLen);
     }
 
     // Image sometimes doesn't download, so
@@ -169,11 +170,11 @@ bool Image::drawJpegFromWebAtPosition(const char *url, const Position &position,
     uint8_t *buff = 0;
     if (strncmp(url, "http://", 7) == 0)
     {
-        buff = downloadFile(url, &defaultLen);
+        buff = _inkplate->downloadFile(url, &defaultLen);
     }
     else if (strncmp(url, "https://", 8) == 0)
     {
-        buff = downloadFileHTTPS(url, &defaultLen);
+        buff = _inkplate->downloadFileHTTPS(url, &defaultLen);
     }
 
     // Image sometimes doesn't download, so
@@ -296,7 +297,7 @@ bool Image::drawJpegFromSdAtPosition(const char *fileName, const Position &posit
 bool Image::drawJpegFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither, bool invert)
 {
     bool ret = 0;
-    uint8_t *buff = downloadFile(s, len);
+    uint8_t *buff = _inkplate->downloadFile(s, len);
 
     // Image sometimes doesn't download, so
     // check if buffer is empty to avoid trying to draw an empty image

@@ -16,9 +16,10 @@
  * @authors     Soldered.com
  ***************************************************/
 #include "../../../system/defines.h"
+#include "Inkplate.h"
 #include "../Image.h"
 #include "../pngle/pngle.h"
-#include "Inkplate.h"
+
 
 extern Image *_imagePtrPng;
 
@@ -211,11 +212,11 @@ bool Image::drawPngFromWeb(const char *url, int x, int y, bool dither, bool inve
 
     if (strncmp(url, "http://", 7) == 0)
     {
-        buf = downloadFile(url, &defaultLen);
+        buf = _inkplate->downloadFile(url, &defaultLen);
     }
     else if (strncmp(url, "https://", 8) == 0)
     {
-        buf = downloadFileHTTPS(url, &defaultLen);
+        buf = _inkplate->downloadFileHTTPS(url, &defaultLen);
     }
 
     // Image sometimes doesn't download, so
@@ -265,7 +266,7 @@ bool Image::drawPngFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither
     _pngY = y;
     pngle_set_draw_callback(pngle, pngle_on_draw);
 
-    uint8_t *buff = downloadFile(s, len);
+    uint8_t *buff = _inkplate->downloadFile(s, len);
 
     // Image sometimes doesn't download, so
     // check if buffer is empty to avoid trying to draw an empty image
@@ -312,7 +313,7 @@ bool Image::drawPngFromWebAtPosition(const char *url, const Position &position, 
     pngle_set_draw_callback(pngle, pngle_on_draw);
 
     int32_t defaultLen = E_INK_WIDTH * E_INK_HEIGHT * 4 + 100;
-    uint8_t *buff = downloadFile(url, &defaultLen);
+    uint8_t *buff = _inkplate->downloadFile(url, &defaultLen);
 
     // Image sometimes doesn't download, so
     // check if buffer is empty to avoid trying to draw an empty image

@@ -15,9 +15,8 @@
  *
  * @authors     Soldered
  ***************************************************/
-
-#include "Image.h"
 #include "Inkplate.h"
+#include "Image.h"
 #include "TJpeg/TJpg_Decoder.h"
 #include "pgmspace.h"
 

@@ -15,8 +15,9 @@
  *
  * @authors     Soldered.com
  ***************************************************/
-#include "../Image.h"
 #include "Inkplate.h"
+#include "../Image.h"
+
 
 
 /**
@@ -216,11 +217,11 @@ bool Image::drawBitmapFromWeb(const char *url, int x, int y, bool dither, bool i
 
     if (strncmp(url, "http://", 7) == 0)
     {
-        buf = downloadFile(url, &defaultLen);
+        buf = _inkplate->downloadFile(url, &defaultLen);
     }
     else if (strncmp(url, "https://", 8) == 0)
     {
-        buf = downloadFileHTTPS(url, &defaultLen);
+        buf = _inkplate->downloadFileHTTPS(url, &defaultLen);
     }
 
     // Image sometimes doesn't download, so
@@ -255,7 +256,7 @@ bool Image::drawBitmapFromWeb(const char *url, int x, int y, bool dither, bool i
 bool Image::drawBitmapFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither, bool invert)
 {
     bool ret = 0;
-    uint8_t *buf = downloadFile(s, len);
+    uint8_t *buf = _inkplate->downloadFile(s, len);
 
     // Image sometimes doesn't download, so
     // check if buffer is empty to avoid trying to draw an empty image
@@ -452,7 +453,7 @@ bool Image::drawBmpFromWebAtPosition(const char *url, const Position &position, 
 {
     bool ret = 0;
     int32_t defaultLen = E_INK_WIDTH * E_INK_HEIGHT * 4 + 150;
-    uint8_t *buf = downloadFileHTTPS(url, &defaultLen);
+    uint8_t *buf = _inkplate->downloadFileHTTPS(url, &defaultLen);
 
     // Image sometimes doesn't download, so
     // check if buffer is empty to avoid trying to draw an empty image

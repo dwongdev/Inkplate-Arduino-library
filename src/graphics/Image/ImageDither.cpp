@@ -15,8 +15,9 @@
  *
  * @authors     Soldered
  ***************************************************/
-#include "Image.h"
 #include "Inkplate.h"
+#include "Image.h"
+
 
 /**
  * @brief       ditherGetPixelBmp calculates dither for given pixel in bmp
