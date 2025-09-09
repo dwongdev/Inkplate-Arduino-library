@@ -32,7 +32,7 @@
 class Inkplate;
 
 
-class EPDDriver : public RTC, public Image
+class EPDDriver : public Image
 {
   public:
     void writePixelInternal(int16_t x, int16_t y, uint16_t color);
@@ -61,6 +61,8 @@ class EPDDriver : public RTC, public Image
     IOExpander internalIO;
     IOExpander externalIO;
 
+    RTC rtc;
+
     uint8_t _beginDone = 0;
     uint8_t _displayMode;
 
@@ -81,6 +83,9 @@ class EPDDriver : public RTC, public Image
 
   private:
     void calculateLUTs();
+    void pmicBegin();
+    uint8_t initializeFramebuffers();
+    void gpioInit();
     uint8_t readPowerGood();
     void pinsAsOutputs();
     int einkOn();

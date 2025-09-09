@@ -5,7 +5,20 @@
 SPIClass spi2(2);
 SdFat sd(&spi2);
 
-
+/**
+ *
+ * @brief       writePixelInternal funtion sets pixel data for (x, y) pixel position
+ *
+ * @param       int16_t x0
+ *              default position for x, will be changed depending on rotation
+ * @param       int16_t y0
+ *              default position for y, will be changed depending on rotation
+ * @param       uint16_t color
+ *              pixel color, in 3bit mode have values in range 0-7
+ *
+ * @note        If x0 or y0 are out of inkplate screen borders, function will
+ * exit.
+ */
 void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
 {
     int16_t x0 = x;
@@ -65,119 +78,23 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // If the driver was already initialized, skip current initialization
     if (_beginDone == 1)
         return 0;
-
+    
+    // Save the given inkplate pointer for internal use
     _inkplate = _inkplatePtr;
 
-    internalIO.begin(IO_INT_ADDR);
-    externalIO.begin(IO_EXT_ADDR);
-
-    internalIO.digitalWrite(9, LOW);
-
+    // Initialize the image processing functionalities
     beginImage(_inkplatePtr);
 
-    _inkplate = _inkplatePtr;
+    // Initialize the all GPIOs
+    gpioInit();
 
 
-    memset(internalIO._ioExpanderRegs, 0, 22);
-    memset(externalIO._ioExpanderRegs, 0, 22);
-
-    internalIO.pinMode(VCOM, OUTPUT);
-    internalIO.pinMode(PWRUP, OUTPUT);
-    internalIO.pinMode(WAKEUP, OUTPUT);
-    internalIO.pinMode(GPIO0_ENABLE, OUTPUT);
-    internalIO.digitalWrite(GPIO0_ENABLE, 1);
-
-    internalIO.digitalWrite(WAKEUP, 1);
-    WAKEUP_SET;
-    delay(1);
-    Wire.beginTransmission(0x48);
-    Wire.write(0x09);
-    Wire.write(0B00011011); // Power up seq.
-    Wire.write(0B00000000); // Power up delay (3mS per rail)
-    Wire.write(0B00011011); // Power down seq.
-    Wire.write(0B00000000); // Power down delay (6mS per rail)
-    Wire.endTransmission();
-    delay(1);
-    internalIO.digitalWrite(WAKEUP, 0);
-    WAKEUP_CLEAR;
-
-    // Set all pins of seconds I/O expander to outputs, low.
-    // For some reason, it draw more current in deep sleep when pins are set as
-    // inputs...
-
-    for (uint32_t i = 0; i < 256; ++i)
-        pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
-                    (((i & B11100000) >> 5) << 25);
-
-    for (int i = 0; i < 15; i++)
-    {
-        externalIO.pinMode(i, OUTPUT);
-        externalIO.digitalWrite(i, LOW);
-    }
-
-    // For same reason, unused pins of first I/O expander have to be also set as
-    // outputs, low.
-    internalIO.pinMode(14, OUTPUT);
-    internalIO.pinMode(15, OUTPUT);
-    internalIO.digitalWrite(14, LOW);
-    internalIO.digitalWrite(15, LOW);
-
-    // Set SPI pins to input to reduce power consumption in deep sleep
-    pinMode(12, INPUT);
-    pinMode(13, INPUT);
-    pinMode(14, INPUT);
-    pinMode(15, INPUT);
-
-    // And also disable uSD card supply
-    internalIO.pinMode(SD_PMOS_PIN, INPUT);
-
-    // CONTROL PINS
-    pinMode(0, OUTPUT);
-    pinMode(2, OUTPUT);
-    pinMode(32, OUTPUT);
-    pinMode(33, OUTPUT);
-    internalIO.pinMode(OE, OUTPUT);
-    internalIO.pinMode(GMOD, OUTPUT);
-    internalIO.pinMode(SPV, OUTPUT);
-
-    // DATA PINS
-    pinMode(4, OUTPUT); // D0
-    pinMode(5, OUTPUT);
-    pinMode(18, OUTPUT);
-    pinMode(19, OUTPUT);
-    pinMode(23, OUTPUT);
-    pinMode(25, OUTPUT);
-    pinMode(26, OUTPUT);
-    pinMode(27, OUTPUT); // D7
-
-    internalIO.pinMode(10, OUTPUT);
-    internalIO.pinMode(11, OUTPUT);
-    internalIO.pinMode(12, OUTPUT);
-    internalIO.digitalWrite(10, LOW);
-    internalIO.digitalWrite(11, LOW);
-    internalIO.digitalWrite(12, LOW);
-    // Battery voltage Switch MOSFET
-    internalIO.pinMode(9, OUTPUT);
-    internalIO.digitalWrite(9, LOW);
-
-    // Initialize all the framebuffers
-    DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
-    _partial = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
-    _pBuffer = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 4);
-    DMemory4Bit = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 2);
-    GLUT = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
-    GLUT2 = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
-    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL || GLUT == NULL ||
-        GLUT2 == NULL)
+    if(!initializeFramebuffers())
     {
         return 0;
     }
-    // Set all the framebuffers to White at start
-    memset(DMemoryNew, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
-    memset(_partial, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
-    memset(_pBuffer, 0, E_INK_WIDTH * E_INK_HEIGHT / 4);
-    memset(DMemory4Bit, 255, E_INK_WIDTH * E_INK_HEIGHT / 2);
 
+    // Calculate color LUTs to optimize drawing to the screen
     calculateLUTs();
 
     _beginDone = 1;
@@ -246,11 +163,24 @@ void EPDDriver::vscan_end()
     delayMicroseconds(0);
 }
 
+/**
+ * @brief       sets the current display mode of the e-ink display
+ *
+ * @param       uint8_t
+ *              if set to 1, it will be set to grayscale mode
+ *              if set to 0, set to BW mode
+ */
 void EPDDriver::selectDisplayMode(uint8_t displayMode)
 {
     _displayMode = displayMode;
 }
 
+/**
+ * @brief       clearDisplay function clears memory buffer for display
+ *
+ * @note        This does not clear the actual display, only the memory buffer, you need to call
+ * display() function after this to clear the display
+ */
 void EPDDriver::clearDisplay()
 {
     // Clear 1 bit per pixel display buffer
@@ -262,6 +192,14 @@ void EPDDriver::clearDisplay()
         memset(DMemory4Bit, 255, E_INK_WIDTH * E_INK_HEIGHT / 2);
 }
 
+/**
+ * @brief       display function update display with new data from buffer
+ *
+ * @param       bool leaveOn
+ *              if set to 1, it will disable turning supply for eink after
+ *              display update in order to save some time needed for power supply
+ *              to save some time at next display update or increase refreshing speed
+ */
 void EPDDriver::display(bool _leaveOn)
 {
     if (_displayMode == 0)
@@ -637,6 +575,21 @@ void EPDDriver::einkOff()
     setPanelState(0);
 }
 
+  void EPDDriver::pmicBegin()
+  {
+    WAKEUP_SET;
+    delay(1);
+    Wire.beginTransmission(0x48);
+    Wire.write(0x09);
+    Wire.write(0B00011011); // Power up seq.
+    Wire.write(0B00000000); // Power up delay (3mS per rail)
+    Wire.write(0B00011011); // Power down seq.
+    Wire.write(0B00000000); // Power down delay (6mS per rail)
+    Wire.endTransmission();
+    delay(1);
+    WAKEUP_CLEAR;
+  }
+
 
 /**
  * @brief       pinsAsOutputs sets all tps pins as outputs
@@ -779,6 +732,116 @@ void EPDDriver::hscan_start(uint32_t _d)
 uint8_t EPDDriver::getDisplayMode()
 {
     return _displayMode;
+}
+
+/**
+ * @brief       Initializes the internal and external IO expanders,
+ *              Configures all of the data and control pins for the
+ *              EPD Driver.
+ */
+void EPDDriver::gpioInit()
+{
+    internalIO.begin(IO_INT_ADDR);
+    externalIO.begin(IO_EXT_ADDR);
+
+    internalIO.digitalWrite(9, LOW);
+
+    //Set all IO expander registers to 0
+    memset(internalIO._ioExpanderRegs, 0, 22);
+    memset(externalIO._ioExpanderRegs, 0, 22);
+
+    internalIO.pinMode(VCOM, OUTPUT);
+    internalIO.pinMode(PWRUP, OUTPUT);
+    internalIO.pinMode(WAKEUP, OUTPUT);
+    internalIO.pinMode(GPIO0_ENABLE, OUTPUT);
+    internalIO.digitalWrite(GPIO0_ENABLE, 1);
+
+            // For same reason, unused pins of first I/O expander have to be also set as
+    // outputs, low.
+    internalIO.pinMode(14, OUTPUT);
+    internalIO.pinMode(15, OUTPUT);
+    internalIO.digitalWrite(14, LOW);
+    internalIO.digitalWrite(15, LOW);
+
+    // Set SPI pins to input to reduce power consumption in deep sleep
+    pinMode(12, INPUT);
+    pinMode(13, INPUT);
+    pinMode(14, INPUT);
+    pinMode(15, INPUT);
+
+    // And also disable uSD card supply
+    internalIO.pinMode(SD_PMOS_PIN, INPUT);
+
+    // CONTROL PINS
+    pinMode(0, OUTPUT);
+    pinMode(2, OUTPUT);
+    pinMode(32, OUTPUT);
+    pinMode(33, OUTPUT);
+    internalIO.pinMode(OE, OUTPUT);
+    internalIO.pinMode(GMOD, OUTPUT);
+    internalIO.pinMode(SPV, OUTPUT);
+
+    // DATA PINS
+    pinMode(4, OUTPUT); // D0
+    pinMode(5, OUTPUT);
+    pinMode(18, OUTPUT);
+    pinMode(19, OUTPUT);
+    pinMode(23, OUTPUT);
+    pinMode(25, OUTPUT);
+    pinMode(26, OUTPUT);
+    pinMode(27, OUTPUT); // D7
+
+    internalIO.pinMode(10, OUTPUT);
+    internalIO.pinMode(11, OUTPUT);
+    internalIO.pinMode(12, OUTPUT);
+    internalIO.digitalWrite(10, LOW);
+    internalIO.digitalWrite(11, LOW);
+    internalIO.digitalWrite(12, LOW);
+    // Battery voltage Switch MOSFET
+    internalIO.pinMode(9, OUTPUT);
+    internalIO.digitalWrite(9, LOW);
+
+        // Set all pins of seconds I/O expander to outputs, low.
+    // For some reason, it draw more current in deep sleep when pins are set as
+    // inputs...
+
+    for (uint32_t i = 0; i < 256; ++i)
+        pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
+                    (((i & B11100000) >> 5) << 25);
+
+    for (int i = 0; i < 15; i++)
+    {
+        externalIO.pinMode(i, OUTPUT);
+        externalIO.digitalWrite(i, LOW);
+    }
+}
+
+/**
+ * @brief       initializeFramebuffers allocates memory to be used
+ *              by specific display modes of the display
+ *
+ * @return      returns 0 if allocation failed, 1 if it succeeded
+ */
+uint8_t EPDDriver::initializeFramebuffers()
+{
+    // Initialize all the framebuffers
+    DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
+    _partial = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
+    _pBuffer = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 4);
+    DMemory4Bit = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 2);
+    GLUT = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
+    GLUT2 = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
+    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL || GLUT == NULL ||
+        GLUT2 == NULL)
+    {
+        return 0;
+    }
+    // Set all the framebuffers to White at start
+    memset(DMemoryNew, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
+    memset(_partial, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
+    memset(_pBuffer, 0, E_INK_WIDTH * E_INK_HEIGHT / 4);
+    memset(DMemory4Bit, 255, E_INK_WIDTH * E_INK_HEIGHT / 2);
+
 }
 
 /**
