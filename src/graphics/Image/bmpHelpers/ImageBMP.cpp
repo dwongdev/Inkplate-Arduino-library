@@ -19,7 +19,6 @@
 #include "../Image.h"
 
 
-
 /**
  * @brief       legalBmp function checks file header for BMP image signature
  *

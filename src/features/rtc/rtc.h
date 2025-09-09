@@ -87,7 +87,7 @@ class RTC
     void GetRtcData();
     void EnableAlarm(); // called on setAlarm()
     void SetAlarm(uint8_t alarm_second, uint8_t alarm_minute, uint8_t alarm_hour, uint8_t alarm_day,
-                     uint8_t alarm_weekday);
+                  uint8_t alarm_weekday);
     void SetAlarmEpoch(uint32_t _epoch, uint8_t _match);
     void ReadAlarm();
     bool ChangeTimeFormat(); // returns false for 24H format & true for 12H format

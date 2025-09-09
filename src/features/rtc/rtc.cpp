@@ -230,8 +230,7 @@ void RTC::EnableAlarm() // datasheet 8.5.6.
  * @param uint8_t AlarmDay     Set the alarm rtcDay
  * @param uint8_t AlarmWeekday Set the alarm rtcWeekday
  */
-void RTC::SetAlarm(uint8_t AlarmSecond, uint8_t AlarmMinute, uint8_t AlarmHour, uint8_t AlarmDay,
-                      uint8_t AlarmWeekday)
+void RTC::SetAlarm(uint8_t AlarmSecond, uint8_t AlarmMinute, uint8_t AlarmHour, uint8_t AlarmDay, uint8_t AlarmWeekday)
 {
     if (AlarmSecond < 99)
     { // rtcSecond
@@ -350,7 +349,7 @@ void RTC::ReadAlarm()
             AlarmSecond = 99; // using 99 as code for no alarm
         }
         else
-        {                                                              // else if AEN = 0 (rtcSecond alarm enabled)
+        {                                                     // else if AEN = 0 (rtcSecond alarm enabled)
             AlarmSecond = BcdToDec(AlarmSecond & ~RTC_ALARM); // remove AEN flag and convert to dec number
         }
 

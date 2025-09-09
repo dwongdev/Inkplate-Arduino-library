@@ -47,8 +47,6 @@ struct bitmapHeader
 class Image
 {
   public:
-  
-
     typedef enum
     {
         BMP,

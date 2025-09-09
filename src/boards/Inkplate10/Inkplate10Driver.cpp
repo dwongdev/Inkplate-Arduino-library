@@ -78,7 +78,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // If the driver was already initialized, skip current initialization
     if (_beginDone == 1)
         return 0;
-    
+
     // Save the given inkplate pointer for internal use
     _inkplate = _inkplatePtr;
 
@@ -89,7 +89,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     gpioInit();
 
 
-    if(!initializeFramebuffers())
+    if (!initializeFramebuffers())
     {
         return 0;
     }
@@ -575,8 +575,8 @@ void EPDDriver::einkOff()
     setPanelState(0);
 }
 
-  void EPDDriver::pmicBegin()
-  {
+void EPDDriver::pmicBegin()
+{
     WAKEUP_SET;
     delay(1);
     Wire.beginTransmission(0x48);
@@ -588,7 +588,7 @@ void EPDDriver::einkOff()
     Wire.endTransmission();
     delay(1);
     WAKEUP_CLEAR;
-  }
+}
 
 
 /**
@@ -746,7 +746,7 @@ void EPDDriver::gpioInit()
 
     internalIO.digitalWrite(9, LOW);
 
-    //Set all IO expander registers to 0
+    // Set all IO expander registers to 0
     memset(internalIO._ioExpanderRegs, 0, 22);
     memset(externalIO._ioExpanderRegs, 0, 22);
 
@@ -756,7 +756,7 @@ void EPDDriver::gpioInit()
     internalIO.pinMode(GPIO0_ENABLE, OUTPUT);
     internalIO.digitalWrite(GPIO0_ENABLE, 1);
 
-            // For same reason, unused pins of first I/O expander have to be also set as
+    // For same reason, unused pins of first I/O expander have to be also set as
     // outputs, low.
     internalIO.pinMode(14, OUTPUT);
     internalIO.pinMode(15, OUTPUT);
@@ -801,7 +801,7 @@ void EPDDriver::gpioInit()
     internalIO.pinMode(9, OUTPUT);
     internalIO.digitalWrite(9, LOW);
 
-        // Set all pins of seconds I/O expander to outputs, low.
+    // Set all pins of seconds I/O expander to outputs, low.
     // For some reason, it draw more current in deep sleep when pins are set as
     // inputs...
 
@@ -841,7 +841,6 @@ uint8_t EPDDriver::initializeFramebuffers()
     memset(_partial, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
     memset(_pBuffer, 0, E_INK_WIDTH * E_INK_HEIGHT / 4);
     memset(DMemory4Bit, 255, E_INK_WIDTH * E_INK_HEIGHT / 2);
-
 }
 
 /**
