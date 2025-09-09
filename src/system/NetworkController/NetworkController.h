@@ -27,23 +27,6 @@
 #include "time.h"
 #include <string.h>
 
-/**
- * @brief       BitmapHeader structure that includes standard bitmap parameters
- */
-struct bitmapHeader
-{
-    uint16_t signature;     // Is picture a legal BMP
-    uint32_t fileSize;      // Size of image in bytes
-    uint32_t startRAW;      // Address where raw data (pixel array) can be found/is started
-    uint32_t dibHeaderSize; // Size of the header in bytes
-    uint32_t width;         // Width of image
-    uint32_t height;        // Height of image
-    uint16_t color;         // The number of bits per pixel, which is the color depth of
-                            // the image. Typical values are 1, 4, 8, 16, 24 and 32
-    uint32_t compression;   // The compression method being used. See the next table
-                            // for a list of possible values
-};
-
 #define WIFI_TIMEOUT 23
 
 /**
