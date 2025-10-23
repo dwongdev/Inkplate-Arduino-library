@@ -38,9 +38,6 @@ class Shapes : virtual public Adafruit_GFX
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) = 0;
 
 
-#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE4) || defined(ARDUINO_INKPLATE7)
-    void drawTextWithShadow(int x, int y, const char *_c, uint8_t _color1, uint8_t color2);
-#endif
 
     void drawElipse(int rx, int ry, int xc, int yc, int c);
     void fillElipse(int rx, int ry, int xc, int yc, int c);

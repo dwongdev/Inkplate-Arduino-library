@@ -17,6 +17,7 @@
  ***************************************************/
 
 #include "Esp.h"
+#include "../../boardSelect.h"
 
 /**
  * @brief       Function Intializes I2S driver of the ESP32

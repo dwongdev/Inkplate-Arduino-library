@@ -1,8 +1,8 @@
-#include "Inkplate10Driver.h"
+#include "Inkplate5V2Driver.h"
 #include "Inkplate.h"
 
 // Header guard for the Arduino include
-#ifdef ARDUINO_INKPLATE10V2
+#ifdef ARDUINO_INKPLATE5V2
 
 SPIClass spi2(2);
 SdFat sd(&spi2);
@@ -28,37 +28,55 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
     if (x0 > E_INK_WIDTH - 1 || y0 > E_INK_HEIGHT - 1 || x0 < 0 || y0 < 0)
         return;
 
+    // set x, y depending on selected rotation
     switch (_inkplate->getRotation())
     {
-    case 1:
+    case 1: // 90 degree left
         _swap_int16_t(x0, y0);
         x0 = E_INK_HEIGHT - x0 - 1;
         break;
-    case 2:
+    case 2: // 180 degree, or upside down
         x0 = E_INK_WIDTH - x0 - 1;
         y0 = E_INK_HEIGHT - y0 - 1;
         break;
-    case 3:
+    case 3: // 90 degree right
         _swap_int16_t(x0, y0);
         y0 = E_INK_WIDTH - y0 - 1;
         break;
     }
 
-    if (_inkplate->getDisplayMode() == 0)
+    // If the 1 bit mode is used, pixels are packed 1 bit = 1 pixel in frame buffer
+    if (getDisplayMode() == 0)
     {
+        // Divide by 8 to find a byte.
         int x = x0 >> 3;
+
+        // Get the remainder of the division to find a exact bit in the byte that needs to be modified.
         int x_sub = x0 & 7;
-        uint8_t temp = *(_partial + ((E_INK_WIDTH >> 3) * y0) + x);
-        *(_partial + (E_INK_WIDTH / 8 * y0) + x) = (~pixelMaskLUT[x_sub] & temp) | (color ? pixelMaskLUT[x_sub] : 0);
+
+        // Save the currnet state of the byte in the frame buffer.
+        uint8_t temp = *(_partial + (E_INK_WIDTH / 8) * y0 + x);
+
+        // Modify the pixel. First clear the pixel by writing zero then write the 1 if the pixel is set.
+        *(_partial + (E_INK_WIDTH / 8) * y0 + x) = (~pixelMaskLUT[x_sub] & temp) | (color ? pixelMaskLUT[x_sub] : 0);
     }
     else
     {
+        // If 3 bit mode is used, constrain the color value (only 8 possible colors are available).
         color &= 7;
+
+        // Divide by two to find a byte
         int x = x0 >> 1;
+
+        //  Get the remainder of the division to find if the lower or upper 4 bits are needed.
         int x_sub = x0 & 1;
+
+        // Store the current value of the byte.
         uint8_t temp;
-        temp = *(DMemory4Bit + (E_INK_WIDTH >> 1) * y0 + x);
-        *(DMemory4Bit + (E_INK_WIDTH >> 1) * y0 + x) = (pixelMaskGLUT[x_sub] & temp) | (x_sub ? color : color << 4);
+        temp = *(DMemory4Bit + (E_INK_WIDTH / 2) * y0 + x);
+
+        // Modify the specific pixel by writing all zeros into lower or upper 4 bits and set the needed color.
+        *(DMemory4Bit + (E_INK_WIDTH / 2) * y0 + x) = (pixelMaskGLUT[x_sub] & temp) | (x_sub ? color : color << 4);
     }
 }
 
@@ -99,6 +117,22 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // Calculate color LUTs to optimize drawing to the screen
     calculateLUTs();
 
+    // Use only myI2S
+    myI2S = &I2S1;
+
+    // Allocate memory for DMA descriptor and line buffer.
+    _dmaLineBuffer = (uint8_t *)heap_caps_malloc((E_INK_WIDTH / 4) + 16, MALLOC_CAP_DMA);
+    _dmaI2SDesc = (lldesc_s *)heap_caps_malloc(sizeof(lldesc_t), MALLOC_CAP_DMA);
+
+
+    if (_dmaLineBuffer == NULL || _dmaI2SDesc == NULL)
+    {
+        return 0;
+    }
+
+    // Init the I2S driver. It will setup a I2S driver.
+    I2SInit(myI2S);
+
     _beginDone = 1;
     return 1;
 }
@@ -110,16 +144,13 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
  */
 void EPDDriver::calculateLUTs()
 {
+    // Fill up the pixel to EPD LUT for 3 bit mode.
     for (int j = 0; j < 9; ++j)
     {
-        for (uint32_t i = 0; i < 256; ++i)
+        for (int i = 0; i < 256; ++i)
         {
-            uint8_t z = (waveform3Bit[i & 0x07][j] << 2) | (waveform3Bit[(i >> 4) & 0x07][j]);
-            GLUT[j * 256 + i] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
-                                (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
-            z = ((waveform3Bit[i & 0x07][j] << 2) | (waveform3Bit[(i >> 4) & 0x07][j])) << 4;
-            GLUT2[j * 256 + i] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
-                                 (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
+            GLUT[j * 256 + i] = (waveform3Bit[i & 0x07][j] << 2) | (waveform3Bit[(i >> 4) & 0x07][j]);
+            GLUT2[j * 256 + i] = ((waveform3Bit[i & 0x07][j] << 2) | (waveform3Bit[(i >> 4) & 0x07][j])) << 4;
         }
     }
 }
@@ -224,54 +255,54 @@ void EPDDriver::display(bool _leaveOn)
  */
 void IRAM_ATTR EPDDriver::display3b(bool leaveOn)
 {
+    // Check if epaper power supply is successfully turned on.
+    // If not, skip the update (if there is no power to the epaper, sending data to it can damage the epaper!).
     if (!einkOn())
         return;
-    clean(1, 1);
-    clean(0, 10);
-    clean(2, 1);
-    clean(1, 10);
-    clean(2, 1);
-    clean(0, 10);
-    clean(2, 1);
-    clean(1, 10);
 
-    for (int k = 0; k < 9; k++)
+    // Clear the display by flashing epaper display black, white, black white.
+    clean(0, 1);
+    clean(1, 11);
+    clean(2, 1);
+    clean(0, 11);
+    clean(2, 1);
+    clean(1, 11);
+    clean(2, 1);
+    clean(0, 11);
+
+    // Send everything to the display. There are 9 waveform phases to get the needed graycale.
+    for (int k = 0; k < 9; ++k)
     {
-        uint8_t *dp = DMemory4Bit + (E_INK_HEIGHT * E_INK_WIDTH / 2);
+        uint8_t *dp = DMemory4Bit;
 
         vscan_start();
-
-        for (int i = 0; i < E_INK_HEIGHT; i++)
+        for (int i = 0; i < E_INK_HEIGHT; ++i)
         {
-            uint32_t t = GLUT2[k * 256 + (*(--dp))];
-            t |= GLUT[k * 256 + (*(--dp))];
-            hscan_start(t);
-            t = GLUT2[k * 256 + (*(--dp))];
-            t |= GLUT[k * 256 + (*(--dp))];
-            GPIO.out_w1ts = t | CL;
-            GPIO.out_w1tc = DATA | CL;
-
-            for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); j++)
+            uint8_t *_DMemoryNewPtrFlipped = (dp + E_INK_WIDTH / 2) - 1;
+            for (int j = 0; j < (E_INK_WIDTH / 4); j += 4)
             {
-                t = GLUT2[k * 256 + (*(--dp))];
-                t |= GLUT[k * 256 + (*(--dp))];
-                GPIO.out_w1ts = t | CL;
-                GPIO.out_w1tc = DATA | CL;
-                t = GLUT2[k * 256 + (*(--dp))];
-                t |= GLUT[k * 256 + (*(--dp))];
-                GPIO.out_w1ts = t | CL;
-                GPIO.out_w1tc = DATA | CL;
+                _dmaLineBuffer[j + 2] =
+                    (GLUT2[k * 256 + (*(_DMemoryNewPtrFlipped--))] | GLUT[k * 256 + (*(_DMemoryNewPtrFlipped--))]);
+                _dmaLineBuffer[j + 3] =
+                    (GLUT2[k * 256 + (*(_DMemoryNewPtrFlipped--))] | GLUT[k * 256 + (*(_DMemoryNewPtrFlipped--))]);
+                _dmaLineBuffer[j] =
+                    (GLUT2[k * 256 + (*(_DMemoryNewPtrFlipped--))] | GLUT[k * 256 + (*(_DMemoryNewPtrFlipped--))]);
+                _dmaLineBuffer[j + 1] =
+                    (GLUT2[k * 256 + (*(_DMemoryNewPtrFlipped--))] | GLUT[k * 256 + (*(_DMemoryNewPtrFlipped--))]);
+                dp += 8;
             }
-
-            GPIO.out_w1ts = CL;
-            GPIO.out_w1tc = DATA | CL;
+            sendDataI2S(myI2S, _dmaI2SDesc);
             vscan_end();
         }
         delayMicroseconds(230);
     }
-    clean(3, 1);
-    vscan_start();
 
+    // Set the drivers inside epaper panel into dischare state.
+    clean(3, 1);
+
+    // vscan_start();
+
+    // If is needed to leave the epaper power supply on, do not turn it of.
     if (!leaveOn)
         einkOff();
 }
@@ -289,61 +320,93 @@ void EPDDriver::display1b(bool _leaveOn)
 {
     memcpy(DMemoryNew, _partial, E_INK_WIDTH * E_INK_HEIGHT / 8);
 
-    uint32_t _pos;
+    uint32_t _send;
     uint8_t data;
     uint8_t dram;
-    uint8_t _repeat;
 
     if (!einkOn())
         return;
 
     clean(0, 1);
-    clean(1, 10);
+    clean(1, 11);
     clean(2, 1);
-    clean(0, 10);
+    clean(0, 11);
     clean(2, 1);
-    clean(1, 10);
+    clean(1, 11);
     clean(2, 1);
-    clean(0, 10);
-    _repeat = 5;
+    clean(0, 11);
 
-    for (int k = 0; k < _repeat; k++)
+    for (int k = 0; k < 3; ++k)
     {
-        _pos = (E_INK_HEIGHT * E_INK_WIDTH / 8) - 1;
+        uint8_t *DMemoryNewPtr = DMemoryNew;
         vscan_start();
-        for (int i = 0; i < E_INK_HEIGHT; i++)
+        for (int i = 0; i < E_INK_HEIGHT; ++i)
         {
-            dram = (*(DMemoryNew + _pos));
-            data = LUTB[(dram >> 4) & 0x0F];
-            hscan_start(pinLUT[data]);
-            data = LUTB[dram & 0x0F];
-            GPIO.out_w1ts = pinLUT[data] | CL;
-            GPIO.out_w1tc = DATA | CL;
-            _pos--;
-            for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); j++)
+            uint8_t *_DMemoryNewPtrFlipped = (DMemoryNewPtr + E_INK_WIDTH / 8) - 1;
+            for (int n = 0; n < (E_INK_WIDTH / 4); n += 4)
             {
-                dram = (*(DMemoryNew + _pos));
-                data = LUTB[(dram >> 4) & 0x0F];
-                GPIO.out_w1ts = pinLUT[data] | CL;
-                GPIO.out_w1tc = DATA | CL;
-                data = LUTB[dram & 0x0F];
-                GPIO.out_w1ts = pinLUT[data] | CL;
-                GPIO.out_w1tc = DATA | CL;
-                _pos--;
+                uint8_t dram1 = *(_DMemoryNewPtrFlipped--);
+                uint8_t dram2 = *(_DMemoryNewPtrFlipped--);
+                _dmaLineBuffer[n] = LUTB[(dram2 >> 4) & 0x0F];     // i + 2;
+                _dmaLineBuffer[n + 1] = LUTB[dram2 & 0x0F];        // i + 3;
+                _dmaLineBuffer[n + 2] = LUTB[(dram1 >> 4) & 0x0F]; // i;
+                _dmaLineBuffer[n + 3] = LUTB[dram1 & 0x0F];        // i + 1;
+                DMemoryNewPtr += 2;
             }
-            GPIO.out_w1ts = CL;
-            GPIO.out_w1tc = DATA | CL;
+            // Send the data using I2S DMA driver.
+            sendDataI2S(myI2S, _dmaI2SDesc);
             vscan_end();
         }
         delayMicroseconds(230);
     }
 
-    clean(2, 2);
-    clean(3, 1);
+    for (int k = 0; k < 1; ++k)
+    {
+        uint8_t *DMemoryNewPtr = DMemoryNew;
+        vscan_start();
+        for (int i = 0; i < E_INK_HEIGHT; ++i)
+        {
+            uint8_t *_DMemoryNewPtrFlipped = (DMemoryNewPtr + E_INK_WIDTH / 8) - 1;
+            for (int n = 0; n < (E_INK_WIDTH / 4); n += 4)
+            {
+                uint8_t dram1 = *(_DMemoryNewPtrFlipped--);
+                uint8_t dram2 = *(_DMemoryNewPtrFlipped--);
+                _dmaLineBuffer[n] = LUT2[(dram2 >> 4) & 0x0F];     // i + 2;
+                _dmaLineBuffer[n + 1] = LUT2[dram2 & 0x0F];        // i + 3;
+                _dmaLineBuffer[n + 2] = LUT2[(dram1 >> 4) & 0x0F]; // i;
+                _dmaLineBuffer[n + 3] = LUT2[dram1 & 0x0F];        // i + 1;
+                DMemoryNewPtr += 2;
+            }
+            // Send the data using I2S DMA driver.
+            sendDataI2S(myI2S, _dmaI2SDesc);
+            vscan_end();
+        }
+        delayMicroseconds(230);
+    }
 
-    vscan_start();
+    for (int k = 0; k < 1; ++k)
+    {
+        vscan_start();
+        for (int i = 0; i < E_INK_HEIGHT; ++i)
+        {
+            for (int n = 0; n < (E_INK_WIDTH / 4); n += 4)
+            {
+                _dmaLineBuffer[n] = 0;
+                _dmaLineBuffer[n + 1] = 0;
+                _dmaLineBuffer[n + 2] = 0;
+                _dmaLineBuffer[n + 3] = 0;
+            }
+            // Send the data using I2S DMA driver.
+            sendDataI2S(myI2S, _dmaI2SDesc);
+            vscan_end();
+        }
+        delayMicroseconds(230);
+    }
+
+    // vscan_start();
     if (!_leaveOn)
         einkOff();
+
     _blockPartial = 0;
 }
 
@@ -368,6 +431,7 @@ uint32_t EPDDriver::partialUpdate(bool _forced, bool leaveOn)
 {
     if (getDisplayMode() == 1)
         return 0;
+
     if (_blockPartial == 1 && !_forced)
     {
         display1b(leaveOn);
@@ -391,9 +455,17 @@ uint32_t EPDDriver::partialUpdate(bool _forced, bool leaveOn)
     uint8_t data = 0;
     uint8_t diffw, diffb;
     uint32_t n = (E_INK_WIDTH * E_INK_HEIGHT / 4) - 1;
-    uint8_t _repeat;
 
     uint32_t changeCount = 0;
+
+    _dmaI2SDesc->size = (E_INK_WIDTH / 4) + 16;
+    _dmaI2SDesc->length = (E_INK_WIDTH / 4) + 16;
+    _dmaI2SDesc->sosf = 1;
+    _dmaI2SDesc->owner = 1;
+    _dmaI2SDesc->qe.stqe_next = 0;
+    _dmaI2SDesc->eof = 1;
+    _dmaI2SDesc->buf = _dmaLineBuffer;
+    _dmaI2SDesc->offset = 0;
 
     for (int i = 0; i < E_INK_HEIGHT; ++i)
     {
@@ -420,36 +492,29 @@ uint32_t EPDDriver::partialUpdate(bool _forced, bool leaveOn)
     if (!einkOn())
         return 0;
 
-
-    _repeat = 5;
-
-    for (int k = 0; k < _repeat; ++k)
+    for (int k = 0; k < 4; ++k)
     {
+        uint8_t *dp = _pBuffer;
         vscan_start();
-        n = (E_INK_WIDTH * E_INK_HEIGHT / 4) - 1;
         for (int i = 0; i < E_INK_HEIGHT; ++i)
         {
-            data = *(_pBuffer + n);
-            _send = pinLUT[data];
-            hscan_start(_send);
-            n--;
-            for (int j = 0; j < ((E_INK_WIDTH / 4) - 1); ++j)
+            uint8_t *_dpPtrFlipped = (dp + E_INK_WIDTH / 4) - 1;
+            for (int j = 0; j < (E_INK_WIDTH / 4); j += 4)
             {
-                data = *(_pBuffer + n);
-                _send = pinLUT[data];
-                GPIO.out_w1ts = _send | CL;
-                GPIO.out_w1tc = DATA | CL;
-                n--;
+                _dmaLineBuffer[j + 2] = *(_dpPtrFlipped--);
+                _dmaLineBuffer[j + 3] = *(_dpPtrFlipped--);
+                _dmaLineBuffer[j] = *(_dpPtrFlipped--);
+                _dmaLineBuffer[j + 1] = *(_dpPtrFlipped--);
             }
-            GPIO.out_w1ts = _send | CL;
-            GPIO.out_w1tc = DATA | CL;
+            dp += (E_INK_WIDTH / 4);
+            // Send the data using I2S DMA driver.
+            sendDataI2S(myI2S, _dmaI2SDesc);
             vscan_end();
         }
         delayMicroseconds(230);
     }
     clean(2, 2);
-    clean(3, 1);
-    vscan_start();
+    // vscan_start();
 
     if (!leaveOn)
         einkOff();
@@ -604,15 +669,19 @@ void EPDDriver::pinsAsOutputs()
     internalIO.pinMode(OE, OUTPUT);
     internalIO.pinMode(GMOD, OUTPUT);
     internalIO.pinMode(SPV, OUTPUT);
-    pinMode(0, OUTPUT);
-    pinMode(4, OUTPUT);
-    pinMode(5, OUTPUT);
-    pinMode(18, OUTPUT);
-    pinMode(19, OUTPUT);
-    pinMode(23, OUTPUT);
-    pinMode(25, OUTPUT);
-    pinMode(26, OUTPUT);
-    pinMode(27, OUTPUT);
+    // Set up the EPD Data and CL pins for I2S.
+    setI2S1pin(0, I2S1O_BCK_OUT_IDX, 0);
+    setI2S1pin(4, I2S1O_DATA_OUT0_IDX, 0);
+    setI2S1pin(5, I2S1O_DATA_OUT1_IDX, 0);
+    setI2S1pin(18, I2S1O_DATA_OUT2_IDX, 0);
+    setI2S1pin(19, I2S1O_DATA_OUT3_IDX, 0);
+    setI2S1pin(23, I2S1O_DATA_OUT4_IDX, 0);
+    setI2S1pin(25, I2S1O_DATA_OUT5_IDX, 0);
+    setI2S1pin(26, I2S1O_DATA_OUT6_IDX, 0);
+    setI2S1pin(27, I2S1O_DATA_OUT7_IDX, 0);
+
+    // Start sending clock to the EPD.
+    myI2S->conf1.tx_stop_en = 1;
 }
 
 uint8_t EPDDriver::getPanelState()
@@ -662,6 +731,8 @@ void EPDDriver::pinsZstate()
     pinMode(25, INPUT);
     pinMode(26, INPUT);
     pinMode(27, INPUT);
+
+    myI2S->conf1.tx_stop_en = 0;
 }
 
 /**
@@ -692,24 +763,28 @@ void EPDDriver::clean(uint8_t c, uint8_t rep)
     else if (c == 3)
         data = B11111111;
 
-    uint32_t _send = pinLUT[data];
+    // Fill up the buffer with the data.
+    for (int i = 0; i < (E_INK_WIDTH / 4); i++)
+    {
+        _dmaLineBuffer[i] = data;
+    }
+
+    _dmaI2SDesc->size = (E_INK_WIDTH / 4) + 16;
+    _dmaI2SDesc->length = (E_INK_WIDTH / 4) + 16;
+    _dmaI2SDesc->sosf = 1;
+    _dmaI2SDesc->owner = 1;
+    _dmaI2SDesc->qe.stqe_next = 0;
+    _dmaI2SDesc->eof = 1;
+    _dmaI2SDesc->buf = _dmaLineBuffer;
+    _dmaI2SDesc->offset = 0;
+
     for (int k = 0; k < rep; ++k)
     {
         vscan_start();
         for (int i = 0; i < E_INK_HEIGHT; ++i)
         {
-            hscan_start(_send);
-            GPIO.out_w1ts = (_send) | CL;
-            GPIO.out_w1tc = CL;
-            for (int j = 0; j < ((E_INK_WIDTH / 8) - 1); ++j)
-            {
-                GPIO.out_w1ts = CL;
-                GPIO.out_w1tc = CL;
-                GPIO.out_w1ts = CL;
-                GPIO.out_w1tc = CL;
-            }
-            GPIO.out_w1ts = CL;
-            GPIO.out_w1tc = CL;
+            // Send the data using I2S DMA driver.
+            sendDataI2S(myI2S, _dmaI2SDesc);
             vscan_end();
         }
         delayMicroseconds(230);
@@ -744,13 +819,11 @@ uint8_t EPDDriver::getDisplayMode()
 void EPDDriver::gpioInit()
 {
     internalIO.begin(IO_INT_ADDR);
-    externalIO.begin(IO_EXT_ADDR);
 
     internalIO.digitalWrite(9, LOW);
 
     // Set all IO expander registers to 0
     memset(internalIO._ioExpanderRegs, 0, 22);
-    memset(externalIO._ioExpanderRegs, 0, 22);
 
     internalIO.pinMode(VCOM, OUTPUT);
     internalIO.pinMode(PWRUP, OUTPUT);
@@ -762,22 +835,27 @@ void EPDDriver::gpioInit()
 
     // For same reason, unused pins of first I/O expander have to be also set as
     // outputs, low.
+    internalIO.pinMode(11, OUTPUT);
+    internalIO.pinMode(12, OUTPUT);
+    internalIO.pinMode(13, OUTPUT);
     internalIO.pinMode(14, OUTPUT);
     internalIO.pinMode(15, OUTPUT);
+    internalIO.digitalWrite(11, LOW);
+    internalIO.digitalWrite(12, LOW);
+    internalIO.digitalWrite(13, LOW);
     internalIO.digitalWrite(14, LOW);
     internalIO.digitalWrite(15, LOW);
 
     // Set SPI pins to input to reduce power consumption in deep sleep
-    pinMode(12, INPUT);
-    pinMode(13, INPUT);
-    pinMode(14, INPUT);
-    pinMode(15, INPUT);
+    pinMode(12, INPUT_PULLDOWN);
+    pinMode(13, INPUT_PULLDOWN);
+    pinMode(14, INPUT_PULLDOWN);
+    pinMode(15, INPUT_PULLDOWN);
 
     // And also disable uSD card supply
     internalIO.pinMode(SD_PMOS_PIN, INPUT);
 
     // CONTROL PINS
-    pinMode(0, OUTPUT);
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
     pinMode(33, OUTPUT);
@@ -785,22 +863,6 @@ void EPDDriver::gpioInit()
     internalIO.pinMode(GMOD, OUTPUT);
     internalIO.pinMode(SPV, OUTPUT);
 
-    // DATA PINS
-    pinMode(4, OUTPUT); // D0
-    pinMode(5, OUTPUT);
-    pinMode(18, OUTPUT);
-    pinMode(19, OUTPUT);
-    pinMode(23, OUTPUT);
-    pinMode(25, OUTPUT);
-    pinMode(26, OUTPUT);
-    pinMode(27, OUTPUT); // D7
-
-    internalIO.pinMode(10, OUTPUT);
-    internalIO.pinMode(11, OUTPUT);
-    internalIO.pinMode(12, OUTPUT);
-    internalIO.digitalWrite(10, LOW);
-    internalIO.digitalWrite(11, LOW);
-    internalIO.digitalWrite(12, LOW);
     // Battery voltage Switch MOSFET
     internalIO.pinMode(9, OUTPUT);
     internalIO.digitalWrite(9, LOW);
@@ -812,12 +874,6 @@ void EPDDriver::gpioInit()
     for (uint32_t i = 0; i < 256; ++i)
         pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
                     (((i & B11100000) >> 5) << 25);
-
-    for (int i = 0; i < 15; i++)
-    {
-        externalIO.pinMode(i, OUTPUT);
-        externalIO.digitalWrite(i, LOW);
-    }
 }
 
 /**

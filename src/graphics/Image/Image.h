@@ -113,12 +113,13 @@ class Image
                               const uint16_t screenWidth, const uint16_t screenHeight, uint16_t *posX, uint16_t *posY);
     uint8_t findClosestPalette(uint32_t c);
 
-    uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
-    uint8_t ditherBuffer[2][E_INK_WIDTH + 20];
-    uint8_t jpegDitherBuffer[18][18];
 
 
   private:
+
+    uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
+    uint8_t ditherBuffer[2][E_INK_WIDTH + 20];
+    uint8_t jpegDitherBuffer[18][18];
     static bool drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap, bool dither, bool invert);
 
     int16_t blockW = 0, blockH = 0;
