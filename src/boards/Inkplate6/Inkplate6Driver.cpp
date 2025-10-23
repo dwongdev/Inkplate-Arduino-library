@@ -48,7 +48,7 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
         int x = x0 >> 3;
         int x_sub = x0 & 7;
         uint8_t temp = *(_partial + 100 * y0 + x);
-        *(_partial +100 * y0 + x) = (~pixelMaskLUT[x_sub] & temp) | (color ? pixelMaskLUT[x_sub] : 0);
+        *(_partial + 100 * y0 + x) = (~pixelMaskLUT[x_sub] & temp) | (color ? pixelMaskLUT[x_sub] : 0);
     }
     else
     {
@@ -804,8 +804,8 @@ void EPDDriver::gpioInit()
     externalIO.begin(IO_EXT_ADDR);
 
     for (uint32_t i = 0; i < 256; ++i)
-    pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
-                (((i & B11100000) >> 5) << 25);
+        pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
+                    (((i & B11100000) >> 5) << 25);
 
     // Set all IO expander registers to 0
     memset(internalIO._ioExpanderRegs, 0, 22);
@@ -864,9 +864,6 @@ void EPDDriver::gpioInit()
     // Set all pins of seconds I/O expander to outputs, low.
     // For some reason, it draw more current in deep sleep when pins are set as
     // inputs...
-
-
-
 }
 
 /**
@@ -878,7 +875,7 @@ void EPDDriver::gpioInit()
 uint8_t EPDDriver::initializeFramebuffers()
 {
     // Initialize all the framebuffers
-     DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
+    DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _partial = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _pBuffer = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 4);
     DMemory4Bit = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 2);

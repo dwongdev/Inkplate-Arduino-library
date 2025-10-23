@@ -114,9 +114,7 @@ class Image
     uint8_t findClosestPalette(uint32_t c);
 
 
-
   private:
-
     uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
     uint8_t ditherBuffer[2][E_INK_WIDTH + 20];
     uint8_t jpegDitherBuffer[18][18];

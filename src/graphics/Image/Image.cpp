@@ -374,4 +374,3 @@ void Image::getPointsForPosition(const Position &position, const uint16_t imageW
         break;
     }
 }
-

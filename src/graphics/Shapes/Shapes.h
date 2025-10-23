@@ -38,7 +38,6 @@ class Shapes : virtual public Adafruit_GFX
     virtual void drawPixel(int16_t x, int16_t y, uint16_t color) = 0;
 
 
-
     void drawElipse(int rx, int ry, int xc, int yc, int c);
     void fillElipse(int rx, int ry, int xc, int yc, int c);
     void drawPolygon(int *x, int *y, int n, int color);
