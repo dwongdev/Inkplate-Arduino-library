@@ -17,7 +17,7 @@
  ***************************************************/
 #include "Inkplate.h"
 #include "../Image.h"
-
+#ifndef USE_COLOR_IMAGE
 
 /**
  * @brief       legalBmp function checks file header for BMP image signature
@@ -518,3 +518,4 @@ bool Image::drawBmpFromSdAtPosition(const char *fileName, const Position &positi
 
     return 1;
 }
+#endif

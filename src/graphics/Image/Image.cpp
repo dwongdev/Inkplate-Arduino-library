@@ -16,18 +16,55 @@
  * @authors     Soldered
  ***************************************************/
 #include "Inkplate.h"
+#ifndef USE_COLOR_IMAGE
 #include "Image.h"
 #include "TJpeg/TJpg_Decoder.h"
 #include "pgmspace.h"
 
+
 Image *_imagePtrJpeg = nullptr;
 Image *_imagePtrPng = nullptr;
 
-void Image::beginImage(Inkplate *inkplateptr)
+uint8_t (*Image::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
+uint8_t (*Image::jpegDitherBuffer)[18] = nullptr;
+uint8_t *Image::pixelBuffer = nullptr; 
+uint32_t *Image::ditherPalette = nullptr; 
+uint8_t *Image::palette = nullptr; 
+
+void Image::begin(Inkplate *inkplateptr)
 {
     _inkplate = inkplateptr;
     _imagePtrJpeg = this;
     _imagePtrPng = this;
+
+
+jpegDitherBuffer = (uint8_t (*)[18])heap_caps_calloc(18, 18, MALLOC_CAP_SPIRAM);
+
+
+ditherBuffer = (uint8_t (*)[E_INK_WIDTH + 20])heap_caps_calloc(2, (E_INK_WIDTH + 20), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+
+
+pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
+
+
+ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
+
+
+palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+
+
+if (!jpegDitherBuffer || !ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
+{
+    Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
+}
+else
+{
+    Serial.println(" Buffers allocated successfully in PSRAM");
+}
+
+
+
+
 }
 
 /**
@@ -46,9 +83,9 @@ void Image::beginImage(Inkplate *inkplateptr)
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::drawImage(const String path, int x, int y, bool dither, bool invert)
+bool Image::draw(const String path, int x, int y, bool dither, bool invert)
 {
-    return drawImage(path.c_str(), x, y, dither, invert);
+    return draw(path.c_str(), x, y, dither, invert);
 };
 
 /**
@@ -67,7 +104,7 @@ bool Image::drawImage(const String path, int x, int y, bool dither, bool invert)
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::drawImage(const char *path, int x, int y, bool dither, bool invert)
+bool Image::draw(const char *path, int x, int y, bool dither, bool invert)
 {
     // Try to get the file extension.
     char _fileExtension[5];
@@ -115,7 +152,7 @@ bool Image::drawImage(const char *path, int x, int y, bool dither, bool invert)
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::drawImage(const uint8_t *buf, int x, int y, int16_t w, int16_t h, uint8_t c, uint8_t bg)
+bool Image::draw(const uint8_t *buf, int x, int y, int16_t w, int16_t h, uint8_t c, uint8_t bg)
 {
     if (_inkplate->getDisplayMode() == INKPLATE_1BIT && bg == 0xFF)
         _inkplate->drawBitmap(x, y, buf, w, h, c);
@@ -144,10 +181,10 @@ bool Image::drawImage(const uint8_t *buf, int x, int y, int16_t w, int16_t h, ui
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::drawImage(const String path, const Format &format, const int x, const int y, const bool dither,
+bool Image::draw(const String path, const Format &format, const int x, const int y, const bool dither,
                       const bool invert)
 {
-    return drawImage(path.c_str(), format, x, y, dither, invert);
+    return draw(path.c_str(), format, x, y, dither, invert);
 };
 
 /**
@@ -168,7 +205,7 @@ bool Image::drawImage(const String path, const Format &format, const int x, cons
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::drawImage(const char *path, const Format &format, const int x, const int y, const bool dither,
+bool Image::draw(const char *path, const Format &format, const int x, const int y, const bool dither,
                       const bool invert)
 {
     if (strncmp(path, "http://", 7) == 0 || strncmp(path, "https://", 8) == 0)
@@ -209,7 +246,7 @@ bool Image::drawImage(const char *path, const Format &format, const int x, const
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::drawImage(const char *path, const Format &format, const Position &position, const bool dither,
+bool Image::draw(const char *path, const Format &format, const Position &position, const bool dither,
                       const bool invert)
 {
     if (strncmp(path, "http://", 7) == 0 || strncmp(path, "https://", 8) == 0)
@@ -374,3 +411,5 @@ void Image::getPointsForPosition(const Position &position, const uint16_t imageW
         break;
     }
 }
+
+#endif

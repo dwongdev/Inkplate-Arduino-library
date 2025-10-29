@@ -16,6 +16,7 @@
  * @authors     Soldered
  ***************************************************/
 #include "Inkplate.h"
+#ifndef USE_COLOR_IMAGE
 #include "Image.h"
 
 
@@ -143,3 +144,4 @@ void Image::ditherSwapBlockJpeg(int x)
 
     jpegDitherBuffer[17][1] = 0;
 }
+#endif

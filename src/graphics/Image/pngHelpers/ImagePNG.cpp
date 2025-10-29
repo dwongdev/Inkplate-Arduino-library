@@ -15,10 +15,12 @@
  *
  * @authors     Soldered.com
  ***************************************************/
+
 #include "../../../system/defines.h"
 #include "Inkplate.h"
+#ifndef USE_COLOR_IMAGE
 #include "../Image.h"
-#include "../pngle/pngle.h"
+#include "../../pngle/pngle.h"
 
 
 extern Image *_imagePtrPng;
@@ -46,7 +48,7 @@ static Image::Position _pngPosition = Image::_npos;
  * @param       uint8_t rgba[4]
  *              color
  */
-void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint8_t rgba[4])
+void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint8_t rgba[4])
 {
     if (_pngPosition != Image::_npos)
     {
@@ -396,3 +398,4 @@ bool Image::drawPngFromSdAtPosition(const char *fileName, const Position &positi
 
     return ret;
 }
+#endif
