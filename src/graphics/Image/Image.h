@@ -18,7 +18,7 @@
 
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
-
+#ifndef USE_COLOR_IMAGE
 #include "../../features/SdFat/SdFat.h"
 #include "WiFi.h"
 
@@ -67,16 +67,16 @@ class Image
 
     Inkplate *_inkplate = NULL;
 
-    void beginImage(Inkplate *inkplateptr);
+    void begin(Inkplate *inkplateptr);
 
-    bool drawImage(const char *path, int x, int y, bool dither = 1, bool invert = 0);
-    bool drawImage(const String path, int x, int y, bool dither = 1, bool invert = 0);
-    bool drawImage(const uint8_t *buf, int x, int y, int16_t w, int16_t h, uint8_t c = 1, uint8_t bg = 0xFF);
-    bool drawImage(const char *path, const Format &format, const int x, const int y, const bool dither = 1,
+    bool draw(const char *path, int x, int y, bool dither = 1, bool invert = 0);
+    bool draw(const String path, int x, int y, bool dither = 1, bool invert = 0);
+    bool draw(const uint8_t *buf, int x, int y, int16_t w, int16_t h, uint8_t c = 1, uint8_t bg = 0xFF);
+    bool draw(const char *path, const Format &format, const int x, const int y, const bool dither = 1,
                    const bool invert = 0);
-    bool drawImage(const String path, const Format &format, const int x, const int y, const bool dither = 1,
+    bool draw(const String path, const Format &format, const int x, const int y, const bool dither = 1,
                    const bool invert = 0);
-    bool drawImage(const char *path, const Format &format, const Position &position, const bool dither = 1,
+    bool draw(const char *path, const Format &format, const Position &position, const bool dither = 1,
                    const bool invert = 0);
 
     bool getFileExtension(char *_filename, char *_extension);
@@ -115,16 +115,19 @@ class Image
 
 
   private:
-    uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
-    uint8_t ditherBuffer[2][E_INK_WIDTH + 20];
-    uint8_t jpegDitherBuffer[18][18];
+
+    static uint8_t  *pixelBuffer;
+    static uint8_t  (*jpegDitherBuffer)[18];
+    static uint8_t  (*ditherBuffer)[E_INK_WIDTH + 20];
+    static uint32_t*  ditherPalette; // 8 bit colors, in color, 3x8 bit colors
+    static uint8_t*  palette;        // 2 3 bit colors per byte, _###_###
+
+    uint16_t _lastTileRowY = -1;
+
     static bool drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap, bool dither, bool invert);
 
     int16_t blockW = 0, blockH = 0;
     int16_t lastY = -1;
-
-    uint32_t ditherPalette[256]; // 8 bit colors, in color, 3x8 bit colors
-    uint8_t palette[128];        // 2 3 bit colors per byte, _###_###
 
     bool legalBmp(bitmapHeader *bmpHeader);
 
@@ -161,4 +164,5 @@ class Image
     // -------------------------------------------
 };
 
+#endif
 #endif

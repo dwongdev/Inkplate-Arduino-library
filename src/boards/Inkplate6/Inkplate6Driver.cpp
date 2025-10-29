@@ -27,17 +27,18 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
     if (x0 > E_INK_WIDTH - 1 || y0 > E_INK_HEIGHT - 1 || x0 < 0 || y0 < 0)
         return;
 
+    // set x, y depending on selected rotation
     switch (_inkplate->getRotation())
     {
-    case 1:
+    case 1: // 90 degree left
         _swap_int16_t(x0, y0);
         x0 = E_INK_HEIGHT - x0 - 1;
         break;
-    case 2:
+    case 2: // 180 degree, or upside down
         x0 = E_INK_WIDTH - x0 - 1;
         y0 = E_INK_HEIGHT - y0 - 1;
         break;
-    case 3:
+    case 3: // 90 degree right
         _swap_int16_t(x0, y0);
         y0 = E_INK_WIDTH - y0 - 1;
         break;
@@ -80,23 +81,17 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     if (_beginDone == 1)
         return 0;
 
+    Wire.begin();
+
     // Save the given inkplate pointer for internal use
     _inkplate = _inkplatePtr;
 
     // Initialize the image processing functionalities
-    beginImage(_inkplatePtr);
+    image.begin(_inkplatePtr);
 
     // Initialize the GPIOs
     gpioInit();
 
-
-    if (!initializeFramebuffers())
-    {
-        return 0;
-    }
-
-    // Calculate color LUTs to optimize drawing to the screen
-    calculateLUTs();
 
     // Use only myI2S
     myI2S = &I2S1;
@@ -110,10 +105,36 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
         return 0;
     }
 
-
     // Init the I2S driver. It will setup a I2S driver.
     I2SInit(myI2S);
 
+        // CONTROL PINS
+    pinMode(0, OUTPUT);
+    pinMode(2, OUTPUT);
+    pinMode(32, OUTPUT);
+    pinMode(33, OUTPUT);
+    internalIO.pinMode(OE, OUTPUT);
+    internalIO.pinMode(GMOD, OUTPUT);
+    internalIO.pinMode(SPV, OUTPUT);
+
+    internalIO.pinMode(10, OUTPUT);
+    internalIO.pinMode(11, OUTPUT);
+    internalIO.pinMode(12, OUTPUT);
+    internalIO.digitalWrite(10, LOW);
+    internalIO.digitalWrite(11, LOW);
+    internalIO.digitalWrite(12, LOW);
+    // Battery voltage Switch MOSFET
+    internalIO.pinMode(9, OUTPUT);
+    internalIO.digitalWrite(9, LOW);
+
+
+    if (!initializeFramebuffers())
+    {
+        return 0;
+    }
+
+    // Calculate color LUTs to optimize drawing to the screen
+    calculateLUTs();
     _beginDone = 1;
     return 1;
 }
@@ -601,6 +622,7 @@ void EPDDriver::einkOff()
     VCOM_CLEAR;
     OE_CLEAR;
     GMOD_CLEAR;
+    LE_CLEAR;
     CKV_CLEAR;
     SPH_CLEAR;
     SPV_CLEAR;
@@ -779,11 +801,7 @@ void EPDDriver::clean(uint8_t c, uint8_t rep)
  */
 void EPDDriver::hscan_start(uint32_t _d)
 {
-    SPH_CLEAR;
-    GPIO.out_w1ts = (_d) | CL;
-    GPIO.out_w1tc = DATA | CL;
-    SPH_SET;
-    CKV_SET;
+
 }
 
 uint8_t EPDDriver::getDisplayMode()
@@ -820,6 +838,9 @@ void EPDDriver::gpioInit()
     // Initialize I2C communication with the TPS chip
     pmicBegin();
 
+    // Set all pins of seconds I/O expander to outputs, low.
+    // For some reason, it draw more current in deep sleep when pins are set as
+    // inputs...
     for (int i = 0; i < 15; i++)
     {
         externalIO.pinMode(i, OUTPUT);
@@ -842,28 +863,9 @@ void EPDDriver::gpioInit()
     // And also disable uSD card supply
     internalIO.pinMode(SD_PMOS_PIN, INPUT);
 
-    // CONTROL PINS
-    pinMode(0, OUTPUT);
-    pinMode(2, OUTPUT);
-    pinMode(32, OUTPUT);
-    pinMode(33, OUTPUT);
-    internalIO.pinMode(OE, OUTPUT);
-    internalIO.pinMode(GMOD, OUTPUT);
-    internalIO.pinMode(SPV, OUTPUT);
 
-    internalIO.pinMode(10, OUTPUT);
-    internalIO.pinMode(11, OUTPUT);
-    internalIO.pinMode(12, OUTPUT);
-    internalIO.digitalWrite(10, LOW);
-    internalIO.digitalWrite(11, LOW);
-    internalIO.digitalWrite(12, LOW);
-    // Battery voltage Switch MOSFET
-    internalIO.pinMode(9, OUTPUT);
-    internalIO.digitalWrite(9, LOW);
 
-    // Set all pins of seconds I/O expander to outputs, low.
-    // For some reason, it draw more current in deep sleep when pins are set as
-    // inputs...
+
 }
 
 /**

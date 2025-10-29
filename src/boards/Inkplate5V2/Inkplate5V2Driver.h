@@ -34,7 +34,7 @@
 class Inkplate;
 
 
-class EPDDriver : public Image, public Esp
+class EPDDriver : public Esp
 {
   public:
     void writePixelInternal(int16_t x, int16_t y, uint16_t color);
@@ -63,6 +63,8 @@ class EPDDriver : public Image, public Esp
     IOExpander internalIO;
 
     RTC rtc;
+
+    Image image;
 
     uint8_t _beginDone = 0;
     uint8_t _displayMode;

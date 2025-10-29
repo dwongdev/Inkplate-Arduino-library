@@ -103,7 +103,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     _inkplate = _inkplatePtr;
 
     // Initialize the image processing functionalities
-    beginImage(_inkplatePtr);
+    image.begin(_inkplatePtr);
 
     // Initialize the all GPIOs
     gpioInit();
