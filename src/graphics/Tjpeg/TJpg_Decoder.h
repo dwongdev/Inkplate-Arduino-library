@@ -20,7 +20,7 @@ https://github.com/Bodmer/TJpg_Decoder
 #include <pgmspace.h>
 #endif
 
-#define TJPGD_WORKSPACE_SIZE 3100
+#define TJPGD_WORKSPACE_SIZE 16688
 
 enum
 {
