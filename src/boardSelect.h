@@ -16,11 +16,23 @@
 #include <Arduino.h>
 
 #ifdef ARDUINO_INKPLATE10V2
+#define MULTIPLE_DISPLAY_MODES
 #include "boards/Inkplate10/Inkplate10BoardFile.h"
 #elif defined(ARDUINO_INKPLATE6V2)
+#define USES_I2S
+#define MULTIPLE_DISPLAY_MODES
 #include "boards/Inkplate6/Inkplate6BoardFile.h"
 #elif defined(ARDUINO_INKPLATE5V2)
+#define MULTIPLE_DISPLAY_MODES
+#define USES_I2S
 #include "boards/Inkplate5V2/Inkplate5V2BoardFile.h"
+#elif defined(ARDUINO_INKPLATE6FLICK)
+#define USES_I2S
+#define MULTIPLE_DISPLAY_MODES
+#include "boards/Inkplate6FLICK/Inkplate6FLICKBoardFile.h"
+#elif defined(ARDUINO_INKPLATECOLOR)
+#define USE_COLOR_IMAGE
+#include "boards/Inkplate6COLOR/Inkplate6COLORBoardFile.h"
 #else
 #error "Board not selected!"
 #endif
