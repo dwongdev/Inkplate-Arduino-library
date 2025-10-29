@@ -32,7 +32,11 @@
 class Inkplate : public Graphics, public InkplateBoardClass, public NetworkController
 {
   public:
+    #ifndef ARDUINO_INKPLATECOLOR
     Inkplate(uint8_t mode);
+    #else
+    Inkplate();
+    #endif
     void begin();
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void setRotation(uint8_t r);

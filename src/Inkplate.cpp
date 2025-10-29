@@ -20,11 +20,16 @@
 #include "Inkplate.h"
 
 //--------------------------USER FUNCTIONS--------------------------------------------
+#ifdef MULTIPLE_DISPLAY_MODES
 Inkplate::Inkplate(uint8_t mode) : Adafruit_GFX(E_INK_WIDTH, E_INK_HEIGHT), Graphics(E_INK_WIDTH, E_INK_HEIGHT)
 {
     _mode = mode;
 }
-
+#else
+Inkplate::Inkplate() : Adafruit_GFX(E_INK_WIDTH, E_INK_HEIGHT), Graphics(E_INK_WIDTH, E_INK_HEIGHT)
+{
+}
+#endif
 void Inkplate::begin()
 {
 
@@ -40,7 +45,9 @@ void Inkplate::begin()
     initDriver(this);
 
     // Forward the display mode to the EPD driver
+    #ifdef MULTIPLE_DISPLAY_MODES
     selectDisplayMode(_mode);
+    #endif
 
     // Clean frame buffers.
     clearDisplay();
