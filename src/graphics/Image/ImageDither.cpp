@@ -41,7 +41,7 @@ uint8_t Image::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool paletted
         px = ditherPalette[px];
 
     if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
-        px = (uint16_t)px >> 1;
+      px = (uint16_t)px >> 1;
 
     uint8_t oldPixel = min((uint16_t)0xFF, (uint16_t)((uint16_t)ditherBuffer[0][i] + px));
 

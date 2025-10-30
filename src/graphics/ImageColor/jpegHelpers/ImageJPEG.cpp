@@ -380,7 +380,6 @@ bool ImageColor::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h,
     {
         _imagePtrJpeg->lastY = y;
     }
-    Serial.println("Gets to drawJPGChunk");
 
     // --- Draw the JPEG MCU block ---
     for (int j = 0; j < h; ++j)
@@ -410,14 +409,7 @@ bool ImageColor::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h,
             _imagePtrJpeg->_inkplate->drawPixel(x + i, y + j, val);
         }
     }
-    #ifndef ARDUINO_INKPLATECOLOR
-    if (dither)
-    {
-        // Carry the bottom error row to the global buffer
-        _imagePtrJpeg->ditherSwapBlockJpeg(x);
 
-    }
-    #endif
 
     return true;
 }

@@ -369,44 +369,48 @@ bool Image::drawJpegFromBuffer(uint8_t *buff, int32_t len, int x, int y, bool di
  * @param       int16_t invert
  *              1 if using invert, 0 if not
  */
-bool Image::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h,
-                          uint16_t *bitmap, bool dither, bool invert)
+bool Image::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap, bool dither, bool invert)
 {
     if (!_imagePtrJpeg)
-        return false;
+        return 0;
 
-    // Carry global error from previous scanline
     if (dither && y != _imagePtrJpeg->lastY)
     {
         _imagePtrJpeg->ditherSwap(E_INK_WIDTH);
         _imagePtrJpeg->lastY = y;
     }
 
-    // --- Draw the JPEG MCU block ---
     for (int j = 0; j < h; ++j)
     {
         for (int i = 0; i < w; ++i)
         {
             uint32_t rgb = bitmap[j * w + i];
+            uint32_t val;
+
             uint8_t r = _RED(rgb), g = _GREEN(rgb), b = _BLUE(rgb);
-            uint32_t val = dither
-                ? _imagePtrJpeg->ditherGetPixelJpeg(RGB8BIT(r, g, b), i, j, x, y, w, h)
-                : RGB3BIT(r, g, b);
+
+            if (dither)
+            {
+                val = _imagePtrJpeg->ditherGetPixelJpeg(RGB8BIT(r, g, b), i, j, x, y, w, h);
+            }
+            else
+            {
+                val = RGB3BIT(r, g, b);
+            }
 
             if (invert)
                 val = 7 - val;
+            if (_imagePtrJpeg->_inkplate->getDisplayMode() == INKPLATE_1BIT)
+                val = (~val >> 2) & 1;
 
             _imagePtrJpeg->_inkplate->drawPixel(x + i, y + j, val);
         }
     }
 
+
     if (dither)
-    {
-        // Carry the bottom error row to the global buffer
         _imagePtrJpeg->ditherSwapBlockJpeg(x);
 
-    }
-
-    return true;
+    return 1;
 }
 #endif
