@@ -295,7 +295,7 @@ void EPDDriver::display3b(bool leaveOn)
  */
 void EPDDriver::display1b(bool leaveOn)
 {
-   // Copy everything from partial buffer into main buffer.
+    // Copy everything from partial buffer into main buffer.
     memcpy(DMemoryNew, _partial, E_INK_WIDTH * E_INK_HEIGHT / 8);
 
     // Helper variables.
@@ -507,7 +507,6 @@ uint32_t EPDDriver::partialUpdate(bool _forced, bool leaveOn)
         _partialUpdateCounter++;
 
     return changeCount;
-
 }
 
 
@@ -782,7 +781,6 @@ void EPDDriver::clean(uint8_t c, uint8_t rep)
  */
 void EPDDriver::hscan_start(uint32_t _d)
 {
-
 }
 
 uint8_t EPDDriver::getDisplayMode()
@@ -834,7 +832,7 @@ void EPDDriver::gpioInit()
     internalIO.pinMode(FRONTLIGHT_EN, OUTPUT);
 
     // For same reason, unused pins of first I/O expander have to be also set as
-// outputs, low.
+    // outputs, low.
     internalIO.pinMode(14, OUTPUT);
     internalIO.pinMode(15, OUTPUT);
     internalIO.digitalWrite(14, LOW);
@@ -855,10 +853,6 @@ void EPDDriver::gpioInit()
     internalIO.pinMode(OE, OUTPUT);
     internalIO.pinMode(GMOD, OUTPUT);
     internalIO.pinMode(SPV, OUTPUT);
-
-
-
-
 }
 
 /**

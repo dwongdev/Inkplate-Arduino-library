@@ -108,7 +108,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // Init the I2S driver. It will setup a I2S driver.
     I2SInit(myI2S);
 
-        // CONTROL PINS
+    // CONTROL PINS
     pinMode(0, OUTPUT);
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
@@ -801,7 +801,6 @@ void EPDDriver::clean(uint8_t c, uint8_t rep)
  */
 void EPDDriver::hscan_start(uint32_t _d)
 {
-
 }
 
 uint8_t EPDDriver::getDisplayMode()
@@ -862,10 +861,6 @@ void EPDDriver::gpioInit()
 
     // And also disable uSD card supply
     internalIO.pinMode(SD_PMOS_PIN, INPUT);
-
-
-
-
 }
 
 /**

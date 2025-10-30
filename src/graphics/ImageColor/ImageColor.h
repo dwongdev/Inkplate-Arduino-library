@@ -26,7 +26,6 @@
 class Inkplate;
 
 
-
 /**
  * @brief       Image basic class for work with images
  */
@@ -51,18 +50,18 @@ class ImageColor
     } Position;
 
     struct bitmapHeader
-{
-    uint16_t signature;     // Is picture a legal BMP
-    uint32_t fileSize;      // Size of image in bytes
-    uint32_t startRAW;      // Address where raw data (pixel array) can be found/is started
-    uint32_t dibHeaderSize; // Size of the header in bytes
-    uint32_t width;         // Width of image
-    uint32_t height;        // Height of image
-    uint16_t color;         // The number of bits per pixel, which is the color depth of
-                            // the image. Typical values are 1, 4, 8, 16, 24 and 32
-    uint32_t compression;   // The compression method being used. See the next table
-                            // for a list of possible values
-};
+    {
+        uint16_t signature;     // Is picture a legal BMP
+        uint32_t fileSize;      // Size of image in bytes
+        uint32_t startRAW;      // Address where raw data (pixel array) can be found/is started
+        uint32_t dibHeaderSize; // Size of the header in bytes
+        uint32_t width;         // Width of image
+        uint32_t height;        // Height of image
+        uint16_t color;         // The number of bits per pixel, which is the color depth of
+                                // the image. Typical values are 1, 4, 8, 16, 24 and 32
+        uint32_t compression;   // The compression method being used. See the next table
+                                // for a list of possible values
+    };
 
 
     Inkplate *_inkplate = NULL;
@@ -73,11 +72,11 @@ class ImageColor
     bool draw(const String path, int x, int y, bool dither = 1, bool invert = 0);
     bool draw(const uint8_t *buf, int x, int y, int16_t w, int16_t h, uint8_t c = 1, uint8_t bg = 0xFF);
     bool draw(const char *path, const Format &format, const int x, const int y, const bool dither = 1,
-                   const bool invert = 0);
+              const bool invert = 0);
     bool draw(const String path, const Format &format, const int x, const int y, const bool dither = 1,
-                   const bool invert = 0);
+              const bool invert = 0);
     bool draw(const char *path, const Format &format, const Position &position, const bool dither = 1,
-                   const bool invert = 0);
+              const bool invert = 0);
 
     bool getFileExtension(char *_filename, char *_extension);
 
@@ -114,18 +113,17 @@ class ImageColor
 
 
   private:
-    #ifdef ARDUINO_INKPLATE2
+#ifdef ARDUINO_INKPLATE2
     uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
-    #else
+#else
     uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
-    #endif
-    static uint8_t  (*jpegDitherBuffer)[18];
-    //static int16_t (*ditherBuffer)[8][E_INK_WIDTH + 20];
+#endif
+    static uint8_t (*jpegDitherBuffer)[18];
+    // static int16_t (*ditherBuffer)[8][E_INK_WIDTH + 20];
     static int16_t ditherBuffer[3][8][E_INK_WIDTH + 20];
 
     uint32_t ditherPalette[256]; // 8 bit colors, in color, 3x8 bit colors
     uint8_t palette[128];        // 2 3 bit colors per byte, _###_###
-
 
 
     const int kernelWidth = _kernelWidth;

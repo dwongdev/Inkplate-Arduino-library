@@ -73,11 +73,11 @@ class Image
     bool draw(const String path, int x, int y, bool dither = 1, bool invert = 0);
     bool draw(const uint8_t *buf, int x, int y, int16_t w, int16_t h, uint8_t c = 1, uint8_t bg = 0xFF);
     bool draw(const char *path, const Format &format, const int x, const int y, const bool dither = 1,
-                   const bool invert = 0);
+              const bool invert = 0);
     bool draw(const String path, const Format &format, const int x, const int y, const bool dither = 1,
-                   const bool invert = 0);
+              const bool invert = 0);
     bool draw(const char *path, const Format &format, const Position &position, const bool dither = 1,
-                   const bool invert = 0);
+              const bool invert = 0);
 
     bool getFileExtension(char *_filename, char *_extension);
 
@@ -115,12 +115,11 @@ class Image
 
 
   private:
-
-    static uint8_t  *pixelBuffer;
-    static uint8_t  jpegDitherBuffer[18][18];
-    static uint8_t  ditherBuffer[2][E_INK_WIDTH + 20];
-    static uint32_t*  ditherPalette; // 8 bit colors, in color, 3x8 bit colors
-    static uint8_t*  palette;        // 2 3 bit colors per byte, _###_###
+    static uint8_t *pixelBuffer;
+    static uint8_t jpegDitherBuffer[18][18];
+    static uint8_t ditherBuffer[2][E_INK_WIDTH + 20];
+    static uint32_t *ditherPalette; // 8 bit colors, in color, 3x8 bit colors
+    static uint8_t *palette;        // 2 3 bit colors per byte, _###_###
 
     uint16_t _lastTileRowY = -1;
 

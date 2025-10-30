@@ -161,7 +161,8 @@ bool ImageColor::drawJpegFromWeb(const char *url, int x, int y, bool dither, boo
  *
  * @return      1 if drawn successfully, 0 if not
  */
-bool ImageColor::drawJpegFromWebAtPosition(const char *url, const Position &position, const bool dither, const bool invert)
+bool ImageColor::drawJpegFromWebAtPosition(const char *url, const Position &position, const bool dither,
+                                           const bool invert)
 {
     bool ret = 0;
 
@@ -218,7 +219,7 @@ bool ImageColor::drawJpegFromWebAtPosition(const char *url, const Position &posi
  * @return      1 if drawn successfully, 0 if not
  */
 bool ImageColor::drawJpegFromSdAtPosition(const char *fileName, const Position &position, const bool dither,
-                                     const bool invert)
+                                          const bool invert)
 {
     uint8_t ret = 0;
 
@@ -369,8 +370,7 @@ bool ImageColor::drawJpegFromBuffer(uint8_t *buff, int32_t len, int x, int y, bo
  * @param       int16_t invert
  *              1 if using invert, 0 if not
  */
-bool ImageColor::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h,
-                          uint16_t *bitmap, bool dither, bool invert)
+bool ImageColor::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap, bool dither, bool invert)
 {
     if (!_imagePtrJpeg)
         return false;

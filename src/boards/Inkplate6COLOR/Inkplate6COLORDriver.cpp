@@ -108,7 +108,6 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 }
 
 
-
 /**
  * @brief       clearDisplay function clears memory buffer for display
  *
@@ -163,7 +162,6 @@ void EPDDriver::display(bool _leaveOn)
 }
 
 
-
 uint8_t EPDDriver::getPanelState()
 {
     return _panelState;
@@ -190,7 +188,7 @@ void EPDDriver::setPanelState(uint8_t state)
  */
 void EPDDriver::clean()
 {
-    
+
     // Set resolution setting
     uint8_t res_set_data[] = {0x02, 0x58, 0x01, 0xc0};
     sendCommand(0x61);
@@ -394,7 +392,7 @@ bool EPDDriver::setPanelDeepSleep(bool _state)
 void EPDDriver::setIOExpanderForLowPower()
 {
     Wire.begin();
-   internalIO.begin(IO_INT_ADDR);
+    internalIO.begin(IO_INT_ADDR);
 
     // TOUCHPAD PINS
     internalIO.pinMode(IO_PIN_B2, OUTPUT);
@@ -437,7 +435,6 @@ void EPDDriver::setIOExpanderForLowPower()
     internalIO.digitalWrite(IO_PIN_B6, LOW);
     internalIO.digitalWrite(IO_PIN_B7, LOW);
 }
-
 
 
 /**

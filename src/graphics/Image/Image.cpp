@@ -25,13 +25,13 @@
 Image *_imagePtrJpeg = nullptr;
 Image *_imagePtrPng = nullptr;
 
-//uint8_t (*Image::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
-__attribute__((section(".ext_ram.bss")))uint8_t Image::ditherBuffer[2][E_INK_WIDTH + 20];
-__attribute__((section(".ext_ram.bss")))uint8_t Image::jpegDitherBuffer[18][18];
-//uint8_t (*Image::jpegDitherBuffer)[18] = nullptr;
-uint8_t *Image::pixelBuffer = nullptr; 
-uint32_t *Image::ditherPalette = nullptr; 
-uint8_t *Image::palette = nullptr; 
+// uint8_t (*Image::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
+__attribute__((section(".ext_ram.bss"))) uint8_t Image::ditherBuffer[2][E_INK_WIDTH + 20];
+__attribute__((section(".ext_ram.bss"))) uint8_t Image::jpegDitherBuffer[18][18];
+// uint8_t (*Image::jpegDitherBuffer)[18] = nullptr;
+uint8_t *Image::pixelBuffer = nullptr;
+uint32_t *Image::ditherPalette = nullptr;
+uint8_t *Image::palette = nullptr;
 
 void Image::begin(Inkplate *inkplateptr)
 {
@@ -40,33 +40,29 @@ void Image::begin(Inkplate *inkplateptr)
     _imagePtrPng = this;
 
 
-//jpegDitherBuffer = (uint8_t (*)[18])heap_caps_calloc(18, 18, MALLOC_CAP_SPIRAM);
+    // jpegDitherBuffer = (uint8_t (*)[18])heap_caps_calloc(18, 18, MALLOC_CAP_SPIRAM);
 
 
-//ditherBuffer = (uint8_t (*)[E_INK_WIDTH + 20])heap_caps_calloc(2, (E_INK_WIDTH + 20), MALLOC_CAP_SPIRAM);
+    // ditherBuffer = (uint8_t (*)[E_INK_WIDTH + 20])heap_caps_calloc(2, (E_INK_WIDTH + 20), MALLOC_CAP_SPIRAM);
 
 
-pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
+    pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
 
 
-ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
+    ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
 
 
-palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+    palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
 
 
-if (!jpegDitherBuffer || !ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
-{
-    Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
-}
-else
-{
-    Serial.println(" Buffers allocated successfully in PSRAM");
-}
-
-
-
-
+    if (!jpegDitherBuffer || !ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
+    {
+        Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
+    }
+    else
+    {
+        Serial.println(" Buffers allocated successfully in PSRAM");
+    }
 }
 
 /**
@@ -124,14 +120,14 @@ bool Image::draw(const char *path, int x, int y, bool dither, bool invert)
     }
     else
     {
-        if(_inkplate->getSdCardOk())
+        if (_inkplate->getSdCardOk())
         {
-        if (strstr(_fileExtension, "bmp") != NULL || strstr(_fileExtension, "dib") != NULL)
-            return drawBitmapFromSd(path, x, y, dither, invert);
-        if (strstr(_fileExtension, "jpg") != NULL || strstr(_fileExtension, "jpeg") != NULL)
-            return drawJpegFromSd(path, x, y, dither, invert);
-        if (strstr(_fileExtension, "png") != NULL)
-            return drawPngFromSd(path, x, y, dither, invert);
+            if (strstr(_fileExtension, "bmp") != NULL || strstr(_fileExtension, "dib") != NULL)
+                return drawBitmapFromSd(path, x, y, dither, invert);
+            if (strstr(_fileExtension, "jpg") != NULL || strstr(_fileExtension, "jpeg") != NULL)
+                return drawJpegFromSd(path, x, y, dither, invert);
+            if (strstr(_fileExtension, "png") != NULL)
+                return drawPngFromSd(path, x, y, dither, invert);
         }
     }
     return 0;
@@ -187,7 +183,7 @@ bool Image::draw(const uint8_t *buf, int x, int y, int16_t w, int16_t h, uint8_t
  * @return      1 if succesfuly drawn, 0 if not
  */
 bool Image::draw(const String path, const Format &format, const int x, const int y, const bool dither,
-                      const bool invert)
+                 const bool invert)
 {
     return draw(path.c_str(), format, x, y, dither, invert);
 };
@@ -210,8 +206,7 @@ bool Image::draw(const String path, const Format &format, const int x, const int
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::draw(const char *path, const Format &format, const int x, const int y, const bool dither,
-                      const bool invert)
+bool Image::draw(const char *path, const Format &format, const int x, const int y, const bool dither, const bool invert)
 {
     if (strncmp(path, "http://", 7) == 0 || strncmp(path, "https://", 8) == 0)
     {
@@ -251,8 +246,7 @@ bool Image::draw(const char *path, const Format &format, const int x, const int 
  *
  * @return      1 if succesfuly drawn, 0 if not
  */
-bool Image::draw(const char *path, const Format &format, const Position &position, const bool dither,
-                      const bool invert)
+bool Image::draw(const char *path, const Format &format, const Position &position, const bool dither, const bool invert)
 {
     if (strncmp(path, "http://", 7) == 0 || strncmp(path, "https://", 8) == 0)
     {

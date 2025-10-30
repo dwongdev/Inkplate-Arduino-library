@@ -329,7 +329,7 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
         {
         case 1: {
             _inkplate->drawPixel(x + j, (h - y - 1),
-                       (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
+                                 (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
 
             break;
         }
@@ -442,7 +442,6 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
     }
     ditherSwap(w);
 }
-
 
 
 /**

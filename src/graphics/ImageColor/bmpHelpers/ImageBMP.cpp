@@ -334,13 +334,14 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
 
         case 1: {
 
-            #if defined(ARDUINO_INKPLATECOLOR)
+#if defined(ARDUINO_INKPLATECOLOR)
             _inkplate->drawPixel(x + j, (h - y - 1),
-                       (!invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
-            #else
+                                 (!invert ^ (palette[0] > palette[1])) ^
+                                     !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
+#else
             _inkplate->drawPixel(x + j, (h - y - 1),
-                       (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
-            #endif
+                                 (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
+#endif
             break;
         }
 
@@ -354,14 +355,14 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
             {
                 val = palette[px >> 1] & (px & 1 ? 0x0F : 0xF0) >> (px & 1 ? 0 : 4);
             }
-            #if defined(ARDUINO_INKPLATECOLOR)
+#if defined(ARDUINO_INKPLATECOLOR)
             if (invert)
                 val = 7 - val;
 
-            #else
+#else
             if (invert)
                 val = val ^ 1;
-            #endif
+#endif
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
         }
@@ -376,13 +377,13 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
             {
                 val = palette[px >> 1] & (px & 1 ? 0x0F : 0xF0) >> (px & 1 ? 0 : 4);
             }
-            #if defined(ARDUINO_INKPLATECOLOR)
+#if defined(ARDUINO_INKPLATECOLOR)
             if (invert)
                 val = 7 - val;
-            #else
+#else
             if (invert)
                 val = val ^ 1;
-            #endif
+#endif
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
         }
@@ -400,13 +401,13 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
                 val = ditherGetPixelBmp(((uint32_t)r << 16) | ((uint32_t)g << 8) | ((uint32_t)b), j, y, w, 0);
             else
             {
-                #if defined(ARDUINO_INKPLATECOLOR)
+#if defined(ARDUINO_INKPLATECOLOR)
                 if (invert)
                     val = 7 - val;
-                #else
+#else
                 if (invert)
                     val = val ^ 1;
-                #endif
+#endif
             }
 
 
@@ -426,14 +427,14 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
             {
                 val = findClosestPalette(r, g, b);
             }
-            #if defined(ARDUINO_INKPLATECOLOR)
+#if defined(ARDUINO_INKPLATECOLOR)
             if (invert)
                 val = 7 - val;
 
-            #else
+#else
             if (invert)
                 val = val ^ 1;
-            #endif
+#endif
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
         }
@@ -452,16 +453,16 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
 
                 val = findClosestPalette(r, g, b);
             }
-            #ifndef ARDUINO_INKPLATECOLOR
+#ifndef ARDUINO_INKPLATECOLOR
             if (invert)
                 val = 7 - val;
-            #endif
+#endif
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
         }
         }
     }
-    //ditherSwap(w);
+    // ditherSwap(w);
 }
 
 /**
@@ -480,7 +481,8 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
  *
  * @return      1 if drawn successfully, 0 if not
  */
-bool ImageColor::drawBmpFromWebAtPosition(const char *url, const Position &position, const bool dither, const bool invert)
+bool ImageColor::drawBmpFromWebAtPosition(const char *url, const Position &position, const bool dither,
+                                          const bool invert)
 {
     bool ret = 0;
     int32_t defaultLen = E_INK_WIDTH * E_INK_HEIGHT * 4 + 150;
@@ -519,7 +521,7 @@ bool ImageColor::drawBmpFromWebAtPosition(const char *url, const Position &posit
  * @return      1 if drawn successfully, 0 if not
  */
 bool ImageColor::drawBmpFromSdAtPosition(const char *fileName, const Position &position, const bool dither,
-                                    const bool invert)
+                                         const bool invert)
 {
     SdFile dat;
     if (!dat.open(fileName, O_RDONLY))

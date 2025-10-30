@@ -102,7 +102,7 @@ class Touch
 
     // Scale touch data report to fit screen (and also rotation).
     void scale(struct cypressTouchData *_touchData, uint16_t _xSize, uint16_t _ySize, bool _flipX, bool _flipY,
-                 bool _swapXY);
+               bool _swapXY);
 
     // Disable touchscreen.
     void end();

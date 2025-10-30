@@ -38,7 +38,7 @@ class EPDDriver
 
     double readBattery();
 
-    //RTC rtc;
+    // RTC rtc;
 
     ImageColor image;
 

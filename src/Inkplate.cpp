@@ -44,10 +44,10 @@ void Inkplate::begin()
     // Init low level driver for EPD.
     initDriver(this);
 
-    // Forward the display mode to the EPD driver
-    #ifdef MULTIPLE_DISPLAY_MODES
+// Forward the display mode to the EPD driver
+#ifdef MULTIPLE_DISPLAY_MODES
     selectDisplayMode(_mode);
-    #endif
+#endif
 
     // Clean frame buffers.
     clearDisplay();

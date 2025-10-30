@@ -45,9 +45,9 @@ class Shapes : virtual public Adafruit_GFX
     void drawThickLine(int x1, int y1, int x2, int y2, int color, float thickness);
     void drawGradientLine(int x1, int y1, int x2, int y2, int color1, int color2, float thickness = -1);
 
-    #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE4) || defined(ARDUINO_INKPLATE7)
-      void drawTextWithShadow(int x, int y, const char *_text, uint8_t _colorText, uint8_t _colorShadow);
-    #endif
+#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE4) || defined(ARDUINO_INKPLATE7)
+    void drawTextWithShadow(int x, int y, const char *_text, uint8_t _colorText, uint8_t _colorShadow);
+#endif
 
   private:
     struct EdgeBucket

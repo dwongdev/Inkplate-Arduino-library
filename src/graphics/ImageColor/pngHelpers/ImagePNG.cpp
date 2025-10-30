@@ -82,12 +82,12 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
 
                 if (_pngDither)
                 {
-                    px = _imagePtrPng->ditherGetPixelBmp((r << 16) | (g << 8) | (b), x + i, y + j,E_INK_WIDTH, 0);
+                    px = _imagePtrPng->ditherGetPixelBmp((r << 16) | (g << 8) | (b), x + i, y + j, E_INK_WIDTH, 0);
                 }
                 _imagePtrPng->_inkplate->drawPixel(_pngX + x + i, _pngY + y + j, px);
             }
 
-        if (lastY != y)
+    if (lastY != y)
     {
         lastY = y;
     }
@@ -299,7 +299,8 @@ bool ImageColor::drawPngFromWeb(WiFiClient *s, int x, int y, int32_t len, bool d
  *
  * @return      1 if drawn successfully, 0 if not
  */
-bool ImageColor::drawPngFromWebAtPosition(const char *url, const Position &position, const bool dither, const bool invert)
+bool ImageColor::drawPngFromWebAtPosition(const char *url, const Position &position, const bool dither,
+                                          const bool invert)
 {
     _pngDither = dither;
     _pngInvert = invert;
@@ -349,7 +350,7 @@ bool ImageColor::drawPngFromWebAtPosition(const char *url, const Position &posit
  * @return      1 if drawn successfully, 0 if not
  */
 bool ImageColor::drawPngFromSdAtPosition(const char *fileName, const Position &position, const bool dither,
-                                    const bool invert)
+                                         const bool invert)
 {
     SdFile dat;
     if (!dat.open(fileName, O_RDONLY))

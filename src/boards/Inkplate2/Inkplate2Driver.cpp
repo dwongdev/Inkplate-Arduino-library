@@ -23,7 +23,7 @@ SPISettings epdSpiSettings(1000000UL, MSBFIRST, SPI_MODE0);
  */
 void EPDDriver::writePixelInternal(int16_t x0, int16_t y0, uint16_t color)
 {
-    if (x0 > _inkplate->width() - 1 || y0 > _inkplate->height()  - 1 || x0 < 0 || y0 < 0)
+    if (x0 > _inkplate->width() - 1 || y0 > _inkplate->height() - 1 || x0 < 0 || y0 < 0)
         return;
     if (color > 2)
         return;
@@ -49,7 +49,7 @@ void EPDDriver::writePixelInternal(int16_t x0, int16_t y0, uint16_t color)
     int _x = x0 / 8;
     int _xSub = x0 % 8;
 
-    int _position = E_INK_WIDTH/ 8 * y0 + _x;
+    int _position = E_INK_WIDTH / 8 * y0 + _x;
 
     // Clear both black and red frame buffer.
     *(DMemory4Bit + _position) |= (pixelMaskLUT[7 - _xSub]);
@@ -117,7 +117,6 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 }
 
 
-
 /**
  * @brief       clearDisplay function clears memory buffer for display
  *
@@ -139,7 +138,7 @@ void EPDDriver::clearDisplay()
  */
 void EPDDriver::display(bool _leaveOn)
 {
-       // Wake the panel and wait a bit
+    // Wake the panel and wait a bit
     // The refresh time is long anyway so this delay doesn't make much impact
     setPanelDeepSleep(false);
     delay(20);
@@ -164,7 +163,6 @@ void EPDDriver::display(bool _leaveOn)
     // Go back to sleep
     setPanelDeepSleep(true);
 }
-
 
 
 uint8_t EPDDriver::getPanelState()
@@ -196,7 +194,7 @@ void EPDDriver::resetPanel()
  */
 void EPDDriver::sendCommand(uint8_t _command)
 {
-     digitalWrite(EPAPER_CS_PIN, LOW);
+    digitalWrite(EPAPER_CS_PIN, LOW);
     digitalWrite(EPAPER_DC_PIN, LOW);
     delayMicroseconds(10);
     epdSPI.beginTransaction(epdSpiSettings);
