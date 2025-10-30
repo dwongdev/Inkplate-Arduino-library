@@ -114,8 +114,11 @@ class ImageColor
 
 
   private:
-
+    #ifdef ARDUINO_INKPLATE2
+    uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
+    #else
     uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
+    #endif
     static uint8_t  (*jpegDitherBuffer)[18];
     //static int16_t (*ditherBuffer)[8][E_INK_WIDTH + 20];
     static int16_t ditherBuffer[3][8][E_INK_WIDTH + 20];
