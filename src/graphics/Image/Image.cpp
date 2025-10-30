@@ -124,12 +124,15 @@ bool Image::draw(const char *path, int x, int y, bool dither, bool invert)
     }
     else
     {
+        if(_inkplate->getSdCardOk())
+        {
         if (strstr(_fileExtension, "bmp") != NULL || strstr(_fileExtension, "dib") != NULL)
             return drawBitmapFromSd(path, x, y, dither, invert);
         if (strstr(_fileExtension, "jpg") != NULL || strstr(_fileExtension, "jpeg") != NULL)
             return drawJpegFromSd(path, x, y, dither, invert);
         if (strstr(_fileExtension, "png") != NULL)
             return drawPngFromSd(path, x, y, dither, invert);
+        }
     }
     return 0;
 };
