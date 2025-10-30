@@ -75,8 +75,6 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
 
                 if (_pngDither)
                 {
-                    px = _imagePtrPng->ditherGetPixelBmp((r << 16) | (g << 8) | (b), x + i, y + j,
-                                                         _imagePtrPng->_inkplate->width(), 0);
                     px = _imagePtrPng->ditherGetPixelBmp(RGB8BIT(r, g, b), x + i, y + j,
                                                          _imagePtrPng->_inkplate->width(), 0);
                     if (_pngInvert)
