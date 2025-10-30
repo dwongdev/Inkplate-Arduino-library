@@ -1,9 +1,9 @@
+// Header guard for the Arduino include
+#ifdef ARDUINO_INKPLATE5V2
 #ifndef __INKPLATE5V2_PINS_H__
 #define __INKPLATE5V2_PINS_H__
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
-// Header guard for the Arduino include
-#ifdef ARDUINO_INKPLATE5V2
 #define IO_INT_ADDR 0x20
 
 // Pin on the internal io expander which controls MOSFET for turning on and off the SD card

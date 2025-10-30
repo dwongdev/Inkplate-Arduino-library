@@ -1,7 +1,7 @@
-#include "Inkplate6Driver.h"
-#include "Inkplate.h"
 
 #ifdef ARDUINO_INKPLATE6V2
+#include "Inkplate6Driver.h"
+#include "Inkplate.h"
 
 SPIClass spi2(2);
 SdFat sd(&spi2);

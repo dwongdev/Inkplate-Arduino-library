@@ -1,8 +1,7 @@
-#include "Inkplate5V2Driver.h"
-#include "Inkplate.h"
-
 // Header guard for the Arduino include
 #ifdef ARDUINO_INKPLATE5V2
+#include "Inkplate5V2Driver.h"
+#include "Inkplate.h"
 
 SPIClass spi2(2);
 SdFat sd(&spi2);

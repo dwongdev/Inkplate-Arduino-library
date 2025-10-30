@@ -1,8 +1,8 @@
-#ifndef __INKPLATE5V2DRIVER_H__
-#define __INKPLATE5V2DRIVER_H__
-
 // Header guard for the Arduino include
 #ifdef ARDUINO_INKPLATE5V2
+
+#ifndef __INKPLATE5V2DRIVER_H__
+#define __INKPLATE5V2DRIVER_H__
 
 // Inkplate Board name.
 #define INKPLATE_BOARD_NAME "Inkplate 5V2"

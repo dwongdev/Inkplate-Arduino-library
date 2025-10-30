@@ -1,7 +1,6 @@
+#ifdef ARDUINO_INKPLATE6FLICK
 #include "Inkplate6FLICKDriver.h"
 #include "Inkplate.h"
-
-#ifdef ARDUINO_INKPLATE6FLICK
 
 SPIClass spi2(2);
 SdFat sd(&spi2);

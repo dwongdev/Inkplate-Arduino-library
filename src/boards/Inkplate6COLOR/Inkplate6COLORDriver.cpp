@@ -1,8 +1,7 @@
-#include "Inkplate6COLORDriver.h"
-#include "Inkplate.h"
-
 // Header guard for the Arduino include
 #ifdef ARDUINO_INKPLATECOLOR
+#include "Inkplate6COLORDriver.h"
+#include "Inkplate.h"
 
 SPIClass spi2(2);
 SdFat sd(&spi2);
