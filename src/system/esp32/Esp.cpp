@@ -15,10 +15,10 @@
  *
  * @authors     Soldered
  ***************************************************/
-#ifdef USES_I2S
+
 #include "Esp.h"
 #include "../../boardSelect.h"
-
+#ifdef USES_I2S
 /**
  * @brief       Function Intializes I2S driver of the ESP32
  *
