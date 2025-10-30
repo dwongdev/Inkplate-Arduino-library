@@ -32,7 +32,7 @@
 class Inkplate : public Graphics, public InkplateBoardClass, public NetworkController
 {
   public:
-    #ifndef ARDUINO_INKPLATECOLOR
+    #ifdef MULTIPLE_DISPLAY_MODES
     Inkplate(uint8_t mode);
     #else
     Inkplate();
