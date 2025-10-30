@@ -117,8 +117,8 @@ class Image
   private:
 
     static uint8_t  *pixelBuffer;
-    static uint8_t  (*jpegDitherBuffer)[18];
-    static uint8_t  (*ditherBuffer)[E_INK_WIDTH + 20];
+    static uint8_t  jpegDitherBuffer[18][18];
+    static uint8_t  ditherBuffer[2][E_INK_WIDTH + 20];
     static uint32_t*  ditherPalette; // 8 bit colors, in color, 3x8 bit colors
     static uint8_t*  palette;        // 2 3 bit colors per byte, _###_###
 
