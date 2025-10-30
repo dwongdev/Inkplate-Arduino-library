@@ -25,5 +25,7 @@
 #include "boards/Inkplate6FLICK/Inkplate6FLICKDriver.h"
 #elif defined(ARDUINO_INKPLATECOLOR)
 #include "boards/Inkplate6COLOR/Inkplate6COLORDriver.h"
+#elif defined(ARDUINO_INKPLATE2)
+#include "boards/Inkplate2/Inkplate2Driver.h"
 #endif
 #endif

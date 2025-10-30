@@ -33,6 +33,9 @@
 #elif defined(ARDUINO_INKPLATECOLOR)
 #define USE_COLOR_IMAGE
 #include "boards/Inkplate6COLOR/Inkplate6COLORBoardFile.h"
+#elif defined(ARDUINO_INKPLATE2)
+#define USE_COLOR_IMAGE
+#include "boards/Inkplate2/Inkplate2BoardFile.h"
 #else
 #error "Board not selected!"
 #endif
