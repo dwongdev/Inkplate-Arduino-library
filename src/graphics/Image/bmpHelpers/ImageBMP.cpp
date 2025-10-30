@@ -111,18 +111,13 @@ void Image::readBmpHeader(uint8_t *buf, bitmapHeader *_h)
         {
             uint32_t c = READ32(paletteRGB + (i << 2));
 
-#if defined(ARDUINO_INKPLATECOLOR)
-            c = c >> 8;
-            palette[i >> 1] |= findClosestPalette(c) << (i & 1 ? 0 : 4);
-            ditherPalette[i] = c;
-#else
+
             uint8_t r = (c & 0xFF000000) >> 24;
             uint8_t g = (c & 0x00FF0000) >> 16;
             uint8_t b = (c & 0x0000FF00) >> 8;
 
             palette[i >> 1] |= RGB3BIT(r, g, b) << (i & 1 ? 0 : 4);
             ditherPalette[i] = RGB8BIT(r, g, b);
-#endif
         }
     }
 };
@@ -327,28 +322,32 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
     int16_t h = bmpHeader->height;
     int8_t c = bmpHeader->color;
 
+
     for (int j = 0; j < w; ++j)
     {
         switch (c)
         {
-
         case 1: {
-
             _inkplate->drawPixel(x + j, (h - y - 1),
-                                 (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
+                       (invert ^ (palette[0] > palette[1])) ^ !!(pixelBuffer[j >> 3] & (1 << (7 - (j & 7)))));
+
             break;
         }
 
         case 4: {
-            uint8_t px = pixelBuffer[j >> 1] & (j & 1 ? 0x0F : 0xF0) >> (j & 1 ? 0 : 4);
+            uint8_t px = (pixelBuffer[j >> 1] & (j & 1 ? 0x0F : 0xF0)) >> (j & 1 ? 0 : 4);
             uint8_t val;
 
             if (dither)
                 val = ditherGetPixelBmp(px, j, y, w, 1);
             else
-            {
-                val = palette[px >> 1] & (px & 1 ? 0x0F : 0xF0) >> (px & 1 ? 0 : 4);
-            }
+                val = (palette[px >> 1] & (px & 1 ? 0x0F : 0xF0)) >> (px & 1 ? 0 : 4);
+
+            if (invert)
+                val = val ^ 1;
+
+            if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
+                val = (~val >> 2) & 1;
 
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
@@ -361,9 +360,13 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
             if (dither)
                 val = ditherGetPixelBmp(px, j, y, w, 1);
             else
-            {
-                val = palette[px >> 1] & (px & 1 ? 0x0F : 0xF0) >> (px & 1 ? 0 : 4);
-            }
+                val = (palette[px >> 1] & (px & 1 ? 0x0F : 0xF0)) >> (px & 1 ? 0 : 4);
+
+            if (invert)
+                val = val ^ 1;
+
+            if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
+                val = (~val >> 2) & 1;
 
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
@@ -371,7 +374,6 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
 
         case 16: {
             uint16_t px = ((uint16_t)pixelBuffer[(j << 1) | 1] << 8) | pixelBuffer[(j << 1)];
-
             uint8_t r = (px & 0x7C00) >> 7;
             uint8_t g = (px & 0x3E0) >> 2;
             uint8_t b = (px & 0x1F) << 3;
@@ -381,15 +383,18 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
             if (dither)
                 val = ditherGetPixelBmp(RGB8BIT(r, g, b), j, y, w, 0);
             else
-            {
                 val = RGB3BIT(r, g, b);
-            }
 
-            val = RGB3BIT(r, g, b);
+            if (invert)
+                val = val ^ 1;
+
+            if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
+                val = (~val >> 2) & 1;
 
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
         }
+
         case 24: {
             uint32_t b = pixelBuffer[j * 3];
             uint32_t g = pixelBuffer[j * 3 + 1];
@@ -400,12 +405,18 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
             if (dither)
                 val = ditherGetPixelBmp(RGB8BIT(r, g, b), j, y, w, 0);
             else
-            {
                 val = RGB3BIT(r, g, b);
-            }
+
+            if (invert)
+                val = val ^ 1;
+
+            if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
+                val = (~val >> 2) & 1;
+
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
         }
+
         case 32: {
             uint8_t b = pixelBuffer[j * 4];
             uint8_t g = pixelBuffer[j * 4 + 1];
@@ -414,16 +425,16 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
             uint8_t val;
 
             if (dither)
-
                 val = ditherGetPixelBmp(RGB8BIT(r, g, b), j, y, w, 0);
             else
-            {
-
                 val = RGB3BIT(r, g, b);
-            }
 
             if (invert)
                 val = 7 - val;
+
+            if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
+                val = (~val >> 2) & 1;
+
             _inkplate->drawPixel(x + j, (h - y - 1), val);
             break;
         }
@@ -431,6 +442,8 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
     }
     ditherSwap(w);
 }
+
+
 
 /**
  * @brief       drawBmpFromWebAtPosition function draws bitmap image from web at
