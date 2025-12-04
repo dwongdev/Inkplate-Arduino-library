@@ -28,7 +28,7 @@ void EPDDriver::writePixelInternal(int16_t x0, int16_t y0, uint16_t color)
     if (color > 2)
         return;
 
-    switch (_inkplate->getRotation()) // FIXED
+    switch (_inkplate->getRotation()) 
     {
     case 3:
         _swap_int16_t(x0, y0);
