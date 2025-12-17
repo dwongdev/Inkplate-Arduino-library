@@ -4,7 +4,7 @@
 #include "Inkplate.h"
 
 SPIClass spi2(1);
-SdFat sd(&spi2);
+SdFat sd;
 
 SPISettings epdSpiSettings(10000000, MSBFIRST, SPI_MODE0);
 
@@ -348,7 +348,7 @@ int16_t EPDDriver::sdCardInit()
     internalIO.digitalWrite(SD_PMOS_PIN, LOW);
     delay(200);
     spi2.begin(12, 13, 11, 10);
-    setSdCardOk(sd.begin(10, SD_SCK_MHZ(25)));
+    setSdCardOk(sd.begin(SdSpiConfig(10, SHARED_SPI, SD_SCK_MHZ(25), &spi2)));
     return getSdCardOk();
 }
 
@@ -372,7 +372,7 @@ void EPDDriver::sdCardSleep()
  *
  * @return      sd card class object
  */
-SdFat EPDDriver::getSdFat()
+SdFat& EPDDriver::getSdFat()
 {
     return sd;
 }
