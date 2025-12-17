@@ -26,8 +26,7 @@ ImageColor *_imagePtrJpeg = nullptr;
 ImageColor *_imagePtrPng = nullptr;
 
 // uint8_t (*ImageColor::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
-uint8_t (*ImageColor::jpegDitherBuffer)[18] = nullptr;
-__attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][8][E_INK_WIDTH + 20];
+__attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][8][E_INK_HEIGHT];
 
 // int16_t (*ImageColor::ditherBuffer)[8][E_INK_WIDTH + 20] = nullptr;
 // uint8_t *ImageColor::pixelBuffer = nullptr;
@@ -40,27 +39,6 @@ void ImageColor::begin(Inkplate *inkplateptr)
     _imagePtrJpeg = this;
     _imagePtrPng = this;
 
-
-    jpegDitherBuffer = (uint8_t(*)[18])heap_caps_calloc(18, 18, MALLOC_CAP_SPIRAM);
-
-
-    // pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
-
-
-    // ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
-
-
-    // palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
-
-
-    if (!jpegDitherBuffer || !ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
-    {
-        Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
-    }
-    else
-    {
-        Serial.println(" Buffers allocated successfully in PSRAM");
-    }
 }
 
 /**
