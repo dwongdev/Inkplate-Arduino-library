@@ -77,12 +77,16 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
                     g = 255 - g;
                     b = 255 - b;
                 }
-
-                uint8_t px = _imagePtrPng->findClosestPalette(r, g, b);
+                uint8_t px;
 
                 if (_pngDither)
                 {
-                    px = _imagePtrPng->ditherGetPixelBmp((r << 16) | (g << 8) | (b), x + i, y + j, E_INK_WIDTH, 0);
+                    px = _imagePtrPng->ditherGetPixelBmp((r << 16) | (g << 8) | (b), x + i, y + j, pngle_get_width(pngle), 0); // Changed from e_ink_width
+                }
+                else
+                {
+                    px = _imagePtrPng->findClosestPalette(r, g, b);
+
                 }
                 _imagePtrPng->_inkplate->drawPixel(_pngX + x + i, _pngY + y + j, px);
             }

@@ -377,9 +377,13 @@ bool ImageColor::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uin
 
     // Carry global error from previous scanline
     if (dither && y != _imagePtrJpeg->lastY)
-    {
-        _imagePtrJpeg->lastY = y;
-    }
+{
+    // We moved to a new scanline
+    int oldRow = _imagePtrJpeg->lastY & (18 - 1);
+
+    _imagePtrJpeg->lastY = y;
+}
+
 
     // --- Draw the JPEG MCU block ---
     for (int j = 0; j < h; ++j)
@@ -399,7 +403,7 @@ bool ImageColor::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uin
             if (dither)
             {
                 val = _imagePtrJpeg->ditherGetPixelBmp(((uint32_t)r << 16) | ((uint32_t)g << 8) | ((uint32_t)b), i + x,
-                                                       j + y, E_INK_WIDTH, 0);
+                                                       j + y, E_INK_HEIGHT, 0); // Changed from E_INK_WIDTH
             }
             else
             {
