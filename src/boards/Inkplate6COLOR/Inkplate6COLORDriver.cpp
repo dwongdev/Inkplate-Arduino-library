@@ -32,7 +32,7 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
     if (color > 6)
         return;
 
-    /*switch (_inkplate->getRotation())
+    switch (_inkplate->getRotation())
     {
     case 3:
         _swap_int16_t(x0, y0);
@@ -46,7 +46,7 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
         _swap_int16_t(x0, y0);
         y0 = E_INK_WIDTH - y0 - 1;
         break;
-    } */
+    } 
 
     int _x = x0 / 2;
     int _x_sub = x0 % 2;

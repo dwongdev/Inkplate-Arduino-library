@@ -53,7 +53,7 @@ class EPDDriver
 
     IOExpander internalIO;
 
-    // RTC rtc;
+    RTC rtc;
 
     ImageColor image;
 
