@@ -22,12 +22,6 @@
 
 extern ImageColor *_imagePtrJpeg;
 
-/*
-static uint32_t pallete[] = {
-    0x000000ll, 0xFFFFFFll, 0x008000ll, 0x0000FFll, 0xFF0000ll, 0xFFFF00ll,
-0xFFAA00ll,
-};
-*/
 
 #if defined(ARDUINO_INKPLATECOLOR)
 
@@ -44,6 +38,11 @@ static unsigned int width = E_INK_HEIGHT, height = E_INK_WIDTH;
 static uint32_t pallete[] = {0xFFFFFF, 0x0000000, 0xFF0000};
 static unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
 
+#elif defined(ARDUINO_ESP32S3_DEV)
+static uint32_t pallete[] = { 0x424852, 0xA1A8A8, 0xB0AB44, 0x7D4749, 0x4B689A, 0x516A64};
+//static uint32_t pallete[] = { 0x000000, 0xFFFFFF, 0xFFFF00, 0xFF0000, 0x0000FF, 0x00FF00};
+static unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
+
 #endif
 
 /**
@@ -56,7 +55,7 @@ static unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
  */
 uint8_t ImageColor::findClosestPalette(int16_t r, int16_t g, int16_t b)
 {
-    int64_t minDistance = 0x7fffffffffffffff;
+    int64_t minDistance = INT64_MAX;
     uint8_t contenderCount = 0;
     uint8_t contenderList[sizeof pallete / sizeof pallete[0]];
 
@@ -65,7 +64,17 @@ uint8_t ImageColor::findClosestPalette(int16_t r, int16_t g, int16_t b)
         int16_t pr = RED8(pallete[i]);
         int16_t pg = GREEN8(pallete[i]);
         int16_t pb = BLUE8(pallete[i]);
-        int32_t currentDistance = SQR(r - pr) + SQR(g - pg) + SQR(b - pb);
+
+        int32_t dr = r - pr;
+        int32_t dg = g - pg;
+        int32_t db = b - pb;
+
+        // Perceptual weighted RGB distance (Rec.601)
+        int32_t currentDistance =
+              30 * dr * dr
+            + 59 * dg * dg
+            + 11 * db * db;
+
         if (currentDistance < minDistance)
         {
             minDistance = currentDistance;
@@ -74,18 +83,14 @@ uint8_t ImageColor::findClosestPalette(int16_t r, int16_t g, int16_t b)
         }
         else if (currentDistance == minDistance)
         {
-            contenderList[contenderCount] = i;
-            contenderCount++;
+            if (contenderCount < sizeof pallete / sizeof pallete[0])
+                contenderList[contenderCount++] = i;
         }
     }
 
-    // If your project has a good way to seed rand(),
-    // you can use rand() here to improve dithering quality
-    // when using shades that are exactly between palette colors.
-    // return contenderList[contenderCount <= 1 ? 0 : rand() % contenderCount];
-
     return contenderList[0];
 }
+
 
 /**
  * @brief       ditherGetPixelBmp finds dithered value for given pixel

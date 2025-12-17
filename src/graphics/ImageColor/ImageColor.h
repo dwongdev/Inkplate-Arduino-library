@@ -113,7 +113,7 @@ class ImageColor
 
 
   private:
-#ifdef ARDUINO_INKPLATE2
+#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_ESP32S3_DEV)
     uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
 #else
     uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
