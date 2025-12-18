@@ -22,29 +22,6 @@
 
 extern ImageColor *_imagePtrJpeg;
 
-
-#if defined(ARDUINO_INKPLATECOLOR)
-
-static uint32_t pallete[] = {0x000000, 0xFFFFFF, 0x00FF00, 0x0000FF, 0xFF0000, 0xFFFF00, 0xFF8000};
-static unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
-
-#elif defined(ARDUINO_INKPLATE2)
-
-static uint32_t pallete[] = {0xFFFFFF, 0x000000, 0xFF0000};
-static unsigned int width = E_INK_HEIGHT, height = E_INK_WIDTH;
-
-#elif defined(ARDUINO_INKPLATE4) || defined(ARDUINO_INKPLATE7)
-
-static uint32_t pallete[] = {0xFFFFFF, 0x0000000, 0xFF0000};
-static unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
-
-#elif defined(ARDUINO_ESP32S3_DEV)
-//static uint32_t pallete[] = { 0x424852, 0xA1A8A8, 0xB0AB44, 0x7D4749, 0x4B689A, 0x516A64};
-static uint32_t pallete[] = { 0x000000, 0xFFFFFF, 0xFFFF00, 0xFF0000, 0x0000FF, 0x00FF00};
-static unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
-
-#endif
-
 /**
  * @brief       findClosestPalette return closes pallete for given pixel
  *
@@ -117,12 +94,9 @@ uint8_t ImageColor::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool pal
     int16_t g = GREEN8(px) + ditherBuffer[1][j % 8][i];
     int16_t b = BLUE8(px) + ditherBuffer[2][j % 8][i];
 
-    if (i == w - 1) {
-        int row = j % 8;
-        memset(ditherBuffer[0][row], 0, w * sizeof(int16_t));
-        memset(ditherBuffer[1][row], 0, w * sizeof(int16_t));
-        memset(ditherBuffer[2][row], 0, w * sizeof(int16_t));
-    }
+    ditherBuffer[0][j % 8][i] = 0;
+    ditherBuffer[1][j % 8][i] = 0;
+    ditherBuffer[2][j % 8][i] = 0;
 
     r = max((int16_t)0, min((int16_t)255, r));
     g = max((int16_t)0, min((int16_t)255, g));
