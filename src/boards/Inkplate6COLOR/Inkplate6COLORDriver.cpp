@@ -46,7 +46,7 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
         _swap_int16_t(x0, y0);
         y0 = E_INK_WIDTH - y0 - 1;
         break;
-    } 
+    }
 
     int _x = x0 / 2;
     int _x_sub = x0 % 2;
@@ -472,7 +472,7 @@ void EPDDriver::sdCardSleep()
  *
  * @return      sd card class object
  */
-SdFat& EPDDriver::getSdFat()
+SdFat &EPDDriver::getSdFat()
 {
     return sd;
 }

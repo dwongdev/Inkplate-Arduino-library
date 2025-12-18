@@ -59,7 +59,7 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
     }
     if (rgba[3])
     {
-    unsigned int width = _imagePtrPng->width;
+        unsigned int width = _imagePtrPng->width;
         for (int j = 0; j < h; ++j)
             for (int i = 0; i < w; ++i)
             {
@@ -83,12 +83,12 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
 
                 if (_pngDither)
                 {
-                    px = _imagePtrPng->ditherGetPixelBmp((r << 16) | (g << 8) | (b), x + i, y + j, width, 0); // Changed from e_ink_width
+                    px = _imagePtrPng->ditherGetPixelBmp((r << 16) | (g << 8) | (b), x + i, y + j, width,
+                                                         0); // Changed from e_ink_width
                 }
                 else
                 {
                     px = _imagePtrPng->findClosestPalette(r, g, b);
-
                 }
                 _imagePtrPng->_inkplate->drawPixel(_pngX + x + i, _pngY + y + j, px);
             }

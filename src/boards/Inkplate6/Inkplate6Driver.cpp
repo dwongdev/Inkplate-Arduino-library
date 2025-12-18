@@ -926,7 +926,7 @@ void EPDDriver::sdCardSleep()
  *
  * @return      sd card class object
  */
-SdFat& EPDDriver::getSdFat()
+SdFat &EPDDriver::getSdFat()
 {
     return sd;
 }

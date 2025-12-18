@@ -27,8 +27,8 @@ ImageColor *_imagePtrPng = nullptr;
 
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_ESP32S3_DEV)
 __attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][8][E_INK_HEIGHT];
-# else
-__attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][8][E_INK_WIDTH+200];
+#else
+__attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][8][E_INK_WIDTH + 200];
 #endif
 
 
@@ -37,7 +37,6 @@ void ImageColor::begin(Inkplate *inkplateptr)
     _inkplate = inkplateptr;
     _imagePtrJpeg = this;
     _imagePtrPng = this;
-
 }
 
 /**

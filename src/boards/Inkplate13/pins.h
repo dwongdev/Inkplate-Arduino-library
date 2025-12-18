@@ -7,39 +7,40 @@
 #define IO_INT_ADDR 0x20
 
 // Color display of the spectra panel
-static uint32_t pallete[] = { 0x000000, 0xFFFFFF, 0xFFFF00, 0xFF0000, 0x0000FF, 0x00FF00};
+static uint32_t pallete[] = {0x000000, 0xFFFFFF, 0xFFFF00, 0xFF0000, 0x0000FF, 0x00FF00};
 
 // Pin on the internal io expander which controls MOSFET for turning on and off the SD card
 #define SD_PMOS_PIN IO_PIN_B2 // 10
 
 
 // Pinout definition - should be hard-coded.
-#define SPECTRA133_DC_PIN         14
-#define SPECTRA133_CS_M_PIN       42
-#define SPECTRA133_RST_PIN        4
-#define SPECTRA133_BUSYN_PIN      7
-#define SPECTRA133_SPI_MOSI       40
-#define SPECTRA133_SPI_MISO       41
-#define SPECTRA133_SPI_SCK        38
-#define SPECTRA133_CS_S_PIN       39
-#define SPECTRA133_PWR_EN         21
-#define SPECTRA133_BS0            6
-#define SPECTRA133_BS1            5
+#define SPECTRA133_DC_PIN    14
+#define SPECTRA133_CS_M_PIN  42
+#define SPECTRA133_RST_PIN   4
+#define SPECTRA133_BUSYN_PIN 7
+#define SPECTRA133_SPI_MOSI  40
+#define SPECTRA133_SPI_MISO  41
+#define SPECTRA133_SPI_SCK   38
+#define SPECTRA133_CS_S_PIN  39
+#define SPECTRA133_PWR_EN    21
+#define SPECTRA133_BS0       6
+#define SPECTRA133_BS1       5
 
 // Define the default Spectra6 color indexes.
-#define INKPLATE_BLACK    0
-#define INKPLATE_WHITE    1
-#define INKPLATE_YELLOW   2
-#define INKPLATE_RED      3
-#define INKPLATE_BLUE     5
-#define INKPLATE_GREEN    6
+#define INKPLATE_BLACK  0
+#define INKPLATE_WHITE  1
+#define INKPLATE_YELLOW 2
+#define INKPLATE_RED    3
+#define INKPLATE_BLUE   5
+#define INKPLATE_GREEN  6
 
-static uint16_t colorPalette[6] = {INKPLATE_BLACK, INKPLATE_WHITE, INKPLATE_YELLOW, INKPLATE_RED, INKPLATE_BLUE, INKPLATE_GREEN};
+static uint16_t colorPalette[6] = {INKPLATE_BLACK, INKPLATE_WHITE, INKPLATE_YELLOW,
+                                   INKPLATE_RED,   INKPLATE_BLUE,  INKPLATE_GREEN};
 
 
 // Screen resolution.
-#define E_INK_WIDTH              1200
-#define E_INK_HEIGHT             1600
+#define E_INK_WIDTH  1200
+#define E_INK_HEIGHT 1600
 
 // Register addresses
 #define SPECTRA133_REGISTER_PSR             0x00

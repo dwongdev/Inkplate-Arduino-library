@@ -47,10 +47,7 @@ uint8_t ImageColor::findClosestPalette(int16_t r, int16_t g, int16_t b)
         int32_t db = b - pb;
 
         // Perceptual weighted RGB distance (Rec.601)
-        int32_t currentDistance =
-              30 * dr * dr
-            + 59 * dg * dg
-            + 11 * db * db;
+        int32_t currentDistance = 30 * dr * dr + 59 * dg * dg + 11 * db * db;
 
         if (currentDistance < minDistance)
         {

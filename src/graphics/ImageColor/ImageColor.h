@@ -110,7 +110,7 @@ class ImageColor
     void getPointsForPosition(const Position &position, const uint16_t imageWidth, const uint16_t imageHeight,
                               const uint16_t screenWidth, const uint16_t screenHeight, uint16_t *posX, uint16_t *posY);
     uint8_t findClosestPalette(int16_t r, int16_t g, int16_t b);
-    
+
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_ESP32S3_DEV)
     uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
     static int16_t ditherBuffer[3][8][E_INK_HEIGHT];
@@ -123,8 +123,6 @@ class ImageColor
 
 
   private:
-
-    
     uint32_t ditherPalette[256]; // 8 bit colors, in color, 3x8 bit colors
     uint8_t palette[128];        // 2 3 bit colors per byte, _###_###
 
