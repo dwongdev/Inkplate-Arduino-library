@@ -3,9 +3,13 @@
 #include "Inkplate13Driver.h"
 #include "Inkplate.h"
 
-SPIClass spi2(1);
+// SPI used for the MicroSd card
+SPIClass spi1(1);
+
+// Instance of the SdFat object
 SdFat sd;
 
+// SPI settings for communicating with the display, 10MHz
 SPISettings epdSpiSettings(10000000, MSBFIRST, SPI_MODE0);
 
 /**
@@ -17,7 +21,7 @@ SPISettings epdSpiSettings(10000000, MSBFIRST, SPI_MODE0);
  * @param       int16_t y0
  *              default position for y, will be changed depending on rotation
  * @param       uint16_t color
- *              pixel color, in 3bit mode have values in range 0-7
+ *              pixel color
  *
  * @note        If x0 or y0 are out of inkplate screen borders, function will
  * exit.
@@ -88,8 +92,6 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
         image.begin(_inkplatePtr);
 
         _inkplate->setRotation(1);
-
-        //_inkplate->setRotation(1);
 
         // Allocate memory for internal frame buffer
         DMemory4Bit = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 2);
@@ -179,11 +181,22 @@ void EPDDriver::display(bool _leaveOn)
   if (!_leaveOn) setPanelState(false);
 }
 
-
+/**
+ * @brief       returns the current panel state, 0 for off, 1 for on
+ *
+ */
 uint8_t EPDDriver::getPanelState()
 {
     return _panelState;
 }
+
+/**
+ * @brief       sets the current panel state
+ *
+ * @param       uint8_t state
+ *              if set to 1, the panel will be turned on and initialized.
+ *              is et to 0, the panel will be turned off.
+ */
 void EPDDriver::setPanelState(uint8_t state)
 {
     // Check if the current display power state is different than the provided.
@@ -238,6 +251,10 @@ void EPDDriver::setPanelState(uint8_t state)
   }
 }
 
+/**
+ * @brief       initializes the communication pins as well as SPI communication with the Inkplate 13 panel
+ *
+ */
 void EPDDriver::setIO()
 {
   // Config the GPIOs.
@@ -347,8 +364,8 @@ int16_t EPDDriver::sdCardInit()
     internalIO.pinMode(SD_PMOS_PIN, OUTPUT);
     internalIO.digitalWrite(SD_PMOS_PIN, LOW);
     delay(200);
-    spi2.begin(12, 13, 11, 10);
-    setSdCardOk(sd.begin(SdSpiConfig(10, SHARED_SPI, SD_SCK_MHZ(25), &spi2)));
+    spi1.begin(12, 13, 11, 10);
+    setSdCardOk(sd.begin(SdSpiConfig(10, SHARED_SPI, SD_SCK_MHZ(25), &spi1)));
     return getSdCardOk();
 }
 
@@ -384,7 +401,7 @@ SdFat& EPDDriver::getSdFat()
  */
 SPIClass *EPDDriver::getSPIptr()
 {
-    return &spi2;
+    return &spi1;
 }
 
 /**
