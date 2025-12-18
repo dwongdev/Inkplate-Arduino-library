@@ -5,6 +5,9 @@
 // Header guard for the Arduino include
 #ifdef ARDUINO_INKPLATE2
 
+// Color Palette of the Inkplate 2 panel
+static uint32_t pallete[] = {0xFFFFFF, 0x000000, 0xFF0000};
+
 #define EPAPER_RST_PIN  19
 #define EPAPER_DC_PIN   33
 #define EPAPER_CS_PIN   15
