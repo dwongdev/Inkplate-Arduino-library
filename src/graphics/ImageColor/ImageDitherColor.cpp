@@ -87,13 +87,18 @@ uint8_t ImageColor::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool pal
     if (paletted)
         px = ditherPalette[px];
 
-    int16_t r = RED8(px) + ditherBuffer[0][j % 8][i];
-    int16_t g = GREEN8(px) + ditherBuffer[1][j % 8][i];
-    int16_t b = BLUE8(px) + ditherBuffer[2][j % 8][i];
+    const int rowIdx = j & ditherRowMask;
+    int16_t *rowR = ditherBuffer[0][rowIdx];
+    int16_t *rowG = ditherBuffer[1][rowIdx];
+    int16_t *rowB = ditherBuffer[2][rowIdx];
 
-    ditherBuffer[0][j % 8][i] = 0;
-    ditherBuffer[1][j % 8][i] = 0;
-    ditherBuffer[2][j % 8][i] = 0;
+    int16_t r = RED8(px) + rowR[i];
+    int16_t g = GREEN8(px) + rowG[i];
+    int16_t b = BLUE8(px) + rowB[i];
+
+    rowR[i] = 0;
+    rowG[i] = 0;
+    rowB[i] = 0;
 
     r = max((int16_t)0, min((int16_t)255, r));
     g = max((int16_t)0, min((int16_t)255, g));
@@ -106,15 +111,30 @@ uint8_t ImageColor::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool pal
     int32_t bErr = b - (int32_t)((pallete[closest] >> 0) & 0xFF);
 
 
+    const DitherKernelDef *kernelDef = currentKernel;
+    const int kernelWidth = kernelDef->width;
+    const int kernelHeight = kernelDef->height;
+    const int kernelX = kernelDef->x;
+    const int coef = kernelDef->coef;
+    const unsigned char *kernelData = kernelDef->data;
+
+    const int minOffset = max(-kernelX, -i);
+    const int maxOffset = min(kernelWidth - kernelX - 1, w - 1 - i);
     for (int k = 0; k < kernelHeight; ++k)
     {
-        for (int l = -kernelX; l < kernelWidth - kernelX; ++l)
+        const int nextRowIdx = (rowIdx + k) & ditherRowMask;
+        int16_t *nextRowR = ditherBuffer[0][nextRowIdx];
+        int16_t *nextRowG = ditherBuffer[1][nextRowIdx];
+        int16_t *nextRowB = ditherBuffer[2][nextRowIdx];
+        for (int l = minOffset; l <= maxOffset; ++l)
         {
-            if (!(0 <= i + l && i + l < w))
+            const int weight = kernelData[k * kernelWidth + (l + kernelX)];
+            if (!weight)
                 continue;
-            ditherBuffer[0][(j + k) % 8][i + l] += (kernel[k][l + kernelX] * rErr) / coef;
-            ditherBuffer[1][(j + k) % 8][i + l] += (kernel[k][l + kernelX] * gErr) / coef;
-            ditherBuffer[2][(j + k) % 8][i + l] += (kernel[k][l + kernelX] * bErr) / coef;
+            const int idx = i + l;
+            nextRowR[idx] += (weight * rErr) / coef;
+            nextRowG[idx] += (weight * gErr) / coef;
+            nextRowB[idx] += (weight * bErr) / coef;
         }
     }
 

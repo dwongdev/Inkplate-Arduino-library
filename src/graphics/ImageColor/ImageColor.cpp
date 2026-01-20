@@ -26,9 +26,11 @@ ImageColor *_imagePtrJpeg = nullptr;
 ImageColor *_imagePtrPng = nullptr;
 
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_ESP32S3_DEV)
-__attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][8][E_INK_HEIGHT];
+__attribute__((section(".ext_ram.bss")))
+int16_t ImageColor::ditherBuffer[3][ImageColor::ditherRowCount][E_INK_HEIGHT];
 #else
-__attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][8][E_INK_WIDTH + 200];
+__attribute__((section(".ext_ram.bss")))
+int16_t ImageColor::ditherBuffer[3][ImageColor::ditherRowCount][E_INK_WIDTH + 200];
 #endif
 
 
@@ -37,6 +39,15 @@ void ImageColor::begin(Inkplate *inkplateptr)
     _inkplate = inkplateptr;
     _imagePtrJpeg = this;
     _imagePtrPng = this;
+    setDitherKernel(FloydSteinberg);
+}
+
+void ImageColor::setDitherKernel(const DitherKernel kernel)
+{
+    const uint8_t kernelIndex = static_cast<uint8_t>(kernel);
+    if (kernelIndex >= DITHER_KERNEL_COUNT)
+        return;
+    currentKernel = &DITHER_KERNELS[kernelIndex];
 }
 
 /**

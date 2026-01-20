@@ -49,6 +49,16 @@ class ImageColor
         _npos
     } Position;
 
+    typedef enum
+    {
+        FloydSteinberg = 0,
+        JarvisJudiceNinke,
+        Atkinson,
+        Burkes,
+        Stucki,
+        SierraLite
+    } DitherKernel;
+
     struct bitmapHeader
     {
         uint16_t signature;     // Is picture a legal BMP
@@ -104,6 +114,8 @@ class ImageColor
     bool drawPngFromWeb(const char *url, int x, int y, bool dither = 0, bool invert = 0);
     bool drawPngFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither = 0, bool invert = 0);
 
+    void setDitherKernel(const DitherKernel kernel);
+
     // Should be private, but needed in a png callback :(
     uint8_t ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool paletted);
 
@@ -111,13 +123,16 @@ class ImageColor
                               const uint16_t screenWidth, const uint16_t screenHeight, uint16_t *posX, uint16_t *posY);
     uint8_t findClosestPalette(int16_t r, int16_t g, int16_t b);
 
+    static const uint8_t ditherRowCount = 16;
+    static const uint8_t ditherRowMask = ditherRowCount - 1;
+    static_assert((ditherRowCount & ditherRowMask) == 0, "ditherRowCount must be power of two");
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_ESP32S3_DEV)
     uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
-    static int16_t ditherBuffer[3][8][E_INK_HEIGHT];
+    static int16_t ditherBuffer[3][ditherRowCount][E_INK_HEIGHT];
     static const unsigned int width = E_INK_HEIGHT, height = E_INK_WIDTH;
 #else
     uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
-    static int16_t ditherBuffer[3][8][E_INK_WIDTH + 200];
+    static int16_t ditherBuffer[3][ditherRowCount][E_INK_WIDTH + 200];
     static const unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
 #endif
 
@@ -127,13 +142,7 @@ class ImageColor
     uint8_t palette[128];        // 2 3 bit colors per byte, _###_###
 
 
-    const int kernelWidth = _kernelWidth;
-    const int kernelHeight = _kernelHeight;
-
-    const int coef = _coef;
-    const int kernelX = _kernelX;
-
-    const unsigned char (*kernel)[_kernelWidth] = _kernel;
+    const DitherKernelDef *currentKernel = &DITHER_KERNELS[0];
 
     uint16_t _lastTileRowY = -1;
 
@@ -171,7 +180,7 @@ class ImageColor
 
     void drawRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h);
     void drawRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, uint8_t *mask, int16_t w, int16_t h);
-    // -------------------------------------------
+ 
 };
 
 #endif
