@@ -80,14 +80,14 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // buffer and clear frame buffer
     if (!_beginDone)
     {
+        setPanelPinsToLow();
+
         Wire.begin();
 
         // Save the given inkplate pointer for internal use
         _inkplate = _inkplatePtr;
 
-
         internalIO.begin(IO_INT_ADDR);
-
 
         image.begin(_inkplatePtr);
 
@@ -207,6 +207,8 @@ void EPDDriver::setPanelState(uint8_t state)
         // Check if the screen must be powered down or powered up.
         if (state)
         {
+            setPanelPinsToLow();
+            delay(50);
             // Configure GPIOs.
             setIO();
 
@@ -282,10 +284,6 @@ void EPDDriver::setIO()
     if (!SPI.begin(SPECTRA133_SPI_SCK, SPECTRA133_SPI_MISO, SPECTRA133_SPI_MOSI))
     {
         Serial.println("Failed to init SPI");
-    }
-    else
-    {
-        Serial.println("SPI init done");
     }
 }
 
@@ -496,6 +494,29 @@ void EPDDriver::waitForBusy()
         // Let the RTOS breathe.
         delay(1);
     }
+}
+
+// Function helps empty capacitors, without this sometimes the panel refuses to refresh...
+void EPDDriver::setPanelPinsToLow()
+{
+    pinMode(SPECTRA133_DC_PIN, OUTPUT);
+    pinMode(SPECTRA133_CS_M_PIN, OUTPUT);
+    pinMode(SPECTRA133_RST_PIN, OUTPUT);
+    pinMode(SPECTRA133_BUSYN_PIN, OUTPUT);
+    pinMode(SPECTRA133_CS_S_PIN, OUTPUT);
+    pinMode(SPECTRA133_PWR_EN, OUTPUT);
+    pinMode(SPECTRA133_BS0, OUTPUT);
+    pinMode(SPECTRA133_BS1, OUTPUT);
+
+    digitalWrite(SPECTRA133_DC_PIN, LOW);
+    digitalWrite(SPECTRA133_CS_M_PIN, LOW);
+    digitalWrite(SPECTRA133_RST_PIN, LOW);
+    digitalWrite(SPECTRA133_BUSYN_PIN, LOW);
+    digitalWrite(SPECTRA133_CS_S_PIN, LOW);
+    digitalWrite(SPECTRA133_PWR_EN, LOW);
+    digitalWrite(SPECTRA133_BS0, LOW);
+    digitalWrite(SPECTRA133_BS1, LOW);
+
 }
 
 

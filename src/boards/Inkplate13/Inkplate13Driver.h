@@ -77,6 +77,7 @@ class EPDDriver
     void screenInit();
     uint8_t getPanelState();
     void setIO();
+    void setPanelPinsToLow();
     void gpioInit();
     void setPanelState(uint8_t state);
     void resetPanel();
