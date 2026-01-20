@@ -516,7 +516,6 @@ void EPDDriver::setPanelPinsToLow()
     digitalWrite(SPECTRA133_PWR_EN, LOW);
     digitalWrite(SPECTRA133_BS0, LOW);
     digitalWrite(SPECTRA133_BS1, LOW);
-
 }
 
 
