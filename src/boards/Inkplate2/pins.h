@@ -1,9 +1,9 @@
 #ifndef __INKPLATE2_PINS_H__
 #define __INKPLATE2_PINS_H__
-#include "soc/gpio_reg.h"
-#include "soc/gpio_struct.h"
 // Header guard for the Arduino include
 #ifdef ARDUINO_INKPLATE2
+#include "soc/gpio_reg.h"
+#include "soc/gpio_struct.h"
 
 // Color Palette of the Inkplate 2 panel
 static uint32_t pallete[] = {0xFFFFFF, 0x000000, 0xFF0000};

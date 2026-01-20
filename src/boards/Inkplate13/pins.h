@@ -1,9 +1,9 @@
 #ifndef __INKPLATE13_PINS_H__
 #define __INKPLATE13_PINS_H__
-#include "soc/gpio_reg.h"
-#include "soc/gpio_struct.h"
 // Header guard for the Arduino include
 #ifdef ARDUINO_ESP32S3_DEV
+#include "soc/gpio_reg.h"
+#include "soc/gpio_struct.h"
 #define IO_INT_ADDR 0x20
 
 // Color display of the spectra panel

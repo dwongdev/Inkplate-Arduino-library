@@ -1,9 +1,9 @@
 #ifndef __INKPLATE10V2_PINS_H__
 #define __INKPLATE10V2_PINS_H__
+
+#ifdef ARDUINO_INKPLATE10V2
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
-// Header guard for the Arduino include
-#ifdef ARDUINO_INKPLATE10V2
 #define IO_INT_ADDR 0x20
 #define IO_EXT_ADDR 0x21
 

@@ -1,9 +1,9 @@
 #ifndef __INKPLATE6COLOR_PINS_H__
 #define __INKPLATE6COLOR_PINS_H__
+#ifdef ARDUINO_INKPLATECOLOR
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
 // Header guard for the Arduino include
-#ifdef ARDUINO_INKPLATECOLOR
 #define IO_INT_ADDR 0x20
 
 // Color palette of the 6COLOR panel
