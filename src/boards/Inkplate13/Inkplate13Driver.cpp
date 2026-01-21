@@ -1,5 +1,5 @@
 // Header guard for the Arduino include
-#ifdef ARDUINO_ESP32S3_DEV
+#ifdef ARDUINO_INKPLATE13SPECTRA
 #include "Inkplate13Driver.h"
 #include "Inkplate.h"
 

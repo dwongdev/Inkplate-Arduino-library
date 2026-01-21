@@ -14,7 +14,7 @@
 #define __BOARD_SELECT_H__
 
 #include <Arduino.h>
-#if defined(ARDUINO_ESP32S3_DEV)
+#if defined(ARDUINO_INKPLATE13SPECTRA)
 #define USE_COLOR_IMAGE
 #include "boards/Inkplate13/Inkplate13BoardFile.h"
 #elif defined(ARDUINO_INKPLATE10V2)

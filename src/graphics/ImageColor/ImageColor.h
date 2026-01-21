@@ -19,7 +19,7 @@
 #ifndef __IMAGE_COLOR_H__
 #define __IMAGE_COLOR_H__
 #pragma once
-#if defined(ARDUINO_ESP32S3_DEV) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
+#if defined(ARDUINO_INKPLATE13SPECTRA) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
 
 #include "../../features/SdFat/SdFat.h"
 #include "ImageDitherColorKernels.h"
@@ -128,7 +128,7 @@ class ImageColor
     static const uint8_t ditherRowCount = 16;
     static const uint8_t ditherRowMask = ditherRowCount - 1;
     static_assert((ditherRowCount & ditherRowMask) == 0, "ditherRowCount must be power of two");
-#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_ESP32S3_DEV)
+#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
     uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
     static int16_t ditherBuffer[3][ditherRowCount][E_INK_HEIGHT];
     static const unsigned int width = E_INK_HEIGHT, height = E_INK_WIDTH;

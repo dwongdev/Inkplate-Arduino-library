@@ -5,7 +5,7 @@
 #include "SdFat/SdFat.h"
 #include "rtc/rtc.h"
 #elif defined(ARDUINO_INKPLATE6V2) || defined(ARDUINO_INKPLATE5V2) || defined(ARDUINO_INKPLATECOLOR) ||                \
-    defined(ARDUINO_ESP32S3_DEV)
+    defined(ARDUINO_INKPLATE13SPECTRA)
 #include "SdFat/SdFat.h"
 #include "rtc/rtc.h"
 #elif defined(ARDUINO_INKPLATE6FLICK)
