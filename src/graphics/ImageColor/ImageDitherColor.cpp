@@ -15,10 +15,10 @@
  *
  * @authors     Soldered
  ***************************************************/
+#pragma once
+#if defined(ARDUINO_ESP32S3_DEV) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
 #include "Inkplate.h"
 #include "ImageColor.h"
-
-#ifdef USE_COLOR_IMAGE
 
 extern ImageColor *_imagePtrJpeg;
 

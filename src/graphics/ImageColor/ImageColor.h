@@ -18,6 +18,8 @@
 
 #ifndef __IMAGE_COLOR_H__
 #define __IMAGE_COLOR_H__
+#pragma once
+#if defined(ARDUINO_ESP32S3_DEV) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
 
 #include "../../features/SdFat/SdFat.h"
 #include "ImageDitherColorKernels.h"
@@ -181,5 +183,5 @@ class ImageColor
     void drawRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h);
     void drawRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, uint8_t *mask, int16_t w, int16_t h);
 };
-
+#endif
 #endif

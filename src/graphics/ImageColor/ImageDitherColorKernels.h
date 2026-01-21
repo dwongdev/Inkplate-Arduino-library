@@ -15,9 +15,8 @@
  *
  * @authors     Soldered
  ***************************************************/
-
-#ifndef __IMAGE_DITHER_COLOR_KERNELS
-#define __IMAGE_DITHER_COLOR_KERNELS
+#pragma once
+#if defined(ARDUINO_ESP32S3_DEV) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
 
 struct DitherKernelDef
 {

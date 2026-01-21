@@ -15,8 +15,9 @@
  *
  * @authors     Soldered
  ***************************************************/
+#pragma once
+#if defined(ARDUINO_ESP32S3_DEV) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
 #include "Inkplate.h"
-#ifdef USE_COLOR_IMAGE
 #include "ImageColor.h"
 #include "../TJpeg/TJpg_Decoder.h"
 #include "pgmspace.h"
