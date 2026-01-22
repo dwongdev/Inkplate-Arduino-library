@@ -695,7 +695,6 @@ void EPDDriver::pinsAsOutputs()
 
     // Start sending clock to the EPD.
     myI2S->conf1.tx_stop_en = 1;
-
 }
 
 uint8_t EPDDriver::getPanelState()
@@ -748,7 +747,6 @@ void EPDDriver::pinsZstate()
 
 
     myI2S->conf1.tx_stop_en = 0;
-
 }
 
 /**
@@ -815,7 +813,6 @@ void EPDDriver::clean(uint8_t c, uint8_t rep)
  */
 void EPDDriver::hscan_start(uint32_t _d)
 {
-
 }
 
 uint8_t EPDDriver::getDisplayMode()

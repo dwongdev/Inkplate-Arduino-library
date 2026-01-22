@@ -18,67 +18,67 @@
 
 #ifndef __MCP_EXPANDER_H__
 #define __MCP_EXPANDER_H__
- #if defined(ARDUINO_INKPLATE6) || defined(ARDUINO_INKPLATE10) || defined(ARDUINO_INKPLATE6PLUS)
- #include "Arduino.h"
- #include "Wire.h"
- 
- #define MCP23017_INT_PORTA     0x00
- #define MCP23017_INT_PORTB     0x01
- #define MCP23017_INT_NO_MIRROR false
- #define MCP23017_INT_MIRROR    true
- #define MCP23017_INT_PUSHPULL  false
- #define MCP23017_INT_OPENDRAIN true
- #define MCP23017_INT_ACTLOW    false
- #define MCP23017_INT_ACTHIGH   true
- 
- #define MCP23017_IODIRA   0x00
- #define MCP23017_IPOLA    0x02
- #define MCP23017_GPINTENA 0x04
- #define MCP23017_DEFVALA  0x06
- #define MCP23017_INTCONA  0x08
- #define MCP23017_IOCONA   0x0A
- #define MCP23017_GPPUA    0x0C
- #define MCP23017_INTFA    0x0E
- #define MCP23017_INTCAPA  0x10
- #define MCP23017_GPIOA    0x12
- #define MCP23017_OLATA    0x14
- 
- #define MCP23017_IODIRB   0x01
- #define MCP23017_IPOLB    0x03
- #define MCP23017_GPINTENB 0x05
- #define MCP23017_DEFVALB  0x07
- #define MCP23017_INTCONB  0x09
- #define MCP23017_IOCONB   0x0B
- #define MCP23017_GPPUB    0x0D
- #define MCP23017_INTFB    0x0F
- #define MCP23017_INTCAPB  0x11
- #define MCP23017_GPIOB    0x13
- #define MCP23017_OLATB    0x15
- 
- // User pins on MCP for Inkplate 10
- // If using MCP with address 0x20 (IO_INT_ADDR) use only pins B1-B7
- // Do not use others(0-8) cause they can permanently damage your screen
- #define IO_PIN_B1 9
- #define IO_PIN_B2 10
- #define IO_PIN_B3 11
- #define IO_PIN_B4 12
- #define IO_PIN_B5 13
- #define IO_PIN_B6 14
- #define IO_PIN_B7 15
- 
- // Rest of the pins can be used only with MCP with address 0x22
- // (IO_EXT_ADDR) MCP high level functions (those without address in
- // signature) in Inkplate 10 use IO_EXT_ADDR by default
- #define IO_PIN_A0 0
- #define IO_PIN_A1 1
- #define IO_PIN_A2 2
- #define IO_PIN_A3 3
- #define IO_PIN_A4 4
- #define IO_PIN_A5 5
- #define IO_PIN_A6 6
- #define IO_PIN_A7 7
- #define IO_PIN_B0 8
- 
+#if defined(ARDUINO_INKPLATE6) || defined(ARDUINO_INKPLATE10) || defined(ARDUINO_INKPLATE6PLUS)
+#include "Arduino.h"
+#include "Wire.h"
+
+#define MCP23017_INT_PORTA     0x00
+#define MCP23017_INT_PORTB     0x01
+#define MCP23017_INT_NO_MIRROR false
+#define MCP23017_INT_MIRROR    true
+#define MCP23017_INT_PUSHPULL  false
+#define MCP23017_INT_OPENDRAIN true
+#define MCP23017_INT_ACTLOW    false
+#define MCP23017_INT_ACTHIGH   true
+
+#define MCP23017_IODIRA   0x00
+#define MCP23017_IPOLA    0x02
+#define MCP23017_GPINTENA 0x04
+#define MCP23017_DEFVALA  0x06
+#define MCP23017_INTCONA  0x08
+#define MCP23017_IOCONA   0x0A
+#define MCP23017_GPPUA    0x0C
+#define MCP23017_INTFA    0x0E
+#define MCP23017_INTCAPA  0x10
+#define MCP23017_GPIOA    0x12
+#define MCP23017_OLATA    0x14
+
+#define MCP23017_IODIRB   0x01
+#define MCP23017_IPOLB    0x03
+#define MCP23017_GPINTENB 0x05
+#define MCP23017_DEFVALB  0x07
+#define MCP23017_INTCONB  0x09
+#define MCP23017_IOCONB   0x0B
+#define MCP23017_GPPUB    0x0D
+#define MCP23017_INTFB    0x0F
+#define MCP23017_INTCAPB  0x11
+#define MCP23017_GPIOB    0x13
+#define MCP23017_OLATB    0x15
+
+// User pins on MCP for Inkplate 10
+// If using MCP with address 0x20 (IO_INT_ADDR) use only pins B1-B7
+// Do not use others(0-8) cause they can permanently damage your screen
+#define IO_PIN_B1 9
+#define IO_PIN_B2 10
+#define IO_PIN_B3 11
+#define IO_PIN_B4 12
+#define IO_PIN_B5 13
+#define IO_PIN_B6 14
+#define IO_PIN_B7 15
+
+// Rest of the pins can be used only with MCP with address 0x22
+// (IO_EXT_ADDR) MCP high level functions (those without address in
+// signature) in Inkplate 10 use IO_EXT_ADDR by default
+#define IO_PIN_A0 0
+#define IO_PIN_A1 1
+#define IO_PIN_A2 2
+#define IO_PIN_A3 3
+#define IO_PIN_A4 4
+#define IO_PIN_A5 5
+#define IO_PIN_A6 6
+#define IO_PIN_A7 7
+#define IO_PIN_B0 8
+
 /**
  * @brief       IOExpander class to be used for work with MCP23017 expander
  */
@@ -102,11 +102,10 @@ class IOExpander
     uint16_t _blockedPinsForUser = 0;
 
     const uint8_t regAddresses[22] = {
-        MCP23017_IODIRA,  MCP23017_IODIRB,  MCP23017_IPOLA,   MCP23017_IPOLB,   MCP23017_GPINTENA,
-        MCP23017_GPINTENB, MCP23017_DEFVALA, MCP23017_DEFVALB, MCP23017_INTCONA, MCP23017_INTCONB,
-        MCP23017_IOCONA,   MCP23017_IOCONB,  MCP23017_GPPUA,   MCP23017_GPPUB,   MCP23017_INTFA,
-        MCP23017_INTFB,    MCP23017_INTCAPA, MCP23017_INTCAPB, MCP23017_GPIOA,   MCP23017_GPIOB,
-        MCP23017_OLATA,    MCP23017_OLATB};
+        MCP23017_IODIRA,  MCP23017_IODIRB,  MCP23017_IPOLA,   MCP23017_IPOLB,   MCP23017_GPINTENA, MCP23017_GPINTENB,
+        MCP23017_DEFVALA, MCP23017_DEFVALB, MCP23017_INTCONA, MCP23017_INTCONB, MCP23017_IOCONA,   MCP23017_IOCONB,
+        MCP23017_GPPUA,   MCP23017_GPPUB,   MCP23017_INTFA,   MCP23017_INTFB,   MCP23017_INTCAPA,  MCP23017_INTCAPB,
+        MCP23017_GPIOA,   MCP23017_GPIOB,   MCP23017_OLATA,   MCP23017_OLATB};
 
     uint8_t _ioExpanderI2CAddress;
 
@@ -127,6 +126,6 @@ class IOExpander
 
     bool checkForBlockedPins(uint8_t _pin);
 };
- 
+
 #endif
 #endif

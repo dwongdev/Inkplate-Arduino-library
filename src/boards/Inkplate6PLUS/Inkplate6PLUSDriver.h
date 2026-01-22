@@ -29,7 +29,6 @@
 #include "../../system/defines.h"
 
 
-
 class Inkplate;
 
 

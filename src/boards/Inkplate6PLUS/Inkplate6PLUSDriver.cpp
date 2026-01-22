@@ -518,22 +518,22 @@ int EPDDriver::einkOn()
         return 1;
     WAKEUP_SET;
     delay(5);
-    #ifdef ARDUINO_INKPLATE6PLUSV2
-        if (pwrMode != INKPLATE_USB_PWR_ONLY)
-        {
-            // Enable all rails
-            Wire.beginTransmission(0x48);
-            Wire.write(0x01);
-            Wire.write(B00100000);
-            Wire.endTransmission();
-        }
-    #else
+#ifdef ARDUINO_INKPLATE6PLUSV2
+    if (pwrMode != INKPLATE_USB_PWR_ONLY)
+    {
         // Enable all rails
         Wire.beginTransmission(0x48);
         Wire.write(0x01);
         Wire.write(B00100000);
         Wire.endTransmission();
-    #endif
+    }
+#else
+    // Enable all rails
+    Wire.beginTransmission(0x48);
+    Wire.write(0x01);
+    Wire.write(B00100000);
+    Wire.endTransmission();
+#endif
 
 
     // Modify power up sequence.
@@ -600,10 +600,10 @@ void EPDDriver::einkOff()
         delay(1);
     } while ((readPowerGood() != 0) && (millis() - timer) < 250);
 
-    #ifdef ARDUINO_INKPLATE6PLUSV2
-        if (pwrMode != INKPLATE_USB_PWR_ONLY)
-            WAKEUP_CLEAR;
-    #endif
+#ifdef ARDUINO_INKPLATE6PLUSV2
+    if (pwrMode != INKPLATE_USB_PWR_ONLY)
+        WAKEUP_CLEAR;
+#endif
 
     pinsZstate();
     setPanelState(0);
@@ -706,7 +706,6 @@ void EPDDriver::pinsZstate()
     pinMode(25, INPUT);
     pinMode(26, INPUT);
     pinMode(27, INPUT);
-
 }
 
 /**
