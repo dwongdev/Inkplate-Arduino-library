@@ -51,10 +51,7 @@ jobs:
               fqbn: soldered-inkplate-boards:esp32:Inkplate2
             additional-sketch-paths: |
               - examples/Inkplate2
-          - board:
-              fqbn: soldered-inkplate-boards:esp32:Inkplate13SPECTRA
-            additional-sketch-paths: |
-              - examples/Inkplate13SPECTRA
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
