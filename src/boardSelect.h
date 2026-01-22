@@ -17,10 +17,13 @@
 #if defined(ARDUINO_INKPLATE13SPECTRA)
 #define USE_COLOR_IMAGE
 #include "boards/Inkplate13/Inkplate13BoardFile.h"
-#elif defined(ARDUINO_INKPLATE10V2)
+#elif defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 #define MULTIPLE_DISPLAY_MODES
 #include "boards/Inkplate10/Inkplate10BoardFile.h"
-#elif defined(ARDUINO_INKPLATE6V2)
+#elif defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATE6PLUSV2)
+#define MULTIPLE_DISPLAY_MODES
+#include "boards/Inkplate6PLUS/Inkplate6PLUSBoardFile.h"
+#elif defined(ARDUINO_INKPLATE6V2) || defined(ARDUINO_INKPLATE6)
 #define USES_I2S
 #define MULTIPLE_DISPLAY_MODES
 #include "boards/Inkplate6/Inkplate6BoardFile.h"
