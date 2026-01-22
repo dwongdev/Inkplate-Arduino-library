@@ -19,7 +19,7 @@
 #include "Inkplate.h"
 #ifndef USE_COLOR_IMAGE
 #include "../Image.h"
-#include "../../TJpeg/TJpg_Decoder.h"
+#include "../../Tjpeg/TJpg_Decoder.h"
 
 
 extern Image *_imagePtrJpeg;

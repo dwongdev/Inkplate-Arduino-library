@@ -19,7 +19,7 @@
 #if defined(ARDUINO_INKPLATE13SPECTRA) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
 #include "Inkplate.h"
 #include "ImageColor.h"
-#include "../TJpeg/TJpg_Decoder.h"
+#include "../Tjpeg/TJpg_Decoder.h"
 #include "pgmspace.h"
 
 

@@ -20,7 +20,7 @@
 #include "../../../system/defines.h"
 #include "Inkplate.h"
 #include "../ImageColor.h"
-#include "../../TJpeg/TJpg_Decoder.h"
+#include "../../Tjpeg/TJpg_Decoder.h"
 
 
 extern ImageColor *_imagePtrJpeg;
