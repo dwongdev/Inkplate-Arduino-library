@@ -15,7 +15,7 @@
 #define __INKPLATE6_BOARD_SELECT_H__
 
 // Board select check.
-#ifdef ARDUINO_INKPLATE6V2
+#if defined(ARDUINO_INKPLATE6V2) || defined(ARDUINO_INKPLATE6)
 
 // Include Inkplate6 board header file.
 #include "Inkplate6Driver.h"

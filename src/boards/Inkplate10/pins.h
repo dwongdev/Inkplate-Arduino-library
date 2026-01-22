@@ -1,7 +1,7 @@
 #ifndef __INKPLATE10V2_PINS_H__
 #define __INKPLATE10V2_PINS_H__
 
-#ifdef ARDUINO_INKPLATE10V2
+#if defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
 #define IO_INT_ADDR 0x20

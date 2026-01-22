@@ -1,5 +1,4 @@
-
-#ifdef ARDUINO_INKPLATE6V2
+#if defined(ARDUINO_INKPLATE6V2) || defined(ARDUINO_INKPLATE6)
 #include "Inkplate6Driver.h"
 #include "Inkplate.h"
 
@@ -117,12 +116,18 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     internalIO.pinMode(GMOD, OUTPUT);
     internalIO.pinMode(SPV, OUTPUT);
 
+#ifndef ARDUINO_INKPLATE6V2
+    internalIO.pinMode(10, INPUT);
+    internalIO.pinMode(11, INPUT);
+    internalIO.pinMode(12, INPUT);
+#else
     internalIO.pinMode(10, OUTPUT);
     internalIO.pinMode(11, OUTPUT);
     internalIO.pinMode(12, OUTPUT);
     internalIO.digitalWrite(10, LOW);
     internalIO.digitalWrite(11, LOW);
     internalIO.digitalWrite(12, LOW);
+#endif
     // Battery voltage Switch MOSFET
     internalIO.pinMode(9, OUTPUT);
     internalIO.digitalWrite(9, LOW);
@@ -326,7 +331,7 @@ void EPDDriver::display1b(bool leaveOn)
     clean(2, 1);
 
 // How many cycles / phases / frames of dark pixels
-#if defined(ARDUINO_ESP32_DEV)
+#if defined(ARDUINO_INKPLATE6)
     int rep = 4;
 #elif defined(ARDUINO_INKPLATE6V2)
     int rep = 5;
@@ -487,7 +492,7 @@ uint32_t EPDDriver::partialUpdate(bool _forced, bool leaveOn)
         return 0;
 
 // How many cycles / phases / frames to write to the panel.
-#if defined(ARDUINO_ESP32_DEV)
+#if defined(ARDUINO_INKPLATE6)
     int rep = 5;
 #elif defined(ARDUINO_INKPLATE6V2)
     int rep = 6;
@@ -586,6 +591,9 @@ int EPDDriver::einkOn()
 
     pinsAsOutputs();
     LE_CLEAR;
+#if !defined(ARDUINO_INKPLATE6) && !defined(ARDUINO_INKPLATE6V2) && !defined(ARDUINO_INKPLATE6FLICK)
+    CL_CLEAR;
+#endif
     SPH_SET;
     GMOD_SET;
     SPV_SET;
@@ -622,7 +630,11 @@ void EPDDriver::einkOff()
     VCOM_CLEAR;
     OE_CLEAR;
     GMOD_CLEAR;
+#if !defined(ARDUINO_INKPLATE6) && !defined(ARDUINO_INKPLATE6V2) && !defined(ARDUINO_INKPLATE6FLICK)
+    GPIO.out &= ~(DATA | LE | CL);
+#else
     LE_CLEAR;
+#endif
     CKV_CLEAR;
     SPH_CLEAR;
     SPV_CLEAR;
@@ -671,7 +683,6 @@ void EPDDriver::pinsAsOutputs()
     internalIO.pinMode(GMOD, OUTPUT);
     internalIO.pinMode(SPV, OUTPUT);
 
-    // Set up the EPD Data and CL pins for I2S.
     setI2S1pin(0, I2S1O_BCK_OUT_IDX, 0);
     setI2S1pin(4, I2S1O_DATA_OUT0_IDX, 0);
     setI2S1pin(5, I2S1O_DATA_OUT1_IDX, 0);
@@ -684,6 +695,7 @@ void EPDDriver::pinsAsOutputs()
 
     // Start sending clock to the EPD.
     myI2S->conf1.tx_stop_en = 1;
+
 }
 
 uint8_t EPDDriver::getPanelState()
@@ -734,7 +746,9 @@ void EPDDriver::pinsZstate()
     pinMode(26, INPUT);
     pinMode(27, INPUT);
 
+
     myI2S->conf1.tx_stop_en = 0;
+
 }
 
 /**
@@ -801,6 +815,7 @@ void EPDDriver::clean(uint8_t c, uint8_t rep)
  */
 void EPDDriver::hscan_start(uint32_t _d)
 {
+
 }
 
 uint8_t EPDDriver::getDisplayMode()
@@ -817,7 +832,11 @@ void EPDDriver::gpioInit()
 {
 
     internalIO.begin(IO_INT_ADDR);
+#if defined(ARDUINO_INKPLATE6)
+    internalIO.digitalWrite(9, HIGH);
+#else
     internalIO.digitalWrite(9, LOW);
+#endif
     externalIO.begin(IO_EXT_ADDR);
 
     for (uint32_t i = 0; i < 256; ++i)
@@ -853,6 +872,7 @@ void EPDDriver::gpioInit()
     internalIO.digitalWrite(14, LOW);
     internalIO.digitalWrite(15, LOW);
 
+#ifdef ARDUINO_INKPLATE6V2
     // Set SPI pins to input to reduce power consumption in deep sleep
     pinMode(12, INPUT);
     pinMode(13, INPUT);
@@ -861,6 +881,10 @@ void EPDDriver::gpioInit()
 
     // And also disable uSD card supply
     internalIO.pinMode(SD_PMOS_PIN, INPUT);
+#else
+    internalIO.pinMode(9, OUTPUT);
+    internalIO.digitalWrite(9, LOW);
+#endif
 }
 
 /**

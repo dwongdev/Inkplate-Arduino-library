@@ -15,7 +15,7 @@
 #define __INKPLATE10_BOARD_SELECT_H__
 
 // Board select check.
-#ifdef ARDUINO_INKPLATE10V2
+#if defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 
 // Include Inkplate10 board header file.
 #include "Inkplate10Driver.h"

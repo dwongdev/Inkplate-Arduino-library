@@ -2,7 +2,7 @@
 #define __INKPLATE6DRIVER_H__
 
 // Header guard for the Arduino include
-#ifdef ARDUINO_INKPLATE6V2
+#if defined(ARDUINO_INKPLATE6V2) || defined(ARDUINO_INKPLATE6)
 
 // Inkplate Board name.
 #define INKPLATE_BOARD_NAME "Inkplate 6"
@@ -10,8 +10,8 @@
 // Include main header file for the Arduino.
 #include "Arduino.h"
 
-// Include library for PCAL6416A GPIO expander.
-#include "../../system/pcalExpander/pcalExpander.h"
+// Include GPIO expander selection.
+#include "../../system/ExpanderSelect.h"
 
 #include "pins.h"
 

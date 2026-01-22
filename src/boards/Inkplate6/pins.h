@@ -1,6 +1,6 @@
-#ifndef __INKPLATE6V2_PINS_H__
-#define __INKPLATE6V2_PINS_H__
-#ifdef ARDUINO_INKPLATE6V2
+#ifndef __INKPLATE6_PINS_H__
+#define __INKPLATE6_PINS_H__
+#if defined(ARDUINO_INKPLATE6V2) || defined(ARDUINO_INKPLATE6)
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
 #define IO_INT_ADDR 0x20

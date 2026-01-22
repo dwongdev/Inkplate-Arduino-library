@@ -1,5 +1,5 @@
 // Header guard for the Arduino include
-#ifdef ARDUINO_INKPLATE10V2
+#if defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 #include "Inkplate10Driver.h"
 #include "Inkplate.h"
 
@@ -765,7 +765,7 @@ void EPDDriver::gpioInit()
     internalIO.pinMode(15, OUTPUT);
     internalIO.digitalWrite(14, LOW);
     internalIO.digitalWrite(15, LOW);
-
+    #if defined(ARDUINO_INKPLATE10V2)
     // Set SPI pins to input to reduce power consumption in deep sleep
     pinMode(12, INPUT);
     pinMode(13, INPUT);
@@ -774,7 +774,10 @@ void EPDDriver::gpioInit()
 
     // And also disable uSD card supply
     internalIO.pinMode(SD_PMOS_PIN, INPUT);
-
+#else
+    internalIO.pinMode(12, OUTPUT);
+    internalIO.digitalWrite(12, LOW);
+#endif
     // CONTROL PINS
     pinMode(0, OUTPUT);
     pinMode(2, OUTPUT);
@@ -794,12 +797,18 @@ void EPDDriver::gpioInit()
     pinMode(26, OUTPUT);
     pinMode(27, OUTPUT); // D7
 
-    internalIO.pinMode(10, OUTPUT);
-    internalIO.pinMode(11, OUTPUT);
-    internalIO.pinMode(12, OUTPUT);
-    internalIO.digitalWrite(10, LOW);
-    internalIO.digitalWrite(11, LOW);
-    internalIO.digitalWrite(12, LOW);
+    #if defined(ARDUINO_INKPLATE10V2)
+        internalIO.pinMode(10, OUTPUT);
+        internalIO.pinMode(11, OUTPUT);
+        internalIO.pinMode(12, OUTPUT);
+        internalIO.digitalWrite(10, LOW);
+        internalIO.digitalWrite(11, LOW);
+        internalIO.digitalWrite(12, LOW);
+    #else
+        internalIO.pinMode(10, INPUT);
+        internalIO.pinMode(11, INPUT);
+        internalIO.pinMode(12, INPUT);
+    #endif
     // Battery voltage Switch MOSFET
     internalIO.pinMode(9, OUTPUT);
     internalIO.digitalWrite(9, LOW);
