@@ -18,7 +18,7 @@
 
 #ifndef __PCAL_H__
 #define __PCAL_H__
-
+#if !defined(ARDUINO_INKPLATE6) && !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE6PLUS)
 #include "Arduino.h"
 #include "Wire.h"
 
@@ -145,4 +145,5 @@ class IOExpander
     bool checkForBlockedPins(uint8_t _pin);
 };
 
+#endif
 #endif

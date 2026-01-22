@@ -15,7 +15,7 @@
  *
  * @authors     Soldered
  ***************************************************/
-
+#if !defined(ARDUINO_INKPLATE6) && !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE6PLUS)
 #include "pcalExpander.h"
 
 /**
@@ -485,3 +485,4 @@ bool IOExpander::checkForBlockedPins(uint8_t _pin)
     // Pin is not blocked, user can use it.
     return false;
 }
+#endif
