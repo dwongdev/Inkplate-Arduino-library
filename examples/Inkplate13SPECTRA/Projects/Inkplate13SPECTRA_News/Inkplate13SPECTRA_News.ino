@@ -16,20 +16,20 @@
 */
 
 // Ensure the correct board is selected in the Arduino IDE
-#ifndef ARDUINO_INKPLATECOLOR
+/*#ifndef ARDUINO_INKPLATE13SPECTRA
 #error "Wrong board selection for this example, please select Soldered Inkplate 6COLOR in the boards menu."
-#endif
+#endif*/
 
 // ---------- CHANGE HERE -------------
 // Adjust your timezone (e.g., 2 means UTC+2)
 int timeZone = 2;
 
 // WiFi credentials (replace with your WiFi network details)
-char ssid[] = "YourWiFiSSID";       // Replace with your WiFi SSID
-char pass[] = "YourWiFiPassword";   // Replace with your WiFi password
+char ssid[] = "Soldered Electronics";       // Replace with your WiFi SSID
+char pass[] = "dasduino";   // Replace with your WiFi password
 
 // News API key (get one from https://newsapi.org/)
-char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
+char api_key_news[] = "0764e21041bc424c90071880e5f0607f"; // Replace with your News API key
 // ------------------------------------
 
 
@@ -45,7 +45,7 @@ char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
 #include "Fonts/Inter10pt7b.h"
 
 // Create network and display objects
-NetworkFunctions network;
+NetworkTEST network;
 Inkplate inkplate; // Use color mode for Inkplate 6COLOR
 
 // Constants for delays and refreshes
@@ -65,8 +65,9 @@ void setup()
 
     // Initialize the display
     inkplate.begin();
-    inkplate.setTextWrap(false);
+    inkplate.setTextWrap(true);
     Serial.println(F("Display initialized."));
+    inkplate.setTextColor(INKPLATE_BLACK);
 
     // Connect to WiFi
     Serial.println(F("Setting WiFi credentials..."));

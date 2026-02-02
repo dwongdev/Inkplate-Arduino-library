@@ -23,19 +23,19 @@
 // Static Json from ArduinoJson library
 StaticJsonDocument<35000> doc;
 
-void NetworkFunctions::setCredentials(const char *wifiSSID, const char *wifiPass, const char *apiKey)
+void NetworkTEST::setCredentials(const char *wifiSSID, const char *wifiPass, const char *apiKey)
 {
     strncpy(ssid, wifiSSID, sizeof(ssid) - 1);
     strncpy(pass, wifiPass, sizeof(pass) - 1);
     strncpy(api_key_news, apiKey, sizeof(api_key_news) - 1);
 }
 
-void NetworkFunctions::setTimeZone(int tz)
+void NetworkTEST::setTimeZone(int tz)
 {
     timeZone = tz;
 }
 
-void NetworkFunctions::begin()
+void NetworkTEST::begin()
 {
     WiFi.begin(ssid, pass);
     Serial.println(F("Connecting to WiFi..."));
@@ -49,7 +49,7 @@ void NetworkFunctions::begin()
     Serial.println(F("\nWiFi connected."));
 }
 
-struct news* NetworkFunctions::getData(Inkplate &inkplate)
+struct news* NetworkTEST::getData(Inkplate &inkplate)
 {
     struct news *ent = nullptr;
 
