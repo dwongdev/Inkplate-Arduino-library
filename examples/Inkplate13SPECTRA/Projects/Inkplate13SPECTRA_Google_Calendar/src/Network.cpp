@@ -1,11 +1,11 @@
 #include "Network.h"
 
 // Constructor to initialize WiFi and Google Calendar credentials
-NetworkTEST::NetworkTEST(const String& calendarID, const String& apiKey)
+NetworkFunctions::NetworkFunctions(const String& calendarID, const String& apiKey)
     : calendarID(calendarID), apiKey(apiKey) {}
 
 // Fetches calendar events from Google Calendar and fills in the data structure
-bool NetworkTEST::fetchCalendar(calendarData* data) {
+bool NetworkFunctions::fetchCalendar(calendarData* data) {
     struct tm timeinfo;
 
     // Retry loop to wait for time sync (up to 10 seconds)
@@ -111,7 +111,7 @@ bool NetworkTEST::fetchCalendar(calendarData* data) {
 }
 
 
-String NetworkTEST::urlEncode(const String &s){
+String NetworkFunctions::urlEncode(const String &s){
     String out;
     const char *hex="0123456789ABCDEF";
     for(size_t i = 0;i<s.length();i++){

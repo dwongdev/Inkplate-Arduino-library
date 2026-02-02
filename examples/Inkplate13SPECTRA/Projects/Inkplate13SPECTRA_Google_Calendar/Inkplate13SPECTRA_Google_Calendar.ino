@@ -24,12 +24,12 @@ Before You Start:
 #include "src/includes.h" // Include necessary libraries and dependencies for Inkplate and networking
 
 // --- WiFi Configuration ---
-const char *ssid = "Soldered Electronics";
-const char *password = "dasduino";
+const char *ssid = "your ssid";
+const char *password = "your password";
 
 // --- User Info ---
-String calendarID = "a78633dd077ea3298cb9e314adbcc9b29ce32100fc5c06c6a90fe917fc1c2b38@group.calendar.google.com";
-String apiKey = "AIzaSyDyh08fEKLW4lkzDscN0uUFdjYWRlSOS28";
+String calendarID = "your calendar id";
+String apiKey = "your apiKey";
 
 int highlightColor = 4;  // this is used to highlight the currently ongoing event | change the integer to change the color (see below)
 
@@ -46,7 +46,7 @@ const char  *ntpServer = "pool.ntp.org";  // in case you want to use a different
 // --- Device and Data Objects ---
 Inkplate inkplate;
 calendarData calendar;
-NetworkTEST network(calendarID, apiKey);
+NetworkFunctions network(calendarID, apiKey);
 Gui gui(inkplate);
 
 // --- Deep Sleep Configuration ---

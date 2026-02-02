@@ -31,7 +31,7 @@ void setup()
     // x1- x coordinate of bottom right corner
     // y1- y coordinate of bottom right corner
     // text - text we want to display
-    display.drawTextBox(100,100,300,300,text);
+    display.drawTextBox(100,100,500,500,text,2);
 
     // Create a text box with all parameters
     // x0- x coordinate of upper left corner
@@ -45,7 +45,7 @@ void setup()
     // showBorder - Create a visible rectangle around the box
     // fontSize - size of the used font in pt
     int offset=32; // Note - some custom fonts are drawn from bottom-to-top which requires an offset, use an offset that best suits the font you use 
-    display.drawTextBox(400,100+offset,600,300,text,1,&Roboto_Light_36,27,false,36);
+    display.drawTextBox(700,100+offset,900,300,text,1,&Roboto_Light_36,27,false,36);
 
     // Display both text boxes
     display.display();

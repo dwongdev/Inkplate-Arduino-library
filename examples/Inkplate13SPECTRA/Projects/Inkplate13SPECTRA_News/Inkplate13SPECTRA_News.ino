@@ -1,6 +1,6 @@
 /*
-    Inkplate6COLOR_News_API Example for Soldered Inkplate 6COLOR
-    This example demonstrates how to use the Inkplate 6COLOR to display news headlines and descriptions
+    Inkplate13SPECTRA_News_API Example for Soldered Inkplate 13SPECTRA
+    This example demonstrates how to use the Inkplate 13SPECTRA to display news headlines and descriptions
     fetched from the News API. You will need an API key from https://newsapi.org/ to use this example.
 
     IMPORTANT:
@@ -12,7 +12,7 @@
     - Inkplate documentation: https://www.inkplate.io
     - Support forums: https://forum.soldered.com/
 
-    Created by Soldered, 30.4.2025
+    Created by Soldered, 02.02.2026
 */
 
 // Ensure the correct board is selected in the Arduino IDE
@@ -25,11 +25,11 @@
 int timeZone = 2;
 
 // WiFi credentials (replace with your WiFi network details)
-char ssid[] = "Soldered Electronics";       // Replace with your WiFi SSID
-char pass[] = "dasduino";   // Replace with your WiFi password
+char ssid[] = "your ssid";       // Replace with your WiFi SSID
+char pass[] = "your pasword";   // Replace with your WiFi password
 
 // News API key (get one from https://newsapi.org/)
-char api_key_news[] = "0764e21041bc424c90071880e5f0607f"; // Replace with your News API key
+char api_key_news[] = "your news api key"; // Replace with your News API key
 // ------------------------------------
 
 
@@ -61,7 +61,7 @@ void setup()
 {
     // Initialize serial communication for debugging
     Serial.begin(115200);
-    Serial.println(F("Starting Inkplate6COLOR_News example..."));
+    Serial.println(F("Starting Inkplate13SPECTRA_News example..."));
 
     // Initialize the display
     inkplate.begin();

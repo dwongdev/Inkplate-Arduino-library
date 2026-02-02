@@ -6,9 +6,9 @@
 #include <ArduinoJson.h>
 #include "calendarData.h"
 
-class NetworkTEST {
+class NetworkFunctions {
 public:
-    NetworkTEST(const String& calendarID, const String& apiKey);
+    NetworkFunctions(const String& calendarID, const String& apiKey);
     
     void connectWiFi();
     bool fetchCalendar(calendarData* data);

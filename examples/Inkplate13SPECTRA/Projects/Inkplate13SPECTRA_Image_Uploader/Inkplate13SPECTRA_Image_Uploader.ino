@@ -1,5 +1,5 @@
 /*
-  Inkplate10 Image Uploader Example
+  Inkplate13SPECTRA Image Uploader Example
   Compatible with Soldered Inkplate 13SPECTRA
 
   Getting Started:
