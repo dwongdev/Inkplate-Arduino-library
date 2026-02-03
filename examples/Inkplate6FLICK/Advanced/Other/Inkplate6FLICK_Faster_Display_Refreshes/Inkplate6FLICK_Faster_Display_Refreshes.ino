@@ -53,8 +53,6 @@ void loop()
     // by setting leaveOn to 1 screens power supply won't be turned off at the end,
     // and is assumed to be on already.
 
-    display.einkOn();
-
     display.fillCircle(200, 100, 50, BLACK);
 
     t = millis();
@@ -64,8 +62,6 @@ void loop()
     Serial.print("display.display(1) took ");
     Serial.print(t);
     Serial.println(" ms");
-
-    display.einkOff();
 
     display.clearDisplay();
 
@@ -87,7 +83,7 @@ void loop()
     // by setting leaveOn to 1 screens power supply won't be turned off at the end,
     // and is assumed to be on already, as with display.display's leaveOn flag.
 
-    display.einkOn();
+
 
     display.fillCircle(400, 100, 50, BLACK);
 
@@ -99,7 +95,6 @@ void loop()
     Serial.print(t);
     Serial.println(" ms");
 
-    display.einkOff();
 
     display.clearDisplay();
 

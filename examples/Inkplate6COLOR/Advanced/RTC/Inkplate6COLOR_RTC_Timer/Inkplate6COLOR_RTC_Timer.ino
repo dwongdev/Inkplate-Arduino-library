@@ -38,7 +38,7 @@ int countdown_time = 60;
 void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
-    display.rtcReset();           //  Reset RTC if there is some data in it
+    display.rtc.Reset();           //  Reset RTC if there is some data in it
     display.clearDisplay(); // Clear frame buffer of display
     display.display();      // Put clear image on display
     display.setTextSize(3); // Set text to be 4 times bigger than classic 5x7 px text
@@ -46,8 +46,8 @@ void setup()
 
     pinMode(39, INPUT_PULLUP); // Set RTC INT pin on ESP32 GPIO39 as input with pullup resistor enabled
 
-    display.rtcSetTime(hour, minutes, seconds);    // Send time to RTC
-    display.rtcSetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.SetTime(hour, minutes, seconds);    // Send time to RTC
+    display.rtc.SetDate(weekday, day, month, year); // Send date to RTC
 
     // Set up a timer
     /*   source_clock
@@ -62,19 +62,19 @@ void setup()
      *   int_pulse
      *       true = interrupt generate a pulse; false = interrupt follows timer flag
      */
-    display.rtcTimerSet(Inkplate::TIMER_CLOCK_1HZ, countdown_time, true, false);
+    display.rtc.TimerSet(Inkplate::TIMER_CLOCK_1HZ, countdown_time, true, false);
 }
 
 void loop()
 {
-    display.rtcGetRtcData();             // Get the time and date from RTC
-    seconds = display.rtcGetSecond();  // Store senconds in a variable
-    minutes = display.rtcGetMinute();  // Store minutes in a variable
-    hour = display.rtcGetHour();       // Store hours in a variable
-    day = display.rtcGetDay();         // Store day of month in a variable
-    weekday = display.rtcGetWeekday(); // Store day of week in a variable
-    month = display.rtcGetMonth();     // Store month in a variable
-    year = display.rtcGetYear();       // Store year in a variable
+    display.rtc.GetRtcData();             // Get the time and date from RTC
+    seconds = display.rtc.GetSecond();  // Store senconds in a variable
+    minutes = display.rtc.GetMinute();  // Store minutes in a variable
+    hour = display.rtc.GetHour();       // Store hours in a variable
+    day = display.rtc.GetDay();         // Store day of month in a variable
+    weekday = display.rtc.GetWeekday(); // Store day of week in a variable
+    month = display.rtc.GetMonth();     // Store month in a variable
+    year = display.rtc.GetYear();       // Store year in a variable
 
     display.clearDisplay();                                       // Clear content in frame buffer
     display.setCursor(60, 300);                                  // Set position of the text
@@ -108,10 +108,10 @@ void printTime(uint8_t _hour, uint8_t _minutes, uint8_t _seconds, uint8_t _day, 
     display.print('/');
     display.print(_year, DEC);
 
-    if (display.rtcCheckTimerFlag())  // Check if timer event has occurred
+    if (display.rtc.CheckTimerFlag())  // Check if timer event has occurred
     {
-      display.rtcClearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
-      display.rtcDisableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
+      display.rtc.ClearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
+      display.rtc.DisableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
       display.setCursor(400, 400);  // Set new position for cursor
       display.print("Timer!");
     }
