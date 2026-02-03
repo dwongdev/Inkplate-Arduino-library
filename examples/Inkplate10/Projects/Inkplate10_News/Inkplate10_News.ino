@@ -43,7 +43,7 @@ char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
 
 // Create network and display objects
 Network network;
-Inkplate inkplate(INKPLATE_1BIT);
+InkplateFunctions inkplate(INKPLATE_1BIT);
 
 // Constants for delays and refreshes
 #define DELAY_MS (uint32_t)60 * 60 * 1000 // Delay between API calls (1 hour)
