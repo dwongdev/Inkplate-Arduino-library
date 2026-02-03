@@ -48,7 +48,7 @@ void setup()
         // NOTE: Both drawImage methods allow for an optional fifth "invert" parameter. Setting this parameter
         // to true will flip all colors on the image, making black white and white black. This may be necessary when
         // exporting bitmaps from certain softwares.
-        if (!display.drawImage("image1.bmp", 0, 0, 1))
+        if (!display.image.draw("image1.bmp", 0, 0, 1))
         {
             // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
             // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no
@@ -63,7 +63,7 @@ void setup()
         display.clearDisplay();
         if (file.open("image2.bmp", O_RDONLY))
         {
-            display.drawBitmapFromSd(&file, 0, 0);
+            display.image.drawBitmapFromSd(&file, 0, 0);
         }
         else
         {
@@ -74,7 +74,7 @@ void setup()
     
         // Now draw a JPEG
         display.clearDisplay();
-        if (!display.drawImage("pyramid.jpg", 100, 0, true, false))
+        if (!display.image.draw("pyramid.jpg", 100, 0, true, false))
         {
             // If is something failed (wrong filename or wrong format), write error message on the screen.
             // You can turn off dithering for somewhat faster image load by changing the fifth parameter to false, or

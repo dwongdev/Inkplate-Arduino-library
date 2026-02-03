@@ -49,7 +49,6 @@ void setup()
     if (rtc_get_reset_reason(0) == DEEPSLEEP_RESET) // Check if ESP32 is reseted by deep sleep or power up / user manual
                                                     // reset (or some other reason)
     {
-        display.preloadScreen(); // If is woken up by deep sleep, recreate whole screen to be same as was before deep sleep
         counter++;            // Update variable / variables
         decimal *= 1.23;
         display.clearDisplay();      // Clear everything in buffer
