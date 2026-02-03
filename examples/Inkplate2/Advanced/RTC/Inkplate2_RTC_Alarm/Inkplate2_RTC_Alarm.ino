@@ -27,7 +27,7 @@ int timeZone = 2;
 
 Inkplate display; // Initialize Inkplate object
 
-Network network; // Create network object for WiFi and HTTP functions
+NetworkFunctions network; // Create network object for WiFi and HTTP functions
 
 // Write your SSID and password (needed to get the correct time from the Internet)
 char ssid[] = "";

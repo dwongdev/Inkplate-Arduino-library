@@ -18,14 +18,14 @@ Distributed as-is; no warranty is given.
 
 #include <HTTPClient.h>
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
+#include <WiFiClient.h>
 
 #ifndef NETWORK_H
 #define NETWORK_H
 
 // All functions defined in Network.cpp
 
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file

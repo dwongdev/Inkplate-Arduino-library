@@ -22,7 +22,7 @@ Distributed as-is; no warranty is given.
 
 #include "Inkplate.h"
 
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -47,7 +47,7 @@ void Network::begin(char *ssid, char *pass)
 }
 
 // Get time from NTP server
-void Network::getTime(tm *t)
+void NetworkFunctions::getTime(tm *t)
 {
     // Get seconds since 1.1.1970.
     time_t nowSecs = time(nullptr) + timezone * 3600ULL;
@@ -59,7 +59,7 @@ void Network::getTime(tm *t)
 }
 
 // Function for initial time setting ovet the ntp server
-void Network::setTime(int timeZone)
+void NetworkFunctions::setTime(int timeZone)
 {
     // Used for setting correct time
     configTime(0, 0, "pool.ntp.org", "time.nist.gov");

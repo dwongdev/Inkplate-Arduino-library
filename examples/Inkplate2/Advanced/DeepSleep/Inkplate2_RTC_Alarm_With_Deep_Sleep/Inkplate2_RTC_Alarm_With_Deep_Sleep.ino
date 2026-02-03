@@ -33,13 +33,13 @@
 
 Inkplate display; // Initialize Inkplate object
 
-Network network; // Create network object for WiFi and HTTP functions
+NetworkFunctions network; // Create network object for WiFi and HTTP functions
 
 RTC rtc; // RTC object for RTC functions
 
 // Write your SSID and password (needed to get the correct time from the Internet)
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 // Adjust your time zone, 1 means UTC+1
 int timeZone = 1;
