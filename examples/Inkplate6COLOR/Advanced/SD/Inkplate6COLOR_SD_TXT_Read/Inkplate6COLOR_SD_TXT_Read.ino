@@ -25,7 +25,7 @@
 #endif
 
 #include "Inkplate.h" //Include Inkplate library to the sketch
-#include "SdFat.h"    //Include library for SD card
+
 Inkplate display;     // Create an object on Inkplate library
 SdFile file;          // Create SdFile object used for accessing files on SD card
 
