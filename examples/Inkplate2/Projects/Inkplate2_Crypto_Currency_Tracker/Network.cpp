@@ -1,5 +1,5 @@
 /*
-Network.cpp
+NetworkFunctions.cpp
 Inkplate Arduino library
 David Zovko, Borna Biro, Denis Vajak, Zvonimir Haramustek @ e-radionica.com
 September 24, 2020
@@ -14,7 +14,7 @@ If you have any questions about licensing, please contact techsupport@e-radionic
 Distributed as-is; no warranty is given.
 */
 
-#include "Network.h"
+#include "NetworkFunctions.h"
 
 #include <HTTPClient.h>
 #include <WiFi.h>
@@ -25,7 +25,7 @@ Distributed as-is; no warranty is given.
 // Must be installed for this example to work
 #include <ArduinoJson.h>
 
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -50,7 +50,7 @@ void Network::begin(char *ssid, char *pass)
 }
 
 // Gets time from ntp server
-void Network::getTime(char *timeStr, int timeZone)
+void NetworkFunctions::getTime(char *timeStr, int timeZone)
 {
     // Get seconds since 1.1.1970.
     time_t nowSecs = time(nullptr);
@@ -73,7 +73,7 @@ void Network::getTime(char *timeStr, int timeZone)
     timeStr[8] = hr % 10 + '0';
 }
 
-bool Network::getData(double *data, char *currency)
+bool NetworkFunctions::getData(double *data, char *currency)
 {
     bool f = 0;
 

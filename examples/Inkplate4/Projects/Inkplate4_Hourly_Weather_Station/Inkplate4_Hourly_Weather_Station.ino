@@ -77,7 +77,7 @@ char apiKey[] = "";
 Inkplate display;
 
 // All our network functions are in this object, see Network.h
-Network network;
+NetworkFunctions network;
 
 // Constants used for drawing icons
 char abbrs[32][32] = {"01d", "02d", "03d", "04d", "09d", "10d", "11d", "13d", "50d",

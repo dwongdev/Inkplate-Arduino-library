@@ -45,7 +45,7 @@
 // Our networking functions, declared in Network.cpp
 #include "Network.h"
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // Create Inkplate object in 1bit (monochrome) mode
 Inkplate display(INKPLATE_1BIT);

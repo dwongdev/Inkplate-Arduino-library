@@ -21,7 +21,7 @@ Distributed as-is; no warranty is given.
 // They have been declared in seperate file to increase readability
 #include "Network.h"
 
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -49,7 +49,7 @@ void Network::begin(char *ssid, char *pass)
 }
 
 // Gets time from ntp server
-void Network::getTime(char *timeStr, int timeZone)
+void NetworkFunctions::getTime(char *timeStr, int timeZone)
 {
     // Get seconds since 1.1.1970.
     time_t nowSecs = time(nullptr);
@@ -94,7 +94,7 @@ void formatWind(char *str, float wind)
     dtostrf(wind, 2, 0, str);
 }
 
-bool Network::getData(char *lat, char *lon, char *apiKey, char *temp1, char *temp2, char *temp3, char *temp4,
+bool NetworkFunctions::getData(char *lat, char *lon, char *apiKey, char *temp1, char *temp2, char *temp3, char *temp4,
                       char *currentTemp, char *currentWind, char *currentTime, char *currentWeather,
                       char *currentWeatherAbbr, char *abbr1, char *abbr2, char *abbr3, char *abbr4, int *timeZone)
 {
@@ -191,7 +191,7 @@ bool Network::getData(char *lat, char *lon, char *apiKey, char *temp1, char *tem
     }
     else if (httpCode == 401)
     {
-        Serial.print(F("Network error, probably wrong api key"));
+        Serial.print(F("NetworkFunctions error, probably wrong api key"));
         while (1)
             ;
     }
@@ -206,7 +206,7 @@ bool Network::getData(char *lat, char *lon, char *apiKey, char *temp1, char *tem
     return !f;
 }
 
-void Network::getHours(char *hour1, char *hour2, char *hour3, char *hour4, int timeZone)
+void NetworkFunctions::getHours(char *hour1, char *hour2, char *hour3, char *hour4, int timeZone)
 {
     // Format hours info
     sprintf(hour1, "%2ldh", (dataEpoch / 3600L + timeZone + 24) % 24);

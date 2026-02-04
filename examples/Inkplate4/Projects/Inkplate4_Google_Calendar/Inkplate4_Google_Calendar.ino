@@ -65,7 +65,7 @@ int timeZone = 2; // 2 means UTC+2
 Inkplate display;
 
 // Our networking functions, see Network.cpp for info
-Network network;
+NetworkFunctions network;
 
 // Variables for time and raw event info
 char date[64];

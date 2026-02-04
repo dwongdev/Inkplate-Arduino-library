@@ -23,7 +23,7 @@
 // Our networking functions, declared in Network.cpp
 #include "Network.h"
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 Inkplate display(INKPLATE_1BIT);
 

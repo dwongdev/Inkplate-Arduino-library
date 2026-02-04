@@ -47,7 +47,7 @@ const char  *ntpServer = "pool.ntp.org";  // in case you want to use a different
 // --- Device and Data Objects ---
 Inkplate inkplate;
 calendarData calendar;
-Network network(calendarID, apiKey);
+NetworkFunctions network(calendarID, apiKey);
 Gui gui(inkplate);
 
 // --- Deep Sleep Configuration ---

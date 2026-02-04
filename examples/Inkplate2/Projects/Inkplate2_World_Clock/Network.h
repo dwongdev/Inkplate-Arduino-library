@@ -28,7 +28,7 @@ Distributed as-is; no warranty is given.
  * @brief           Gelper class for all the network operations
  * 
 */
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file

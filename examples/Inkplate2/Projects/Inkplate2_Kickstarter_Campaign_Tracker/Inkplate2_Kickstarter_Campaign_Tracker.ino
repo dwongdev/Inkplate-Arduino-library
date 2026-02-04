@@ -23,7 +23,7 @@
 
 Inkplate display;
 
-Network network;
+NetworkFunctions network;
 
 #define DELAY_MS 300000 // Delay in milliseconds between deep sleep and the next wake up -> 5 minutes
 #define DELAY_WIFI_RETRY_SECONDS 10

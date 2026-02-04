@@ -1,5 +1,5 @@
 /*
-Network.h
+NetworkFunctions.h
 Inkplate 6 Arduino library
 David Zovko, Borna Biro, Denis Vajak, Zvonimir Haramustek @ e-radionica.com
 September 24, 2020
@@ -23,9 +23,9 @@ Distributed as-is; no warranty is given.
 #ifndef NETWORK_H
 #define NETWORK_H
 
-// All functions defined in Network.cpp
+// All functions defined in NetworkFunctions.cpp
 
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file

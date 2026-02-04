@@ -18,7 +18,7 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file

@@ -15,7 +15,7 @@ Distributed as-is; no warranty is given.
 // Uncomment for American output
 // #define AMERICAN
 
-// Network.cpp contains various functions and classes that enable Weather station
+// NetworkFunctions.cpp contains various functions and classes that enable Weather station
 // They have been declared in seperate file to increase readability
 #include "Network.h"
 
@@ -25,7 +25,7 @@ Distributed as-is; no warranty is given.
 #include <WiFiClientSecure.h>
 
 
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -53,7 +53,7 @@ void Network::begin(char *ssid, char *pass)
 }
 
 // Gets time from ntp server
-void Network::getTime(char *timeStr)
+void NetworkFunctions::getTime(char *timeStr)
 {
     // Get seconds since 1.1.1970.
     time_t nowSecs = time(nullptr);
@@ -98,7 +98,7 @@ void formatWind(char *str, float wind)
     dtostrf(wind, 2, 0, str);
 }
 
-bool Network::getData(char *lon, char *lat, char *apiKey, char *temp1, char *temp2, char *temp3, char *abbr1,
+bool NetworkFunctions::getData(char *lon, char *lat, char *apiKey, char *temp1, char *temp2, char *temp3, char *abbr1,
                       char *abbr2, char *abbr3)
 {
     bool f = 0;
@@ -199,7 +199,7 @@ bool Network::getData(char *lon, char *lat, char *apiKey, char *temp1, char *tem
     return !f;
 }
 
-void Network::getHours(char *hour1, char *hour2, char *hour3)
+void NetworkFunctions::getHours(char *hour1, char *hour2, char *hour3)
 {
     // Format hours info
     sprintf(hour1, "%2ldh", (dataEpoch / 3600L + timeZone + 24) % 24);

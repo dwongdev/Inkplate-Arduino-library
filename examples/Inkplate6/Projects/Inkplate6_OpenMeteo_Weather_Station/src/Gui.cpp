@@ -141,7 +141,7 @@ const uint8_t *Gui::getBatteryIcon(int percentage)
 }
 
 // --- Draw Temperature & Precipitation Graph ---
-void Gui::drawTemperaturePrecipGraph(WeatherData *weatherData, Network::UserInfo *userInfo)
+void Gui::drawTemperaturePrecipGraph(WeatherData *weatherData, NetworkFunctions::UserInfo *userInfo)
 {
     // Layout values for graph placement
     int graphX = 260;
@@ -271,7 +271,7 @@ void Gui::drawTemperaturePrecipGraph(WeatherData *weatherData, Network::UserInfo
 }
 
 // --- Display All Weather Data ---
-void Gui::displayWeatherData(WeatherData *weatherData, Network::UserInfo *userInfo)
+void Gui::displayWeatherData(WeatherData *weatherData, NetworkFunctions::UserInfo *userInfo)
 {
     // Section 1: Main info
     inkplate.setFont(&FreeSans18pt7b);

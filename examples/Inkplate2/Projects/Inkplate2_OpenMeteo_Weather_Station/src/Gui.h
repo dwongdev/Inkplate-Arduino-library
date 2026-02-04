@@ -12,14 +12,14 @@ class Gui
 public:
     Gui(Inkplate &inkplate);
     void drawBackground();
-    void displayWeatherData(WeatherData *weatherData, Network::UserInfo *userInfo);
-    void displayWeatherData2(WeatherData *weatherData, Network::UserInfo *userInfo);
+    void displayWeatherData(WeatherData *weatherData, NetworkFunctions::UserInfo *userInfo);
+    void displayWeatherData2(WeatherData *weatherData, NetworkFunctions::UserInfo *userInfo);
     void wifiError();
     void apiError();
 
 private:
     Inkplate &inkplate;
-    void drawTemperaturePrecipGraph(WeatherData *weatherData, Network::UserInfo *userInfo);
+    void drawTemperaturePrecipGraph(WeatherData *weatherData, NetworkFunctions::UserInfo *userInfo);
     const uint8_t* getWeatherIcon(int code);
     const uint8_t* getBatteryIcon(int percentage);
 

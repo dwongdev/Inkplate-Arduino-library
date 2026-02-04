@@ -36,7 +36,7 @@ extern Inkplate display;
 // Static Json from ArduinoJson library
 StaticJsonDocument<30000> doc;
 
-void Network::begin()
+void NetworkFunctions::begin()
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -64,7 +64,7 @@ void Network::begin()
 }
 
 // Gets time from ntp server
-void Network::getTime(char *timeStr)
+void NetworkFunctions::getTime(char *timeStr)
 {
     // Get seconds since 1.1.1970.
     time_t nowSecs = time(nullptr);
@@ -87,7 +87,7 @@ void Network::getTime(char *timeStr)
     timeStr[8] = hr % 10 + '0';
 }
 
-bool Network::getData(double *data)
+bool NetworkFunctions::getData(double *data)
 {
     bool f = 0;
 

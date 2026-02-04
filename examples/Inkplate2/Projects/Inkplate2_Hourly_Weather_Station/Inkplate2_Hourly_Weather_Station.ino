@@ -43,8 +43,8 @@
 // Inkplate object
 Inkplate display;
 
-// All our network functions are in this object, see Network.h
-Network network;
+// All our network functions are in this object, see NetworkFunctions.h
+NetworkFunctions network;
 
 // Change to your wifi ssid and password
 char ssid[] = "";
