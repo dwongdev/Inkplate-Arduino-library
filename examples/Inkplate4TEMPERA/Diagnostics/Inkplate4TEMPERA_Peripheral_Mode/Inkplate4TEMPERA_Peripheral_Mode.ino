@@ -601,9 +601,9 @@ void loop()
                 break;
             case 'n':
                 sscanf(s + 3, "%d", &br);
-                // sprintf(temp, "display.setFrontlight(%d);\n\r", br);
+                // sprintf(temp, "display.frontlight.setState(%d);\n\r", br);
                 // Serial.println(temp);
-                display.setFrontlight(br);
+                display.frontlight.setState(br);
                 break;
             case 'o':
                 sscanf(s + 3, "%d", &pwrs);
