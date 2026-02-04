@@ -54,7 +54,7 @@ void setup()
     /*   source_clock
      *       Inkplate::TIMER_CLOCK_4096HZ     -> clk = 4096Hz -> min timer = 244uS -> MAX timer = 62.256mS
      *       Inkplate::TIMER_CLOCK_64HZ       -> clk = 64Hz   -> min timer = 15.625mS -> MAX timer = 3.984s
-     *       Inkplate::TIMER_CLOCK_1HZ        -> clk = 1Hz    -> min timer = 1s -> MAX timer = 255s
+     *       RTC::TIMER_CLOCK_1HZ        -> clk = 1Hz    -> min timer = 1s -> MAX timer = 255s
      *       Inkplate::TIMER_CLOCK_1PER60HZ   -> clk = 1/60Hz -> min timer = 60s -> MAX timer = 4h15min
      *   value
      *       coundowntime in seconds
@@ -63,7 +63,7 @@ void setup()
      *   int_pulse
      *       true = interrupt generate a pulse; false = interrupt follows timer flag
      */
-    display.rtc.TimerSet(Inkplate::TIMER_CLOCK_1HZ, countdown_time, true, false);
+    display.rtc.TimerSet(RTC::TIMER_CLOCK_1HZ, countdown_time, true, false);
 }
 
 // Variable that keeps count on how much screen has been partially updated

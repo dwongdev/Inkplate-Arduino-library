@@ -25,8 +25,8 @@
 #include "Inkplate.h"            //Include Inkplate library to the sketch
 Inkplate display; 
 
-const char ssid[] = "";    // Your WiFi SSID
-const char *password = ""; // Your WiFi password
+const char ssid[] = "Soldered Electronics";    // Your WiFi SSID
+const char *password = "dasduino"; // Your WiFi password
 
 //This is the certificate for the website https://varipass.org
 
