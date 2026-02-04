@@ -59,10 +59,6 @@ void Image::begin(Inkplate *inkplateptr)
     {
         Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
     }
-    else
-    {
-        Serial.println(" Buffers allocated successfully in PSRAM");
-    }
 }
 
 /**
