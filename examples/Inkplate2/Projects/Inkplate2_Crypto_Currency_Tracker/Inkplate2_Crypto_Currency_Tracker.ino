@@ -26,7 +26,7 @@
 
 #include "Inkplate.h" // Include Inkplate library to the sketch
 
-#include "Network.h" // Our networking functions, declared in Network.cpp
+#include "NetworkFunctions.h" // Our networking functions, declared in NetworkFunctions.cpp
 
 // Include fonts used
 #include "Fonts/Inter16pt7b.h"
@@ -39,7 +39,7 @@
 #define DELAY_MS 3 * 60 * 1000 // Every 3 minutes, minute has 60 seconds and second has 1000 miliseconds
 #define DELAY_WIFI_RETRY_SECONDS 10
 
-Network network; // Create object with all networking functions
+NetworkFunctions network; // Create object with all networking functions
 
 Inkplate display; // Create object for Inkplate library
 
@@ -222,7 +222,7 @@ void drawTime()
     // Just draw time
     int i = 1;
 
-    // Save current date string, more about it in Network.cpp
+    // Save current date string, more about it in NetworkFunctions.cpp
     network.getTime(date, timeZone);
 
     // Text settings
@@ -241,7 +241,7 @@ void drawTime()
 // Our main drawing function
 void drawAll()
 {
-    // Save current date string, more about it in Network.cpp
+    // Save current date string, more about it in NetworkFunctions.cpp
     network.getTime(date, timeZone);
 
     // Find current day from string

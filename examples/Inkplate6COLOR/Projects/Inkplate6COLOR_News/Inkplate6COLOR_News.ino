@@ -45,7 +45,7 @@ char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
 #include "Fonts/Inter10pt7b.h"
 
 // Create network and display objects
-Network network;
+NetworkFunctions network;
 Inkplate inkplate; // Use color mode for Inkplate 6COLOR
 
 // Constants for delays and refreshes

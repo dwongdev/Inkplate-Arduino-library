@@ -100,7 +100,7 @@ const uint8_t *Gui::getWeatherIcon(int code)
 
 
 // --- Display All Weather Data ---
-void Gui::displayWeatherData(WeatherData *weatherData, Network::UserInfo *userInfo)
+void Gui::displayWeatherData(WeatherData *weatherData, NetworkFunctions::UserInfo *userInfo)
 {
     inkplate.setTextColor(INKPLATE2_BLACK);
     int startX = 10;                      // Starting x-position for the weekly forecast
@@ -153,7 +153,7 @@ void Gui::displayWeatherData(WeatherData *weatherData, Network::UserInfo *userIn
 }
 
 // --- Display All Weather Data ---
-void Gui::displayWeatherData2(WeatherData *weatherData, Network::UserInfo *userInfo)
+void Gui::displayWeatherData2(WeatherData *weatherData, NetworkFunctions::UserInfo *userInfo)
 {
 // Section 1: Main info
 inkplate.setFont(&FreeSans12pt7b);

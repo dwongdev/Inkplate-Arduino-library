@@ -34,7 +34,7 @@ extern Inkplate display;
 // Static Json from ArduinoJson library
 ArduinoJson::StaticJsonDocument<30000> doc; // Still technically deprecated, but clarifies the source
 
-void Network::begin()
+void NetworkFunctions::begin()
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -59,7 +59,7 @@ void Network::begin()
 
 }
 
-bool Network::getData(char* text, char* auth)
+bool NetworkFunctions::getData(char* text, char* auth)
 {
     bool f = 0;
 

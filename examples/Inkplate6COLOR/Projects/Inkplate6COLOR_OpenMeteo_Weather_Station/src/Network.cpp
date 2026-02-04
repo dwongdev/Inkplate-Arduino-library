@@ -7,7 +7,7 @@
 
 
 // Function to get weather description based on the weather code
-String Network::getWeatherDescription(int code) {
+String NetworkFunctions::getWeatherDescription(int code) {
   switch (code) {
       case 0: return "Clear sky";
       case 1: case 2: case 3: return "Mainly clear, partly cloudy";
@@ -26,7 +26,7 @@ String Network::getWeatherDescription(int code) {
   }
 }
 
-String Network::extractDate(String dateTime) {
+String NetworkFunctions::extractDate(String dateTime) {
   int spaceIndex = dateTime.indexOf(' ');
   if (spaceIndex != -1) {
       return dateTime.substring(0, spaceIndex);  // e.g., "2025-04-08"
@@ -35,7 +35,7 @@ String Network::extractDate(String dateTime) {
 }
 
 
-String Network::extractTime(String dateTime) {
+String NetworkFunctions::extractTime(String dateTime) {
   int tIndex = dateTime.indexOf(' ');
   if (tIndex != -1 && tIndex + 5 < dateTime.length()) {
       return dateTime.substring(tIndex + 1, tIndex + 6);  // e.g., "06:11"
@@ -43,7 +43,7 @@ String Network::extractTime(String dateTime) {
   return "??:??";
 }
 
-String Network::getFormattedTime() {
+String NetworkFunctions::getFormattedTime() {
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
       return "Time N/A";
@@ -59,7 +59,7 @@ String Network::getFormattedTime() {
   return String(timeStr);
 }
 
-int Network::getCurrentHour() {
+int NetworkFunctions::getCurrentHour() {
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
       return -1;  // Return -1 if time is not available (error)
@@ -68,7 +68,7 @@ int Network::getCurrentHour() {
   return timeinfo.tm_hour;
 }
 
-String Network::extractSun(String dateTime) {
+String NetworkFunctions::extractSun(String dateTime) {
   int tIndex = dateTime.indexOf('T');
   if (tIndex != -1 && tIndex + 5 < dateTime.length()) {
       return dateTime.substring(tIndex + 1, tIndex + 6);  // e.g., "06:11"
@@ -77,7 +77,7 @@ String Network::extractSun(String dateTime) {
 }
 
 // Function to get the current day of the week and return the next 7 days dynamically
-String Network::getDayName(int dayIndex) {
+String NetworkFunctions::getDayName(int dayIndex) {
   // Array of days, starting from Sunday (index 0)
   String daysOfWeek[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
   
@@ -97,7 +97,7 @@ String Network::getDayName(int dayIndex) {
 }
 
 // Function to fetch weather data from Open-Meteo API
-void Network::fetchWeatherData(WeatherData* weatherData, UserInfo* userInfo, const float* latitude, const float* longitude) {
+void NetworkFunctions::fetchWeatherData(WeatherData* weatherData, UserInfo* userInfo, const float* latitude, const float* longitude) {
     // Construct URL for the Open-Meteo API request
     String units = "&temperature_unit=fahrenheit";
 

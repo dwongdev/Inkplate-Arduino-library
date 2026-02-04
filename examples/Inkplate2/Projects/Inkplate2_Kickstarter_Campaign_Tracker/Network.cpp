@@ -13,7 +13,7 @@
 
 #include "Network.h"
 
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     Serial.print("Attempting to connect to ");
     Serial.println(ssid);
@@ -31,7 +31,7 @@ void Network::begin(char *ssid, char *pass)
     Serial.println(ssid);
 }
 
-void Network::getData(int *backers, int *pledged)
+void NetworkFunctions::getData(int *backers, int *pledged)
 {
     WiFiClientSecure client;
     client.setInsecure(); // Use HTTPS but don't compare certificate
@@ -80,7 +80,7 @@ void Network::getData(int *backers, int *pledged)
 }
 
 // The function used to set the current time
-void Network::setTime(struct tm *timeinfo, int timeZone)
+void NetworkFunctions::setTime(struct tm *timeinfo, int timeZone)
 {
     // Used for setting correct time
     configTime(0, 0, "pool.ntp.org", "time.nist.gov");

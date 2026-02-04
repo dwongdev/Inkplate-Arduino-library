@@ -65,7 +65,7 @@ char currencyAbbr[] = "BTC";
 #include "Network.h"
 
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // create display object
 Inkplate display(INKPLATE_3BIT);
