@@ -118,10 +118,10 @@ void printTime(uint8_t _hour, uint8_t _minutes, uint8_t _seconds, uint8_t _day, 
     display.print('/');
     display.print(_year, DEC);
 
-    if (display.rtcCheckTimerFlag())  // Check if timer event has occurred
+    if (display.rtc.CheckTimerFlag())  // Check if timer event has occurred
     {
-      display.rtcClearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
-      display.rtcDisableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
+      display.rtc.ClearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
+      display.rtc.DisableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
       display.setCursor(400, 400);  // Set new position for cursor
       display.print("Timer!");
     }

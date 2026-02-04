@@ -32,7 +32,7 @@ void setup()
 
     // Turn off frontlight
     display.frontlight.setState(true);
-    display.setFrontlight(0);
+    display.frontlight.setState(0);
 
     // Join wifi
     display.connectWiFi(ssid, password);

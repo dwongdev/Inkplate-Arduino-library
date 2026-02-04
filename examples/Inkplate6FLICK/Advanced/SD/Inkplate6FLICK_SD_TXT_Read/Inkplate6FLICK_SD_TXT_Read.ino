@@ -35,7 +35,7 @@ void setup()
     display.clearDisplay(); // Clear frame buffer of display
     display.display();      // Put clear image on display
     display.setRotation(1);
-    display.setFrontlight(15);
+    display.frontlight.setState(15);
     // Init SD card. Display if SD card is init propery or not.
     if (display.sdCardInit())
     {

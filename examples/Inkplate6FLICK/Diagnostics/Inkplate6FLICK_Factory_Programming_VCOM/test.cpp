@@ -72,7 +72,7 @@ void testPeripheral()
     // Check touch screen and frontlight
     // Check frontlight (just a visual check). Set frontlight to max.
     display.frontlight.setState(true);  // Enable frontlight circuit
-    display.setFrontlight(63); // Set frontlight intensity to the max.
+    display.frontlight.setState(63); // Set frontlight intensity to the max.
     display.println("- Frontlight test (visual check)");
     display.partialUpdate(0, 1);
     delay(1000);

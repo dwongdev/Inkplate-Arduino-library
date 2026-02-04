@@ -127,7 +127,7 @@ void setup()
 
     // Turn off frontlight
     display.frontlight.setState(true);
-    display.setFrontlight(0);
+    display.frontlight.setState(0);
 
     display.setTextWrap(false);
     display.setTextColor(0, 7);

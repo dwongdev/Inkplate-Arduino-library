@@ -20,10 +20,6 @@ jobs:
             additional-sketch-paths: |
               - examples/Inkplate5V2
           - board:
-              fqbn: soldered-inkplate-boards:esp32:Inkplate6
-            additional-sketch-paths: |
-              - examples/Inkplate6
-          - board:
               fqbn: soldered-inkplate-boards:esp32:Inkplate6V2
             additional-sketch-paths: |
               - examples/Inkplate6

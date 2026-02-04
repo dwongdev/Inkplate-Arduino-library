@@ -47,7 +47,7 @@ void setup()
 
     // Turn frontlight on
     display.frontlight.setState(1);
-    display.setFrontlight(50);
+    display.frontlight.setBrightness(50);
 
     display.clearDisplay(); // Clear frame buffer of display
     display.image.draw(
@@ -59,7 +59,7 @@ void setup()
         slide = 0; // We do not have more than 3 images, so roll back to zero
 
     // Turn off touchscreen and frontlight to save energy duiring deep sleep
-    display.tsShutdown();  // Turn off the display touchscreen
+    display.touchscreen.shutdown();  // Turn off the display touchscreen
     display.frontlight.setState(0); // Turn off the frontlight
 
     rtc_gpio_isolate(GPIO_NUM_12); // Isolate/disable GPIO12 on ESP32 (only to reduce power consumption in sleep)
