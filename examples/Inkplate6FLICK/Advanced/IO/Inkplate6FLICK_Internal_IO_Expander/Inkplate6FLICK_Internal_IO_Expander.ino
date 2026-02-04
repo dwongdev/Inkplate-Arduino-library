@@ -49,6 +49,6 @@ void loop()
 {
     display.internalIO.digitalWrite(LED_PIN, LOW, IO_INT_ADDR);  // Set output to low (LED does not light up)
     delay(1000);                                        // Wait for one second
-    display.internalIO.digitalWriteIO(LED_PIN, HIGH, IO_INT_ADDR); // Set output to high (LED lights up)
+    display.internalIO.digitalWrite(LED_PIN, HIGH, IO_INT_ADDR); // Set output to high (LED lights up)
     delay(1000);                                        // Wait for one second
 }
