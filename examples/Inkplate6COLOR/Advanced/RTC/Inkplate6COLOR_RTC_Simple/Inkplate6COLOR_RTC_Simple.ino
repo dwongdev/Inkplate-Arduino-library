@@ -38,13 +38,13 @@ uint8_t year = 23;
 void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
-    display.rtc..Reset();     // Reset RTC if there is some data in it
+    display.rtc.Reset();     // Reset RTC if there is some data in it
     display.clearDisplay(); // Clear frame buffer of display
     display.setTextSize(3); // Set text to be 3 times bigger than classic 5x7 px text
     display.setTextColor(INKPLATE_BLACK, INKPLATE_WHITE); // Set text color and background
 
-    display.rtc..SetTime(hour, minutes, seconds);    // Send time to RTC
-    display.rtc..SetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.SetTime(hour, minutes, seconds);    // Send time to RTC
+    display.rtc.SetDate(weekday, day, month, year); // Send date to RTC
     getAndDisplayTime();                           // Display time on the screen
 }
 

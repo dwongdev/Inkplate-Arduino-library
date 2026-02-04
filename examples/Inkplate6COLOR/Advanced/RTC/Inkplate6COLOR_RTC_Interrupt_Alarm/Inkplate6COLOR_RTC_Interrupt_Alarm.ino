@@ -39,7 +39,7 @@ void setup()
     display.setTextSize(3); // Set text to be 4 times bigger than classic 5x7 px text
   
     display.rtc.SetEpoch(1650000000);
-    display.rtc.SetAlarmEpoch(display.rtcGetEpoch() + 60, RTC_ALARM_MATCH_DHHMMSS);
+    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 60, RTC_ALARM_MATCH_DHHMMSS);
 
     // display.rtc.SetTime(6, 25, 0);        // Or you can use other way to set the time and date
     // display.rtc.SetDate(6, 16, 5, 2020);
