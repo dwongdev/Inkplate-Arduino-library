@@ -27,7 +27,7 @@ void setup()
 {
     Serial.begin(115200);    // Set up a serial communication of 115200 baud
     display.begin();         // Init Inkplate library
-    display.frontlight(true); // Enable frontlight circuit
+    display.frontlight.setState(true); // Enable frontlight circuit
     display.setFrontlight(b); // Set frontlight intensity
 }
 

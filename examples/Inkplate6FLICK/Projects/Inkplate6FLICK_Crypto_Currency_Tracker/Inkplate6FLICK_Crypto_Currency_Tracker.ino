@@ -124,10 +124,10 @@ void setup()
     // Initial display settings
 
     display.begin();
-    display.tsInit(true);
+    display.touchscreen.init(true);
 
     // Turn off frontlight
-    display.frontlight(true);
+    display.frontlight.setState(true);
     display.setFrontlight(0);
 
     display.setTextWrap(false);

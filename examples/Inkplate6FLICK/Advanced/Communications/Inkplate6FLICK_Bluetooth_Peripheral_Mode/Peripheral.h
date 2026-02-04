@@ -591,13 +591,13 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 break;
             case 'o':
                 sscanf(s + 3, "%d", &pwrs);
-                // sprintf(temp, "display->tsInit(%d);\n\r", pwrs);
+                // sprintf(temp, "display->touchscreen.init(%d);\n\r", pwrs);
                 // SerialBT->println(temp);
                 if (pwrs == 1)
-                    display->tsInit(1);
+                    display->touchscreen.init(1);
 
                 if (pwrs == 0)
-                    display->tsInit(0);
+                    display->touchscreen.init(0);
                 break;
             case 'p':
                 sscanf(s + 3, "%c", &b);

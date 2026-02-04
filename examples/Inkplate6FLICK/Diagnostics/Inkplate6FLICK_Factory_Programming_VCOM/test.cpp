@@ -71,7 +71,7 @@ void testPeripheral()
 
     // Check touch screen and frontlight
     // Check frontlight (just a visual check). Set frontlight to max.
-    display.frontlight(true);  // Enable frontlight circuit
+    display.frontlight.setState(true);  // Enable frontlight circuit
     display.setFrontlight(63); // Set frontlight intensity to the max.
     display.println("- Frontlight test (visual check)");
     display.partialUpdate(0, 1);
@@ -175,7 +175,7 @@ void testPeripheral()
     // Text wake up button
     // Disable touchscreen to avoid accidental TS INT trigger that would trigger WAKE button.
     // (since Touch INT and WAKE BTN share same line).
-    display.tsInit(true);
+    display.touchscreen.init(true);
     // Wait a little bit.
     delay(100);
     
@@ -374,7 +374,7 @@ int checkTouch(uint8_t _tsTimeout)
     unsigned long _timeout;
 
     // First try to init touchscreen controller.
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(true))
     {
         return 0;
     }

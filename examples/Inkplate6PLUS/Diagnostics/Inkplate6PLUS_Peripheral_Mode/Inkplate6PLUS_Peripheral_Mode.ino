@@ -601,13 +601,13 @@ void loop()
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    display.frontlight(true);
-                    // Serial.println("display.frontlight(true);");
+                    display.frontlight.setState(true);
+                    // Serial.println("display.frontlight.setState(true);");
                 }
                 else
                 {
-                    display.frontlight(false);
-                    // Serial.println("display.frontlight(false);");
+                    display.frontlight.setState(false);
+                    // Serial.println("display.frontlight.setState(false);");
                 }
                 break;
             case 'n':
@@ -618,13 +618,13 @@ void loop()
                 break;
             case 'o':
                 sscanf(s + 3, "%d", &pwrs);
-                // sprintf(temp, "display.tsInit(%d);\n\r", pwrs);
+                // sprintf(temp, "display.touchscreen.init(%d);\n\r", pwrs);
                 // Serial.println(temp);
                 if (pwrs == 1)
-                    display.tsInit(1);
+                    display.touchscreen.init(1);
 
                 if (pwrs == 0)
-                    display.tsInit(0);
+                    display.touchscreen.init(0);
                 break;
             case 'p':
                 sscanf(s + 3, "%c", &b);

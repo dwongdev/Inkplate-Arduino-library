@@ -46,7 +46,7 @@ void setup()
 
     display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS); // Set RTC alarm 10 seconds from now
 
-    display.frontlight(false); // Disable frontlight (to save power)
+    display.frontlight.setState(false); // Disable frontlight (to save power)
 
     // Enable wakup from deep sleep on gpio 39 where RTC interrupt is connected
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);

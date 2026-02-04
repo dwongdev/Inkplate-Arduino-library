@@ -30,7 +30,7 @@ void setup()
     // Must be called before display.begin()!
     //display.setInkplatePowerMode(INKPLATE_USB_PWR_ONLY);
     display.begin();         // Init Inkplate library
-    display.frontlight(true); // Enable frontlight circuit
+    display.frontlight.setState(true); // Enable frontlight circuit
     display.setFrontlight(b); // Set frontlight intensity
 }
 

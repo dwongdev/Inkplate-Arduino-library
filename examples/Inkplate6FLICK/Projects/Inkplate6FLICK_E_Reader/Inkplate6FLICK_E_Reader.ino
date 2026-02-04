@@ -118,7 +118,7 @@ void setup() {
     Serial.println("SD init failed");
     while (1);
   }
-  if (!display.tsInit(true)) {
+  if (!display.touchscreen.init(true)) {
     Serial.println("Touch init failed");
     while (1);
   }

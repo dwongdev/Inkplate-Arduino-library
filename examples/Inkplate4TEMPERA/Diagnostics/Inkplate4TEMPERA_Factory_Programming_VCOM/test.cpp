@@ -116,7 +116,7 @@ void testPeripheral()
 
     // Check touch screen and frontlight
     // Check frontlight (just a visual check). Set frontlight to max.
-    display.frontlight(true);  // Enable frontlight circuit
+    display.frontlight.setState(true);  // Enable frontlight circuit
     display.setFrontlight(63); // Set frontlight intensity to the max.
     ADD_PRINT_MARGIN
     display.println("- Frontlight test (visual check)");
@@ -513,7 +513,7 @@ int checkTouch(uint8_t _tsTimeout)
     unsigned long _timeout;
 
     // First try to init touchscreen controller.
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(true))
     {
         return 0;
     }
