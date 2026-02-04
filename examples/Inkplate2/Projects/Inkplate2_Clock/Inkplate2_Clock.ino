@@ -24,7 +24,7 @@
 
 #include "Network.h" // Our networking functions, declared in Network.cpp
 
-Network network; // Create network object for WiFi and HTTP functions
+NetworkFunctions network; // Create network object for WiFi and HTTP functions
 
 Inkplate display; // Create Inkplate library object
 

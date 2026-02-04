@@ -14,7 +14,7 @@ If you have any questions about licensing, please contact techsupport@e-radionic
 Distributed as-is; no warranty is given.
 */
 
-#include "NetworkFunctions.h"
+#include "Network.h"
 
 #include <HTTPClient.h>
 #include <WiFi.h>
