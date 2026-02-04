@@ -39,12 +39,12 @@ void setup()
     display.display();      // Put clear image on display
     display.setTextSize(3); // Set text to be 3 times bigger than classic 5x7 px text
   
-    display.rtcSetEpoch(1689699600);
-    display.rtcSetAlarmEpoch(display.rtcGetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
+    display.rtc.SetEpoch(1689699600);
+    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
 
-    // display.rtcSetTime(5, 00, 00);        // Or you can use other way to set the time and date
-    // display.rtcSetDate(2, 18, 7, 2023);
-    // display.rtcSetAlarm(10, 25, 6, 16, 6); // Set alarm 10 seconds from now
+    // display.rtc.SetTime(5, 00, 00);        // Or you can use other way to set the time and date
+    // display.rtc.SetDate(2, 18, 7, 2023);
+    // display.rtc.SetAlarm(10, 25, 6, 16, 6); // Set alarm 10 seconds from now
   
     attachInterrupt(39, alarmISR, FALLING); // Set interrupt function and interrupt mode
 }
@@ -55,15 +55,15 @@ void loop()
 {
     display.clearDisplay();         // Clear frame buffer of display
     display.setCursor(60, 280);    // Set position of the text
-    display.rtcGetRtcData();          // Get the time and date from RTC
+    display.rtc.GetRtcData();          // Get the time and date from RTC
 
     // Print the time on screen
-    printTime(display.rtcGetHour(), display.rtcGetMinute(), display.rtcGetSecond(), display.rtcGetDay(), display.rtcGetWeekday(), display.rtcGetMonth(), display.rtcGetYear());
+    printTime(display.rtc.GetHour(), display.rtc.GetMinute(), display.rtc.GetSecond(), display.rtc.GetDay(), display.rtc.GetWeekday(), display.rtc.GetMonth(), display.rtc.GetYear());
     
     if (_alarmFlag)     // Check alarm flag
     {
         // _alarmFlag = 0;              // Uncomment if you want to clear this flag
-        display.rtcClearAlarmFlag();    // It's recommended to clear alarm flag after alarm has occurred
+        display.rtc.ClearAlarmFlag();    // It's recommended to clear alarm flag after alarm has occurred
         display.setCursor(250, 320);    // Set position of the text
         display.print("ALARM");         // Print text
     }

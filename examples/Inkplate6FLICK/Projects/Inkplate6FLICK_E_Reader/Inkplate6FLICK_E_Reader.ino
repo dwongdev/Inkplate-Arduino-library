@@ -448,7 +448,7 @@ void displayPicture() {
   snprintf(fullPath, sizeof(fullPath),
            "/books/%s/%s",
            currentBook->name, currentPic->name);
-  display.drawImage(fullPath, 0, 11, 1);  // moved down by 10px
+  display.image.draw(fullPath, 0, 11, 1);  // moved down by 10px
   displayPictureButtons();
   displayPageCounter();
   display.partialUpdate(false, true);

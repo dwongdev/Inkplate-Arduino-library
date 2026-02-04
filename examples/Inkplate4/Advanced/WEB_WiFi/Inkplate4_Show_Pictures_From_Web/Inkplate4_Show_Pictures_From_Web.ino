@@ -51,7 +51,7 @@ void setup()
     // NOTE: Both drawImage methods allow for an optional fifth "invert" parameter. Setting this parameter to true
     // will flip all colors on the image, making black white and white black. This may be necessary when exporting
     // bitmaps from certain softwares. Forth parameter will dither the image.
-    if (!display.drawImage("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/dev/examples/Inkplate4/Advanced/WEB_WiFi/Inkplate4_Show_Pictures_From_Web/cat.bmp", 0, 0, false, false))
+    if (!display.image.draw("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/dev/examples/Inkplate4/Advanced/WEB_WiFi/Inkplate4_Show_Pictures_From_Web/cat.bmp", 0, 0, false, false))
     {
         // If something failed (wrong filename or wrong bitmap format), write error message on the screen.
         // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no compression!
@@ -61,7 +61,7 @@ void setup()
     display.display();
     delay(3000);
 
-    if (!display.drawImage("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/dev/examples/Inkplate4/Advanced/WEB_WiFi/Inkplate4_Show_Pictures_From_Web/coffee.bmp", 0, 0, true, false))
+    if (!display.image.draw("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/dev/examples/Inkplate4/Advanced/WEB_WiFi/Inkplate4_Show_Pictures_From_Web/coffee.bmp", 0, 0, true, false))
     {
         // If something failed (wrong filename or wrong bitmap format), write error message on the screen.
         // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no compression!
@@ -77,7 +77,7 @@ void setup()
     // NOTE: Both drawJpegFromWeb methods allow for an optional fifth "invert" parameter. Setting this parameter to
     // true will flip all colors on the image, making black white and white black. forth parameter will dither the
     // image.
-    if (!display.drawImage("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/dev/examples/Inkplate4/Advanced/WEB_WiFi/Inkplate4_Show_Pictures_From_Web/scene.jpg", 0, 0, true, false))
+    if (!display.image.draw("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/dev/examples/Inkplate4/Advanced/WEB_WiFi/Inkplate4_Show_Pictures_From_Web/scene.jpg", 0, 0, true, false))
     {
         // If something failed (wrong filename or format), write error message on the screen.
         display.println("Image open error");

@@ -317,7 +317,7 @@ void drawForecast()
         int textCentre = dayPos + (dayPitch / 2);
         sprintf(Output, "http://openweathermap.org/img/wn/%s@2x.png", OWOC.forecast[day].icon);
         Serial.println(Output);
-        display.drawImage(Output, textCentre - 48, dayOffset - 62, true, true);
+        display.image.draw(Output, textCentre - 48, dayOffset - 62, true, true);
         display.setTextColor(INKPLATE4_BLACK, INKPLATE4_WHITE);
         display.setTextSize(1);
         display.setFont(&FreeSans9pt7b);
@@ -441,7 +441,7 @@ void drawCurrent()
     sprintf(Output, "http://openweathermap.org/img/wn/%s.png", OWOC.current.icon);
     Serial.println("CURRENT ");
     Serial.println(Output);
-    display.drawImage(Output, -5, 18, true, true);
+    display.image.draw(Output, -5, 18, true, true);
 
     display.setFont(&FreeSans12pt7b);
     sprintf(Output, "%2.01f%c", OWOC.current.temp, tempUnit);

@@ -35,7 +35,7 @@ void setup()
     char url[256];
     imageUrl(url);
 
-    Serial.println(display.drawImage(url, display.PNG, 0, 0, true, false));
+    Serial.println(display.image.draw(url, display.PNG, 0, 0, true, false));
     display.display();
 
     Serial.println("Going to sleep");

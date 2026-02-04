@@ -113,6 +113,6 @@ void loop()
 void showSplashScreen()
 {
     display.clearDisplay();
-    display.drawImage(demo_image, 0, 0, demo_image_w, demo_image_h);
+    display.image.draw(demo_image, 0, 0, demo_image_w, demo_image_h);
     display.display();
 }

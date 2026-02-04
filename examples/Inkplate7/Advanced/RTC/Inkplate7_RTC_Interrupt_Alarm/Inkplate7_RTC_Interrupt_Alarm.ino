@@ -43,12 +43,12 @@ void setup()
     display.setTextSize(3); // Set text to be 3 times bigger than classic 5x7 px text
 
     // Set Epoch time and set the alarm's time 60 seconds from now
-    display.rtcSetEpoch(1679379900);
-    display.rtcSetAlarmEpoch(display.rtcGetEpoch() + countdown_time, RTC_ALARM_MATCH_DHHMMSS);
+    display.rtc.SetEpoch(1679379900);
+    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + countdown_time, RTC_ALARM_MATCH_DHHMMSS);
 
-    // display.rtcSetTime(6, 25, 0);          // Or, you can use other way to set the time and date
-    // display.rtcSetDate(2, 21, 3, 2023);
-    // display.rtcSetAlarm(countdown_time, 25, 6, 21, 2); // Set alarm 60 seconds from now
+    // display.rtc.SetTime(6, 25, 0);          // Or, you can use other way to set the time and date
+    // display.rtc.SetDate(2, 21, 3, 2023);
+    // display.rtc.SetAlarm(countdown_time, 25, 6, 21, 2); // Set alarm 60 seconds from now
 
     attachInterrupt(39, alarmISR, FALLING); // Set interrupt function and interrupt mode
 }
@@ -57,16 +57,16 @@ void loop()
 {
     display.clearDisplay();     // Clear frame buffer of display
     display.setCursor(80, 120); // Set position of the text
-    display.rtcGetRtcData();    // Get the time and date from RTC
+    display.rtc.GetRtcData();    // Get the time and date from RTC
 
     // Print the time on screen
-    printTime(display.rtcGetHour(), display.rtcGetMinute(), display.rtcGetSecond(), display.rtcGetDay(),
-              display.rtcGetWeekday(), display.rtcGetMonth(), display.rtcGetYear());
+    printTime(display.rtc.GetHour(), display.rtc.GetMinute(), display.rtc.GetSecond(), display.rtc.GetDay(),
+              display.rtc.GetWeekday(), display.rtc.GetMonth(), display.rtc.GetYear());
 
     if (_alarmFlag) // Check alarm flag
     {
         // _alarmFlag = 0;              // Uncomment if you want to clear this flag
-        display.rtcClearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
+        display.rtc.ClearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
         display.setCursor(240, 230); // Set new position for cursor
         display.print("Alarm!");      // Print text
     }

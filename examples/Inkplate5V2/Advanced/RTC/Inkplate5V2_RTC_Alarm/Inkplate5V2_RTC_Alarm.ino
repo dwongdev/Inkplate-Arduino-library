@@ -52,9 +52,9 @@ void setup()
     display.display();      // Put clear image on display
     display.setTextSize(4); // Set text to be 4 times bigger than classic 5x7 px text
 
-    display.rtcSetTime(hours, minutes, seconds);                                        // Send time to RTC
-    display.rtcSetDate(weekday, day, month, year);                                      // Send date to RTC
-    display.rtcSetAlarm(alarmSeconds, alarmMinutes, alarmHour, alarmDay, alarmWeekday); // Set alarm
+    display.rtc.SetTime(hours, minutes, seconds);                                        // Send time to RTC
+    display.rtc.SetDate(weekday, day, month, year);                                      // Send date to RTC
+    display.rtc.SetAlarm(alarmSeconds, alarmMinutes, alarmHour, alarmDay, alarmWeekday); // Set alarm
 }
 
 // Variable that keeps count on how much screen has been partially updated
@@ -63,22 +63,22 @@ void loop()
 {
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtcGetRtcData();           // Get the time and date from RTC
-        seconds = display.rtcGetSecond();  // Store senconds in a variable
-        minutes = display.rtcGetMinute();  // Store minutes in a variable
-        hours = display.rtcGetHour();      // Store hours in a variable
-        weekday = display.rtcGetWeekday(); // Store day of week in a variable
-        day = display.rtcGetDay();         // Store day of month in a variable
-        month = display.rtcGetMonth();     // Store month in a variable
-        year = display.rtcGetYear();       // Store year in a variable
+        display.rtc.GetRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.GetSecond();  // Store senconds in a variable
+        minutes = display.rtc.GetMinute();  // Store minutes in a variable
+        hours = display.rtc.GetHour();      // Store hours in a variable
+        weekday = display.rtc.GetWeekday(); // Store day of week in a variable
+        day = display.rtc.GetDay();         // Store day of month in a variable
+        month = display.rtc.GetMonth();     // Store month in a variable
+        year = display.rtc.GetYear();       // Store year in a variable
 
         display.clearDisplay();                                        // Clear content in frame buffer
         display.setCursor(300, 332);                                   // Set position of the text
         printTime(hours, minutes, seconds, day, weekday, month, year); // Print the time on screen
 
-        if (display.rtcCheckAlarmFlag()) // Check if alarm has occurred
+        if (display.rtc.CheckAlarmFlag()) // Check if alarm has occurred
         {
-            display.rtcClearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
+            display.rtc.ClearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
             display.setCursor(532, 532); // Set new position for cursor
             display.print("ALARM!");
         }

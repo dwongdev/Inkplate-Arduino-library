@@ -50,7 +50,7 @@ void setup()
     display.setFrontlight(50);
 
     display.clearDisplay(); // Clear frame buffer of display
-    display.drawImage(
+    display.image.draw(
         pictures[slide], 0, 0, 600, 600); // Display selected picture at location X=0, Y=0. All three pictures have resolution of 600x600 pixels
     display.display(); // Refresh the screen with new picture
     slide++; // Update counter for pictures. With this variable, we choose what picture is going to be displayed on

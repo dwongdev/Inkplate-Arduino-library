@@ -40,7 +40,7 @@ void loop()
 {
     float voltage = display.readBattery();                   // Read battery voltage
     display.clearDisplay();                                  // Clear everything in frame buffer of e-paper display
-    display.drawImage(battSymbol, 100, 100, 106, 45, BLACK); // Draw battery symbol at position X=100 Y=100
+    display.image.draw(battSymbol, 100, 100, 106, 45, BLACK); // Draw battery symbol at position X=100 Y=100
     display.setCursor(210, 120);
     display.print(voltage, 2); // Print battery voltage
     display.print('V');
