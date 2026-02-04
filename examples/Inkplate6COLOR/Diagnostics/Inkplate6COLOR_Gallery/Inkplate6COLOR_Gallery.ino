@@ -66,7 +66,7 @@ void setup()
         if (fileCount != 0) // If there we're any files choose one and draw it
         {
             String s = files[random(0, fileCount)];
-            display.drawImage(s, 0, 0);
+            display.image.draw(s, 0, 0);
             Serial.println("Drawn image: ");
             Serial.println(s);
             display.display();

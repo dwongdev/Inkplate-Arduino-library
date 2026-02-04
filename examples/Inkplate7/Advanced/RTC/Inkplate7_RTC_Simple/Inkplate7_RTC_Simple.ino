@@ -43,22 +43,22 @@ void setup()
     display.display();      // Put clear image on display
     display.setTextSize(3); // Set text to be 3 times bigger than classic 5x7 px text
 
-    display.rtcSetTime(hour, minutes, seconds);    // Send time to RTC
-    display.rtcSetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.SetTime(hour, minutes, seconds);    // Send time to RTC
+    display.rtc.SetDate(weekday, day, month, year); // Send date to RTC
 }
 
 void loop()
 {
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtcGetRtcData();           // Get the time and date from RTC
-        seconds = display.rtcGetSecond();  // Store senconds in a variable
-        minutes = display.rtcGetMinute();  // Store minutes in a variable
-        hour = display.rtcGetHour();       // Store hours in a variable
-        day = display.rtcGetDay();         // Store day of month in a variable
-        weekday = display.rtcGetWeekday(); // Store day of week in a variable
-        month = display.rtcGetMonth();     // Store month in a variable
-        year = display.rtcGetYear();       // Store year in a variable
+        display.rtc.GetRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.GetSecond();  // Store senconds in a variable
+        minutes = display.rtc.GetMinute();  // Store minutes in a variable
+        hour = display.rtc.GetHour();       // Store hours in a variable
+        day = display.rtc.GetDay();         // Store day of month in a variable
+        weekday = display.rtc.GetWeekday(); // Store day of week in a variable
+        month = display.rtc.GetMonth();     // Store month in a variable
+        year = display.rtc.GetYear();       // Store year in a variable
 
         display.clearDisplay();                                       // Clear content in frame buffer
         display.setCursor(88, 180);                                   // Set position of the text

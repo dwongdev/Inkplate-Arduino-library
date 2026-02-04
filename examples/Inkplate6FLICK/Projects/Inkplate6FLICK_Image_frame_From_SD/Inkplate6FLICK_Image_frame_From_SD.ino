@@ -222,7 +222,7 @@ bool displayImage()
     char *picturePath = strcat(path, pictureName);
 
     // Draw the image on the screen
-    if (!display.drawImage(picturePath, 0, 0, 1, 0))
+    if (!display.image.draw(picturePath, 0, 0, 1, 0))
     {
         // Close folder and file
         file.close();

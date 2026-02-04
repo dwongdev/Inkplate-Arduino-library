@@ -66,7 +66,7 @@ void loop()
     display.print(" *C");
     // Draw thermometer icon
     // Arguments are: array variable name, start X, start Y, size X, size Y
-    display.drawImage(temperature_icon, 200, 55, 70, 70);
+    display.image.draw(temperature_icon, 200, 55, 70, 70);
 
     // Display humidity icon and measured value
     display.setCursor(280, 175); // Arguments are: X coordinate, Y coordinate
@@ -74,7 +74,7 @@ void loop()
     display.print(" %");
     // Draw humidity icon
     // Arguments are: array variable name, start X, start Y, size X, size Y
-    display.drawImage(humidity_icon, 195, 150, 70, 70);
+    display.image.draw(humidity_icon, 195, 150, 70, 70);
 
     // Display the pressure icon and measured value
     display.setTextSize(3);
@@ -83,11 +83,11 @@ void loop()
     display.print(" hPa");
     // Draw pressure icon
     // Arguments are: array variable name, start X, start Y, size X, size Y
-    display.drawImage(pressure_icon, 190, 250, 70, 70);
+    display.image.draw(pressure_icon, 190, 250, 70, 70);
 
     // Draw Soldered logo
     // Arguments are: array variable name, start X, start Y, size X, size Y
-    display.drawImage(logo, 475, 350, 160, 32);
+    display.image.draw(logo, 475, 350, 160, 32);
 
     // This line actually drawing on the Inkplate screen, previous lines just drawing into the frame buffer
     display.display();

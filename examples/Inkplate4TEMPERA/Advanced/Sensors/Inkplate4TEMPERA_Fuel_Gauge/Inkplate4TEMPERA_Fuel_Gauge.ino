@@ -83,7 +83,7 @@ void loop()
     display.clearDisplay();
 
     // Draw the battery icon
-    display.drawImage(batteryIcon, 0, 0, 600, 600);
+    display.image.draw(batteryIcon, 0, 0, 600, 600);
     // Draw the rectrangle inside the battery depending on the state of charge
     // The width of the rectrangle is proportional to the variable
     display.fillRect(195, 425, 202 * (soc / 100.0F), 95, BLACK);

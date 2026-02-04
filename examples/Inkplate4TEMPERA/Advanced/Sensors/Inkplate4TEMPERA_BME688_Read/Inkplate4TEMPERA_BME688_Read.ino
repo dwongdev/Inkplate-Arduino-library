@@ -55,7 +55,7 @@ void loop()
     display.clearDisplay(); // Clear what was previously written;
 
     // Print temperature
-    display.drawImage(temperature_icon, 93, 100, temperature_icon_w, temperature_icon_h, BLACK); // Draw the icon
+    display.image.draw(temperature_icon, 93, 100, temperature_icon_w, temperature_icon_h, BLACK); // Draw the icon
     display.setCursor(68, 69);                                                                   // Set position of text
     display.print("Temperature: ");
     display.setCursor(100, 241);   // Set position of text
@@ -63,7 +63,7 @@ void loop()
     display.print("C");
 
     // Print humidity
-    display.drawImage(humidity_icon, 378, 100, humidity_icon_w, humidity_icon_h, BLACK); // Draw the icon
+    display.image.draw(humidity_icon, 378, 100, humidity_icon_w, humidity_icon_h, BLACK); // Draw the icon
     display.setCursor(378, 69);                                                          // Set position of text
     display.print("Humidity: ");
     display.setCursor(386, 241); // Set position of text
@@ -71,7 +71,7 @@ void loop()
     display.print("%");
 
     // Print pressure
-    display.drawImage(pressure_icon, 93, 368, pressure_icon_w, pressure_icon_h, BLACK); // Draw the icon
+    display.image.draw(pressure_icon, 93, 368, pressure_icon_w, pressure_icon_h, BLACK); // Draw the icon
     display.setCursor(89, 337);                                                         // Set position of text
     display.print("Pressure: ");
     display.setCursor(85, 509); // Set position of text

@@ -236,7 +236,7 @@ void loop()
                 r = display.sdCardInit();
                 if (r)
                 {
-                    r = display.drawBitmapFromSd(strTemp, x, y);
+                    r = display.image.drawBitmapFromSd(strTemp, x, y);
                     Serial.print("#H(");
                     Serial.print(r, DEC);
                     Serial.println(")*");
@@ -381,7 +381,7 @@ void loop()
                 r = display.sdCardInit();
                 if (r)
                 {
-                    r = display.drawImage(strTemp, x, y);
+                    r = display.image.draw(strTemp, x, y);
                     Serial.print("#H(");
                     Serial.print(r, DEC);
                     Serial.println(")*");
@@ -416,28 +416,28 @@ void loop()
                 break;
             case 'W':
                 sscanf(s + 3, "%d,%d,%d", &hr, &min, &sec);
-                // sprintf(temp, "display.rtcSetTime(%d, %d, %d);\n\r", hr, min, sec);
+                // sprintf(temp, "display.rtc.SetTime(%d, %d, %d);\n\r", hr, min, sec);
                 // Serial.println(temp);
-                display.rtcSetTime(hr, min, sec);
+                display.rtc.SetTime(hr, min, sec);
                 break;
             case 'X':
                 sscanf(s + 3, "%d,%d,%d,%d", &wday, &day, &mon, &yr);
-                // sprintf(temp, "display.rtcSetDate(%d, %d, %d, %d);\n\r", wday, day, mon, yr);
+                // sprintf(temp, "display.rtc.SetDate(%d, %d, %d, %d);\n\r", wday, day, mon, yr);
                 // Serial.println(temp);
-                display.rtcSetDate(wday, day, mon, yr);
+                display.rtc.SetDate(wday, day, mon, yr);
                 break;
             case 'Y':
                 sscanf(s + 3, "%d", &ep);
-                // sprintf(temp, "display.rtcSetEpoch(%d);\n\r", ep);
+                // sprintf(temp, "display.rtc.SetEpoch(%d);\n\r", ep);
                 // Serial.println(temp);
-                display.rtcSetEpoch(ep);
+                display.rtc.SetEpoch(ep);
                 break;
             case 'Z':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     Serial.print("#Z(");
-                    Serial.print(display.rtcGetEpoch());
+                    Serial.print(display.rtc.GetEpoch());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -449,30 +449,30 @@ void loop()
                     Serial.println("INVALID");
                     break;
                 }
-                display.rtcGetRtcData();
+                display.rtc.GetRtcData();
                 Serial.print("#a(");
                 switch (k)
                 {
                 case 0:
-                    Serial.print(display.rtcGetSecond());
+                    Serial.print(display.rtc.GetSecond());
                     break;
                 case 1:
-                    Serial.print(display.rtcGetMinute());
+                    Serial.print(display.rtc.GetMinute());
                     break;
                 case 2:
-                    Serial.print(display.rtcGetHour());
+                    Serial.print(display.rtc.GetHour());
                     break;
                 case 3:
-                    Serial.print(display.rtcGetDay());
+                    Serial.print(display.rtc.GetDay());
                     break;
                 case 4:
-                    Serial.print(display.rtcGetWeekday());
+                    Serial.print(display.rtc.GetWeekday());
                     break;
                 case 5:
-                    Serial.print(display.rtcGetMonth());
+                    Serial.print(display.rtc.GetMonth());
                     break;
                 case 6:
-                    Serial.print(display.rtcGetYear());
+                    Serial.print(display.rtc.GetYear());
                     break;
                 }
                 Serial.println(")*");
@@ -480,22 +480,22 @@ void loop()
                 break;
             case 'b':
                 sscanf(s + 3, "%d,%d,%d,%d,%d", &as, &am, &ah, &ad, &aw);
-                // sprintf(temp, "display.rtcSetAlarm(%d, %d, %d, %d, %d);\n\r", as, am, ah, ad, aw);
+                // sprintf(temp, "display.rtc.SetAlarm(%d, %d, %d, %d, %d);\n\r", as, am, ah, ad, aw);
                 // Serial.println(temp);
-                display.rtcSetAlarm(as, am, ah, ad, aw);
+                display.rtc.SetAlarm(as, am, ah, ad, aw);
                 break;
             case 'c':
                 sscanf(s + 3, "%d,%d", &ae, &amc);
-                // sprintf(temp, "display.rtcSetAlarmEpoch(%d, %d);\n\r", ae, amc);
+                // sprintf(temp, "display.rtc.SetAlarmEpoch(%d, %d);\n\r", ae, amc);
                 // Serial.println(temp);
-                display.rtcSetAlarmEpoch(ae, amc);
+                display.rtc.SetAlarmEpoch(ae, amc);
                 break;
             case 'd':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     Serial.print("#d(");
-                    Serial.print(display.rtcCheckAlarmFlag());
+                    Serial.print(display.rtc.CheckAlarmFlag());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -504,8 +504,8 @@ void loop()
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    // Serial.println("display.rtcClearAlarmFlag()");
-                    display.rtcClearAlarmFlag();
+                    // Serial.println("display.rtc.ClearAlarmFlag()");
+                    display.rtc.ClearAlarmFlag();
                     Serial.flush();
                 }
                 break;
@@ -520,19 +520,19 @@ void loop()
                 switch (k)
                 {
                 case 0:
-                    Serial.print(display.rtcGetAlarmSecond());
+                    Serial.print(display.rtc.GetAlarmSecond());
                     break;
                 case 1:
-                    Serial.print(display.rtcGetAlarmMinute());
+                    Serial.print(display.rtc.GetAlarmMinute());
                     break;
                 case 2:
-                    Serial.print(display.rtcGetAlarmHour());
+                    Serial.print(display.rtc.GetAlarmHour());
                     break;
                 case 3:
-                    Serial.print(display.rtcGetAlarmDay());
+                    Serial.print(display.rtc.GetAlarmDay());
                     break;
                 case 4:
-                    Serial.print(display.rtcGetAlarmWeekday());
+                    Serial.print(display.rtc.GetAlarmWeekday());
                     break;
                 }
                 Serial.println(")*");
@@ -547,16 +547,16 @@ void loop()
                     break;
                 }
 
-                // sprintf(temp, "display.rtcTimerSet(%d, %d, %d, %d);\n\r", sc, v, ie, ip);
+                // sprintf(temp, "display.rtc.TimerSet(%d, %d, %d, %d);\n\r", sc, v, ie, ip);
                 // Serial.println(temp);
-                display.rtcTimerSet(sc, v, ie, ip);
+                display.rtc.TimerSet(sc, v, ie, ip);
                 break;
             case 'h':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     Serial.print("#h(");
-                    Serial.print(display.rtcCheckTimerFlag());
+                    Serial.print(display.rtc.CheckTimerFlag());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -565,16 +565,16 @@ void loop()
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    // Serial.println("display.rtcClearTimerFlag()");
-                    display.rtcClearTimerFlag();
+                    // Serial.println("display.rtc.ClearTimerFlag()");
+                    display.rtc.ClearTimerFlag();
                 }
                 break;
             case 'j':
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    // Serial.println("display.rtcDisableTimer()");
-                    display.rtcDisableTimer();
+                    // Serial.println("display.rtc.DisableTimer()");
+                    display.rtc.DisableTimer();
                 }
                 break;
             case 'k':
@@ -582,7 +582,7 @@ void loop()
                 if (b == '?')
                 {
                     Serial.print("#k(");
-                    Serial.print(display.rtcIsSet());
+                    Serial.print(display.rtc.IsSet());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -591,8 +591,8 @@ void loop()
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    // Serial.println("display.rtcReset()");
-                    display.rtcReset();
+                    // Serial.println("display.rtc.Reset()");
+                    display.rtc.Reset();
                 }
                 break;
             }

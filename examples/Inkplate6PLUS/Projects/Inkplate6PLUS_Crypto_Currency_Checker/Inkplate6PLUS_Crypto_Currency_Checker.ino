@@ -228,9 +228,9 @@ void getCoinPrices()
 
 void drawCurrencySigns()
 {
-    display.drawImage(dollar, 280, 235, 48, 48);
-    display.drawImage(euro, 280, 335, 48, 48);
-    display.drawImage(gbp, 280, 435, 48, 48);
+    display.image.draw(dollar, 280, 235, 48, 48);
+    display.image.draw(euro, 280, 335, 48, 48);
+    display.image.draw(gbp, 280, 435, 48, 48);
 }
 
 void drawAll()
@@ -307,26 +307,26 @@ void drawCoinIcons()
 {
     if (strcmp(currency, "bitcoin") == 0)
     {
-        display.drawImage(btc, COIN_ICON_X, COIN_ICON_Y, btc_w, btc_h);
+        display.image.draw(btc, COIN_ICON_X, COIN_ICON_Y, btc_w, btc_h);
     }
     else if (strcmp(currency, "ethereum") == 0)
     {
-        display.drawImage(eth, COIN_ICON_X, COIN_ICON_Y, eth_w, eth_h);
+        display.image.draw(eth, COIN_ICON_X, COIN_ICON_Y, eth_w, eth_h);
     }
     else if (strcmp(currency, "binance") == 0)
     {
-        display.drawImage(bnc, COIN_ICON_X, COIN_ICON_Y, bnc_w, bnc_h);
+        display.image.draw(bnc, COIN_ICON_X, COIN_ICON_Y, bnc_w, bnc_h);
     }
     else if (strcmp(currency, "ripple") == 0)
     {
-        display.drawImage(xrp, COIN_ICON_X, COIN_ICON_Y, xrp_w, xrp_h);
+        display.image.draw(xrp, COIN_ICON_X, COIN_ICON_Y, xrp_w, xrp_h);
     }
     else if (strcmp(currency, "dogecoin") == 0)
     {
-        display.drawImage(doge, COIN_ICON_X, COIN_ICON_Y, doge_w, doge_h);
+        display.image.draw(doge, COIN_ICON_X, COIN_ICON_Y, doge_w, doge_h);
     }
     else if (strcmp(currency, "tether") == 0)
     {
-        display.drawImage(tether, COIN_ICON_X, COIN_ICON_Y, tether_w, tether_h);
+        display.image.draw(tether, COIN_ICON_X, COIN_ICON_Y, tether_w, tether_h);
     }
 }

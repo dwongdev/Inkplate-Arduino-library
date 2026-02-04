@@ -65,7 +65,7 @@ void setup()
         display.clearDisplay();
         if (file.open("image2.bmp", O_RDONLY))
         {
-            display.drawBitmapFromSd(&file, 0, 0);
+            display.image.drawBitmapFromSd(&file, 0, 0);
             display.display();
             delay(5000);
         }

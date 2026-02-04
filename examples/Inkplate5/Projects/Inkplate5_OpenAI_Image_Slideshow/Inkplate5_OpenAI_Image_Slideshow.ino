@@ -84,7 +84,7 @@ void setup() {
     
     // Draw the image centered on the screen
     // Image assumed to be 1024x1024; offset to center it
-    bool result = display.drawImage(imageUrl, imageFormat, display.width()/2 - 512, display.height()/2 - 512, true, false);
+    bool result = display.image.draw(imageUrl, imageFormat, display.width()/2 - 512, display.height()/2 - 512, true, false);
     
     if(result == 0) {
       // Show an error if image decoding fails
@@ -100,7 +100,7 @@ void setup() {
   }
 
   // Schedule the next wakeup time using the real-time clock
-  display.rtcSetAlarmEpoch(display.rtcGetEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
+  display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
 
   // Enable external wakeup on GPIO 39 (typically tied to RTC alarm)
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);

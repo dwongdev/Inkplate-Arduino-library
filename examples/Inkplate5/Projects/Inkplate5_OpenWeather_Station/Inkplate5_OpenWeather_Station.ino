@@ -335,7 +335,7 @@ void drawForecast()
         dayPos = (day - startDay) * dayPitch;
         int textCentre = dayPos + (dayPitch / 2);
         sprintf(Output, "http://openweathermap.org/img/wn/%s@2x.png", OWOC.forecast[day].icon);
-        display.drawImage(Output, dayPos + 165, dayOffset - 50, true, true);
+        display.image.draw(Output, dayPos + 165, dayOffset - 50, true, true);
         display.setTextColor(BLACK, WHITE);
         display.setTextSize(1);
         display.setFont(&Roboto_Light_36);
@@ -466,7 +466,7 @@ void drawHourly()
 void drawCurrent()
 {
     sprintf(Output, "http://openweathermap.org/img/wn/%s@4x.png", OWOC.current.icon);
-    display.drawImage(Output, 0, 0, true, true);
+    display.image.draw(Output, 0, 0, true, true);
 
     display.setFont(&Roboto_Light_48);
     sprintf(Output, "%2.01f%c", OWOC.current.temp, tempUnit);
