@@ -31,6 +31,12 @@
 #define MULTIPLE_DISPLAY_MODES
 #define USES_I2S
 #include "boards/Inkplate5V2/Inkplate5V2BoardFile.h"
+#elif defined(ARDUINO_INKPLATE5)
+#define MULTIPLE_DISPLAY_MODES
+#include "boards/Inkplate5/Inkplate5BoardFile.h"
+#elif defined(ARDUINO_INKPLATE4TEMPERA)
+#define MULTIPLE_DISPLAY_MODES
+#include "boards/Inkplate4TEMPERA/Inkplate4TEMPERABoardFile.h"
 #elif defined(ARDUINO_INKPLATE6FLICK)
 #define USES_I2S
 #define MULTIPLE_DISPLAY_MODES
