@@ -7,6 +7,10 @@ jobs:
     strategy:
       matrix:
         include:
+          - board: 
+              fqbn: soldered-inkplate-boards:esp32:Inkplate4TEMPERA
+            additional-sketch-paths: |
+              - examples/Inkplate4TEMPERA
           - board:
               fqbn: soldered-inkplate-boards:esp32:Inkplate5
             additional-sketch-paths: |
