@@ -92,7 +92,7 @@ void setup()
     display.display(); // Show on Inkplate with a full refresh
 
     // Initialize touchscreen
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init failed!");
     }

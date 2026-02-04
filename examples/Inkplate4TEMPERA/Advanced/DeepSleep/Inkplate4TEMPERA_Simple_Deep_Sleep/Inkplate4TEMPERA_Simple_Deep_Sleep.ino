@@ -46,7 +46,7 @@ void setup()
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
 
     // Turn frontlight on
-    display.frontlight(1);
+    display.frontlight.setState(1);
     display.setFrontlight(50);
 
     display.clearDisplay(); // Clear frame buffer of display
@@ -60,7 +60,7 @@ void setup()
 
     // Turn off touchscreen and frontlight to save energy duiring deep sleep
     display.tsShutdown();  // Turn off the display touchscreen
-    display.frontlight(0); // Turn off the frontlight
+    display.frontlight.setState(0); // Turn off the frontlight
 
     rtc_gpio_isolate(GPIO_NUM_12); // Isolate/disable GPIO12 on ESP32 (only to reduce power consumption in sleep)
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // Activate wake-up timer -- wake up after 20s here

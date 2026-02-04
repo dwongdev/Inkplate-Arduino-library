@@ -31,7 +31,7 @@ void setup()
     display.begin();
 
     // Turn off frontlight
-    display.frontlight(true);
+    display.frontlight.setState(true);
     display.setFrontlight(0);
 
     // Join wifi

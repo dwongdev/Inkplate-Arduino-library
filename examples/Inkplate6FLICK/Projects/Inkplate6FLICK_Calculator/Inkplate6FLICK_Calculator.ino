@@ -45,7 +45,7 @@ void setup()
     display.clearDisplay();
 
     // Initialize touchscreen
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init failed!");
     }

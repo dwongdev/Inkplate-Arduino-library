@@ -29,11 +29,11 @@ void setup()
     display.begin();
 
     // To turn off frontlight
-    // display.frontlight(true);
+    // display.frontlight.setState(true);
     // display.setFrontlight(0);
 
     // If you want to use frontlight:
-    // display.frontlight(true);
+    // display.frontlight.setState(true);
     // display.setFrontlight(35);
 
     // Join wifi

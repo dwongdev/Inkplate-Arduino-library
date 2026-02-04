@@ -41,7 +41,7 @@ void setup()
     delay(3000);
     display.clearDisplay();
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
