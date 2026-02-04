@@ -121,17 +121,17 @@ void Touch::tsReadRegs(uint8_t _addr, uint8_t *_buff, uint8_t _size)
  */
 void Touch::tsHardwareReset()
 {
-    #ifdef ARDUINO_INKPLATE4TEMPERA
+#ifdef ARDUINO_INKPLATE4TEMPERA
     _inkplate->externalIO.digitalWrite(TOUCHSCREEN_RST, LOW);
     delay(15);
     _inkplate->externalIO.digitalWrite(TOUCHSCREEN_RST, HIGH);
     delay(15);
-    #else
+#else
     _inkplate->internalIO.digitalWrite(TOUCHSCREEN_RST, LOW);
     delay(15);
     _inkplate->internalIO.digitalWrite(TOUCHSCREEN_RST, HIGH);
     delay(15);
-    #endif
+#endif
 }
 
 /**
@@ -181,11 +181,11 @@ bool Touch::init(uint8_t _pwrState)
 {
     if (!_inkplate)
         return false;
-    #ifdef ARDUINO_INKPLATE4TEMPERA
-        _inkplate->externalIO.digitalWrite(TOUCHSCREEN_EN, LOW);   
-    #else
-        _inkplate->internalIO.digitalWrite(TOUCHSCREEN_EN, LOW);
-    #endif
+#ifdef ARDUINO_INKPLATE4TEMPERA
+    _inkplate->externalIO.digitalWrite(TOUCHSCREEN_EN, LOW);
+#else
+    _inkplate->internalIO.digitalWrite(TOUCHSCREEN_EN, LOW);
+#endif
     // Enable power to TS
 
     delay(100);

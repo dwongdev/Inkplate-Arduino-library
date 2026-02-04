@@ -365,12 +365,12 @@ class BQ27441
 
     bool writeOpConfig(uint16_t value);
 
-	    /**
-        Use BlockData() to read a byte from the loaded extended data
+    /**
+    Use BlockData() to read a byte from the loaded extended data
 
-        @param offset of data block byte to be read
-        @return true on success
-    */
+    @param offset of data block byte to be read
+    @return true on success
+*/
     uint8_t readBlockData(uint8_t offset);
 
     // Added by Soldered Electronics. Enable or disable hibernate state to reduce power consumption.
