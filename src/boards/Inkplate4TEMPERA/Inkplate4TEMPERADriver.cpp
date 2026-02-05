@@ -135,7 +135,6 @@ void EPDDriver::calculateLUTs()
                                  (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
         }
     }
-
 }
 
 
@@ -874,7 +873,6 @@ void EPDDriver::gpioInit()
         externalIO.pinMode(i, OUTPUT);
         externalIO.digitalWrite(i, LOW);
     }
-
 }
 
 /**

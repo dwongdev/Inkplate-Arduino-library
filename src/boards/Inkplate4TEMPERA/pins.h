@@ -44,9 +44,9 @@
 #define TOUCHSCREEN_IO_EXPANDER IO_EXT_ADDR
 #define TOUCHSCREEN_IO_REGS     ioRegsEx
 #define TOUCHSCREEN_EN          0
-#define TOUCHSCREEN_RST                  1
-#define TOUCHSCREEN_INT                  36
-#define TOUCHSCREEN_ADDR                 0x15
+#define TOUCHSCREEN_RST         1
+#define TOUCHSCREEN_INT         36
+#define TOUCHSCREEN_ADDR        0x15
 
 
 #define WAKEUP 3

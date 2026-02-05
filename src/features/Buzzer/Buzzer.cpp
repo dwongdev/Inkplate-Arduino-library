@@ -25,7 +25,7 @@
  *
  * @returns     None
  */
-void Buzzer::begin(Inkplate* _inkplatePtr)
+void Buzzer::begin(Inkplate *_inkplatePtr)
 {
     _inkplate = _inkplatePtr;
 }

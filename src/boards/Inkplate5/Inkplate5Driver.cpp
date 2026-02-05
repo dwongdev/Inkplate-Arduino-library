@@ -140,7 +140,6 @@ void EPDDriver::calculateLUTs()
                                  (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
         }
     }
-
 }
 
 
@@ -480,7 +479,7 @@ void EPDDriver::display1b(bool leaveOn)
  */
 uint32_t EPDDriver::partialUpdate(bool _forced, bool _leaveOn)
 {
-        if (getDisplayMode() == 1)
+    if (getDisplayMode() == 1)
         return 0;
 
     if (_blockPartial == 1 && !_forced)
