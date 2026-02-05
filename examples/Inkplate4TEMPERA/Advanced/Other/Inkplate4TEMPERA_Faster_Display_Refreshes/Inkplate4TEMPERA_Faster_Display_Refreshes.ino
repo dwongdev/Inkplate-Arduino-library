@@ -55,7 +55,7 @@ void loop()
     // by setting leaveOn to 1 screens power supply won't be turned off at the end,
     // and is assumed to be on already.
 
-    display.einkOn(); // Turn on the ePaper (be careful when using this function manually)
+    //display.einkOn(); // Turn on the ePaper (be careful when using this function manually)
     display.fillCircle(200, 100, 50, BLACK); // Draw another circle
 
     // Again, measure time and print result to Serial
@@ -88,7 +88,7 @@ void loop()
     // by setting leaveOn to 1 screens power supply won't be turned off at the end,
     // and is assumed to be on already, as with display.display's leaveOn flag.
 
-    display.einkOn();
+    //display.einkOn();
     display.fillCircle(400, 100, 50, BLACK);
     t = millis();
     display.partialUpdate(0, 1);
@@ -96,7 +96,7 @@ void loop()
     Serial.print("display.partialUpdate(0, 1) took ");
     Serial.print(t);
     Serial.println(" ms");
-    display.einkOff();
+    //display.einkOff();
 
     display.clearDisplay();
 
