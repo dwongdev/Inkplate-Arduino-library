@@ -20,7 +20,7 @@
 #error "Wrong board selection for this example, please select Soldered Inkplate4TEMPERA in the boards menu."
 #endif
 
-#include "Hall-Effect-Digital-easyC-SOLDERED.h" // Include the Hall Effect sensor library
+#include "Hall-Effect-SOLDERED.h" // Include the Hall Effect sensor library
 #include "Inkplate.h"                           // Include Inkplate library to the sketch
 
 // Create an object on Inkplate library and also set library into 1-bit mode (BW)
