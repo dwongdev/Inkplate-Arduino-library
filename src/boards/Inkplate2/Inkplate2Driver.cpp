@@ -98,12 +98,12 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
         pinMode(33, OUTPUT);
         pinMode(32, OUTPUT);
 
-        digitalWrite(5,LOW);
-        digitalWrite(18,LOW);
-        digitalWrite(19,LOW);
-        digitalWrite(23,LOW);
-        digitalWrite(33,LOW);
-        digitalWrite(32,LOW);
+        digitalWrite(5, LOW);
+        digitalWrite(18, LOW);
+        digitalWrite(19, LOW);
+        digitalWrite(23, LOW);
+        digitalWrite(33, LOW);
+        digitalWrite(32, LOW);
 
         delay(2000);
 

@@ -40,11 +40,11 @@ void ImageColor::begin(Inkplate *inkplateptr)
     setDitherKernel(FloydSteinberg);
 
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
-    ditherBuffer = (int16_t (*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes,
-                                                                                    MALLOC_CAP_SPIRAM);
+    ditherBuffer =
+        (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
 #else
-    ditherBuffer = (int16_t (*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes,
-                                                                                    MALLOC_CAP_SPIRAM);
+    ditherBuffer =
+        (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
 #endif
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
     pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_HEIGHT * 4 + 5), MALLOC_CAP_SPIRAM);
