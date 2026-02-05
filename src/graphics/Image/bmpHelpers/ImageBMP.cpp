@@ -15,9 +15,9 @@
  *
  * @authors     Soldered.com
  ***************************************************/
+#if !defined(ARDUINO_INKPLATECOLOR) && !defined(ARDUINO_INKPLATE2) && !defined(ARDUINO_INKPLATE13SPECTRA)
 #include "Inkplate.h"
 #include "../Image.h"
-#ifndef USE_COLOR_IMAGE
 
 /**
  * @brief       legalBmp function checks file header for BMP image signature

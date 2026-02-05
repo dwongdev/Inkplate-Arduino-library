@@ -129,19 +129,23 @@ class ImageColor
     static const uint8_t ditherRowMask = ditherRowCount - 1;
     static_assert((ditherRowCount & ditherRowMask) == 0, "ditherRowCount must be power of two");
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
-    uint8_t pixelBuffer[E_INK_HEIGHT * 4 + 5];
-    static int16_t ditherBuffer[3][ditherRowCount][E_INK_HEIGHT];
+    static uint8_t *pixelBuffer;
+    static const unsigned int ditherBufferWidth = E_INK_HEIGHT;
+    static int16_t (*ditherBuffer)[ditherRowCount][ditherBufferWidth];
+    static constexpr size_t ditherBufferSizeBytes = 3 * ditherRowCount * ditherBufferWidth * sizeof(int16_t);
     static const unsigned int width = E_INK_HEIGHT, height = E_INK_WIDTH;
 #else
-    uint8_t pixelBuffer[E_INK_WIDTH * 4 + 5];
-    static int16_t ditherBuffer[3][ditherRowCount][E_INK_WIDTH + 200];
+    static uint8_t *pixelBuffer;
+    static const unsigned int ditherBufferWidth = E_INK_WIDTH + 200;
+    static int16_t (*ditherBuffer)[ditherRowCount][ditherBufferWidth];
+    static constexpr size_t ditherBufferSizeBytes = 3 * ditherRowCount * ditherBufferWidth * sizeof(int16_t);
     static const unsigned int width = E_INK_WIDTH, height = E_INK_HEIGHT;
 #endif
 
 
   private:
-    uint32_t ditherPalette[256]; // 8 bit colors, in color, 3x8 bit colors
-    uint8_t palette[128];        // 2 3 bit colors per byte, _###_###
+    static uint32_t *ditherPalette; // 8 bit colors, in color, 3x8 bit colors
+    static uint8_t *palette;        // 2 3 bit colors per byte, _###_###
 
 
     const DitherKernelDef *currentKernel = &DITHER_KERNELS[0];

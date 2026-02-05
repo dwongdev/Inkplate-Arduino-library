@@ -152,7 +152,7 @@ bool ImageColor::drawPngFromSd(SdFile *p, int x, int y, bool dither, bool invert
     uint32_t remain = 0;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
     _pngX = x;
@@ -209,7 +209,7 @@ bool ImageColor::drawPngFromWeb(const char *url, int x, int y, bool dither, bool
     bool ret = 1;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
     _pngX = x;
@@ -268,7 +268,7 @@ bool ImageColor::drawPngFromWeb(WiFiClient *s, int x, int y, int32_t len, bool d
     bool ret = 1;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
     _pngX = x;
@@ -315,7 +315,7 @@ bool ImageColor::drawPngFromWebAtPosition(const char *url, const Position &posit
     bool ret = 1;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
 
@@ -372,7 +372,7 @@ bool ImageColor::drawPngFromSdAtPosition(const char *fileName, const Position &p
     uint32_t remain = 0;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
 

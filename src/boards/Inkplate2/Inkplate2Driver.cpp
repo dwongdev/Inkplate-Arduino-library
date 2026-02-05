@@ -91,6 +91,22 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 
         image.begin(_inkplatePtr);
 
+        pinMode(5, OUTPUT);
+        pinMode(18, OUTPUT);
+        pinMode(19, OUTPUT);
+        pinMode(23, OUTPUT);
+        pinMode(33, OUTPUT);
+        pinMode(32, OUTPUT);
+
+        digitalWrite(5,LOW);
+        digitalWrite(18,LOW);
+        digitalWrite(19,LOW);
+        digitalWrite(23,LOW);
+        digitalWrite(33,LOW);
+        digitalWrite(32,LOW);
+
+        delay(2000);
+
         if (DMemory4Bit == NULL)
         {
             return false;

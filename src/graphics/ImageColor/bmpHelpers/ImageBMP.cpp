@@ -106,7 +106,7 @@ void ImageColor::readBmpHeader(uint8_t *buf, bitmapHeader *_h)
             totalColors = (1ULL << _h->color);
 
         memcpy(paletteRGB, buf + 53, totalColors * 4);
-        memset(palette, 0, sizeof palette);
+        memset(palette, 0, 128 * sizeof(uint8_t));
 
         for (int i = 0; i < totalColors; ++i)
         {
@@ -183,7 +183,7 @@ bool ImageColor::drawBitmapFromSd(SdFile *p, int x, int y, bool dither, bool inv
 
     p->seekSet(bmpHeader.startRAW);
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
     for (int i = 0; i < h; ++i)
     {
         int16_t n = ROWSIZE(w, c);
@@ -296,7 +296,7 @@ bool ImageColor::drawBitmapFromBuffer(uint8_t *buf, int x, int y, bool dither, b
         return 0;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     uint8_t *bufferPtr = buf + bmpHeader.startRAW;
     for (int i = 0; i < bmpHeader.height; ++i)
@@ -539,7 +539,7 @@ bool ImageColor::drawBmpFromSdAtPosition(const char *fileName, const Position &p
 
     dat.seekSet(bmpHeader.startRAW);
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     uint16_t posX, posY;
     getPointsForPosition(position, bmpHeader.width, bmpHeader.height, E_INK_WIDTH, E_INK_HEIGHT, &posX, &posY);

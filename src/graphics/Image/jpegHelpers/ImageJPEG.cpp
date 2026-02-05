@@ -15,9 +15,9 @@
  *
  * @authors     Soldered
  ***************************************************/
+#if !defined(ARDUINO_INKPLATECOLOR) && !defined(ARDUINO_INKPLATE2) && !defined(ARDUINO_INKPLATE13SPECTRA)
 #include "../../../system/defines.h"
 #include "Inkplate.h"
-#ifndef USE_COLOR_IMAGE
 #include "../Image.h"
 #include "../../Tjpeg/TJpg_Decoder.h"
 

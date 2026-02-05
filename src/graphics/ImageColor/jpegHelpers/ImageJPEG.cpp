@@ -71,7 +71,7 @@ bool ImageColor::drawJpegFromSd(SdFile *p, int x, int y, bool dither, bool inver
     blockW = -1;
     blockH = -1;
     lastY = -1;
-    memset(ditherBuffer, 0, sizeof ditherBuffer);
+    memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     TJpgDec.setJpgScale(1);
     TJpgDec.setCallback(drawJpegChunk);
@@ -231,7 +231,7 @@ bool ImageColor::drawJpegFromSdAtPosition(const char *fileName, const Position &
     blockW = -1;
     blockH = -1;
     lastY = -1;
-    memset(ditherBuffer, 0, sizeof ditherBuffer);
+    memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     TJpgDec.setJpgScale(1);
     TJpgDec.setCallback(drawJpegChunk);
@@ -338,7 +338,7 @@ bool ImageColor::drawJpegFromBuffer(uint8_t *buff, int32_t len, int x, int y, bo
     blockH = -1;
     lastY = -1;
 
-    memset(ditherBuffer, 0, sizeof ditherBuffer);
+    memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     TJpgDec.setJpgScale(1);
     TJpgDec.setCallback(drawJpegChunk);
