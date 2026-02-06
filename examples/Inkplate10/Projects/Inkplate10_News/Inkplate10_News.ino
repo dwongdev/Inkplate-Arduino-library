@@ -42,8 +42,8 @@ char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
 #include "Fonts/FreeSerifItalic24pt7b.h"
 
 // Create network and display objects
-Network network;
-InkplateFunctions inkplate(INKPLATE_1BIT);
+NetworkFunctions network;
+Inkplate inkplate(INKPLATE_1BIT);
 
 // Constants for delays and refreshes
 #define DELAY_MS (uint32_t)60 * 60 * 1000 // Delay between API calls (1 hour)

@@ -59,7 +59,7 @@ void setup()
 void loop()
 {
     //Touch in area checks if touch ocured in given coordinates
-    if(display.touchInArea(x_position, y_position, 100, 50))
+    if(display.touchscreen.touchInArea(x_position, y_position, 100, 50))
     {
         x_position += 100;
         y_position += 100;

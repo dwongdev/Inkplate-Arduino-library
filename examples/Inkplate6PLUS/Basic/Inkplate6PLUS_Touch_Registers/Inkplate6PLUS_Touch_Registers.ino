@@ -57,9 +57,9 @@ void setup()
 void loop()
 {
     // Check if there is any touch detected
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
-        display.tsGetRawData(touchRegs);
+        display.touchscreen.getRawData(touchRegs);
         for(int i = 0; i < 8; ++i)
         {
             Serial.print("Reg ");
