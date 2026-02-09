@@ -73,7 +73,7 @@ void setup() {
 
   // Switch display to 3-bit grayscale mode for higher image quality
   // WARNING: Partial updates are not supported in this mode!
-  display.setDisplayMode(INKPLATE_3BIT);
+  display.selectDisplayMode(INKPLATE_3BIT);
   display.setTextColor(BLACK);
   display.println("Downloading and displaying image (May take a while...)");
   display.display();          // Show status

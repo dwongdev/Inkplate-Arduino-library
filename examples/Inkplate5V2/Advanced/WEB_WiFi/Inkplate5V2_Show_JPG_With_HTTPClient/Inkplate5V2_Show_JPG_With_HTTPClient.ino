@@ -64,7 +64,7 @@ void setup()
 
     // Switch to 3-bit mode so the image will be of better quality
     // NOTE: You can't use partial update when the Inkplate is in the 3-bit mode!
-    display.setDisplayMode(INKPLATE_3BIT);
+    display.selectDisplayMode(INKPLATE_3BIT);
 
     // Make an object for the HTTP client
     HTTPClient http;

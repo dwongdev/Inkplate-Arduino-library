@@ -205,7 +205,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
 
             case 'I':
                 sscanf(s + 3, "%d", &c);
-                // sprintf(temp, "display->setDisplayMode(%s)\n", c == 0 ? "INKPLATE_1BIT" : "INKPLATE_3BIT");
+                // sprintf(temp, "display->selectDisplayMode(%s)\n", c == 0 ? "INKPLATE_1BIT" : "INKPLATE_3BIT");
                 // Serial.print(temp);
                 if (c == 1)
                     display->selectDisplayMode(INKPLATE_1BIT);

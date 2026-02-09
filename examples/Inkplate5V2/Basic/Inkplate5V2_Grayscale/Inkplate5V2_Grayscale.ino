@@ -366,7 +366,7 @@ void loop()
     }
 
     // Did you know that you can change between BW and greyscale mode anytime?
-    // Just call display.setDisplayMode(mode)
+    // Just call display.selectDisplayMode(mode)
 }
 
 // Small function that will write on the screen what function is currently in demonstration.
