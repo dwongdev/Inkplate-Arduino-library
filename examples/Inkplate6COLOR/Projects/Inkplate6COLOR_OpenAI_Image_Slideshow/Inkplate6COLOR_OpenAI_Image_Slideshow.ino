@@ -23,14 +23,14 @@
 #define SLEEP_DURATION_IN_MINS 30*60 
 
 // Format of the image to be downloaded and displayed (PNG is recommended for best compatibility)
-Image::Format imageFormat = Image::PNG;
+ImageColor::Format imageFormat = ImageColor::PNG;
 
 // WiFi credentials (replace with your own SSID and password)
-const char* ssid = "YOUR_SSID_HERE";
-const char* password = "YOUR_PASSWORD_HERE";
+const char* ssid = "";
+const char* password = "";
 
 // OpenAI API key (replace with your OpenAI API key)
-const char* openai_key = "YOUR_API_KEY_HERE"; 
+const char* openai_key = ""; 
 
 
 // Create a secure WiFi client to communicate with OpenAI over HTTPS
@@ -77,7 +77,7 @@ void setup() {
     
     // Draw the image centered on the screen
     // Image assumed to be 512x512; offset to center it
-    bool result = display.image.draw(imageUrl, display.width()/2 - 256, display.height()/2 - 256, true, false);
+    bool result = display.image.draw(imageUrl, imageFormat, display.width()/2 - 256, display.height()/2 - 256, true, false);
     
     if(result == 0) {
       // Show an error if image decoding fails
