@@ -105,7 +105,14 @@ void loop()
         display.printf("Error opening folder! Make sure \nthat you have entered the proper \nname and add / to the end "
                        "of the \npath");
         display.display();
-        deepSleep();
+            // Turn off the power supply for the SD card
+        display.sdCardSleep();
+
+        // Enable wakeup from deep sleep on GPIO 36 (wake button)
+        esp_sleep_enable_ext0_wakeup(GPIO_NUM_36, LOW);
+
+        // Put ESP32 into deep sleep (low power mode)
+        esp_deep_sleep_start();
     }
 
     // If the index is equal to 0, it is the end of the file so repeat the code in loop again
@@ -116,7 +123,14 @@ void loop()
         esp_sleep_enable_timer_wakeup(SECS_BETWEEN_PICTURES * 1000000LL);
 
         // Go into deep sleep
-        deepSleep();
+        // Turn off the power supply for the SD card
+        display.sdCardSleep();
+
+        // Enable wakeup from deep sleep on GPIO 36 (wake button)
+        esp_sleep_enable_ext0_wakeup(GPIO_NUM_36, LOW);
+
+        // Put ESP32 into deep sleep (low power mode)
+        esp_deep_sleep_start();
     }
 }
 
@@ -171,20 +185,7 @@ int getFileCount()
     }
 }
 
-/**
- * @brief     Turn off all peripherals, go to deep sleep, and enable wakeup on the wake button.
- */
-void deepSleep()
-{
-    // Turn off the power supply for the SD card
-    display.sdCardSleep();
 
-    // Enable wakeup from deep sleep on GPIO 36 (wake button)
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_36, LOW);
-
-    // Put ESP32 into deep sleep (low power mode)
-    esp_deep_sleep_start();
-}
 
 /**
  * @brief     If it's the first file, the file open at index 0 won't work so skip this for the index zero (first file
