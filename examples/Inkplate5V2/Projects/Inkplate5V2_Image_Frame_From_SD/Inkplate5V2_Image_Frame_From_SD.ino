@@ -41,7 +41,7 @@ const char folderPath[] = "/images/"; // NOTE: Must end with /
 
 #include "Inkplate.h"            // Include Inkplate library to the sketch
 Inkplate display(INKPLATE_3BIT); // Create an object on Inkplate library and also set library into 3 Bit mode
-SdFile folder, file;             // Create SdFile objects used for accessing files on SD card
+FsFile folder, file;             // Create SdFile objects used for accessing files on SD card
 
 // Last image index stored in RTC RAM that stores variable even if deep sleep is used
 RTC_DATA_ATTR uint16_t lastImageIndex = 0;

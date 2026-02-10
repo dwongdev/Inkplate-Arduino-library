@@ -65,10 +65,10 @@ void setup()
 void loop()
 {
     // Periodically check if we can communicate to the touch screen
-    if (display.tsAvailable())
+    if (display.touchscree.available())
     {
         // Read the raw data of the touch screen registers
-        display.tsGetRawData(touchRegs);
+        display.touchscreen.getRawData(touchRegs);
         for(int i = 0; i < 8; ++i)
         {
             Serial.print("Reg [");

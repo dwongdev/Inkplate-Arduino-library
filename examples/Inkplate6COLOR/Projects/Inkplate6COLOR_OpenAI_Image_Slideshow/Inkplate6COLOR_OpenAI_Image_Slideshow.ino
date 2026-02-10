@@ -77,7 +77,7 @@ void setup() {
     
     // Draw the image centered on the screen
     // Image assumed to be 512x512; offset to center it
-    bool result = display.image.draw(imageUrl, imageFormat, display.width()/2 - 256, display.height()/2 - 256, true, false);
+    bool result = display.image.draw(imageUrl, display.width()/2 - 256, display.height()/2 - 256, true, false);
     
     if(result == 0) {
       // Show an error if image decoding fails

@@ -52,12 +52,12 @@ void setup()
 void loop()
 {
     // Check if there is any touch detected
-    if (display.touchscreen.Available())
+    if (display.touchscreen.available())
     {
         uint8_t n;
         uint16_t x[2], y[2];
         // See how many fingers are detected (max 2) and copy x and y position of each finger on touchscreen
-        n = display.touchscreen.GetData(x, y);
+        n = display.touchscreen.getData(x, y);
         if (n != 0)
         {
 #ifdef DRAW_LINE // Draw line from old point to new

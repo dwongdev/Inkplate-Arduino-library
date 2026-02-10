@@ -42,19 +42,19 @@ void setup()
 
 void loop()
 {
-    if (display.readTouchpad(PAD1))
+    if (displaytouchscreen.readTouchpad(PAD1))
     { // Check if first pad has been touched. If it is, decrement the number and refresh the screen.
         number--;
         displayNumber();
     }
 
-    if (display.readTouchpad(PAD2))
+    if (displaytouchscreen.readTouchpad(PAD2))
     { // If you touched second touchpad, set number to zero and refresh screen by calling our displayNumber() function
         number = 0;
         displayNumber();
     }
 
-    if (display.readTouchpad(PAD3))
+    if (displaytouchscreen.readTouchpad(PAD3))
     { // If you touched third touchpad, incerement the number and refresh the screen.
         number++;
         displayNumber();

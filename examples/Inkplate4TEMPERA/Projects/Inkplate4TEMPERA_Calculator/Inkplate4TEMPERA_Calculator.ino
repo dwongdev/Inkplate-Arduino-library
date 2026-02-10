@@ -64,7 +64,7 @@ void loop()
 // Eg. writing numbers, selecting the mathematical operations, calculating and clearing the display
 void keysEvents()
 {
-    if (display.touchInArea(30, 130, 150, 50)) // Refresh
+    if (display.touchscreen.touchInArea(30, 130, 150, 50)) // Refresh
     {
         // Clear screen
         display.clearDisplay();
@@ -72,7 +72,7 @@ void keysEvents()
         display.display();
     }
 
-    if (display.touchInArea(30, 80, 150, 50)) // Clear
+    if (display.touchscreen.touchInArea(30, 80, 150, 50)) // Clear
     {
         // Reset the state of the calculator
         text18_cursor_x = 550;
@@ -90,7 +90,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(30, 30, 150, 50)) // Clear history
+    if (display.touchscreen.touchInArea(30, 30, 150, 50)) // Clear history
     {
         text19_content = "";
         text19_cursor_x = 240;
@@ -102,7 +102,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(300, 471, 135, 97) && (op != ' ') &&
+    if (display.touchscreen.touchInArea(300, 471, 135, 97) && (op != ' ') &&
         atof(&text18_content[rightNumPos + 3]) != 0) // Calculate
     {
         // Do calculation
@@ -127,7 +127,7 @@ void keysEvents()
         numOfDecimalDigitsOnCurrentNumber = 0;
     }
 
-    if (display.touchInArea(435, 471, 135, 97) && (op == ' ') && (rightNumPos > 0)) // Sum
+    if (display.touchscreen.touchInArea(435, 471, 135, 97) && (op == ' ') && (rightNumPos > 0)) // Sum
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " + ";
@@ -141,7 +141,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(165, 471, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 0
+    if (display.touchscreen.touchInArea(165, 471, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 0
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "0";
@@ -162,7 +162,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(30, 471, 135, 97) && !decimalPointOnCurrentNumber &&
+    if (display.touchscreen.touchInArea(30, 471, 135, 97) && !decimalPointOnCurrentNumber &&
         numOfDigitsEntered < 6) // Decimal point
     {
         text18_cursor_x -= X_REZ_OFFSET;
@@ -182,7 +182,7 @@ void keysEvents()
         decimalPointOnCurrentNumber = true;
     }
 
-    if (display.touchInArea(435, 374, 135, 97) && (op == ' ') && (rightNumPos > 0)) // Subtraction
+    if (display.touchscreen.touchInArea(435, 374, 135, 97) && (op == ' ') && (rightNumPos > 0)) // Subtraction
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " - ";
@@ -196,7 +196,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(300, 374, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 3
+    if (display.touchscreen.touchInArea(300, 374, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 3
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "3";
@@ -217,7 +217,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(165, 374, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 2
+    if (display.touchscreen.touchInArea(165, 374, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 2
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "2";
@@ -238,7 +238,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(30, 374, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 1
+    if (display.touchscreen.touchInArea(30, 374, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 1
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "1";
@@ -259,7 +259,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(435, 277, 135, 97) && (op == ' ') && (rightNumPos > 0)) // X
+    if (display.touchscreen.touchInArea(435, 277, 135, 97) && (op == ' ') && (rightNumPos > 0)) // X
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " x ";
@@ -273,7 +273,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(300, 277, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 6
+    if (display.touchscreen.touchInArea(300, 277, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 6
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "6";
@@ -294,7 +294,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(165, 277, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 5
+    if (display.touchscreen.touchInArea(165, 277, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 5
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "5";
@@ -315,7 +315,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(30, 277, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 4
+    if (display.touchscreen.touchInArea(30, 277, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 4
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "4";
@@ -336,7 +336,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(435, 180, 135, 97) && (op == ' ') && (rightNumPos > 0)) // Division
+    if (display.touchscreen.touchInArea(435, 180, 135, 97) && (op == ' ') && (rightNumPos > 0)) // Division
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " / ";
@@ -350,7 +350,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(300, 180, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 9
+    if (display.touchscreen.touchInArea(300, 180, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 9
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "9";
@@ -371,7 +371,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(168, 180, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 8
+    if (display.touchscreen.touchInArea(168, 180, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 8
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "8";
@@ -392,7 +392,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(30, 180, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 7
+    if (display.touchscreen.touchInArea(30, 180, 135, 97) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 7
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "7";

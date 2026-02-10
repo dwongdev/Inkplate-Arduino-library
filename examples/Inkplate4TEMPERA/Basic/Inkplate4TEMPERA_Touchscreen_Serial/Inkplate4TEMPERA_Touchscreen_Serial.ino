@@ -57,14 +57,14 @@ void setup()
 void loop()
 {
     // Periodically check if there is any touch detected
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
         // Variables for storing the touchscreen data
         uint8_t n;
         uint16_t x[2], y[2];
 
         // See how many fingers are detected (max 2) and copy x and y position of each finger on touchscreen
-        n = display.tsGetData(x, y);
+        n = display.touchscreen.getData(x, y);
         if (n != 0)
         {
             // Print number of fingers to serial monitor, along with their coordinates

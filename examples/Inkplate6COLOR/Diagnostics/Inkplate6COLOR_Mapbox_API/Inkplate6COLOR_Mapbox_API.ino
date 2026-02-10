@@ -55,7 +55,7 @@ void setup()
     Serial.println(URL);
 
     // Fetch and display image
-    display.image.draw(URL, Image::PNG, Image::Position::Center);
+    display.image.draw(URL, image::PNG, image::Position::Center);
     display.display();
 
     // Go to sleep for DELAY_MS
