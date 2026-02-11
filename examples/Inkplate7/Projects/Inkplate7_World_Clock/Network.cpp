@@ -25,7 +25,7 @@
  * 
  * @returns         None
 */
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -71,7 +71,7 @@ void Network::begin(char *ssid, char *pass)
  * 
  * @returns         True if OK, false if there was an error
 */
-bool Network::getData(char *city, int *hours, int *minutes)
+bool NetworkFunctions::getData(char *city, int *hours, int *minutes)
 {
     // Create the JSON doc to store time
     DynamicJsonDocument doc(1024);
@@ -168,7 +168,7 @@ bool Network::getData(char *city, int *hours, int *minutes)
  * 
  * @returns         The full name of the city, 0 if it's not found
 */
-char *Network::getFullCityName(char *city)
+char *NetworkFunctions::getFullCityName(char *city)
 {
     static char fullName[33];
     // Check the abbreviation for each city
@@ -192,7 +192,7 @@ char *Network::getFullCityName(char *city)
  * 
  * @returns         True if successful, false if not
 */
-bool Network::getAllCities()
+bool NetworkFunctions::getAllCities()
 {
     // Create the JSON doc to store time
     DynamicJsonDocument doc(24576);

@@ -30,8 +30,8 @@
 #include "src/includes.h" // Include necessary libraries and dependencies for Inkplate and networking
 
 // --- WiFi Configuration ---
-const char *ssid = "Soldered-testingPurposes";
-const char *password = "Testing443";
+const char *ssid = "Soldered Electronics";
+const char *password = "dasduino";
 
 // --- User and Location Info ---
 String myUsername = "Username"; // User's name to be displayed on screen

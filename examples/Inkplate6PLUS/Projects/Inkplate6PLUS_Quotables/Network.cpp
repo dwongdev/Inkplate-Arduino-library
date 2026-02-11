@@ -76,7 +76,7 @@ void NetworkFunctions::begin()
 
 }
 
-bool Network::getData(char* text, char* auth)
+bool NetworkFunctions::getData(char* text, char* auth)
 {
     bool f = 0;
 
