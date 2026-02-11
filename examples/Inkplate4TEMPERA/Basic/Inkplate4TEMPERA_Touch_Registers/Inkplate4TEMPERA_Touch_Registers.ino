@@ -65,7 +65,7 @@ void setup()
 void loop()
 {
     // Periodically check if we can communicate to the touch screen
-    if (display.touchscree.available())
+    if (display.touchscreen.available())
     {
         // Read the raw data of the touch screen registers
         display.touchscreen.getRawData(touchRegs);
