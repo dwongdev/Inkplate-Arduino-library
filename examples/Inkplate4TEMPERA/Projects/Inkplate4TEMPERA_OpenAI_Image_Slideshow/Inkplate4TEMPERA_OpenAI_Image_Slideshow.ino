@@ -23,7 +23,7 @@
 #define SLEEP_DURATION_IN_MINS 30*60 
 
 // Format of the image to be downloaded and displayed (PNG is recommended for best compatibility)
-ImageColor::Format imageFormat = ImageColor::PNG;
+Image::Format imageFormat = Image::PNG;
 
 // WiFi credentials (replace with your own SSID and password)
 const char* ssid = "YOUR_SSID_HERE";

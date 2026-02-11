@@ -23,14 +23,14 @@
 #define SLEEP_DURATION_IN_MINS 30*60 
 
 // Format of the image to be downloaded and displayed (PNG is recommended for best compatibility)
-ImageColor::Format imageFormat = ImageColor::PNG;
+Image::Format imageFormat = Image::PNG;
 
 // WiFi credentials (replace with your own SSID and password)
-const char* ssid = "YOUR_SSID_HERE";
-const char* password = "YOUR_PASSWORD_HERE";
+const char* ssid = "Soldered Electronics";
+const char* password = "dasduino";
 
 // OpenAI API key (replace with your OpenAI API key)
-const char* openai_key = "YOUR_API_KEY_HERE"; 
+const char* openai_key = "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"; 
 
 // Create a secure WiFi client to communicate with OpenAI over HTTPS
 WiFiClientSecure client;
