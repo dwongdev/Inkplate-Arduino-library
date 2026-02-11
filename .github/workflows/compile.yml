@@ -43,14 +43,7 @@ jobs:
               fqbn: soldered-inkplate-boards:esp32:Inkplate6Flick
             additional-sketch-paths: |
               - examples/Inkplate6FLICK
-          - board:
-              fqbn: soldered-inkplate-boards:esp32:Inkplate6COLOR
-            additional-sketch-paths: |
-              - examples/Inkplate6COLOR
-          - board:
-              fqbn: soldered-inkplate-boards:esp32:Inkplate2
-            additional-sketch-paths: |
-              - examples/Inkplate2
+
 
     steps:
       - name: Checkout
