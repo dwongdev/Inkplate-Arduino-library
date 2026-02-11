@@ -30,7 +30,7 @@ const char* ssid = "your ssid";
 const char* password = "your password";
 
 // OpenAI API key (replace with your OpenAI API key)
-const char* openai_key = ""; 
+const char* openai_key = "your api"; 
 
 // Create a secure WiFi client to communicate with OpenAI over HTTPS
 WiFiClientSecure client;
