@@ -113,6 +113,6 @@ void loop()
 void showSplashScreen()
 {
     display.clearDisplay();
-    display.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
+    display.image.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
     display.display();
 }

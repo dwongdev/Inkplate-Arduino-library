@@ -1,262 +1,225 @@
 #include "test.h"
 
-const char sdCardTestStringLength = 100;
-const char *testString = {"This is some test string..."};
+// Use a proper size type for buffer lengths
+static constexpr size_t sdCardTestStringLength = 100;
 
-const char *WSSID = {"Soldered Electronics"};
-const char *WPASS = {"dasduino"};
+// Keep this short so it always fits comfortably
+static const char *testString = "This is some test string...";
+
+static const char *WSSID = "Soldered Electronics";
+static const char *WPASS = "dasduino";
 
 // Change this to your used slave device
-const uint8_t easyCDeviceAddress = 0x76;
+static const uint8_t easyCDeviceAddress = 0x76;
 
 void testPeripheral()
 {
-  // Set display for test report
-  // Send test reports to the UART (this epaper is slow and does not support partial update)
-  Serial.println("INKPLATE CHECKLIST");
+    Serial.println("INKPLATE CHECKLIST");
 
-  // Check I/O expander
-  Serial.print("- I/O Expander: ");
-  // Try to communicate with I/O expander
-  Wire.beginTransmission(IO_INT_ADDR);
-  if (Wire.endTransmission() == 0) // Check if there was an error in communication and print out the results on display.
-  {
-    Serial.println("OK");
-  }
-  else
-  {
-    Serial.println("FAIL");
-    failHandler();
-  }
+    // Check I/O expander
+    Serial.print("- I/O Expander: ");
+    Wire.beginTransmission(IO_INT_ADDR);
+    if (Wire.endTransmission() == 0)
+    {
+        Serial.println("OK");
+    }
+    else
+    {
+        Serial.println("FAIL");
+        failHandler();
+    }
 
-  // Check the micro SD card slot
-  Serial.print("- microSD card slot: ");
-  if (checkMicroSDCard())
-  {
-    Serial.println("OK");
-  }
-  else
-  {
-    Serial.println("FAIL");
-    failHandler();
-  }
+    // Check the micro SD card slot
+    Serial.print("- microSD card slot: ");
+    if (checkMicroSDCard())
+    {
+        Serial.println("OK");
+    }
+    else
+    {
+        Serial.println("FAIL");
+        failHandler();
+    }
 
-  // Check the WiFi
-  Serial.print("- WiFi: ");
-  if (checkWiFi(WSSID, WPASS, WTIMEOUT))
-  {
-      Serial.println("OK");
-  }
-  else
-  {
-      Serial.println("FAIL");
-      failHandler();
-  }
+    // Check the WiFi
+    Serial.print("- WiFi: ");
+    if (checkWiFi(WSSID, WPASS, WTIMEOUT))
+    {
+        Serial.println("OK");
+    }
+    else
+    {
+        Serial.println("FAIL");
+        failHandler();
+    }
 
-  // First version of the Inkplate doesn't have RTC.
+    // Check the RTC
+    Serial.print("- PCF85063 RTC: ");
+    if (rtcCheck())
+    {
+        Serial.println("OK");
+    }
+    else
+    {
+        Serial.println("FAIL");
+        failHandler();
+    }
 
-  // Check the RTC
-  Serial.print("- PCF85063 RTC: ");
-  if (rtcCheck())
-  {
-      Serial.println("OK");
-  }
-  else
-  {
-      Serial.println("FAIL");
-      failHandler();
-  }
+    // Check I2C (easyc)
+    Serial.print("- I2C (easyC): ");
+    if (checkI2C(easyCDeviceAddress))
+    {
+        Serial.println("OK");
+    }
+    else
+    {
+        Serial.println("FAIL");
+        failHandler();
+    }
 
+    // Check battery
+    float batteryVoltage = 0.0f;
+    Serial.print("- Battery: ");
+    if (checkBattery(&batteryVoltage))
+    {
+        Serial.print(batteryVoltage, 2);
+        Serial.print("V ");
+        Serial.println("OK");
+    }
+    else
+    {
+        Serial.println("FAIL");
+        failHandler();
+    }
 
-  // Check I2C (easyc)
-  // A slave must be connected via easyC address (0x28)
-  Serial.print("- I2C (easyC): ");
-  if (checkI2C(easyCDeviceAddress))
-  {
-      Serial.println("OK");
-  }
-  else
-  {
-      Serial.println("FAIL");
-      failHandler();
-  }
+    // Test wake up button
+    unsigned long beginWakeUpTest = millis();
+    int wakeButtonState = digitalRead(GPIO_NUM_18);
 
-  // Check battery
-  float batteryVoltage = 0.0;
-  Serial.print("- Battery: ");
-  if (checkBattery(&batteryVoltage))
-  {
-      Serial.print(batteryVoltage);
-      Serial.print("V ");
-      Serial.println("OK");
-  }
-  else
-  {
-      Serial.println("FAIL");
-      failHandler();
-  }
+    Serial.println("Press WAKEUP button within 30 seconds to finish testing...");
+    while (true)
+    {
+        unsigned long now = millis();
+        if (now - beginWakeUpTest > 30000UL)
+        {
+            Serial.println("WAKEUP not pressed for 30 seconds!");
+            failHandler();
+        }
 
-  // Text wake up button
-  long beginWakeUpTest = millis();
-  int wakeButtonState = digitalRead(GPIO_NUM_18);
-
-  Serial.println("Press WAKEUP button within 30 seconds to finish testing...");
-  while (true)
-  {
-      long now = millis();
-      if (now - beginWakeUpTest > 30000)
-      {
-          Serial.println("WAKEUP not pressed for 30 seconds!");
-          failHandler();
-      }
-
-      if (digitalRead(GPIO_NUM_18) != wakeButtonState)
-      {
-          break;
-      }
-      delay(1);
-  }
-  Serial.println("WAKEUP button pressed!");
+        if (digitalRead(GPIO_NUM_18) != wakeButtonState)
+        {
+            break;
+        }
+        delay(1);
+    }
+    Serial.println("WAKEUP button pressed!");
 }
 
 int checkWiFi(const char *_ssid, const char *_pass, uint8_t _wifiTimeout)
 {
-    unsigned long _timeout = millis();
+    unsigned long start = millis();
 
-    // Try to connect to WiFi network
-    WiFi.begin(WSSID, WPASS);
+    // FIX: use parameters, not globals
+    WiFi.begin(_ssid, _pass);
 
-    // Wait until WiFi connection is established or timeout has occured.
-    while ((WiFi.status() != WL_CONNECTED) && ((unsigned long)(millis() - _timeout) < (_wifiTimeout * 1000UL)))
-        ;
-
-    // Check if board is connected to WiFi
-    if (WiFi.status() == WL_CONNECTED)
+    while ((WiFi.status() != WL_CONNECTED) &&
+           ((unsigned long)(millis() - start) < (static_cast<unsigned long>(_wifiTimeout) * 1000UL)))
     {
-        return 1;
-    }
-    else
-    {
-        return 0;
+        delay(10);
     }
 
-    // Something is wrong if you got there.
-    return 0;
+    return (WiFi.status() == WL_CONNECTED) ? 1 : 0;
 }
 
 int checkMicroSDCard()
 {
-    int sdInitOk = 0;
-    sdInitOk = inkplate.sdCardInit();
+    if (!inkplate.sdCardInit())
+        return 0;
 
-    if (sdInitOk)
+    File file;
+
+    // Create/truncate so there is no leftover data
+    if (!file.open("/testFile.txt", O_CREAT | O_TRUNC | O_RDWR))
+        return 0;
+
+    file.print(testString);
+    file.close();
+
+    delay(50);
+
+    // Read back
+    if (!file.open("/testFile.txt", O_RDONLY))
+        return 0;
+
+    // +1 for terminator
+    char sdCardString[sdCardTestStringLength + 1];
+    size_t bytesRead = file.read(sdCardString, sdCardTestStringLength);
+    sdCardString[bytesRead] = '\0';
+    file.close();
+
+    // Compare
+    if (strcmp(testString, sdCardString) != 0)
     {
-        File file;
-
-        if (file.open("/testFile.txt", O_CREAT | O_RDWR))
-        {
-            file.print(testString);
-            file.close();
-        }
-        else
-        {
-            return 0;
-        }
-
-        delay(250);
-
+        // Best-effort cleanup: reopen and remove open file
         if (file.open("/testFile.txt", O_RDWR))
         {
-            char sdCardString[sdCardTestStringLength];
-            file.read(sdCardString, sizeof(sdCardString));
-            sdCardString[file.fileSize()] = 0;
-            int stringCompare = strcmp(testString, sdCardString);
-            file.remove();
+            file.remove();   // SdFat: remove currently open file
             file.close();
-            if (stringCompare != 0)
-                return 0;
         }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-    {
         return 0;
     }
+
+    // Cleanup: reopen and remove open file
+    if (file.open("/testFile.txt", O_RDWR))
+    {
+        file.remove();
+        file.close();
+    }
+
     return 1;
 }
+
 
 int checkI2C(int address)
 {
     Wire.beginTransmission(address);
-    if (Wire.endTransmission() == 0)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
+    return (Wire.endTransmission() == 0) ? 1 : 0;
 }
 
 int checkBattery(float *batVoltage)
 {
-    float voltage;
-    voltage = inkplate.readBattery();
+    float voltage = static_cast<float>(inkplate.readBattery());
     *batVoltage = voltage;
 
-    // Check the battery voltage.
-    // If the measured voltage is below 2.8V and above 4.6V, charger is dead.
-    if (voltage <= 2.8 || voltage >= 4.6)
-    {
+    // If the measured voltage is below 2.8V or above 4.6V, something is wrong.
+    if (voltage <= 2.8f || voltage >= 4.6f)
         return 0;
-    }
 
     return 1;
 }
 
 int rtcCheck()
 {
-    // First "ping" RTC on the I2C protocol and reset the RTC
     Wire.beginTransmission(0x51);
-    int _res = Wire.endTransmission();
+    int res = Wire.endTransmission();
 
-    // If result is from I2C is anything else than success (_res = 0), return 0 (error).
-    if (_res != 0)
+    if (res != 0)
         return 0;
 
-    // Reset and re-init RTC.
     inkplate.rtc.Reset();
 
-    // Set some time in epoch in RTC.
-    uint32_t _epoch = 1640995200ULL;
-    inkplate.rtc.SetEpoch(_epoch);
+    // 2022-01-01 00:00:00 UTC
+    uint32_t epoch = 1640995200UL;
+    inkplate.rtc.SetEpoch(epoch);
 
-    // Wait at least one and a half second
     delay(1500);
 
-    // Read the epoch (if everything is ok, epoch from RTC should not be the same)
-    if (inkplate.rtc.GetEpoch() != _epoch)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-
-    return 0;
+    return (inkplate.rtc.GetEpoch() != epoch) ? 1 : 0;
 }
 
-// Show a message and stop the code from executing.
 void failHandler()
 {
-
     Serial.println(" -> Test stopped!");
-
-    // Inf. loop... halt the program!
     while (true)
         delay(1000);
 }

@@ -22,97 +22,85 @@
  * @authors     Soldered
  ***************************************************/
 
-// Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE13SPECTRA
 #error "Wrong board selection for this example, please select Inkplate 13SPECTRA in the boards menu."
 #endif
 
-// Do not forget to add WiFi SSID and WiFi Password in test.cpp!
-
-// Include needed libraries in the sketch
 #include "EEPROM.h"
 #include "Inkplate.h"
 #include "Wire.h"
 
-// Include our functions and image
 #include "Peripheral.h"
 #include "test.h"
 #include "image.h"
 
 Inkplate inkplate;
 
-// If you want to write new VCOM voltage and perform all tests change this number
 const int EEPROMaddress = 0;
 
-// Peripheral mode variables and arrays
 #define BUFFER_SIZE 1000
 char commandBuffer[BUFFER_SIZE + 1];
 
+void showSplashScreen();
+
 void setup()
 {
-  Serial.begin(115200);
-  inkplate.setTextSize(4);
-  EEPROM.begin(512);
-  Wire.begin();
+    Serial.begin(115200);
 
-  // Wakeup button
-  pinMode(GPIO_NUM_18, INPUT);
+    inkplate.setTextSize(4);
+    EEPROM.begin(512);
+    Wire.begin();
 
-  bool isFirstStartup = (EEPROM.read(EEPROMaddress) != 170);
+    pinMode(GPIO_NUM_18, INPUT);
 
-  if (isFirstStartup)
-  {
-    Wire.setTimeOut(3000);
-    // Try to ping IO expander to test I2C
-    Wire.beginTransmission(IO_INT_ADDR);
-    if (Wire.endTransmission() != 0)
+    bool isFirstStartup = (EEPROM.read(EEPROMaddress) != 170);
+
+    if (isFirstStartup)
     {
-      Serial.println("I2C Bus error!");
-      failHandler();
+        Wire.setTimeOut(3000);
+
+        Wire.beginTransmission(IO_INT_ADDR);
+        if (Wire.endTransmission() != 0)
+        {
+            Serial.println("I2C Bus error!");
+            failHandler();
+        }
     }
-  }
 
-  inkplate.begin();
+    inkplate.begin();
 
-  if (isFirstStartup)
-  {
-    // Test all the peripherals
-    testPeripheral();
+    if (isFirstStartup)
+    {
+        testPeripheral();
+        EEPROM.write(EEPROMaddress, 170);
+        EEPROM.commit();
+    }
 
-    EEPROM.write(EEPROMaddress, 170);
-    EEPROM.commit();
-  }
+    memset(commandBuffer, 0, sizeof(commandBuffer));
 
-  memset(commandBuffer, 0, BUFFER_SIZE);
-
-  showSplashScreen();
+    showSplashScreen();
 }
 
 void loop()
 {
-  // Peripheral mode 
-  // More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
-
-  if (Serial.available())
-  {
-    while (Serial.available())
+    if (Serial.available())
     {
-      for (int i = 0; i < (BUFFER_SIZE - 1); i++)
-      {
-          commandBuffer[i] = commandBuffer[i + 1];
-      }
-      commandBuffer[BUFFER_SIZE - 1] = Serial.read();
-    }
-  }
+        while (Serial.available())
+        {
+            // sliding window buffer
+            for (int i = 0; i < (BUFFER_SIZE - 1); i++)
+                commandBuffer[i] = commandBuffer[i + 1];
 
-  // Function in Peripheral.h
-  run(commandBuffer, BUFFER_SIZE, &inkplate);
+            commandBuffer[BUFFER_SIZE - 1] = (char)Serial.read();
+        }
+    }
+
+    run(commandBuffer, BUFFER_SIZE, &inkplate);
 }
 
-// Print the initial image that remains on the screen
 void showSplashScreen()
 {
-  inkplate.clearDisplay();
-  inkplate.image.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
-  inkplate.display();
+    inkplate.clearDisplay();
+    inkplate.image.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
+    inkplate.display();
 }
