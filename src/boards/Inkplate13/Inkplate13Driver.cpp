@@ -468,7 +468,7 @@ double EPDDriver::readBattery()
 
     // Set to the highest resolution and read the voltage.
     analogReadResolution(12);
-    int adc = analogReadMilliVolts(35);
+    int adc = analogReadMilliVolts(1);
 
     // Turn off the MOSFET (and voltage divider).
     if (state)
