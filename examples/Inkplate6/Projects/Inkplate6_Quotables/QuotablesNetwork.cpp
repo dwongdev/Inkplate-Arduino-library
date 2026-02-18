@@ -1,5 +1,5 @@
 /*
-    Network.cpp
+    QuotablesNetwork.cpp
     Inkplate 6 Arduino library
     David Zovko, Borna Biro, Denis Vajak, Zvonimir Haramustek @ Soldered
     September 24, 2020
@@ -14,7 +14,7 @@
     Distributed as-is; no warranty is given.
 */
 
-#include "Network.h"
+#include "QuotablesNetwork.h"
 
 #include <HTTPClient.h>
 #include <WiFi.h>
@@ -24,18 +24,6 @@
 
 // Must be installed for this example to work
 #include <ArduinoJson.h>
-// external parameters from our main file
-#include "Network.h"
-
-#include <HTTPClient.h>
-#include <WiFi.h>
-#include <WiFiClientSecure.h>
-
-#include "Inkplate.h"
-
-// Must be installed for this example to work
-#include <ArduinoJson.h>
-
 // external parameters from our main file
 extern char ssid[];
 extern char pass[];
@@ -47,7 +35,7 @@ extern Inkplate display;
 ArduinoJson::StaticJsonDocument<30000> doc; // Still technically deprecated, but clarifies the source
 
 
-void NetworkFunctions::begin()
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -137,14 +125,13 @@ bool NetworkFunctions::getData(char* text, char* auth)
         }
         else
         {
+            // Set all data got from internet using formatTemp and formatWind defined above
+            // This part relies heavily on ArduinoJson library
             if(strlen(doc["quote"]["content"])>128)
             {
                 return false;
             }
-            // Set all data got from internet using formatTemp and formatWind defined above
-            // This part relies heavily on ArduinoJson library
-
-             const char *buff2 = doc["quote"]["author"]["name"];
+            const char *buff2 = doc["quote"]["author"]["name"];
             strncpy(auth,buff2,35);
 
             Serial.println("Success");

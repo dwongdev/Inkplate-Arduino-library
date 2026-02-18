@@ -1,26 +1,28 @@
 /*
-   Inkplate6FLICK_Image_Frame_From_Web example for Soldered Inkplate 6FLICK
-   For this example you will need only USB cable and Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
+    Inkplate6_Image_Frame_From_Web example for Soldered Inkplate 6
+    For this example you will need only USB cable and Inkplate 6.
+    Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
+    Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
+    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
+    This example shows how you can set inkplate to show random pictures from web.
+
+    Want to learn more about Inkplate? Visit www.inkplate.io
+    Looking to get support? Write on our forums: https://forum.soldered.com/
+    28 July 2020 by Soldered
 */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
-#ifndef ARDUINO_INKPLATE6FLICK
-#error "Wrong board selection for this example, please select Soldered Inkplate 6 FLICK"
+#if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)
+#error "Wrong board selection for this example, please select e-radionica Inkplate6 or Soldered Inkplate6 in the boards menu."
 #endif
 
 #include "Inkplate.h"
 
-const char ssid[] = "Soldered Electronics";    // Your WiFi SSID
-const char *password = ""; // Your WiFi password
-
 Inkplate display(INKPLATE_3BIT);
+
+const char ssid[] = ""; // Your WiFi SSID
+const char *password = "";     // Your WiFi password
 
 void setup()
 {
@@ -61,7 +63,7 @@ void imageUrl(char *out)
     HTTPClient http;
 
     // Starting URL that always redirects to a random image
-    const char *startUrl = "http://loremflickr.com/1024/75";
+    const char *startUrl = "http://loremflickr.com/800/600";
 
     // Tell HTTPClient to store the "Location" header sowe can read it later
     const char* keys[] = {"Location"};

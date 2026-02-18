@@ -14,6 +14,9 @@
   Distributed as-is; no warranty is given.
 */
 
+#ifndef QUOTABLESNETWORK_H
+#define QUOTABLESNETWORK_H
+
 #include "Arduino.h"
 
 #include <HTTPClient.h>
@@ -24,16 +27,13 @@
 extern char ssid[];
 extern char pass[];
 
-#ifndef NETWORK_H
-#define NETWORK_H
-
 // All functions defined in Network.cpp
 
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file
-    void begin();
+    void begin(char *ssid, char *pass);
     bool getData(char* text, char* auth);
 
   private:

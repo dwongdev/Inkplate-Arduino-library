@@ -1,5 +1,5 @@
 /*
-  Network.h
+  QuotableNetwork.h
   Inkplate 6 Arduino library
   David Zovko, Borna Biro, Denis Vajak, Zvonimir Haramustek @ Soldered
   September 24, 2020
@@ -13,14 +13,21 @@
   If you have any questions about licensing, please contact techsupport@e-radionica.com
   Distributed as-is; no warranty is given.
 */
-#include "Arduino.h"
-#include "ArduinoJson.h"
-#include "HTTPClient.h"
-#include "WiFi.h"
-#include "WiFiClientSecure.h"
 
-#ifndef NETWORK_H
-#define NETWORK_H
+
+
+#ifndef QUOTABLESNETWORK_H
+#define QUOTABLESNETWORK_H
+
+#include "Arduino.h"
+
+#include <HTTPClient.h>
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+
+// Wifi ssid and password
+extern char ssid[];
+extern char pass[];
 
 // All functions defined in Network.cpp
 

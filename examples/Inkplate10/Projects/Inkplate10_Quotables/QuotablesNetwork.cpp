@@ -1,5 +1,5 @@
 /*
-    Network.cpp
+    QuotablesNetwork.cpp
     Inkplate 6 Arduino library
     David Zovko, Borna Biro, Denis Vajak, Zvonimir Haramustek @ Soldered
     September 24, 2020
@@ -14,7 +14,7 @@
     Distributed as-is; no warranty is given.
 */
 
-#include "Network.h"
+#include "QuotablesNetwork.h"
 
 #include <HTTPClient.h>
 #include <WiFi.h>
@@ -32,7 +32,7 @@ extern char pass[];
 extern Inkplate display;
 
 // Static Json from ArduinoJson library
-StaticJsonDocument<30000> doc; // Still technically deprecated, but clarifies the source
+ArduinoJson::StaticJsonDocument<30000> doc; // Still technically deprecated, but clarifies the source
 
 
 void NetworkFunctions::begin(char *ssid, char *pass)
