@@ -120,7 +120,7 @@ void showImageBuffer() {
 
   display.clearDisplay();                     // clear existing content
   // Draw JPEG from RAM: full-screen, no dithering
-  display.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
+  display.image.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
   display.display();                          // push to panel
 }
 

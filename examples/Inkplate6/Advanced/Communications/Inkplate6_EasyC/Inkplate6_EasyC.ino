@@ -66,14 +66,14 @@ void loop()
     display.setCursor(350, 40);
     display.print(bme680.readTemperature() + temperatureOffset);
     display.print(" *C");
-    display.drawImage(temperature_icon, 150, 0, temperature_icon_w, temperature_icon_h,
+    display.image.draw(temperature_icon, 150, 0, temperature_icon_w, temperature_icon_h,
                       BLACK); // Arguments are: array variable name, start X, start Y, size X, size Y, color
 
     // Display humidity icon and measured value
     display.setCursor(350, 245);
     display.print(bme680.readHumidity() / 10);
     display.print(" %");
-    display.drawImage(humidity_icon, 150, 200, humidity_icon_w, humidity_icon_h,
+    display.image.draw(humidity_icon, 150, 200, humidity_icon_w, humidity_icon_h,
                       BLACK); // Arguments are: array variable name, start X, start Y, size X, size Y, color
 
     // Display the pressure icon and measured value
@@ -81,11 +81,11 @@ void loop()
     display.setCursor(350, 449);
     display.print(bme680.readPressure() * 10);
     display.print(" hPa");
-    display.drawImage(pressure_icon, 150, 400, pressure_icon_w, pressure_icon_h,
+    display.image.draw(pressure_icon, 150, 400, pressure_icon_w, pressure_icon_h,
                       BLACK); // Arguments are: array variable name, start X, start Y, size X, size Y, color
 
     // Display Soldered logo
-    display.drawImage(logo, 585, 545, logo_w, logo_h,
+    display.image.draw(logo, 585, 545, logo_w, logo_h,
                       BLACK); // Arguments are: array variable name, start X, start Y, size X, size Y, color
 
     // This part of code actually drawing on the Inkplate screen, previous lines just drawing into the frame buffer

@@ -3,8 +3,8 @@
 const char sdCardTestStringLength = 100;
 const char *testString = {"This is some test string..."};
 
-const char *WSSID = {"Soldered-testingPurposes"};
-const char *WPASS = {"Testing443"};
+const char *WSSID = {"Soldered Electronics"};
+const char *WPASS = {"dasduino"};
 
 // Change this to your used slave device
 const uint8_t easyCDeviceAddress = 0x30;
@@ -228,17 +228,17 @@ int rtcCheck()
         return 0;
 
     // Reset and re-init RTC.
-    display.rtcReset();
+    display.rtc.Reset();
 
     // Set some time in epoch in RTC.
     uint32_t _epoch = 1640995200ULL;
-    display.rtcSetEpoch(_epoch);
+    display.rtc.SetEpoch(_epoch);
 
     // Wait at least one and a half second
     delay(1500);
 
     // Read the epoch (if everything is ok, epoch from RTC should not be the same)
-    if (display.rtcGetEpoch() != _epoch)
+    if (display.rtc.GetEpoch() != _epoch)
     {
         return 1;
     }

@@ -39,7 +39,6 @@
 #endif
 
 #include "Inkplate.h" //Inkplate display library
-#include "SdFat.h"
 #include <cstring>   // For strlen, strcmp, strdup
 #include <cctype>    // For tolower
 #include <cstdlib>   // For malloc, realloc, free, strtol
@@ -120,7 +119,7 @@ void setup() {
     Serial.println("SD init failed");
     while (1);
   }
-  if (!display.tsInit(true)) {
+  if (!display.touchscreen.init(true)) {
     Serial.println("Touch init failed");
     while (1);
   }
@@ -143,7 +142,7 @@ void setup() {
 void loop() {
   if (!inPictureView) {
     // LEFT = SELECT → open pictures
-    if (display.touchInArea(LEFT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    if (display.touchscreen.touchInArea(LEFT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(LEFT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "SELECT");
       freePictures();
       char folder[128];
@@ -160,7 +159,7 @@ void loop() {
       delay(200);
     }
     // PREV book (cyclic if >1)
-    else if (display.touchInArea(MIDDLE_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(MIDDLE_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(MIDDLE_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "PREV");
       if (totalBooks > 1) {
         if (currentBook->previous) currentBook = currentBook->previous;
@@ -175,7 +174,7 @@ void loop() {
       delay(200);
     }
     // NEXT book (cyclic if >1)
-    else if (display.touchInArea(RIGHT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(RIGHT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(RIGHT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "NEXT");
       if (totalBooks > 1) {
         if (currentBook->next) currentBook = currentBook->next;
@@ -211,7 +210,7 @@ void loop() {
         for (int c = 0; c < 3; c++) {
           int x = ovX + c*(btnW + spacing);
           int y = startY + r*(btnH + spacing);
-          if (display.touchInArea(x, y, btnW, btnH)) {
+          if (display.touchscreen.touchInArea(x, y, btnW, btnH)) {
             invertButton(x, y, btnW, btnH, keys[r][c]);
             if (strcmp(keys[r][c], "CLR") == 0) {
               pageInput = "";
@@ -238,7 +237,7 @@ void loop() {
     }
 
     // HOME/BACK button: cancel goto or go home
-    if (display.touchInArea(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    if (display.touchscreen.touchInArea(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       // invert with appropriate label
       if (inGotoUI) invertButton(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "BACK");
       else          invertButton(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "HOME");
@@ -254,7 +253,7 @@ void loop() {
       delay(200);
     }
     // GOTO button → enter numpad
-    else if (display.touchInArea(GOTO_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(GOTO_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(GOTO_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "GOTO");
       inGotoUI   = true;
       pageInput  = "";  // start empty
@@ -262,7 +261,7 @@ void loop() {
       delay(200);
     }
     // PREV picture
-    else if (display.touchInArea(PREV_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(PREV_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(PREV_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "PREV");
       if (!inGotoUI && currentPic->previous) {
         currentPic = currentPic->previous;
@@ -271,7 +270,7 @@ void loop() {
       delay(200);
     }
     // NEXT picture
-    else if (display.touchInArea(NEXT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(NEXT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(NEXT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "NEXT");
       if (!inGotoUI && currentPic->next) {
         currentPic = currentPic->next;
@@ -450,7 +449,7 @@ void displayPicture() {
   snprintf(fullPath, sizeof(fullPath),
            "/books/%s/%s",
            currentBook->name, currentPic->name);
-  display.drawImage(fullPath, 0, 11, 1);  // moved down by 10px
+  display.image.draw(fullPath, 0, 11, 1);  // moved down by 10px
   displayPictureButtons();
   displayPageCounter();
   display.partialUpdate(false, true);

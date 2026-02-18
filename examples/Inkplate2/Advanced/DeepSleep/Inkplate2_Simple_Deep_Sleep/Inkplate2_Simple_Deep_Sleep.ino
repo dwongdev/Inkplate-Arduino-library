@@ -45,7 +45,7 @@ void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
     display.clearDisplay(); // Clear frame buffer of display
-    display.drawImage(pictures[slide], 106 - w[slide] / 2, 0, w[slide],
+    display.image.draw(pictures[slide], 106 - w[slide] / 2, 0, w[slide],
                       104); // Display selected picture at location X=0, Y=0. All three pictures have different widths,
                             // but the same heights
     display.display();      // Refresh the screen with new picture

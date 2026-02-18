@@ -38,7 +38,7 @@
 #define DELAY_WIFI_RETRY_SECONDS 5
 
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // create display object
 Inkplate display;

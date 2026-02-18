@@ -45,19 +45,19 @@ void setup()
     
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
     display.clearDisplay(); // Clear frame buffer of display
-    display.drawImage(picture1, 0, 0, 212,
+    display.image.draw(picture1, 0, 0, 212,
                       104); // Display picture from RAM  at location X=0, Y=0. It is also needed to specify width and
                             // height of picture (212x104 in this case).
     display.display();      // Refresh the screen with new picture
     delay(10000);           // Wait a bit (in this case 10 seconds)
 
     display.clearDisplay();                      // Clear frame buffer of display
-    display.drawImage(picture2, 0, 0, 212, 104); // Display selected picture at location X=0, Y=0.
+    display.image.draw(picture2, 0, 0, 212, 104); // Display selected picture at location X=0, Y=0.
     display.display();                           // Refresh the screen with new picture
     delay(10000);                                // Wait a bit (in this case 10 seconds)
 
     display.clearDisplay();                      // Clear frame buffer of display
-    display.drawImage(picture3, 0, 0, 212, 104); // Display selected picture at location X=0, Y=0.
+    display.image.draw(picture3, 0, 0, 212, 104); // Display selected picture at location X=0, Y=0.
     display.display();                           // Refresh the screen with new picture
 
     // Put ESP32 into deep sleep. Program stops here

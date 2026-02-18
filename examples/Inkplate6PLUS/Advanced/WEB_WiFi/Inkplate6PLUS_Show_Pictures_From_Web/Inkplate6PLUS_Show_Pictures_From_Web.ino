@@ -62,7 +62,7 @@ void setup()
     // NOTE: Both drawImage methods allow for an optional fifth "invert" parameter. Setting this parameter to true
     // will flip all colors on the image, making black white and white black. This may be necessary when exporting
     // bitmaps from certain softwares. Forth parameter will dither the image. Photo taken by: Roberto Fernandez
-    if (!display.drawImage("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
+    if (!display.image.draw("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
     {
         // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
         // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no compression!
@@ -89,7 +89,7 @@ void setup()
         int32_t len = http.getSize();
         if (len > 0)
         {
-            if (!display.drawBitmapFromWeb(http.getStreamPtr(), 0, 0, len))
+            if (!display.image.drawBitmapFromWeb(http.getStreamPtr(), 0, 0, len))
             {
                 // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
                 // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no
@@ -118,7 +118,7 @@ void setup()
     // NOTE: Both drawJpegFromWeb methods allow for an optional fifth "invert" parameter. Setting this parameter to
     // true will flip all colors on the image, making black white and white black. forth parameter will dither the
     // image.
-    if (!display.drawImage("https://varipass.org/destination.jpg", 0, 100, true, false))
+    if (!display.image.draw("https://varipass.org/destination.jpg", 0, 100, true, false))
     {
         // If is something failed (wrong filename or format), write error message on the screen.
         display.println("Image open error");

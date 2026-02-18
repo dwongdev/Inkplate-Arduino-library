@@ -44,7 +44,7 @@ void setup()
     display.begin();
 
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -70,7 +70,7 @@ void setup()
     esp_sleep_enable_ext1_wakeup(TOUCHPAD_WAKE_MASK, ESP_EXT1_WAKEUP_ALL_LOW);
 
     // Put the touchscreen in deep sleep mode to use less power
-    display.tsSetPowerState(CYPRESS_TOUCH_DEEP_SLEEP_MODE);
+    display.touchscreen.setPowerState(CYPRESS_TOUCH_DEEP_SLEEP_MODE);
 
     // Go to sleep
     esp_deep_sleep_start();

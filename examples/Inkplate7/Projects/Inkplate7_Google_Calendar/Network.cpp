@@ -17,7 +17,7 @@ Distributed as-is; no warranty is given.
 #include "Network.h"
 
 // Connect Inkplate to the WiFi
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -48,7 +48,7 @@ void Network::begin(char *ssid, char *pass)
 }
 
 // Gets time from ntp server
-void Network::getTime(char *timeStr, long offSet, int timeZone)
+void NetworkFunctions::getTime(char *timeStr, long offSet, int timeZone)
 {
     // Get seconds since 1.1.1970. and add timezone
     time_t nowSecs = time(nullptr) + (long)timeZone * 3600L + offSet;
@@ -62,7 +62,7 @@ void Network::getTime(char *timeStr, long offSet, int timeZone)
 }
 
 // Function to get all raw data from the web
-bool Network::getData(char *calendarURL, char *data)
+bool NetworkFunctions::getData(char *calendarURL, char *data)
 {
     // Variable to store fail
     bool f = 0;
@@ -144,7 +144,7 @@ bool Network::getData(char *calendarURL, char *data)
 }
 
 // Find internet time
-void Network::setTime()
+void NetworkFunctions::setTime()
 {
     // Used for setting correct time
     configTime(0, 0, "pool.ntp.org", "time.nist.gov");

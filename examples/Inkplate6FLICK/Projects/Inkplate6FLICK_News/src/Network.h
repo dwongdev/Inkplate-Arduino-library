@@ -47,8 +47,8 @@ struct news
     }
 };
 
-// Network class to handle WiFi and API interactions
-class Network
+// NetworkFunctions class to handle WiFi and API interactions
+class NetworkFunctions
 {
   public:
     void setCredentials(const char *wifiSSID, const char *wifiPass, const char *apiKey);

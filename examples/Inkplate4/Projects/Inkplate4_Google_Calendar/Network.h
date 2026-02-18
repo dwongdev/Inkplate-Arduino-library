@@ -1,5 +1,5 @@
 /*
-Network.h
+NetworkFunctions.h
 Inkplate 5 Arduino library
 David Zovko, Borna Biro, Denis Vajak, Zvonimir Haramustek @ Soldered
 29 March 2023
@@ -26,7 +26,7 @@ Distributed as-is; no warranty is given.
 
 // All functions defined in Network.cpp
 
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file

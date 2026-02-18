@@ -46,7 +46,7 @@ void setup()
         // NOTE: Both drawImage methods allow for an optional fifth "invert" parameter. Setting this parameter
         // to true will flip all colors on the image, making black white and white black. This may be necessary when
         // exporting bitmaps from certain softwares.
-        if (display.drawImage("image1.bmp", 0, 0, 1))
+        if (display.image.draw("image1.bmp", 0, 0, 1))
         {
             display.display();
             delay(5000);
@@ -65,7 +65,7 @@ void setup()
         display.clearDisplay();
         if (file.open("image2.bmp", O_RDONLY))
         {
-            display.drawBitmapFromSd(&file, 0, 0);
+            display.image.drawBitmapFromSd(&file, 0, 0);
             display.display();
             delay(5000);
         }

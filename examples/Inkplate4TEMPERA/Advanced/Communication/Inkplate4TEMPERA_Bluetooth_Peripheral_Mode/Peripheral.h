@@ -210,7 +210,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 r = display->sdCardInit();
                 if (r)
                 {
-                    r = display->drawBitmapFromSd(strTemp, x, y);
+                    r = display->image.drawBitmapFromSd(strTemp, x, y);
                     SerialBT->print("#H(");
                     SerialBT->print(r, DEC);
                     SerialBT->println(")*");
@@ -227,7 +227,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
 
             case 'I':
                 sscanf(s + 3, "%d", &c);
-                // sprintf(temp, "display->setDisplayMode(%s)\n", c == 0 ? "INKPLATE_1BIT" : "INKPLATE_3BIT");
+                // sprintf(temp, "display->selectDisplayMode(%s)\n", c == 0 ? "INKPLATE_1BIT" : "INKPLATE_3BIT");
                 // SerialBT->print(temp);
                 if (c == INKPLATE_1BIT)
                     display->selectDisplayMode(INKPLATE_1BIT);
@@ -355,7 +355,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 r = display->sdCardInit();
                 if (r)
                 {
-                    r = display->drawImage(strTemp, x, y);
+                    r = display->image.draw(strTemp, x, y);
                     SerialBT->print("#H(");
                     SerialBT->print(r, DEC);
                     SerialBT->println(")*");
@@ -392,26 +392,26 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 sscanf(s + 3, "%d,%d,%d", &hr, &min, &sec);
                 // sprintf(temp, "display->rtcSetTime(%d, %d, %d);\n\r", hr, min, sec);
                 // SerialBT->println(temp);
-                display->rtcSetTime(hr, min, sec);
+                display->rtc.SetTime(hr, min, sec);
                 break;
             case 'X':
                 sscanf(s + 3, "%d,%d,%d,%d", &wday, &day, &mon, &yr);
                 // sprintf(temp, "display->rtcSetDate(%d, %d, %d, %d);\n\r", wday, day, mon, yr);
                 // SerialBT->println(temp);
-                display->rtcSetDate(wday, day, mon, yr);
+                display->rtc.SetDate(wday, day, mon, yr);
                 break;
             case 'Y':
                 sscanf(s + 3, "%d", &ep);
                 // sprintf(temp, "display->rtcSetEpoch(%d);\n\r", ep);
                 // SerialBT->println(temp);
-                display->rtcSetEpoch(ep);
+                display->rtc.SetEpoch(ep);
                 break;
             case 'Z':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     SerialBT->print("#Z(");
-                    SerialBT->print(display->rtcGetEpoch());
+                    SerialBT->print(display->rtc.GetEpoch());
                     SerialBT->println(")*");
                     SerialBT->flush();
                 }
@@ -423,30 +423,30 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                     SerialBT->println("INVALID");
                     break;
                 }
-                display->rtcGetRtcData();
+                display->rtc.GetRtcData();
                 SerialBT->print("#a(");
                 switch (k)
                 {
                 case 0:
-                    SerialBT->print(display->rtcGetSecond());
+                    SerialBT->print(display->rtc.GetSecond());
                     break;
                 case 1:
-                    SerialBT->print(display->rtcGetMinute());
+                    SerialBT->print(display->rtc.GetMinute());
                     break;
                 case 2:
-                    SerialBT->print(display->rtcGetHour());
+                    SerialBT->print(display->rtc.GetHour());
                     break;
                 case 3:
-                    SerialBT->print(display->rtcGetDay());
+                    SerialBT->print(display->rtc.GetDay());
                     break;
                 case 4:
-                    SerialBT->print(display->rtcGetWeekday());
+                    SerialBT->print(display->rtc.GetWeekday());
                     break;
                 case 5:
-                    SerialBT->print(display->rtcGetMonth());
+                    SerialBT->print(display->rtc.GetMonth());
                     break;
                 case 6:
-                    SerialBT->print(display->rtcGetYear());
+                    SerialBT->print(display->rtc.GetYear());
                     break;
                 }
                 SerialBT->println(")*");
@@ -456,20 +456,20 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 sscanf(s + 3, "%d,%d,%d,%d,%d", &as, &am, &ah, &ad, &aw);
                 // sprintf(temp, "display->rtcSetAlarm(%d, %d, %d, %d, %d);\n\r", as, am, ah, ad, aw);
                 // SerialBT->println(temp);
-                display->rtcSetAlarm(as, am, ah, ad, aw);
+                display->rtc.SetAlarm(as, am, ah, ad, aw);
                 break;
             case 'c':
                 sscanf(s + 3, "%d,%d", &ae, &amc);
                 // sprintf(temp, "display->rtcSetAlarmEpoch(%d, %d);\n\r", ae, amc);
                 // SerialBT->println(temp);
-                display->rtcSetAlarmEpoch(ae, amc);
+                display->rtc.SetAlarmEpoch(ae, amc);
                 break;
             case 'd':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     SerialBT->print("#d(");
-                    SerialBT->print(display->rtcCheckAlarmFlag());
+                    SerialBT->print(display->rtc.CheckAlarmFlag());
                     SerialBT->println(")*");
                     SerialBT->flush();
                 }
@@ -479,7 +479,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 if (b == '1')
                 {
                     // SerialBT->println("display->rtcClearAlarmFlag()");
-                    display->rtcClearAlarmFlag();
+                    display->rtc.ClearAlarmFlag();
                     SerialBT->flush();
                 }
                 break;
@@ -494,19 +494,19 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 switch (k)
                 {
                 case 0:
-                    SerialBT->print(display->rtcGetAlarmSecond());
+                    SerialBT->print(display->rtc.GetAlarmSecond());
                     break;
                 case 1:
-                    SerialBT->print(display->rtcGetAlarmMinute());
+                    SerialBT->print(display->rtc.GetAlarmMinute());
                     break;
                 case 2:
-                    SerialBT->print(display->rtcGetAlarmHour());
+                    SerialBT->print(display->rtc.GetAlarmHour());
                     break;
                 case 3:
-                    SerialBT->print(display->rtcGetAlarmDay());
+                    SerialBT->print(display->rtc.GetAlarmDay());
                     break;
                 case 4:
-                    SerialBT->print(display->rtcGetAlarmWeekday());
+                    SerialBT->print(display->rtc.GetAlarmWeekday());
                     break;
                 }
                 SerialBT->println(")*");
@@ -523,14 +523,14 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
 
                 // sprintf(temp, "display->rtcTimerSet(%d, %d, %d, %d);\n\r", sc, v, ie, ip);
                 // SerialBT->println(temp);
-                display->rtcTimerSet(sc, v, ie, ip);
+                display->rtc.TimerSet(sc, v, ie, ip);
                 break;
             case 'h':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     SerialBT->print("#h(");
-                    SerialBT->print(display->rtcCheckTimerFlag());
+                    SerialBT->print(display->rtc.CheckTimerFlag());
                     SerialBT->println(")*");
                     SerialBT->flush();
                 }
@@ -540,7 +540,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 if (b == '1')
                 {
                     // SerialBT->println("display->rtcClearTimerFlag()");
-                    display->rtcClearTimerFlag();
+                    display->rtc.ClearTimerFlag();
                 }
                 break;
             case 'j':
@@ -548,7 +548,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 if (b == '1')
                 {
                     // SerialBT->println("display->rtcDisableTimer()");
-                    display->rtcDisableTimer();
+                    display->rtc.DisableTimer();
                 }
                 break;
             case 'k':
@@ -556,7 +556,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 if (b == '?')
                 {
                     SerialBT->print("#k(");
-                    SerialBT->print(display->rtcIsSet());
+                    SerialBT->print(display->rtc.IsSet());
                     SerialBT->println(")*");
                     SerialBT->flush();
                 }
@@ -566,19 +566,19 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 if (b == '1')
                 {
                     // SerialBT->println("display->rtcReset()");
-                    display->rtcReset();
+                    display->rtc.Reset();
                 }
                 break;
             case 'm':
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    display->frontlight(true);
+                    display->frontlight.setState(true);
                     // SerialBT->println("display->frontlight(true);");
                 }
                 else
                 {
-                    display->frontlight(false);
+                    display->frontlight.setState(false);
                     // SerialBT->println("display->frontlight(false);");
                 }
                 break;
@@ -586,17 +586,17 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 sscanf(s + 3, "%d", &br);
                 // sprintf(temp, "display->setFrontlight(%d);\n\r", br);
                 // SerialBT->println(temp);
-                display->setFrontlight(br);
+                display->frontlight.setBrightness(br);
                 break;
             case 'o':
                 sscanf(s + 3, "%d", &pwrs);
-                // sprintf(temp, "display->tsInit(%d);\n\r", pwrs);
+                // sprintf(temp, "display->touchscreen.init(%d);\n\r", pwrs);
                 // SerialBT->println(temp);
                 if (pwrs == 1)
-                    display->tsInit(1);
+                    display->touchscreen.init(1);
 
                 if (pwrs == 0)
-                    display->tsInit(0);
+                    display->touchscreen.init(0);
                 break;
             case 'p':
                 sscanf(s + 3, "%c", &b);
@@ -604,7 +604,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 {
                     // sprintf(temp, "display->tsShutdown();\n\r");
                     // SerialBT->println(temp);
-                    display->tsShutdown();
+                    display->touchscreen.shutdown();
                 }
                 break;
             case 'r':
@@ -612,7 +612,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 if (b == '?')
                 {
                     SerialBT->print("#r(");
-                    SerialBT->print(display->tsAvailable());
+                    SerialBT->print(display->touchscreen.available());
                     SerialBT->println(")*");
                     SerialBT->flush();
                 }
@@ -621,7 +621,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
-                    if (display->tsGetData(tx1, ty1) != 0)
+                    if (display->touchscreen.getData(tx1, ty1) != 0)
                     {
                         SerialBT->print("#s(");
                         SerialBT->print(tx1[0]);
@@ -636,7 +636,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
-                    display->tsGetRawData(rt);
+                    display->touchscreen.getRawData(rt);
                     for (int i = 0; i < 8; ++i)
                     {
                         SerialBT->print("Reg ");
@@ -650,7 +650,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 // sprintf(temp, "display->touchInArea(%hu, %hu, %hu, %hu);\n\r", tx2, ty2, tw, th);
                 // SerialBT->println(temp);
                 SerialBT->print("#u(");
-                SerialBT->print(display->touchInArea(tx2, ty2, tw, th));
+                SerialBT->print(display->touchscreen.touchInArea(tx2, ty2, tw, th));
                 SerialBT->println(")*");
                 SerialBT->flush();
                 break;

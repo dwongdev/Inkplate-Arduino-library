@@ -67,7 +67,7 @@ void setup()
     // so it is not needed to dither it again while drawing.
     display.clearDisplay();
 
-    if (!display.drawImage("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/"
+    if (!display.image.draw("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/"
                            "master/examples/Inkplate2/Advanced/WEB_WiFi/"
                            "Inkplate2_Show_Pictures_From_Web/cat_dithered.jpg",
                            0, 0, false, false))
@@ -98,7 +98,7 @@ void setup()
         int32_t len = http.getSize();
         if (len > 0)
         {
-            if (!display.drawBitmapFromWeb(http.getStreamPtr(), 0, 0, len, true, false))
+            if (!display.image.drawBitmapFromWeb(http.getStreamPtr(), 0, 0, len, true, false))
             {
                 // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
                 // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no
@@ -128,7 +128,7 @@ void setup()
     // NOTE: Both drawJpegFromWeb methods allow for an optional fifth "invert" parameter. Setting this parameter to
     // true will flip all colors on the image, making black white and white black. fourth parameter will dither the
     // image.
-    if (!display.drawImage("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/"
+    if (!display.image.draw("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/"
                            "master/examples/Inkplate2/Advanced/WEB_WiFi/"
                            "Inkplate2_Show_Pictures_From_Web/mountain.png",
                            0, 0, true, false))

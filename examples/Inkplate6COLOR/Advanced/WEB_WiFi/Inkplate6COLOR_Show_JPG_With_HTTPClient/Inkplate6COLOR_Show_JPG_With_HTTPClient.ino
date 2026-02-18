@@ -28,8 +28,8 @@ Inkplate display;
 
 /**************** CHANGE HERE ******************/
 
-char *ssid = ""; // Your WiFi SSID
-char *pass = ""; // Your WiFi password
+char *ssid = "Soldered Electronics"; // Your WiFi SSID
+char *pass = "dasduino"; // Your WiFi password
 
 // Add the URL of the image you want to show on Inkplate
 String url = "https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/master/examples/Inkplate6COLOR/Advanced/WEB_WiFi/Inkplate6COLOR_Show_JPG_With_HTTPClient/image.jpg";
@@ -111,7 +111,7 @@ void setup()
             }
 
             // Draw image into the frame buffer of Inkplate
-            display.drawJpegFromBuffer(buffer, size, 0, 0, true, false);
+            display.image.drawJpegFromBuffer(buffer, size, 0, 0, true, false);
 
             // Free the memory where the image was stored because it is now in the frame buffer
             free(buffer);

@@ -38,7 +38,7 @@ void loop()
 {
     float voltage = display.readBattery();                    // Read battery voltage
     display.clearDisplay();                                   // Clear everything in frame buffer of e-paper display
-    display.drawImage(battSymbol, 230, 130, 104, 104, BLACK); // Draw battery symbol at position X=230 Y=130
+    display.image.draw(battSymbol, 230, 130, 104, 104, BLACK); // Draw battery symbol at position X=230 Y=130
     display.setCursor(330, 180);                              // Set cursor at position X=330 Y=180
     display.print(voltage, 2);                                // Print battery voltage with 2 decimals
     display.print('V');

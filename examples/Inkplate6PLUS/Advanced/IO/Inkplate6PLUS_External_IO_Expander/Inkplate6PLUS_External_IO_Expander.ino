@@ -37,7 +37,7 @@ void setup()
     // Must be called before display.begin()!
     //display.setInkplatePowerMode(INKPLATE_USB_PWR_ONLY); 
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
-    display.pinModeIO(LED_PIN,
+    display.externalIO.pinMode(LED_PIN,
                       OUTPUT); // Set P1-7 (or GPB7) to output. On that pin, we sholud connect LED with current limiting
                                // resistor If we do not specify which IO expander we want to use, by the default
                                // external IO expander will be used of the one with header named IO Expander 2.
@@ -45,8 +45,8 @@ void setup()
 
 void loop()
 {
-    display.digitalWriteIO(LED_PIN, LOW);  // Set output to low (LED does not light up)
+    display.externalIO.digitalWrite(LED_PIN, LOW);  // Set output to low (LED does not light up)
     delay(1000);                           // Wait for one second
-    display.digitalWriteIO(LED_PIN, HIGH); // Set output to high (LED lights up)
-    delay(1000);
+    display.externalIO.digitalWrite(LED_PIN, HIGH); // Set output to high (LED lights up)
+    delay(1000); 
 }

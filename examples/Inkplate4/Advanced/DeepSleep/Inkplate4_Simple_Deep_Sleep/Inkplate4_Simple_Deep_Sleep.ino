@@ -51,7 +51,7 @@ void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
     display.clearDisplay(); // Clear frame buffer of display
-    display.drawImage(pictures[slide], 0, 0, E_INK_WIDTH,
+    display.image.draw(pictures[slide], 0, 0, E_INK_WIDTH,
                       E_INK_HEIGHT); // Display selected picture at location X=0, Y=0. All three pictures have
                                      // resolution of 400x300 pixels
     display.display();               // Refresh the screen with new picture

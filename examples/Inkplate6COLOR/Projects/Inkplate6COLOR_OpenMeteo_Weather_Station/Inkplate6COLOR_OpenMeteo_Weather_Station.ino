@@ -47,8 +47,8 @@ const char* ntpServer = "pool.ntp.org";  // in case you want to use a different 
 
 // --- Device and Data Objects ---
 Inkplate inkplate; // Create Inkplate display object (3-bit mode for partial grayscale)
-Network network;                  // Network utility for weather fetching
-Network::UserInfo userInfo;       // Structure to hold user and device info (battery, last updated, etc.)
+NetworkFunctions network;                  // Network utility for weather fetching
+NetworkFunctions::UserInfo userInfo;       // Structure to hold user and device info (battery, last updated, etc.)
 WeatherData weatherData;          // Structure to hold fetched weather data
 Gui gui(inkplate);                // Drawing visuals and info
 

@@ -4,5 +4,7 @@ AlignConsecutiveMacros: 'true'
 MaxEmptyLinesToKeep: '2'
 TabWidth: '4'
 UseTab: Never
+IncludeBlocks: Preserve
+SortIncludes: false
 
 ...

@@ -42,7 +42,7 @@ char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
 #include "Fonts/FreeSerifItalic24pt7b.h"
 
 // Create network and display objects
-Network network;
+NetworkFunctions network;
 Inkplate inkplate(INKPLATE_1BIT);
 
 // Constants for delays and refreshes

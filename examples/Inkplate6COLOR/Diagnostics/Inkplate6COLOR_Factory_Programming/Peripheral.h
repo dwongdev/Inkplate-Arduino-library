@@ -152,7 +152,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 r = display->sdCardInit();
                 if (r)
                 {
-                    r = display->drawBitmapFromSd(strTemp, x, y);
+                    r = display->image.drawBitmapFromSd(strTemp, x, y);
                     Serial.print("#H(");
                     Serial.print(r, DEC);
                     Serial.println(")*");

@@ -50,7 +50,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
             int x, x1, x2, y, y1, y2, x3, y3, l, c, w, h, r, n, rx, ry, xc, yc, yr;
             uint8_t hr, min, sec, wday, day, mon, k, as, am, ah, ad, aw, amc, v;
             bool ie, ip;
-            System::rtcCountdownSrcClock sc;
+            System::rtc.CountdownSrcClock sc;
             uint32_t ep, ae;
             char b;
             char temp[150];
@@ -226,7 +226,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
 
             case 'I':
                 sscanf(s + 3, "%d", &c);
-                // sprintf(temp, "display->setDisplayMode(%s)\n", c == 0 ? "INKPLATE_1BIT" : "INKPLATE_3BIT");
+                // sprintf(temp, "display->selectDisplayMode(%s)\n", c == 0 ? "INKPLATE_1BIT" : "INKPLATE_3BIT");
                 // SerialBT->print(temp);
                 if (c == 1)
                     display->selectDisplayMode(INKPLATE_1BIT);

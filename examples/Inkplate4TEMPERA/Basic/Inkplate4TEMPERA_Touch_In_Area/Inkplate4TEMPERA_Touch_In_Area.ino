@@ -47,7 +47,7 @@ void setup()
     // Clear the display buffer
     display.clearDisplay();
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -65,7 +65,7 @@ void setup()
 void loop()
 {
     //Touch in area checks if touch ocured in given coordinates
-    if(display.touchInArea(x_position, y_position, 120, 70))
+    if(display.touchscreen.touchInArea(x_position, y_position, 120, 70))
     {
         x_position += 100;
         y_position += 100;

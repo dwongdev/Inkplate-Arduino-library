@@ -32,7 +32,7 @@ void setup()
     display.clearDisplay();
     display.display();
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -56,13 +56,13 @@ void setup()
 void loop()
 {
     // Check if there is any touch detected
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
         uint8_t n;
         uint16_t x[2], y[2];
 
         // See how many fingers are detected (max 2) and copy x and y position of each finger on touchscreen
-        n = display.tsGetData(x, y);
+        n = display.touchscreen.getData(x, y);
         if (n != 0)
         {
             // Print number of fingers to serial monitor, along with their coordinates

@@ -60,7 +60,7 @@ char apiKey[] = ""; // You can obtain one here: https://newsapi.org/
 #define NUM_COLS 2
 
 // Create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // Create display object
 Inkplate display;

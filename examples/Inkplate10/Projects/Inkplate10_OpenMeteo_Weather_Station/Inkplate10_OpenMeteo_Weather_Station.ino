@@ -30,8 +30,8 @@
 #include "src/includes.h" // Include necessary libraries and dependencies for Inkplate and networking
 
 // --- WiFi Configuration ---
-const char *ssid = "Soldered-testingPurposes";
-const char *password = "Testing443";
+const char *ssid = "Soldered Electronics";
+const char *password = "dasduino";
 
 // --- User and Location Info ---
 String myUsername = "Username"; // User's name to be displayed on screen
@@ -47,8 +47,8 @@ const char* ntpServer = "pool.ntp.org";  // in case you want to use a different 
 
 // --- Device and Data Objects ---
 Inkplate inkplate(INKPLATE_3BIT); // Create Inkplate display object (3-bit mode for partial grayscale)
-Network network;                  // Network utility for weather fetching
-Network::UserInfo userInfo;       // Structure to hold user and device info (battery, last updated, etc.)
+NetworkFunctions network;                  // Network utility for weather fetching
+NetworkFunctions::UserInfo userInfo;       // Structure to hold user and device info (battery, last updated, etc.)
 WeatherData weatherData;          // Structure to hold fetched weather data
 Gui gui(inkplate);                // Drawing visuals and info
 

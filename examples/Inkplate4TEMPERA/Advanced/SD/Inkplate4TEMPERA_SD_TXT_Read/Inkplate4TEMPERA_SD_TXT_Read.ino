@@ -25,7 +25,7 @@
 #endif
 
 #include "Inkplate.h"            //Include Inkplate library to the sketch
-#include "SdFat.h"               //Include library for SD card
+               //Include library for SD card
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1 Bit mode (BW)
 SdFile file;                     // Create SdFile object used for accessing files on SD card
 
@@ -34,7 +34,7 @@ void setup()
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
     display.clearDisplay(); // Clear frame buffer of display
     display.display();      // Put clear image on display
-    display.setFrontlight(15);
+    display.frontlight.setState(15);
     // Init SD card. Display if SD card is init propery or not.
     if (display.sdCardInit())
     {

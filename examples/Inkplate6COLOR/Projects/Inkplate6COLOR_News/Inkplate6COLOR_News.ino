@@ -25,11 +25,11 @@
 int timeZone = 2;
 
 // WiFi credentials (replace with your WiFi network details)
-char ssid[] = "YourWiFiSSID";       // Replace with your WiFi SSID
-char pass[] = "YourWiFiPassword";   // Replace with your WiFi password
+char ssid[] = "Soldered Electronics";       // Replace with your WiFi SSID
+char pass[] = "dasduino";   // Replace with your WiFi password
 
 // News API key (get one from https://newsapi.org/)
-char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
+char api_key_news[] = "0764e21041bc424c90071880e5f0607f"; // Replace with your News API key
 // ------------------------------------
 
 
@@ -45,7 +45,7 @@ char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
 #include "Fonts/Inter10pt7b.h"
 
 // Create network and display objects
-Network network;
+NetworkFunctions network;
 Inkplate inkplate; // Use color mode for Inkplate 6COLOR
 
 // Constants for delays and refreshes
