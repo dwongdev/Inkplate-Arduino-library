@@ -124,29 +124,23 @@ void Gui::renderAlbumScreen(const String& albumName,
     // ---- Base canvas ----
     display.clearDisplay();
     display.image.setDitherKernel(ImageColor::DitherKernel::JarvisJudiceNinke);
-    display.setRotation(1); // change to 1/2/3 if your panel orientation needs it
+    display.setRotation(3); // set for portrait orientation on your panel
     display.fillRect(0, 0, display.width(), display.height(), INKPLATE_BLACK);
     display.setTextColor(INKPLATE_WHITE);
 
-    Serial.println("prolazi 1");
+    const int W = display.width();   // expected 488 (portrait)
+    const int H = display.height();  // expected 600 (portrait)
 
-    const int W = display.width();   // expected 448
-    const int H = display.height();  // expected 600
-
-    // Hardcoded cover art: 300x300, centered horizontally
+    // ---- Cover placement (portrait-friendly) ----
     const int coverSize = 300;
     const int coverX = (W - coverSize) / 2;
-    const int coverY = (W - coverSize) / 2;; 
 
-    // Header 
-    display.setFont(&FreeSans9pt7b);
-    display.setCursor(80, 55);
-
-    Serial.println(" prolazi 2");
+    // Put cover near the top so we have room for text + controls under it
+    const int topMargin = 24;
+    const int coverY = topMargin;
 
     // Cover frame + image
     display.drawRect(coverX - 6, coverY - 6, coverSize + 12, coverSize + 12, INKPLATE_WHITE);
-
 
     bool imgOk = display.image.drawJpegFromWeb(imageUrl.c_str(), coverX, coverY, 1, 0);
     if (!imgOk)
@@ -165,115 +159,61 @@ void Gui::renderAlbumScreen(const String& albumName,
         display.print(msg);
     }
 
-    // Text area under cover (Spotify-like hierarchy) 
-    /*const int padX = 80;
+    // ---- Text + progress layout (portrait-friendly stack) ----
+    const int padX = 36;                    // smaller side padding for 488px wide
     const int maxTextW = W - (padX * 2);
 
-    const int yShift=20;
+    // Helper: center + ellipsize to maxTextW at a given baseline Y
+    auto drawCenteredEllipsized = [&](const String& in, const GFXfont* font, int baselineY)
+    {
+        display.setFont(font);
+
+        String s = in;
+        int16_t x1, y1;
+        uint16_t tw, th;
+
+        display.getTextBounds(s.c_str(), 0, 0, &x1, &y1, &tw, &th);
+        if ((int)tw > maxTextW)
+        {
+            String base = s;
+            const String ell = "...";
+            while (base.length() > 1)
+            {
+                String candidate = base + ell;
+                display.getTextBounds(candidate.c_str(), 0, 0, &x1, &y1, &tw, &th);
+                if ((int)tw <= maxTextW)
+                {
+                    s = candidate;
+                    break;
+                }
+                base.remove(base.length() - 1);
+            }
+        }
+
+        display.getTextBounds(s.c_str(), 0, 0, &x1, &y1, &tw, &th);
+        int tx = (W - (int)tw) / 2 - x1;
+        display.setCursor(tx, baselineY);
+        display.print(s);
+    };
 
     // Track title (primary). If trackName empty, fall back to albumName.
-    String title = trackName.length() ? trackName : albumName;
+    const String title = trackName.length() ? trackName : albumName;
 
-    display.setFont(&FreeSansBold24pt7b);
-    {
-        // Ellipsize title to fit maxTextW
-        int16_t x1, y1;
-        uint16_t tw, th;
-        display.getTextBounds(title.c_str(), 0, 0, &x1, &y1, &tw, &th);
+    // Baselines under cover (tuned for 488x600)
+    const int textTopY = coverY + coverSize + 42; // first baseline under cover
+    const int titleY   = textTopY;                // bold 12pt
+    const int artistY  = titleY + 30;             // 9pt
+    const int albumY   = artistY + 24;            // 9pt
 
-        if ((int)tw > maxTextW)
-        {
-            String base = title;
-            const String ell = "...";
-            while (base.length() > 1)
-            {
-                String candidate = base + ell;
-                display.getTextBounds(candidate.c_str(), 0, 0, &x1, &y1, &tw, &th);
-                if ((int)tw <= maxTextW)
-                {
-                    title = candidate;
-                    break;
-                }
-                base.remove(base.length() - 1);
-            }
-        }
+    drawCenteredEllipsized(title,      &FreeSansBold12pt7b, titleY);
+    drawCenteredEllipsized(artistName, &FreeSans9pt7b,      artistY);
+    drawCenteredEllipsized(albumName,  &FreeSans9pt7b,      albumY);
 
-        display.getTextBounds(title.c_str(), 0, 0, &x1, &y1, &tw, &th);
-        int tx = (W - (int)tw) / 2 - x1;
-        int ty = coverY + coverSize + 85 +yShift;
-        display.setCursor(tx, ty);
-        display.print(title);
-    }
-
-    // Artist (secondary)
-    display.setFont(&FreeSans18pt7b);
-    {
-        String artist = artistName;
-        int16_t x1, y1;
-        uint16_t tw, th;
-        display.getTextBounds(artist.c_str(), 0, 0, &x1, &y1, &tw, &th);
-
-        if ((int)tw > maxTextW)
-        {
-            String base = artist;
-            const String ell = "...";
-            while (base.length() > 1)
-            {
-                String candidate = base + ell;
-                display.getTextBounds(candidate.c_str(), 0, 0, &x1, &y1, &tw, &th);
-                if ((int)tw <= maxTextW)
-                {
-                    artist = candidate;
-                    break;
-                }
-                base.remove(base.length() - 1);
-            }
-        }
-
-        display.getTextBounds(artist.c_str(), 0, 0, &x1, &y1, &tw, &th);
-        int tx = (W - (int)tw) / 2 - x1;
-        int ty = coverY + coverSize + 135+yShift;
-        display.setCursor(tx, ty);
-        display.print(artist);
-    }
-
-    // Album (tertiary)
-    display.setFont(&FreeSans12pt7b);
-    {
-        String alb = albumName;
-        int16_t x1, y1;
-        uint16_t tw, th;
-        display.getTextBounds(alb.c_str(), 0, 0, &x1, &y1, &tw, &th);
-
-        if ((int)tw > maxTextW)
-        {
-            String base = alb;
-            const String ell = "...";
-            while (base.length() > 1)
-            {
-                String candidate = base + ell;
-                display.getTextBounds(candidate.c_str(), 0, 0, &x1, &y1, &tw, &th);
-                if ((int)tw <= maxTextW)
-                {
-                    alb = candidate;
-                    break;
-                }
-                base.remove(base.length() - 1);
-            }
-        }
-
-        display.getTextBounds(alb.c_str(), 0, 0, &x1, &y1, &tw, &th);
-        int tx = (W - (int)tw) / 2 - x1;
-        int ty = coverY + coverSize + 170+yShift;
-        display.setCursor(tx, ty);
-        display.print(alb);
-    }
-
-    
+    // Progress bar under text
     const int barX = padX;
     const int barW = W - (padX * 2);
     const int barH = 10;
-    const int barY = coverY + coverSize + 215+yShift;
+    const int barY = albumY + 26;
 
     display.drawRect(barX, barY, barW, barH, INKPLATE_WHITE);
 
@@ -283,66 +223,67 @@ void Gui::renderAlbumScreen(const String& albumName,
         if (progressMs > durationMs) progressMs = durationMs; // clamp
         progress = (float)progressMs / (float)durationMs;
     }
-    
+
     int fillW = (int)(barW * progress);
     display.fillRect(barX + 1, barY + 1, max(0, fillW - 2), barH - 2, INKPLATE_WHITE);
 
-    // Time labels (placeholders)
+    // Time labels
     display.setFont(&FreeSans9pt7b);
     String leftTime = formatMs(progressMs);
     String rightTime = formatMs(durationMs);
 
-    display.setCursor(barX, barY + 30);
+    const int timeY = barY + 28;
+    display.setCursor(barX, timeY);
     display.print(leftTime);
 
     {
         int16_t x1, y1;
         uint16_t tw, th;
         display.getTextBounds(rightTime.c_str(), 0, 0, &x1, &y1, &tw, &th);
-        display.setCursor(barX + barW - (int)tw, barY + 30);
+        display.setCursor(barX + barW - (int)tw, timeY);
         display.print(rightTime);
     }
 
-    
-    const int controlsY = barY + 85;
+    // Controls
+    const int controlsY = timeY + 60;
     const int cx = W / 2;
 
     // Previous
-    display.fillTriangle(cx - 220, controlsY,
-                         cx - 170, controlsY - 28,
-                         cx - 170, controlsY + 28,
+    display.fillTriangle(cx - 170, controlsY,
+                         cx - 130, controlsY - 24,
+                         cx - 130, controlsY + 24,
                          INKPLATE_WHITE);
-    display.fillRect(cx - 232, controlsY - 28, 10, 56, INKPLATE_WHITE);
+    display.fillRect(cx - 182, controlsY - 24, 8, 48, INKPLATE_WHITE);
 
-    // Play (circle + triangle)
-    display.drawCircle(cx, controlsY, 42, INKPLATE_WHITE);
+    // Play/Pause (circle + bars) -- same as your original "pause" icon
+    display.drawCircle(cx, controlsY, 38, INKPLATE_WHITE);
     {
-        const int barW2 = 10;
-        const int barH2 = 36;
+        const int barW2 = 9;
+        const int barH2 = 32;
         const int gap = 10;
 
-        int leftBarX  = cx - gap/2 - barW2;
-        int rightBarX = cx + gap/2;
-        int barTopY   = controlsY - barH2/2;
+        int leftBarX  = cx - gap / 2 - barW2;
+        int rightBarX = cx + gap / 2;
+        int barTopY   = controlsY - barH2 / 2;
 
         display.fillRect(leftBarX,  barTopY, barW2, barH2, INKPLATE_WHITE);
         display.fillRect(rightBarX, barTopY, barW2, barH2, INKPLATE_WHITE);
     }
 
     // Next
-    display.fillTriangle(cx + 220, controlsY,
-                         cx + 170, controlsY - 28,
-                         cx + 170, controlsY + 28,
+    display.fillTriangle(cx + 170, controlsY,
+                         cx + 130, controlsY - 24,
+                         cx + 130, controlsY + 24,
                          INKPLATE_WHITE);
-    display.fillRect(cx + 222, controlsY - 28, 10, 56, INKPLATE_WHITE);
+    display.fillRect(cx + 174, controlsY - 24, 8, 48, INKPLATE_WHITE);
 
     // ---- Footer ----
     display.setFont(&FreeSans9pt7b);
-    display.setCursor(padX, H - 35);*/
-
+    display.setCursor(padX, H - 22);
 
     display.display();
 }
+
 
 String Gui::formatMs(uint32_t ms){
     uint32_t totalSeconds = ms / 1000;

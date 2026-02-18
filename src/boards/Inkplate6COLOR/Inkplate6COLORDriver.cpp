@@ -27,8 +27,8 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
 {
     int16_t x0 = x;
     int16_t y0 = y;
-    if (x0 > E_INK_WIDTH - 1 || y0 > E_INK_HEIGHT - 1 || x0 < 0 || y0 < 0)
-        return;
+    /*if (x0 > E_INK_WIDTH - 1 || y0 > E_INK_HEIGHT - 1 || x0 < 0 || y0 < 0)
+        return;*/
     if (color > 6)
         return;
 

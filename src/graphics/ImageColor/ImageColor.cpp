@@ -19,19 +19,17 @@
 #if defined(ARDUINO_INKPLATE13SPECTRA) || defined(ARDUINO_INKPLATECOLOR) || defined(ARDUINO_INKPLATE2)
 #include "Inkplate.h"
 #include "ImageColor.h"
-#include "../TJpeg/TJpg_Decoder.h"
+#include "../Tjpeg/TJpg_Decoder.h"
 #include "pgmspace.h"
 
 
 ImageColor *_imagePtrJpeg = nullptr;
 ImageColor *_imagePtrPng = nullptr;
 
-#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
-__attribute__((section(".ext_ram.bss"))) int16_t ImageColor::ditherBuffer[3][ImageColor::ditherRowCount][E_INK_HEIGHT];
-#else
-__attribute__((section(".ext_ram.bss")))
-int16_t ImageColor::ditherBuffer[3][ImageColor::ditherRowCount][E_INK_WIDTH + 200];
-#endif
+int16_t (*ImageColor::ditherBuffer)[ImageColor::ditherRowCount][ImageColor::ditherBufferWidth] = nullptr;
+uint8_t *ImageColor::pixelBuffer = nullptr;
+uint32_t *ImageColor::ditherPalette = nullptr;
+uint8_t *ImageColor::palette = nullptr;
 
 
 void ImageColor::begin(Inkplate *inkplateptr)
@@ -40,6 +38,26 @@ void ImageColor::begin(Inkplate *inkplateptr)
     _imagePtrJpeg = this;
     _imagePtrPng = this;
     setDitherKernel(FloydSteinberg);
+
+#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
+    ditherBuffer =
+        (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
+#else
+    ditherBuffer =
+        (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
+#endif
+#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
+    pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_HEIGHT * 4 + 5), MALLOC_CAP_SPIRAM);
+#else
+    pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
+#endif
+    ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
+    palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
+
+    if (!ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
+    {
+        Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
+    }
 }
 
 void ImageColor::setDitherKernel(const DitherKernel kernel)

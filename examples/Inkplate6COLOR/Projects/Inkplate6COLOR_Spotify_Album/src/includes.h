@@ -14,6 +14,7 @@
 #include "fonts/FreeSans12pt7b.h"
 #include "fonts/FreeSans18pt7b.h"
 #include "fonts/FreeSansBold18pt7b.h"
+#include "fonts/FreeSansBold12pt7b.h"
 #include "fonts/FreeSansBold24pt7b.h"
 
 // mbedTLS base64 for Basic auth header
