@@ -1,15 +1,15 @@
 /*
-    Inkplate6_Quotables example for Soldered Inkplate 6
-    For this example you will need only USB cable and Inkplate 6.
-    Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-    Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
+    Inkplate6_Quotables example for Soldered Inkplate 10
+    For this example you will need only USB cable and Inkplate 10.
+    Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
+    Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
     https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
 
     This example shows you how to use simple API call without API key. Response
     from server is in JSON format, so that will be shown too how it is used. What happens
     here is basically ESP32 connects to WiFi and sends API call and server returns HTML
     document containing one quote and some information about it, then using library ArduinoJSON
-    we extract only quote from JSON data and show it on Inkplate 6. After displaying quote
+    we extract only quote from JSON data and show it on Inkplate 10. After displaying quote
     ESP32 goes to sleep and wakes up every 300 seconds to show new quote(you can change time interval).
 
     IMPORTANT:
@@ -23,16 +23,15 @@
 */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
-#if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)
-#error "Wrong board selection for this example, please select e-radionica Inkplate6 or Soldered Inkplate6 in the boards menu."
+#if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
+#error "Wrong board selection for this example, please select e-radionica Inkplate10 or Soldered Inkplate10 in the boards menu."
 #endif
-
 
 //---------- CHANGE HERE  -------------:
 
 // Put in your ssid and password
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 //----------------------------------
 
@@ -43,12 +42,12 @@ char pass[] = "";
 #include "Fonts/FreeMonoBold24pt7b.h"
 
 // Our networking functions, declared in Network.cpp
-#include "Network.h"
+#include "QuotablesNetwork.h"
 #include "driver/rtc_io.h" // Include ESP32 library for RTC pin I/O (needed for rtc_gpio_isolate() function)
 #include <rom/rtc.h>       // Include ESP32 library for RTC (needed for rtc_get_reset_reason() function)
 
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // create display object
 Inkplate display(INKPLATE_1BIT);

@@ -43,7 +43,7 @@ void setup()
     display.display();
 
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -65,10 +65,10 @@ void setup()
 void loop()
 {
     // Periodically check if we can communicate to the touch screen
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
         // Read the raw data of the touch screen registers
-        display.tsGetRawData(touchRegs);
+        display.touchscreen.getRawData(touchRegs);
         for(int i = 0; i < 8; ++i)
         {
             Serial.print("Reg [");

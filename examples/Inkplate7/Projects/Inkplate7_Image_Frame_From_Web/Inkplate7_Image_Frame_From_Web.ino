@@ -56,7 +56,7 @@ void setup()
     imageUrl(url);
 
     // Draw an image on the screen
-    Serial.println(display.drawImage(url, display.PNG, 0, 0));
+    Serial.println(display.image.draw(url, display.PNG, 0, 0));
     display.display();
 
     // Go to deep sleep

@@ -30,8 +30,8 @@
 //---------- CHANGE HERE  -------------:
 
 // Put in your ssid and password
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 //----------------------------------
 
@@ -42,12 +42,12 @@ char pass[] = "";
 #include "Fonts/FreeMonoBold24pt7b.h"
 
 // Our networking functions, declared in Network.cpp
-#include "Network.h"
+#include "QuotablesNetwork.h"
 #include "driver/rtc_io.h" // Include ESP32 library for RTC pin I/O (needed for rtc_gpio_isolate() function)
 #include <rom/rtc.h>       // Include ESP32 library for RTC (needed for rtc_get_reset_reason() function)
 
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // create display object
 Inkplate display(INKPLATE_1BIT);

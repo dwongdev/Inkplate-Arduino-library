@@ -41,7 +41,7 @@ void setup()
         // NOTE: Both drawImage methods allow for an optional fifth "invert" parameter. Setting this parameter
         // to true will flip all colors on the image, making black white and white black. This may be necessary when
         // exporting bitmaps from certain softwares.
-        if (!display.drawImage("image1.bmp", 0, 0, 1))
+        if (!display.image.draw("image1.bmp", 0, 0, 1))
         {
             // If is something failed (wrong filename or wrong bitmap format), write error message on the Serial Monitor
             // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no
@@ -59,7 +59,7 @@ void setup()
 
         if (file.open("image2.bmp", O_RDONLY))
         {
-            display.drawBitmapFromSd(&file, 0, 0, 1);
+            display.image.drawBitmapFromSd(&file, 0, 0, 1);
             display.display();
             delay(5000);
         }

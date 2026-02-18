@@ -67,12 +67,12 @@ void loop()
     display.setTextSize(2);                // Set text scaling to two (text will be two times bigger than normal)
     display.setTextColor(INKPLATE2_BLACK); // Set text color to black
     display.clearDisplay();                // Print out new data
-    display.drawImage(thermometer, 20, 8, 18, 45); // Draw thermometer icon
+    display.image.draw(thermometer, 20, 8, 18, 45); // Draw thermometer icon
     display.setCursor(60, 22);                     // Set text cursor position at X = 60, Y = 22
     display.print(temp, 2);                        // Print air temperature
     display.println(" C");
 
-    display.drawImage(humidity_icon, 5, 58, 45, 45); // Draw pressure icon
+    display.image.draw(humidity_icon, 5, 58, 45, 45); // Draw pressure icon
     display.setCursor(60, 72);                       // Set text cursor position at X = 60, Y = 72
     display.print(hum, 2);                           // Convert to air pressure hPa and print on display
     display.println(" %");

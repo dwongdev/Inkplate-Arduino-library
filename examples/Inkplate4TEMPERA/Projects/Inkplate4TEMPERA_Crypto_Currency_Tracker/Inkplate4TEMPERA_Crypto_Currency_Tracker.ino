@@ -62,7 +62,7 @@ char currencyAbbr[] = "BTC";
 #include "Network.h"
 
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // create display object
 Inkplate display(INKPLATE_3BIT);
@@ -123,11 +123,11 @@ void setup()
 
     // Initial display settings
     display.begin();
-    display.tsInit(true);
+    display.touchscreen.init(true);
 
     // Turn off frontlight
-    display.frontlight(true);
-    display.setFrontlight(0);
+    display.frontlight.setState(true);
+    display.frontlight.setState(0);
 
     display.setTextWrap(false);
     display.setTextColor(0, 7);
@@ -332,7 +332,7 @@ void drawTime()
     // Just draw time
     int i = 1;
 
-    // Save current date string, more about it in Network.cpp
+    // Save current date string, more about it in NetworkFunctions.cpp
     network.getTime(date);
 
     // Text settings
@@ -354,7 +354,7 @@ void drawTime()
 // Our main drawing function
 void drawAll()
 {
-    // Save current date string, more about it in Network.cpp
+    // Save current date string, more about it in NetworkFunctions.cpp
     network.getTime(date);
 
     // Find current day from string

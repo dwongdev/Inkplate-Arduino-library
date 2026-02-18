@@ -46,11 +46,11 @@ void setup()
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
 
     // Turn frontlight on
-    display.frontlight(1);
-    display.setFrontlight(50);
+    display.frontlight.setState(1);
+    display.frontlight.setBrightness(50);
 
     display.clearDisplay(); // Clear frame buffer of display
-    display.drawImage(
+    display.image.draw(
         pictures[slide], 0, 0, 600, 600); // Display selected picture at location X=0, Y=0. All three pictures have resolution of 600x600 pixels
     display.display(); // Refresh the screen with new picture
     slide++; // Update counter for pictures. With this variable, we choose what picture is going to be displayed on
@@ -59,8 +59,8 @@ void setup()
         slide = 0; // We do not have more than 3 images, so roll back to zero
 
     // Turn off touchscreen and frontlight to save energy duiring deep sleep
-    display.tsShutdown();  // Turn off the display touchscreen
-    display.frontlight(0); // Turn off the frontlight
+    display.touchscreen.shutdown();  // Turn off the display touchscreen
+    display.frontlight.setState(0); // Turn off the frontlight
 
     rtc_gpio_isolate(GPIO_NUM_12); // Isolate/disable GPIO12 on ESP32 (only to reduce power consumption in sleep)
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // Activate wake-up timer -- wake up after 20s here

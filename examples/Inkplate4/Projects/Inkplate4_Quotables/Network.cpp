@@ -21,7 +21,7 @@
 #include <ArduinoJson.h>
 
 
-void Network::begin(char * ssid, char * pass)
+void NetworkFunctions::begin(char * ssid, char * pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -45,7 +45,7 @@ void Network::begin(char * ssid, char * pass)
     Serial.println(F(" connected"));
 }
 
-bool Network::getData(char *quote, char *author, int *len, Inkplate * display)
+bool NetworkFunctions::getData(char *quote, char *author, int *len, Inkplate * display)
 {
     bool f = 0;
 

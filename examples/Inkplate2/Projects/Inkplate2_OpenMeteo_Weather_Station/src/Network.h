@@ -7,7 +7,7 @@
 #include <Inkplate.h>
 #include <Arduino.h>
 
-class Network {
+class NetworkFunctions {
 public:
 
     // --- Struct UserInfo ---

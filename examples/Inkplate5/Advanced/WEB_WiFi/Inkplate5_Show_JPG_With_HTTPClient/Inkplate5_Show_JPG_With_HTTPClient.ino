@@ -64,7 +64,7 @@ void setup()
 
     // Switch to 3-bit mode so the image will be of better quality
     // NOTE: You can't use partial update when the Inkplate is in the 3-bit mode!
-    display.setDisplayMode(INKPLATE_3BIT);
+    display.selectDisplayMode(INKPLATE_3BIT);
 
     // Make an object for the HTTP client
     HTTPClient http;
@@ -120,7 +120,7 @@ void setup()
             }
 
             // Draw image into the frame buffer of Inkplate
-            display.drawJpegFromBuffer(buffer, size, 0, 0, true, false);
+            display.image.drawJpegFromBuffer(buffer, size, 0, 0, true, false);
 
             // Free the memory where the image was stored because it is now in the frame buffer
             free(buffer);

@@ -194,7 +194,7 @@ void loop()
                 r = display.sdCardInit();
                 if (r)
                 {
-                    r = display.drawBitmapFromSd(strTemp, x, y);
+                    r = display.image.drawBitmapFromSd(strTemp, x, y);
                     Serial.print("#H(");
                     Serial.print(r, DEC);
                     Serial.println(")*");
@@ -254,7 +254,7 @@ void loop()
                 r = display.sdCardInit();
                 if (r)
                 {
-                    r = display.drawImage(strTemp, x, y);
+                    r = display.image.draw(strTemp, x, y);
                     Serial.print("#H(");
                     Serial.print(r, DEC);
                     Serial.println(")*");

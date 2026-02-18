@@ -52,7 +52,8 @@ void setup()
     {
         // Temporary buffer for file name
         char a[50];
-        FatFile f, root = display.getSdFat().open("/");         // Currently open file and the directory we want images from e.g. root /
+        FsFile root = display.getSdFat().open("/");         // Currently open file and the directory we want images from e.g. root /
+        FsFile f;
         while (f.openNext(&root, O_RDONLY) && f.getName(a, 40)) // Iterate over all files in directory
         {
             if (f.isFile() && !f.isHidden() && a[0] != '.' &&                        // Check if current file isn't a directory
@@ -66,7 +67,7 @@ void setup()
         if (fileCount != 0) // If there we're any files choose one and draw it
         {
             String s = files[random(0, fileCount)];
-            display.drawImage(s, 0, 0);
+            display.image.draw(s, 0, 0);
             Serial.println("Drawn image: ");
             Serial.println(s);
             display.display();

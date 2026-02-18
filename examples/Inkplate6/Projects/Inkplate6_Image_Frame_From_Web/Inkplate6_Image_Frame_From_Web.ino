@@ -28,18 +28,28 @@ void setup()
 {
     Serial.begin(115200);
     display.begin();
+    display.setTextColor(0);
 
     // Join wifi
     display.connectWiFi(ssid, password);
     Serial.println("joined wifi");
-    char url[256];
-    imageUrl(url);
+    char url[256];  // Buffer that will hold the final resolved image url
 
-    Serial.println(display.drawImage(url, display.PNG, 0, 0));
+    // Get the final image URL (resolve HTTP redirect) 
+    imageUrl(url);
+    Serial.println(url);
+
+    // Download and draw the JPEG image directly from the web
+    // Function returns 1 on success and 0 on failure
+    Serial.println(display.image.drawJpegFromWeb(url, 0, 0, true, false));
     display.display();
 
     Serial.println("Going to sleep");
+
+    // Activate wakeup timer
     esp_sleep_enable_timer_wakeup(15ll * 60 * 1000 * 1000);
+
+    // Start deep sleep (this function does not return). Program stops here.
     esp_deep_sleep_start();
 }
 
@@ -48,27 +58,58 @@ void loop()
     // Never here, as deepsleep restarts esp32
 }
 
-void imageUrl(char *a)
+void imageUrl(char *out)
 {
-    String url;
     HTTPClient http;
-    if (http.begin("https://source.unsplash.com/random/800x600") && http.GET() > 0)
+
+    // Starting URL that always redirects to a random image
+    const char *startUrl = "http://loremflickr.com/800/600";
+
+    // Tell HTTPClient to store the "Location" header sowe can read it later
+    const char* keys[] = {"Location"};
+    http.collectHeaders(keys, 1);
+
+    // Disable automatic redirect following, because we want to manually read the Location header
+    http.setFollowRedirects(HTTPC_DISABLE_FOLLOW_REDIRECTS);
+
+    // Start HTTP connection
+    if (!http.begin(startUrl))
     {
-        url = http.getString();
-
-        int urlStart = url.indexOf("href=\"") + 6;
-        int urlEnd = url.indexOf("\">", urlStart);
-
-        url = url.substring(urlStart, urlEnd);
-        url = url.substring(0, url.indexOf("?")) + "?crop=entropy&fit=crop&fm=png&h=600&w=800";
-
-        Serial.println(url);
-        strcpy(a, url.c_str());
+        strcpy(out, startUrl);
+        return;
     }
-    else
+
+    // Perform HTTP GET request
+    int code = http.GET();
+    Serial.printf("HTTP code: %d\n", code);
+
+    // Try header() first (works when collectHeaders is used)
+    String loc = http.header("Location");
+
+    // Fallback to getLocation() (sometimes works even if header() is empty)
+    if (loc.length() == 0)
+        loc = http.getLocation();
+
+    Serial.print("Location: ");
+    Serial.println(loc);
+
+    if (loc.length() == 0)
     {
-        display.println("HTTP error");
-        display.display();
+        strcpy(out, startUrl);
+        http.end();
+        return;
     }
+
+    // If the path is relative, make it absolute
+    if (loc.startsWith("/"))
+        loc = String("http://loremflickr.com") + loc;
+
+    // If the redirect is protocol-relative (redirect starts with "//"), add "http:"
+    if (loc.startsWith("//"))
+        loc = String("http:") + loc;
+
+    strncpy(out, loc.c_str(), 255);
+    out[255] = 0;
+
     http.end();
 }

@@ -58,7 +58,7 @@ void setup()
     // Wakeup button
     pinMode(GPIO_NUM_36, INPUT);
 
-    bool isFirstStartup = (EEPROM.read(EEPROMaddress) != 170);
+    bool isFirstStartup = true;
 
     if (isFirstStartup)
     {

@@ -264,7 +264,7 @@ void loop()
     // Display some grayscale image on screen. We are going to display Soldered logo on display at location X = 100,
     // Y = 100 Image size is 500x332 pixels.
     display.clearDisplay();
-    display.drawImage(picture1, 100, 100, 500,
+    display.image.draw(picture1, 100, 100, 500,
                       332); // Arguments are: array variable name, start X, start Y,  size X, size Y
     displayCurrentAction("Drawing a bitmap image");
     display.display();
@@ -366,7 +366,7 @@ void loop()
     }
 
     // Did you know that you can change between BW and greyscale mode anytime?
-    // Just call display.setDisplayMode(mode)
+    // Just call display.selectDisplayMode(mode)
 }
 
 // Small function that will write on the screen what function is currently in demonstration.

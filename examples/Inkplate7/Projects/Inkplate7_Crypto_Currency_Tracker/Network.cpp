@@ -38,7 +38,7 @@
  * 
  * @returns     none
 */
-void Network::begin(char * ssid, char * pass)
+void NetworkFunctions::begin(char * ssid, char * pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -74,7 +74,7 @@ void Network::begin(char * ssid, char * pass)
  * 
  * @returns     none
 */
-void Network::getTime(char *timeStr, int timeZone)
+void NetworkFunctions::getTime(char *timeStr, int timeZone)
 {
     // Get seconds since 1.1.1970.
     time_t nowSecs = time(nullptr);
@@ -106,7 +106,7 @@ void Network::getTime(char *timeStr, int timeZone)
  * 
  * @returns     True if successful, false if not
 */
-bool Network::getData(double *data, char * currency)
+bool NetworkFunctions::getData(double *data, char * currency)
 {
     // Dynamic Json from ArduinoJson library
     DynamicJsonDocument doc(30000);
@@ -188,7 +188,7 @@ bool Network::getData(double *data, char * currency)
  * 
  * @returns     None
 */
-void Network::setTime()
+void NetworkFunctions::setTime()
 {
     // Used for setting correct time
     configTime(0, 0, "pool.ntp.org", "time.nist.gov");

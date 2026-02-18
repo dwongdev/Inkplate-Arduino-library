@@ -16,7 +16,7 @@
  * @authors     @ Soldered
  ***************************************************/
 #if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATE6PLUSV2) || defined(ARDUINO_INKPLATE4TEMPERA)
-#include "TouchElan.h"
+#include "touchElan.h"
 #include "Inkplate.h"
 
 uint16_t _tsXResolution;

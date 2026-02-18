@@ -32,7 +32,7 @@ static char wDays[8][8] = {
     "Mon", "Tue", "Wed", "Thr", "Fri", "Sat", "Sun",
 };
 
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file

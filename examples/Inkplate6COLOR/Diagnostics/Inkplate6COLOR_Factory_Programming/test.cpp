@@ -3,8 +3,8 @@
 const char sdCardTestStringLength = 100;
 const char *testString = {"This is some test string..."};
 
-const char *WSSID = {"Soldered-testingPurposes"};
-const char *WPASS = {"Testing443"};
+const char *WSSID = {"Soldered Electronics"};
+const char *WPASS = {"dasduino"};
 
 // Change this to your used slave device
 const uint8_t easyCDeviceAddress = 0x30;

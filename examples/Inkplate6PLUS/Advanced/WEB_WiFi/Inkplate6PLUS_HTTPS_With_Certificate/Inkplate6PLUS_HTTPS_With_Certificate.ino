@@ -85,7 +85,7 @@ void setup()
     //Apply the certificate previously defined
     display.applyHttpsCertificate(certificate);
     //Here we will draw the image using a valid certificate. Photo taken by: Roberto Fernandez
-    if (!display.drawImage("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
+    if (!display.image.draw("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
     {
         // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
         // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no compression!
@@ -97,7 +97,7 @@ void setup()
     display.clearDisplay();
     //Next we will try to load an image from a different website, which will not work as the certificate is 
     //not valid for this page
-    if (!display.drawImage("https://i.imgur.com/WdBS7WL.jpeg", 0, 100, true, false))
+    if (!display.image.draw("https://i.imgur.com/WdBS7WL.jpeg", 0, 100, true, false))
     {
         display.println("This image wont load as the certificate is invalid");
         display.display();

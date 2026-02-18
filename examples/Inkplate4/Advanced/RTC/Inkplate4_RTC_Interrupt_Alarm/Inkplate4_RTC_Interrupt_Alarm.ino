@@ -39,13 +39,13 @@ void setup()
     display.setTextSize(2); // Set text to be 2 times bigger than classic 5x7 px text
 
     // Set time as an epoch
-    display.rtcSetEpoch(1680676200);
-    display.rtcSetAlarmEpoch(display.rtcGetEpoch() + 15, RTC_ALARM_MATCH_DHHMMSS);
+    display.rtc.SetEpoch(1680676200);
+    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 15, RTC_ALARM_MATCH_DHHMMSS);
 
     // Or you can use other way to set the time and date
-    // display.rtcSetTime(6, 30, 0);
-    // display.rtcSetDate(4, 5, 4, 2023);
-    // display.rtcSetAlarm(15, 30, 6, 5, 4); // Set alarm 15 seconds from now
+    // display.rtc.SetTime(6, 30, 0);
+    // display.rtc.SetDate(4, 5, 4, 2023);
+    // display.rtc.SetAlarm(15, 30, 6, 5, 4); // Set alarm 15 seconds from now
 
     attachInterrupt(39, alarmISR, FALLING); // Set interrupt function and interrupt mode
 }
@@ -54,16 +54,16 @@ void loop()
 {
     display.clearDisplay();     // Clear frame buffer of display
     display.setCursor(20, 140); // Set position of the text
-    display.rtcGetRtcData();    // Get the time and date from RTC
+    display.rtc.GetRtcData();    // Get the time and date from RTC
 
     // Print the time on screen
-    printTime(display.rtcGetHour(), display.rtcGetMinute(), display.rtcGetSecond(), display.rtcGetDay(),
-              display.rtcGetWeekday(), display.rtcGetMonth(), display.rtcGetYear());
+    printTime(display.rtc.GetHour(), display.rtc.GetMinute(), display.rtc.GetSecond(), display.rtc.GetDay(),
+              display.rtc.GetWeekday(), display.rtc.GetMonth(), display.rtc.GetYear());
 
     if (_alarmFlag) // Check alarm flag
     {
         // _alarmFlag = 0;              // Uncomment if you want to clear this flag
-        display.rtcClearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
+        display.rtc.ClearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
         display.setCursor(165, 160); // Set position of the text
         display.print("ALARM");      // Print text
 

@@ -251,7 +251,7 @@ void loop()
     // Display some bitmap on screen. We are going to display Soldered logo on display at location X = 50, Y = 230
     // Image is 700x140 pixels and we want to every pixel of this bitmap to be black.
     display.clearDisplay();
-    display.drawImage(logo, 50, 230, logo_w, logo_h,
+    display.image.draw(logo, 50, 230, logo_w, logo_h,
                       BLACK); // Arguments are: array variable name, start X, start Y, size X, size Y, color
     displayCurrentAction("Drawing Soldered logo");
     display.display();

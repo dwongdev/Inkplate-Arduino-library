@@ -29,24 +29,24 @@ void setup()
 {
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
 
-    display.rtcClearAlarmFlag(); // Clear alarm flag from any previous alarm
+    display.rtc.ClearAlarmFlag(); // Clear alarm flag from any previous alarm
 
-    if (!display.rtcIsSet()) // Check if RTC is already is set. If ts not, set time and date
+    if (!display.rtc.IsSet()) // Check if RTC is already is set. If ts not, set time and date
     {
         //  display.setTime(hour, minute, sec);
-        display.rtcSetTime(13, 30, 00); // 24H mode, ex. 13:30:00
+        display.rtc.SetTime(13, 30, 00); // 24H mode, ex. 13:30:00
         //  display.setDate(weekday, day, month, yr);
-        display.rtcSetDate(0, 17, 7, 2023); // 0 for Monday, ex. Monday, 17.7.2023.
+        display.rtc.SetDate(0, 17, 7, 2023); // 0 for Monday, ex. Monday, 17.7.2023.
 
-        // display.rtcSetEpoch(1589610300); // Or use epoch for setting the time and date
+        // display.rtc.SetEpoch(1589610300); // Or use epoch for setting the time and date
     }
 
     printCurrentTime(); // Display current time and date
     display.display();
 
-    display.rtcSetAlarmEpoch(display.rtcGetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS); // Set RTC alarm 10 seconds from now
+    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS); // Set RTC alarm 10 seconds from now
 
-    display.frontlight(false); // Disable frontlight (to save power)
+    display.frontlight.setState(false); // Disable frontlight (to save power)
 
     // Enable wakup from deep sleep on gpio 39 where RTC interrupt is connected
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);
@@ -66,9 +66,9 @@ void printCurrentTime()
     display.setCursor(50, 290);
     display.setTextSize(3);
 
-    display.rtcGetRtcData();
+    display.rtc.GetRtcData();
 
-    switch (display.rtcGetWeekday())
+    switch (display.rtc.GetWeekday())
     {
     case 0:
         display.print("Sunday , ");
@@ -93,17 +93,17 @@ void printCurrentTime()
         break;
     }
 
-    display.print(display.rtcGetDay());
+    display.print(display.rtc.GetDay());
     display.print(".");
-    display.print(display.rtcGetMonth());
+    display.print(display.rtc.GetMonth());
     display.print(".");
-    display.print(display.rtcGetYear());
+    display.print(display.rtc.GetYear());
     display.print(". ");
-    print2Digits(display.rtcGetHour());
+    print2Digits(display.rtc.GetHour());
     display.print(':');
-    print2Digits(display.rtcGetMinute());
+    print2Digits(display.rtc.GetMinute());
     display.print(':');
-    print2Digits(display.rtcGetSecond());
+    print2Digits(display.rtc.GetSecond());
 }
 
 void print2Digits(uint8_t _d)

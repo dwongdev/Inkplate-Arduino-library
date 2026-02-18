@@ -50,7 +50,7 @@ void setup()
     display.begin(); // Initialize Inkplate object
 
     // Initialize touchscreen
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(true))
         Serial.println("Touchscreen init failed!");
 
     // Call main draw function defined below

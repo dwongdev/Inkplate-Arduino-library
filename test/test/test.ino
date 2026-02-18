@@ -36,7 +36,7 @@ void setup()
     uint8_t attempts = 3;
     while (attempts--)
     {
-        if (display.drawBitmapFromWeb(screenUrl, 0, 0, false))
+        if (display.image.drawBitmapFromWeb(screenUrl, 0, 0, false))
         {
             WiFi.mode(WIFI_OFF); // Reduce power
             display.display();

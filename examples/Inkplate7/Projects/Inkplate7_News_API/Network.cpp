@@ -16,7 +16,7 @@
 #include "Network.h"
 
 // Connect Inkplate to the WiFi
-void Network::begin(char *ssid, char *pass)
+void NetworkFunctions::begin(char *ssid, char *pass)
 {
     // Initiating wifi, like in BasicHttpClient example
     WiFi.mode(WIFI_STA);
@@ -41,7 +41,7 @@ void Network::begin(char *ssid, char *pass)
 }
 
 // Get data from the News API
-struct news *Network::getData(char *apiKey)
+struct news *NetworkFunctions::getData(char *apiKey)
 {
     // Pointer to the struct where will be stored the news data
     struct news *ent = NULL;

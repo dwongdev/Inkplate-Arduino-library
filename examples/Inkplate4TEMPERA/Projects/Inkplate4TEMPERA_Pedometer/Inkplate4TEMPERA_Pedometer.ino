@@ -121,7 +121,7 @@ void loop()
         display.print(stepsTaken);
 
         // Draw the next frame of the animation in the correct position
-        display.drawImage(frames[animationFrameIndex], 275, 240, 50, 50, BLACK, WHITE);
+        display.image.draw(frames[animationFrameIndex], 275, 240, 50, 50, BLACK, WHITE);
         animationFrameIndex++;
         // If all the frames of the animation are complete...
         if (animationFrameIndex == sizeof(frames) / sizeof(frames[0]))

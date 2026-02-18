@@ -42,8 +42,8 @@ void setup()
     display.setTextSize(2);      // Set text to be 2 times bigger than classic 5x7 px text
     display.setTextColor(BLACK); // Set text color to black
 
-    display.rtcSetTime(hours, minutes, seconds);   // Send time to RTC
-    display.rtcSetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.SetTime(hours, minutes, seconds);   // Send time to RTC
+    display.rtc.SetDate(weekday, day, month, year); // Send date to RTC
 
     // Show time and remember when it's shown
     showTime();
@@ -98,14 +98,14 @@ void print2Digits(uint8_t _d)
 // A function that gets time from RTC and shows it on the screen
 void showTime()
 {
-    display.rtcGetRtcData();           // Get the time and date from RTC
-    seconds = display.rtcGetSecond();  // Store senconds in a variable
-    minutes = display.rtcGetMinute();  // Store minutes in a variable
-    hours = display.rtcGetHour();      // Store hours in a variable
-    weekday = display.rtcGetWeekday(); // Store day of week in a variable
-    day = display.rtcGetDay();         // Store day of month in a variable
-    month = display.rtcGetMonth();     // Store month in a variable
-    year = display.rtcGetYear();       // Store year in a variable
+    display.rtc.GetRtcData();           // Get the time and date from RTC
+    seconds = display.rtc.GetSecond();  // Store senconds in a variable
+    minutes = display.rtc.GetMinute();  // Store minutes in a variable
+    hours = display.rtc.GetHour();      // Store hours in a variable
+    weekday = display.rtc.GetWeekday(); // Store day of week in a variable
+    day = display.rtc.GetDay();         // Store day of month in a variable
+    month = display.rtc.GetMonth();     // Store month in a variable
+    year = display.rtc.GetYear();       // Store year in a variable
 
     display.clearDisplay();                                        // Clear content in frame buffer
     display.setCursor(35, 140);                                    // Set position of the text

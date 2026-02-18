@@ -47,7 +47,7 @@ void setup()
     display.setTextColor(BLACK);
 
     // Draw the background grid from buffer
-    display.drawImage(background, 0, 0, 600, 600, WHITE, BLACK);
+    display.image.draw(background, 0, 0, 600, 600, WHITE, BLACK);
 
     // Let's confiugure the APDS!
     display.wakePeripheral(INKPLATE_APDS9960); // First, wake it from sleep
