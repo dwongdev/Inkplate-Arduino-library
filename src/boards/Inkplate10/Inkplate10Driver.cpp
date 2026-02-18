@@ -24,22 +24,22 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
 {
     int16_t x0 = x;
     int16_t y0 = y;
-    if (x0 > E_INK_WIDTH - 1 || y0 > E_INK_HEIGHT - 1 || x0 < 0 || y0 < 0)
+    /*if (x0 > E_INK_WIDTH - 1 || y0 > E_INK_HEIGHT - 1 || x0 < 0 || y0 < 0)
         return;
-
+*/
     switch (_inkplate->getRotation())
     {
     case 1:
         _swap_int16_t(x0, y0);
-        x0 = E_INK_HEIGHT - x0 - 1;
+        x0 = _inkplate->height() - x0 - 1;
         break;
     case 2:
-        x0 = E_INK_WIDTH - x0 - 1;
-        y0 = E_INK_HEIGHT - y0 - 1;
+        x0 = _inkplate->width() - x0 - 1;
+        y0 = _inkplate->height() - y0 - 1;
         break;
     case 3:
         _swap_int16_t(x0, y0);
-        y0 = E_INK_WIDTH - y0 - 1;
+        y0 = _inkplate->width() - y0 - 1;
         break;
     }
 
