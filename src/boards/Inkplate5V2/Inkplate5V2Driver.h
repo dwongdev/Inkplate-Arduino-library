@@ -59,6 +59,7 @@ class EPDDriver : public Esp
 
     double readBattery();
 
+    void burnInClean(uint8_t clear_cycles, uint16_t cycles_delay);
 
     IOExpander internalIO;
 
