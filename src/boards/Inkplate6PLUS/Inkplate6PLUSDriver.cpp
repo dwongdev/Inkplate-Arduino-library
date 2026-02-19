@@ -1043,6 +1043,40 @@ double EPDDriver::readBattery()
 }
 
 /**
+ * @brief       burnInClean function cleans the screen of any potential burn in by
+ *              by writing a clear sequence to the panel
+ *
+ *
+ * @param       uint8_t clear_cycles
+ *              number of clear cycles
+ *
+ * @param       uint16_t cycles delay
+ *              delay between clear cycles (in milliseconds)
+ *
+ *
+ * @note        Cycles delay should not be smaller than 5 seconds
+ */
+void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
+{
+    einkOn();
+
+    while (clear_cycles)
+    {
+        clean(1, 15);
+        clean(2, 1);
+        clean(0, 5);
+        clean(2, 1);
+        clean(1, 15);
+        clean(2, 1);
+        clean(0, 5);
+        clean(2, 1);
+
+        delay(cycles_delay);
+        clear_cycles--;
+    }
+}
+
+/**
  * @brief       readTemperature reads panel temperature
  *
  * @return      returns  temperature in range from -10 to 85 degree C with
