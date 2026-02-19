@@ -1014,6 +1014,40 @@ int8_t EPDDriver::readTemperature()
 }
 
 /**
+ * @brief       burnInClean function cleans the screen of any potential burn in by
+ *              by writing a clear sequence to the panel
+ *
+ *
+ * @param       uint8_t clear_cycles
+ *              number of clear cycles
+ *
+ * @param       uint16_t cycles delay
+ *              delay between clear cycles (in milliseconds)
+ *
+ *
+ * @note        Cycles delay should not be smaller than 5 seconds
+ */
+void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
+{
+    einkOn();
+
+    while (clear_cycles)
+    {
+        clean(1, 21);
+        clean(2, 1);
+        clean(0, 12);
+        clean(2, 1);
+        clean(1, 21);
+        clean(2, 1);
+        clean(0, 12);
+        clean(2, 1);
+
+        delay(cycles_delay);
+        clear_cycles--;
+    }
+}
+
+/**
  * @brief       Wake a single or multiple peripherals for Inkplate 4TEMPERA.
  *              They are in deep sleep by default so this function MUST be called
  *
