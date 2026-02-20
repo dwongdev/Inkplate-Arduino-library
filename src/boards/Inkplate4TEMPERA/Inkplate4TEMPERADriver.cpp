@@ -1103,7 +1103,8 @@ void EPDDriver::sleepPeripheral(uint8_t _peripheral)
 }
 
 /**
- * @brief       Blocks pins on the IO Expander which are used to control the panel, done to avoid damage to the display by the user
+ * @brief       Blocks pins on the IO Expander which are used to control the panel, done to avoid damage to the display
+ * by the user
  *
  * @return      None
  */
