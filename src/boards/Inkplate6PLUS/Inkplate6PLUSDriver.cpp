@@ -90,6 +90,9 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // Initialize the GPIOs
     gpioInit();
 
+    // Block using pins connected to the panel by the user
+    blockGpioPins();
+
     touchscreen.begin(_inkplatePtr);
 
     frontlight.begin(_inkplatePtr);
@@ -644,9 +647,9 @@ void EPDDriver::pinsAsOutputs()
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
     pinMode(33, OUTPUT);
-    internalIO.pinMode(OE, OUTPUT);
-    internalIO.pinMode(GMOD, OUTPUT);
-    internalIO.pinMode(SPV, OUTPUT);
+    internalIO.pinMode(OE, OUTPUT, true);
+    internalIO.pinMode(GMOD, OUTPUT, true);
+    internalIO.pinMode(SPV, OUTPUT, true);
 
     pinMode(0, OUTPUT);
     pinMode(4, OUTPUT);
@@ -692,9 +695,9 @@ void EPDDriver::pinsZstate()
     pinMode(2, INPUT);
     pinMode(32, INPUT);
     pinMode(33, INPUT);
-    internalIO.pinMode(OE, INPUT);
-    internalIO.pinMode(GMOD, INPUT);
-    internalIO.pinMode(SPV, INPUT);
+    internalIO.pinMode(OE, INPUT, true);
+    internalIO.pinMode(GMOD, INPUT, true);
+    internalIO.pinMode(SPV, INPUT, true);
 
     // Set up the EPD Data and CL pins for I2S .
     pinMode(0, INPUT);
@@ -818,9 +821,9 @@ void EPDDriver::gpioInit()
     memset(internalIO._ioExpanderRegs, 0, 22);
     memset(externalIO._ioExpanderRegs, 0, 22);
 
-    internalIO.pinMode(VCOM, OUTPUT);
-    internalIO.pinMode(PWRUP, OUTPUT);
-    internalIO.pinMode(WAKEUP, OUTPUT);
+    internalIO.pinMode(VCOM, OUTPUT, true);
+    internalIO.pinMode(PWRUP, OUTPUT, true);
+    internalIO.pinMode(WAKEUP, OUTPUT, true);
 
     // Initialize I2C communication with the TPS chip
     pmicBegin();
@@ -1076,6 +1079,21 @@ int8_t EPDDriver::readTemperature()
         delay(5);
     }
     return temp;
+}
+
+/**
+ * @brief       Blocks pins on the IO Expander which are used to control the panel, done to avoid damage to the display by the user
+ *
+ * @return      None
+ */
+void EPDDriver::blockGpioPins()
+{
+    internalIO.blockPinUsage(WAKEUP);
+    internalIO.blockPinUsage(PWRUP);
+    internalIO.blockPinUsage(VCOM);
+    internalIO.blockPinUsage(OE);
+    internalIO.blockPinUsage(GMOD);
+    internalIO.blockPinUsage(SPV);
 }
 
 #endif

@@ -29,56 +29,56 @@
 #define WAKEUP 3
 #define WAKEUP_SET                                                                                                     \
     {                                                                                                                  \
-        internalIO.digitalWrite(WAKEUP, HIGH);                                                                         \
+        internalIO.digitalWrite(WAKEUP, HIGH, true);                                                                         \
     }
 #define WAKEUP_CLEAR                                                                                                   \
     {                                                                                                                  \
-        internalIO.digitalWrite(WAKEUP, LOW);                                                                          \
+        internalIO.digitalWrite(WAKEUP, LOW, true);                                                                          \
     }
 #define PWRUP 4
 #define PWRUP_SET                                                                                                      \
     {                                                                                                                  \
-        internalIO.digitalWrite(PWRUP, HIGH);                                                                          \
+        internalIO.digitalWrite(PWRUP, HIGH, true);                                                                          \
     }
 #define PWRUP_CLEAR                                                                                                    \
     {                                                                                                                  \
-        internalIO.digitalWrite(PWRUP, LOW);                                                                           \
+        internalIO.digitalWrite(PWRUP, LOW, true);                                                                           \
     }
 #define VCOM 5
 #define VCOM_SET                                                                                                       \
     {                                                                                                                  \
-        internalIO.digitalWrite(VCOM, HIGH);                                                                           \
+        internalIO.digitalWrite(VCOM, HIGH, true);                                                                           \
     }
 #define VCOM_CLEAR                                                                                                     \
     {                                                                                                                  \
-        internalIO.digitalWrite(VCOM, LOW);                                                                            \
+        internalIO.digitalWrite(VCOM, LOW, true);                                                                            \
     }
 #define OE 0
 #define OE_SET                                                                                                         \
     {                                                                                                                  \
-        internalIO.digitalWrite(OE, HIGH);                                                                             \
+        internalIO.digitalWrite(OE, HIGH, true);                                                                             \
     }
 #define OE_CLEAR                                                                                                       \
     {                                                                                                                  \
-        internalIO.digitalWrite(OE, LOW);                                                                              \
+        internalIO.digitalWrite(OE, LOW, true);                                                                              \
     }
 #define GMOD 1
 #define GMOD_SET                                                                                                       \
     {                                                                                                                  \
-        internalIO.digitalWrite(GMOD, HIGH);                                                                           \
+        internalIO.digitalWrite(GMOD, HIGH, true);                                                                           \
     }
 #define GMOD_CLEAR                                                                                                     \
     {                                                                                                                  \
-        internalIO.digitalWrite(GMOD, LOW);                                                                            \
+        internalIO.digitalWrite(GMOD, LOW, true);                                                                            \
     }
 #define SPV 2
 #define SPV_SET                                                                                                        \
     {                                                                                                                  \
-        internalIO.digitalWrite(SPV, HIGH);                                                                            \
+        internalIO.digitalWrite(SPV, HIGH, true);                                                                            \
     }
 #define SPV_CLEAR                                                                                                      \
     {                                                                                                                  \
-        internalIO.digitalWrite(SPV, LOW);                                                                             \
+        internalIO.digitalWrite(SPV, LOW, true);                                                                             \
     }
 #define CL 0x01
 #define CL_SET                                                                                                         \
