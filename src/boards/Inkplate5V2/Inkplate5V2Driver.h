@@ -87,6 +87,7 @@ class EPDDriver : public Esp
   private:
     void calculateLUTs();
     void pmicBegin();
+    void blockGpioPins();
     uint8_t initializeFramebuffers();
     void gpioInit();
     uint8_t readPowerGood();
