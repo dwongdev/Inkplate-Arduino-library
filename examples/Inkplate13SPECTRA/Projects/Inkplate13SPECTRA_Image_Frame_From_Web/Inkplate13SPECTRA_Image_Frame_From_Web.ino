@@ -23,8 +23,8 @@
 Inkplate display;
 
 //WiFi credentials
-const char *ssid = "your ssid";     // Your WiFi SSID
-const char *password = "your password"; // Your WiFi password
+const char *ssid = "Soldered Electronics";     // Your WiFi SSID
+const char *password = "dasduino"; // Your WiFi password
 
 
 void setup()

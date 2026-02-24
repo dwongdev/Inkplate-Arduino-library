@@ -1,26 +1,77 @@
-/*
-  Inkplate10 OpenMeteo Weather Station Example
-  Compatible with Soldered Inkplate 10 -> https://soldered.com/documentation/inkplate/projects/open-meteo-weather-station
-
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to fetch and display weather data from the OpenMeteo API
-  using the Inkplate 10 e-paper display.
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • timeZone
-      • latitude
-      • longitude
-  Set your username and city with `myUsername` and `myCity` (for display only, not essential for the API).
-
-  Units:
-  By default, the app uses the metric system.
-  To switch to Imperial units, change the metricUnits to "bool metricUnits = false;"
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_OpenMeteo_Weather_Station.ino
+ * @brief       Fetches weather data from the Open-Meteo API and displays a
+ *              weather-station style dashboard, then deep-sleeps.
+ *
+ * @details     This example demonstrates how to build a low-power weather
+ *              dashboard on Inkplate 10 using Open-Meteo as the data source.
+ *              On boot, the ESP32 attempts to connect to WiFi (with a timeout).
+ *              If the connection succeeds, the device sets local time via NTP
+ *              (configTime) using a configurable UTC offset, then requests
+ *              current/forecast weather data for the configured latitude and
+ *              longitude.
+ *
+ *              The fetched data is rendered using a GUI helper (Gui) that draws
+ *              a background and places weather values (and metadata such as
+ *              username/city and battery voltage) into a formatted layout. If
+ *              WiFi or API access fails, the GUI displays a dedicated error
+ *              screen instead of the dashboard.
+ *
+ *              The display runs in 3-bit grayscale mode (INKPLATE_3BIT) to
+ *              support richer UI elements. After drawing, the ESP32 enters deep
+ *              sleep for a fixed interval to save power. Deep sleep resets the
+ *              ESP32, so the sketch reruns setup() and fetches fresh data after
+ *              every wake-up.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable (battery recommended for deployment)
+ * - Extra:      WiFi Internet connection
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial Monitor: 115200 baud
+ * - Set WiFi credentials (ssid, password)
+ * - Set timeZone (UTC offset), latitude, longitude
+ * - Optionally set myUsername and myCity (display only)
+ * - Set metricUnits = true for metric, false for Imperial units
+ * - Optional: change ntpServer if needed
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID/password and set your location (timezone + coordinates).
+ * 2) Upload the sketch to Inkplate 10 and open Serial Monitor (115200) for logs.
+ * 3) On boot, the device connects to WiFi, syncs time via NTP, fetches weather,
+ *    and renders the dashboard.
+ * 4) The board deep-sleeps for ~30 minutes, then wakes and refreshes the data.
+ *
+ * Expected output:
+ * - A weather dashboard UI rendered in grayscale, showing weather values for the
+ *   configured coordinates, plus city/username and battery voltage.
+ * - If WiFi fails: a WiFi error screen.
+ * - If the API request fails: an API error screen.
+ *
+ * Notes:
+ * - Display mode: 3-bit grayscale (INKPLATE_3BIT). Partial updates are not
+ *   supported in grayscale mode, so updates are full refreshes.
+ * - Deep sleep restarts the ESP32 on every wake-up; no runtime state persists.
+ * - WiFi connection uses a fixed timeout; poor signal or captive portals can
+ *   prevent connection and trigger the WiFi error screen.
+ * - NTP time uses a simple UTC offset (timeZone). Daylight saving time is not
+ *   automatically handled unless your configuration accounts for it.
+ * - API and JSON handling is implemented in the provided src/ modules; very
+ *   large responses or connectivity issues may require tuning timeouts/buffers.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)

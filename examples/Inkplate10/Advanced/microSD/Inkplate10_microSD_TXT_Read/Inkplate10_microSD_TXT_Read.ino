@@ -1,23 +1,49 @@
-/*
-   Inkplate10_SD_TXT_Read example for Soldered Inkplate 10
-   For this example you will need only a micro USB cable, Inkplate 10 and a SD card
-   loaded with text.txt file that can be found inside folder of this example.
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   To work with SD card on Inkplate, you will need to add one extra library.
-   Download and install it from here: https://github.com/e-radionicacom/Inkplate-6-SDFat-Arduino-Library
-
-   You can open your own .txt file, but in order to this example works properly it should
-   not have more than 200 chars and you should name it text.txt
-
-   This example will show you how to open .txt files and display the content of that file on Inkplate epaper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_SD_TXT_Read.ino
+ * @brief       Read and display text file from SD card on Soldered Inkplate 10.
+ *
+ * @details     Demonstrates how to open a .txt file from a FAT-formatted SD card
+ *              and display its contents on the Inkplate 10 e-paper display.
+ *              The example reads a file named "text.txt" from the SD card and
+ *              prints its content on screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable, microSD card
+ * - Extra:      text.txt file on SD card (≤ 200 characters)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Additional library required:
+ *   https://github.com/e-radionicacom/Inkplate-6-SDFat-Arduino-Library
+ * - SD card format: FAT / FAT32
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Copy a text file named "text.txt" (max 200 characters) to a FAT-formatted SD card.
+ * 2) Insert the SD card into the Inkplate.
+ * 3) Install the required SDFat library.
+ * 4) Upload the sketch to Inkplate 10.
+ * 5) The file contents will be read and displayed on the e-paper screen.
+ *
+ * Expected output:
+ * - The contents of text.txt are displayed on the Inkplate display.
+ *
+ * Notes:
+ * - File name must be exactly "text.txt" for this example.
+ * - Text length should not exceed 200 characters.
+ * - Ensure the required SDFat library is properly installed.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)

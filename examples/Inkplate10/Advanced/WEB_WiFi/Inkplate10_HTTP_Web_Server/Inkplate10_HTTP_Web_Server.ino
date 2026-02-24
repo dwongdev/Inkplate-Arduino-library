@@ -1,23 +1,50 @@
-/*
-   Inkplate10_HTTP_Web_Server example for Soldered Inkplate 10
-   For this example you will need a micro USB cable, Inkplate 10 and a device with WiFi and Internet browser (PC, Laptop,
-   Smartphone, ...). Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu. Don't have
-   "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use Inkplate as a small and simple standlone Web Server.
-   You need to connect to Inkplate with WiFi and open IP address shown on Inkplate display.
-   After opening IP address, you will se text box where you can type some text and after that you press "Send to
-   display". Text will apper on Inkplate display! This is just simple example what you can do with it and of course, you
-   can create much more complex stuff.
-
-   HINT: You can change WiFi name and password of your Inkplate WIFi Access point by changing ssid and pass in #define
-   macros!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   2 December 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_HTTP_Web_Server.ino
+ * @brief       Standalone WiFi web server example for Soldered Inkplate 10.
+ *
+ * @details     Demonstrates how to use Inkplate 10 as a simple standalone
+ *              WiFi access point and HTTP web server. After connecting a PC,
+ *              smartphone, or other WiFi-capable device to the Inkplate’s
+ *              access point, a web page can be opened in a browser where text
+ *              can be entered and sent directly to the Inkplate e-paper display.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      WiFi-capable device with a web browser (PC, laptop, smartphone)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Inkplate operates as a WiFi Access Point (AP)
+ * - SSID and password can be changed in the code via #define macros
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 10.
+ * 2) Connect your device to the Inkplate WiFi access point.
+ * 3) Open the IP address shown on the Inkplate display in a web browser.
+ * 4) Enter text into the web page and press “Send to display”.
+ * 5) The submitted text appears on the Inkplate display.
+ *
+ * Expected output:
+ * - Inkplate display shows its IP address and received text.
+ * - Web page allows sending custom text to the display.
+ *
+ * Notes:
+ * - This is a basic demonstration of using Inkplate as a web server.
+ * - Intended for simple interaction and prototyping.
+ * - More advanced web interfaces and logic can be built on top of this example.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-12-02
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)

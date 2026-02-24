@@ -1,20 +1,51 @@
-/*
-   Inkplate10_HTTPS_POST_Request example for Soldered Inkplate10
-   For this example you will need USB cable, Inkplate10 and stable WiFi Internet connection.
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to a WiFi network and send a POST request via HTTPS.
-   We will use JSONPlaceholder fake API for testing to see responses when sending post requests.
-   For real API, you must specify the API key and maybe some more parameters to work correctly.
-   When you send a POST request, on the Serial Monitor you will see a response like on the real
-   API but data won't be written on the API.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   2 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_HTTPS_POST_Request.ino
+ * @brief       HTTPS POST request example for Soldered Inkplate 10.
+ *
+ * @details     Demonstrates how to connect Inkplate 10 to a WiFi network and
+ *              send an HTTPS POST request with a JSON payload. The example uses
+ *              the JSONPlaceholder fake REST API to test request/response flow
+ *              and prints the HTTP status code and response body to the Serial
+ *              Monitor.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      Stable WiFi Internet connection
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial settings: 115200 baud
+ * - Enter your WiFi credentials (ssid, pass) in the code
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password in the sketch.
+ * 2) Upload the sketch to Inkplate 10.
+ * 3) Open Serial Monitor (115200 baud).
+ * 4) The board connects to WiFi and periodically sends an HTTPS POST request.
+ * 5) Observe the returned status code and response payload in Serial Monitor.
+ *
+ * Expected output:
+ * - Inkplate display shows a short message prompting to open Serial Monitor.
+ * - Serial Monitor shows WiFi connection status, HTTP status code, and response body.
+ *
+ * Notes:
+ * - This example uses HTTPS without certificate validation via client.setInsecure().
+ *   This is convenient for demos/testing but is not recommended for production use.
+ * - JSONPlaceholder is a fake API: the response looks real, but data is not persisted.
+ * - For real APIs you may need authentication headers (API keys, tokens) and additional fields.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-02
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
@@ -30,8 +61,8 @@
 #include <WiFiClientSecure.h>
 
 // Enter your WiFi credentials
-const char *ssid = "";
-const char *pass = "";
+const char *ssid = "Soldered Electronics";
+const char *pass = "dasduino";
 
 // Specify the API URL to send a POST request
 const char *apiUrl = "https://jsonplaceholder.typicode.com/posts";

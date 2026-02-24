@@ -1,26 +1,69 @@
-/*
-    Inkplate10_Quotables example for Soldered Inkplate 10
-    For this example you will need only USB cable and Inkplate 10.
-    Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-    Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example shows you how to use simple API call without API key. Response
-    from server is in JSON format, so that will be shown too how it is used. What happens
-    here is basically ESP32 connects to WiFi and sends API call and server returns HTML
-    document containing one quote and some information about it, then using library ArduinoJSON
-    we extract only quote from JSON data and show it on Inkplate 10. After displaying quote
-    ESP32 goes to sleep and wakes up every 300 seconds to show new quote(you can change time interval).
-
-    IMPORTANT:
-    Make sure to change wifi credentials below
-    Also have ArduinoJSON installed in your Arduino libraries, download here: https://arduinojson.org/
-    You can deserialize JSON data easily using JSON assistant https://arduinojson.org/v6/assistant/
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    7 April 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_Quotables.ino
+ * @brief       Fetches a random quote from the Quotables API over WiFi, displays
+ *              it in 1-bit BW, then deep-sleeps between updates.
+ *
+ * @details     This example demonstrates making a simple HTTPS/HTTP API request
+ *              to a public endpoint that does not require an API key, parsing a
+ *              JSON response with ArduinoJson, and rendering the extracted text
+ *              on Inkplate 10.
+ *
+ *              On boot, the ESP32 connects to WiFi using Inkplate's helper.
+ *              It then repeatedly requests a new quote via QuotablesNetwork
+ *              until valid data is received. The quote is drawn inside a text
+ *              box using a large monospace font, and the author name is placed
+ *              in the lower-right corner. The display operates in 1-bit
+ *              black/white mode (INKPLATE_1BIT) and is updated with a full
+ *              refresh.
+ *
+ *              After displaying the quote, the ESP32 enters deep sleep for a
+ *              configurable interval (default 300 seconds). Deep sleep resets
+ *              the ESP32, so the sketch restarts from setup() on every wake-up.
+ *              If WiFi connection fails, an error message is shown and the
+ *              device sleeps briefly before retrying.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable (battery optional)
+ * - Extra:      WiFi Internet connection
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial Monitor: 115200 baud
+ * - Set WiFi credentials (ssid, pass)
+ * - Install library: ArduinoJson (Arduino Library Manager)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password in the sketch.
+ * 2) Upload the sketch and open Serial Monitor at 115200 baud (optional).
+ * 3) After connecting, a random quote and author are fetched and displayed.
+ * 4) The board deep-sleeps for ~5 minutes, then wakes to fetch a new quote.
+ *
+ * Expected output:
+ * - A centered quote rendered in a large font, with the author signature at the
+ *   bottom-right (prefixed with a dash).
+ * - Serial output showing retry progress while fetching data.
+ * - If WiFi fails: an on-screen error message, followed by a short retry sleep.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). This example uses full refreshes.
+ * - Deep sleep restarts the ESP32 on every wake-up; no state is preserved.
+ * - API parsing: the networking layer extracts only required fields (quote and
+ *   author) from the JSON response; ArduinoJson capacity may need adjustment
+ *   if the response format changes.
+ * - Timing: DELAY_S is expressed in microseconds for esp_sleep_enable_timer_wakeup().
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-04-07
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)

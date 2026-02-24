@@ -1,22 +1,47 @@
-/*
-   Inkplate10_EEPROM_Usage example for Soldered Inkplate 10
-   For this example, you will need only USB cable and Inkplate 10.
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use EEPROM with Inkplate board.
-   EEPROM is a permanent memory that holds data even if the power supply is disconnected.
-   You can use EEPROM to store any data you don't want to lose during restarting or powering down the device.
-   It shows how to use basic operations with EEPROM like clearing, writing, and reading.
-   
-   CAUTION! Changing EEPROM size can wipe waveform data.
-   CAUTION! EEPROM addresses from 0 to 75 are used for waveform. DO NOT WRITE OR MODIFY DATA ON THESE ADDRESSES!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   13 March 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_EEPROM_Usage.ino
+ * @brief       EEPROM read/write example for Soldered Inkplate 10.
+ *
+ * @details     Demonstrates how to use the built-in EEPROM on Inkplate 10 to
+ *              store data that persists across resets and power cycles.
+ *              The example shows how to safely clear, write, and read user data
+ *              from EEPROM, while respecting reserved address ranges used by
+ *              the e-paper waveform data.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 10.
+ * 2) The display will first clear user EEPROM data.
+ * 3) Sample data is written to EEPROM.
+ * 4) Stored data is read back and shown on the display.
+ *
+ * Expected output:
+ * - Messages indicating EEPROM clearing, writing, and reading.
+ * - A list of values read from EEPROM displayed on the screen.
+ *
+ * Notes:
+ * - EEPROM addresses 0–75 are reserved for waveform data.
+ * - DO NOT read from or write to addresses below 76.
+ * - Changing EEPROM size may erase waveform data and affect display operation.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-03-13
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)

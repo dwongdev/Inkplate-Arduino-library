@@ -1,19 +1,49 @@
-/*
-   Inkplate10_RTC_Timer example for Soldered Inkplate 10
-   For this example you will need USB cable and Inkplate 10.
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use PCF85063A RTC Timer functionality.
-   This example will show how to set time and date, how to set up a timer, how to read time and how to print time on Inkplate using partial updates.
-   NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after
-   power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   12 November 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_RTC_Timer.ino
+ * @brief       RTC timer functionality example for Soldered Inkplate 10.
+ *
+ * @details     Demonstrates how to use the PCF85063A real-time clock (RTC)
+ *              timer functionality on the Inkplate 10 board. The example shows
+ *              how to set time and date, configure the RTC timer, read current
+ *              time values, and display them on the e-paper screen using
+ *              partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial settings: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 10.
+ * 2) Initialize RTC time and date if not already configured.
+ * 3) Configure the RTC timer in the code.
+ * 4) The timer event is handled while current time is read and displayed.
+ *
+ * Expected output:
+ * - Inkplate display shows the current date and time.
+ * - Timer functionality operates according to configured interval.
+ *
+ * Notes:
+ * - Inkplate 10 uses the PCF85063A RTC chip.
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - It is not recommended to use partial update on the first refresh after power-up.
+ * - Perform a full refresh every 5–10 partial updates to maintain display quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-11-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
