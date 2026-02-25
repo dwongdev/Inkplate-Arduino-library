@@ -100,7 +100,7 @@ void setup()
     EEPROM.begin(512);
     Wire.begin();
 
-    pinMode(GPIO_NUM_18, INPUT);
+    pinMode(GPIO_NUM_36, INPUT);
 
     bool isFirstStartup = (EEPROM.read(EEPROMaddress) != 170);
 

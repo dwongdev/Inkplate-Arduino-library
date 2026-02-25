@@ -52,9 +52,8 @@
 
 #include "Inkplate.h" // Include Inkplate library to the sketch
 #include "picture1.h" // Include .h files of 3 pictures. All three pictures were converted using Inkplate Image Converter
-#include "picture2.h"
-#include "picture3.h"
-const uint8_t *pictures[] = {pic1, pic2, pic3}; // This array of pinters holds address of every picture in the memory,
+
+const uint8_t *pictures[] = {pic1}; // This array of pinters holds address of every picture in the memory,
                                                 // so we can easly select it by selecting index in array
 
 #define uS_TO_S_FACTOR 1000000 // Conversion factor for micro seconds to seconds

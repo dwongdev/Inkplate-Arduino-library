@@ -10,7 +10,7 @@ static const char *WSSID = "Soldered Electronics";
 static const char *WPASS = "dasduino";
 
 // Change this to your used slave device
-static const uint8_t easyCDeviceAddress = 0x76;
+static const uint8_t easyCDeviceAddress = 0x3A;
 
 void testPeripheral()
 {
@@ -94,7 +94,7 @@ void testPeripheral()
 
     // Test wake up button
     unsigned long beginWakeUpTest = millis();
-    int wakeButtonState = digitalRead(GPIO_NUM_18);
+    int wakeButtonState = digitalRead(GPIO_NUM_36);
 
     Serial.println("Press WAKEUP button within 30 seconds to finish testing...");
     while (true)
@@ -106,7 +106,7 @@ void testPeripheral()
             failHandler();
         }
 
-        if (digitalRead(GPIO_NUM_18) != wakeButtonState)
+        if (digitalRead(GPIO_NUM_36) != wakeButtonState)
         {
             break;
         }

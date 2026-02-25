@@ -113,7 +113,7 @@ void setup()
   inkplate.setTextSize(4);                 // Scale text to be 5 times bigger then original (5x7 px)
 
   // Display initial text
-  inkplate.setTextColor(0);
+  inkplate.setTextColor(BLACK);
   inkplate.println("Bluetooth Serial");
   inkplate.println("Example");
   inkplate.println();
@@ -122,7 +122,7 @@ void setup()
   // Init serial communication
   Serial.begin(115200);
   // Create the BLE Device
-  BLEDevice::init("Inkplate 13SPECTRA");
+  BLEDevice::init("Inkplate 10");
 
   // Create the BLE Server
   pServer = BLEDevice::createServer();

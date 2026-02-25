@@ -55,6 +55,7 @@
 #include "picture1.h" //Include .h files of 3 pictures. All three pictures were converted using Inkplate Image Converter
 #include "picture2.h"
 #include "picture3.h"
+
 const uint8_t *pictures[] = {picture1, picture2,
                              picture3}; // This array of pinters holds address of every picture in the memory,
                                         // so we can easly select it by selecting index in array

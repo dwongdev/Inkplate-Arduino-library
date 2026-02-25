@@ -60,7 +60,7 @@
 #include "WiFiClientSecure.h"
 
 // Enter your WiFi credentials
-const char *ssid = "Soldered";
+const char *ssid = "Soldered Electronics";
 const char *pass = "dasduino";
 
 // Specify the API URL to send a POST request

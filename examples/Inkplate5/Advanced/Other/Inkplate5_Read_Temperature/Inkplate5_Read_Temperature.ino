@@ -1,21 +1,47 @@
-/*
-   Inkplate5_Read_Temperature example for Soldered Inkplate 5
-   For this example you will need a USB-C cable and Inkplate 5.
-   Select "Soldered Inkplate5" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read temperature from on-board
-   temperature sensor which is part of TPS65186 e-paper PMIC.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   23 January 2023 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_Read_Temperature.ino
+ * @brief       On-board temperature sensor reading example for Soldered Inkplate 5.
+ *
+ * @details     Demonstrates how to read temperature data from the on-board
+ *              temperature sensor integrated inside the TPS65186 e-paper PMIC.
+ *              This sensor is intended primarily for internal compensation
+ *              and basic monitoring. It is a simple (basic) temperature sensor
+ *              and should not be considered highly accurate or suitable for
+ *              precise temperature measurements.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 5.
+ * 2) The program reads the temperature from the onboard PMIC sensor.
+ * 3) The measured value can be displayed or printed to Serial.
+ *
+ * Expected output:
+ * - Approximate temperature reading reported by the TPS65186 sensor.
+ *
+ * Notes:
+ * - The TPS65186 PMIC includes a basic internal temperature sensor.
+ * - This sensor is not ultra-precise and is not a replacement for a
+ *   dedicated external temperature sensor.
+ * - Intended use is system monitoring and waveform compensation.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-01-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5
