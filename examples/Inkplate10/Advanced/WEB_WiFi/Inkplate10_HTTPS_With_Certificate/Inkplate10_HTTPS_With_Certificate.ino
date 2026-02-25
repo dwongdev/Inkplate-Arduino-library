@@ -1,4 +1,3 @@
-/*
 /**
  **************************************************
  * @file        Inkplate10_HTTPS_With_Certificate.ino

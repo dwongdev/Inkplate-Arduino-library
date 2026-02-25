@@ -1,22 +1,50 @@
-/*
-   Inkplate5V2_Bluetooth_Serial example for Soldered Inkplate 5 V2
-   For this example you will need a USB-C cable, Inkplate 5 and smartphone.
-   Select "Soldered Inkplate5 V2" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5 V2" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows how to use Bluetooth on Inkplate devices.
-   Upload this example to the Inkplate and connect your phone to it via Bluetooth.
-   First, you have to pair the Inkplate with your phone in Bluetooth settings in your phone, then go to the
-   Serial Bluetooth Terminal app and you can find the Inkplate in the device list. You can use another similar app.
-   If Bluetooth starts successfully, you can send anything from your phone to an Inkplate or vice versa.
-   On the screen, you will see what the phone sends while in the app you will see what the Inkplate
-   sends over the Serial Monitor.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 April 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5v2_Bluetooth_Serial.ino
+ * @brief       Bluetooth SPP serial bridge example for Soldered Inkplate 5v2.
+ *
+ * @details     Demonstrates how to use classic Bluetooth (SPP profile) on the
+ *              Inkplate 5v2 to exchange text data between the board and a
+ *              smartphone. Text received from the phone is shown on the
+ *              Inkplate display and logged to the Serial Monitor, while text
+ *              sent from the Inkplate (via Serial Monitor) is forwarded to
+ *              the connected phone.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5v2
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      Bluetooth serial terminal app (e.g. Serial Bluetooth Terminal)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial settings: 115200 baud
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 10.
+ * 2) Pair the Inkplate with your phone in Bluetooth settings.
+ * 3) Open a Bluetooth serial terminal app and connect to Inkplate.
+ * 4) Send text from the phone and verify it appears on the Inkplate display
+ *    and in the Serial Monitor.
+ * 5) Send text from the Serial Monitor and verify it appears in the phone app.
+ *
+ * Expected output:
+ * - Inkplate display shows text received over Bluetooth
+ * - Serial Monitor logs sent and received messages
+ *
+ * Notes:
+ * - Bluetooth pairing and app behavior may differ between Android and iOS.
+ * - Some iOS apps do not support classic Bluetooth SPP.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-17
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5V2

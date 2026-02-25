@@ -58,6 +58,8 @@ class EPDDriver : public Esp
     int8_t readTemperature();
 
     double readBattery();
+    int einkOn();
+    void einkOff();
 
 
     IOExpander internalIO;
@@ -92,8 +94,6 @@ class EPDDriver : public Esp
     void gpioInit();
     uint8_t readPowerGood();
     void pinsAsOutputs();
-    int einkOn();
-    void einkOff();
     void display1b(bool _leaveOn);
     void display3b(bool _leaveOn);
     void pinsZstate();
