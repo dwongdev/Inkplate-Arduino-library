@@ -10,6 +10,8 @@
 // Include main header file for the Arduino.
 #include "Arduino.h"
 
+#include "EEPROM.h"
+
 // Include library for PCAL6416A GPIO expander.
 #include "../../system/pcalExpander/pcalExpander.h"
 
@@ -47,6 +49,8 @@ class EPDDriver : public Esp
     void setFullUpdateThreshold(uint16_t _numberOfPartialUpdates);
     uint8_t getDisplayMode();
 
+    int einkOn();
+    void einkOff();
 
     void setSdCardOk(int16_t s);
     int16_t getSdCardOk();
@@ -60,6 +64,12 @@ class EPDDriver : public Esp
     double readBattery();
 
     void burnInClean(uint8_t clear_cycles, uint16_t cycles_delay);
+
+    bool setVcom(double vcomVoltage, uint16_t EEPROMaddress);
+
+    bool isPowerGood();
+
+    double getVcomVoltage();
 
     IOExpander internalIO;
 
@@ -92,8 +102,6 @@ class EPDDriver : public Esp
     void gpioInit();
     uint8_t readPowerGood();
     void pinsAsOutputs();
-    int einkOn();
-    void einkOff();
     void display1b(bool _leaveOn);
     void display3b(bool _leaveOn);
     void pinsZstate();
@@ -105,6 +113,9 @@ class EPDDriver : public Esp
     void vscan_end();
     uint8_t _panelState = 0;
     Inkplate *_inkplate;
+    uint8_t writeVCOMToEEPROM(double v);
+    void writeReg(uint8_t reg, uint8_t data);
+    uint8_t readReg(uint8_t reg);
 };
 
 #endif
