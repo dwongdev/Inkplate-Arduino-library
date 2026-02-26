@@ -1120,15 +1120,15 @@ void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
     }
 }
 
-/** 
+/**
  * @brief       setVcom sets VCOM voltage of the panel and saves it in EEPROM
  *
  * @param       double vcomVoltage
  *              VCOM voltage to be set, should be in range from -5.0 to 0.0
- * 
+ *
  * @param       uint16_t EEPROMaddress
  *              Address in EEPROM where VCOM value will be saved
- * 
+ *
  * @return      true if VCOM voltage was successfully set and saved in EEPROM, false otherwise
  */
 bool EPDDriver::setVcom(double vcomVoltage, uint16_t EEPROMaddress)
@@ -1158,10 +1158,10 @@ bool EPDDriver::setVcom(double vcomVoltage, uint16_t EEPROMaddress)
 
 /**
  * @brief       writeVCOMToEEPROM writes VCOM voltage to EEPROM
- * 
+ *
  * @param       double v
  *              VCOM voltage to be written to EEPROM, should be in range from -5.0 to 0.0
- * 
+ *
  * @return      true if VCOM voltage was successfully written to EEPROM, false otherwise
  */
 uint8_t EPDDriver::writeVCOMToEEPROM(double v)
@@ -1238,7 +1238,7 @@ void EPDDriver::writeReg(uint8_t _reg, uint8_t _data)
     Wire.write(_data);
     Wire.endTransmission();
 }
-    
+
 // Functions that reads data from register over I2C communication
 uint8_t EPDDriver::readReg(uint8_t _reg)
 {
@@ -1251,7 +1251,7 @@ uint8_t EPDDriver::readReg(uint8_t _reg)
 
 /**
  * @brief       getVcomVoltage reads VCOM voltage from registers
- * 
+ *
  * @return      VCOM voltage in volts
  */
 double EPDDriver::getVcomVoltage()

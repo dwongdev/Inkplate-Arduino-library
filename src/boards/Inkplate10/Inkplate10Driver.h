@@ -68,7 +68,7 @@ class EPDDriver
     bool isPowerGood();
 
     double getVcomVoltage();
-    
+
     IOExpander internalIO;
     IOExpander externalIO;
 

@@ -1156,7 +1156,7 @@ void EPDDriver::writeReg(uint8_t _reg, uint8_t _data)
     Wire.write(_data);
     Wire.endTransmission();
 }
-    
+
 // Functions that reads data from register over I2C communication
 uint8_t EPDDriver::readReg(uint8_t _reg)
 {
