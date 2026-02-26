@@ -675,6 +675,16 @@ uint8_t EPDDriver::readPowerGood()
 }
 
 /**
+ * @brief       isPowerGood checks if power good status is ok for all rails
+ *
+ * @return      true if power good status is ok for all rails, false otherwise
+ */
+bool EPDDriver::isPowerGood()
+{
+    return readPowerGood() == PWR_GOOD_OK;
+}
+
+/**
  * @brief       pinsZstate sets all tps pins at high z state
  *
  * @note        this is used only when turning off epaper
@@ -1014,6 +1024,155 @@ int8_t EPDDriver::readTemperature()
         delay(5);
     }
     return temp;
+}
+
+/**
+ * @brief       burnInClean function cleans the screen of any potential burn in by
+ *              by writing a clear sequence to the panel
+ *
+ *
+ * @param       uint8_t clear_cycles
+ *              number of clear cycles
+ *
+ * @param       uint16_t cycles delay
+ *              delay between clear cycles (in milliseconds)
+ *
+ *
+ * @note        Cycles delay should not be smaller than 5 seconds
+ */
+void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
+{
+    einkOn();
+
+    while (clear_cycles)
+    {
+        clean(1, 21);
+        clean(2, 1);
+        clean(0, 12);
+        clean(2, 1);
+        clean(1, 21);
+        clean(2, 1);
+        clean(0, 12);
+        clean(2, 1);
+
+        delay(cycles_delay);
+        clear_cycles--;
+    }
+}
+
+bool EPDDriver::setVcom(double vcomVoltage, uint16_t EEPROMaddress)
+{
+    // Check for out of bounds
+    if (vcomVoltage < -5.0 || vcomVoltage > 0.0)
+    {
+        return false;
+    }
+
+    else
+    {
+        // Write VCOM to EEPROM
+        internalIO.pinMode(6, INPUT_PULLUP);
+        if (writeVCOMToEEPROM(vcomVoltage))
+        {
+            EEPROM.write(EEPROMaddress, 170);
+            EEPROM.commit();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+uint8_t EPDDriver::writeVCOMToEEPROM(double v)
+{
+    int vcom = int(abs(v) * 100);
+    int vcomH = (vcom >> 8) & 1;
+    int vcomL = vcom & 0xFF;
+
+    // Set PCAL pin where TPS65186 INT pin is connectet to input pull up
+    internalIO.pinMode(6, INPUT_PULLUP);
+
+    // First power up TPS65186 so we can communicate with it
+    einkOn();
+
+    // Wait a little bit
+    delay(250);
+
+    // Send to TPS65186 first 8 bits of VCOM
+    writeReg(0x03, vcomL);
+
+    // Send new value of register to TPS
+    writeReg(0x04, vcomH);
+    delay(1);
+
+    // Program VCOM value to EEPROM
+    writeReg(0x04, vcomH | (1 << 6));
+
+    // Wait until EEPROM has been programmed
+    delay(100);
+    do
+    {
+        delay(1);
+    } while (internalIO.digitalRead(6));
+
+    // Clear Interrupt flag by reading INT1 register
+    readReg(0x07);
+
+    // Now, power off whole TPS
+    einkOff();
+
+    // Wait a little bit...
+    delay(1000);
+
+    // Power up TPS again
+    einkOn();
+
+    delay(10);
+
+    // Read VCOM valuse from registers
+    vcomL = readReg(0x03);
+    vcomH = readReg(0x04);
+
+    // Trun off the TPS65186 and wait a little bit
+    einkOff();
+    delay(100);
+
+    if (vcom != (vcomL | (vcomH << 8)))
+    {
+        Serial.println("\nVCOM EEPROM PROGRAMMING FAILED!\n");
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+    return 0;
+}
+
+// Functions that writes data in register over I2C communication
+void EPDDriver::writeReg(uint8_t _reg, uint8_t _data)
+{
+    Wire.beginTransmission(0x48);
+    Wire.write(_reg);
+    Wire.write(_data);
+    Wire.endTransmission();
+}
+
+// Functions that reads data from register over I2C communication
+uint8_t EPDDriver::readReg(uint8_t _reg)
+{
+    Wire.beginTransmission(0x48);
+    Wire.write(_reg);
+    Wire.endTransmission(false);
+    Wire.requestFrom(0x48, 1);
+    return Wire.read();
+}
+
+double EPDDriver::getVcomVoltage()
+{
+    return (double)(readReg(0x03) | ((uint16_t)((readReg(0x04) & 1) << 8))) / (-100);
 }
 
 /**

@@ -318,17 +318,6 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BluetoothSerial *Ser
                 }
                 break;
 
-            case 'Q':
-                sscanf(s + 3, "%d", &c);
-                c &= 1;
-                // if (c == 0) SerialBT->print("display->einkOff();\n");
-                // if (c == 1) SerialBT->print("display->einkOn();\n");
-                if (c == 0)
-                    display->einkOff();
-                if (c == 1)
-                    display->einkOn();
-                break;
-
             case 'R':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')

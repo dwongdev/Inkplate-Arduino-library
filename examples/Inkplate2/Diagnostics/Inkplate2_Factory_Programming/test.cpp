@@ -2,8 +2,8 @@
 #include "Wire.h"
 
 // Change this to your WiFi
-const char *WSSID = {"Soldered-testingPurposes"};
-const char *WPASS = {"Testing443"};
+const char *WSSID = {""};
+const char *WPASS = {""};
 
 // Change this to your used slave device
 const uint8_t easyCDeviceAddress = 0x30;
