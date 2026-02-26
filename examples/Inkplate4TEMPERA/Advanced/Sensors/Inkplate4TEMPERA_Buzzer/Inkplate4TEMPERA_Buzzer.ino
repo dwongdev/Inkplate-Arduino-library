@@ -1,17 +1,66 @@
-/*
-   Inkplate4TEMPERA_Buzzer example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to beep the built-in buzzer and set it's frequency.
-   Upload the sketch and listen to the beeps!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 Sep 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Buzzer.ino
+ * @brief       Demonstrates how to drive the built-in buzzer on Inkplate 4
+ *              TEMPERA, including simple beeps and approximate pitch control.
+ *
+ * @details     This example shows basic usage of the Inkplate 4 TEMPERA buzzer
+ *              API. After initializing the board and calling the buzzer init
+ *              routine, the sketch plays several short demo sequences:
+ *
+ *              - Fixed-duration beeps using beep(duration_ms)
+ *              - Manual on/off control using beepOn() and beepOff()
+ *              - Frequency-controlled beeps using beep(duration_ms, freq_hz)
+ *
+ *              In the main loop, it plays a short repeating pattern based on a
+ *              C Maj7 chord (C, E, G, B). The pattern alternates between single
+ *              notes and doubled notes to create a simple rhythm.
+ *
+ *              Pitch control is approximate: the buzzer frequency is set via a
+ *              digital potentiometer, which does not behave linearly. Only a
+ *              limited frequency range is supported reliably.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial settings (if relevant): none
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Listen to the startup demo sequences (short beeps, on/off beeps, then
+ *    low/high pitched beeps).
+ * 3) After the demos, the loop continuously plays a simple melody pattern.
+ *
+ * Expected output:
+ * - Audible beeps from the on-board buzzer:
+ *   - Three short beeps (startup)
+ *   - Two longer beeps using manual on/off control
+ *   - Two low-frequency beeps followed by two high-frequency beeps
+ *   - A repeating short “song” built from the chord notes
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). The display is not actively used in
+ *   this example; it is initialized as part of the standard board setup.
+ * - Frequency range: pitch control is supported only within a limited range
+ *   (approximately 572–2933 Hz). Frequencies outside this range may be unstable
+ *   or inaudible.
+ * - Timing: delays are used for rhythm and spacing between notes; this example
+ *   is intentionally blocking and focused on demonstrating the buzzer API.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-09-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

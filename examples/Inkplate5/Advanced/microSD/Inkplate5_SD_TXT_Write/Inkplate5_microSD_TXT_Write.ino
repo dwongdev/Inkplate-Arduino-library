@@ -1,25 +1,48 @@
-/*
-   Inkplate5_SD_TXT_Write example for Soldered Inkplate 5
-   For this example you will need only a USB-C cable, Inkplate 5, and an SD card.
-   Select "Soldered Inkplate5" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows how you can use Inkplate 5 to write in a .txt file. 
-   The file name is specified below and you can change it. Just make sure that 
-   you specified the .txt extension or otherwise it will create a file that you
-   can't open. You can also change the content that will be written in the file
-   by changing the array called dataToWrite. 
-
-   If you don't change anything, after uploading the example the Inkplate will 
-   create a file named test.txt and write "Hello! This is the file writing example 
-   for Inkplate 5." into the file. It will also add a new line at the end, so if 
-   you run the example again, it will write once again the same string in the next line.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   21 March 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_SD_TXT_Write.ino
+ * @brief       Write text file to SD card on Soldered Inkplate 5.
+ *
+ * @details     Demonstrates how to initialize the SD card, create a .txt file,
+ *              write data into it, and properly close the file using the
+ *              Inkplate SD card interface. The example writes a short text
+ *              string into "test.txt" stored on a FAT-formatted SD card.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable, microSD card
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
+ * - SD card format: FAT / FAT32
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+ *
+ * How to use:
+ * 1) Insert a FAT-formatted SD card into the Inkplate.
+ * 2) Upload the sketch to Inkplate 5.
+ * 3) The program initializes the SD card.
+ * 4) A file named "test.txt" is created (or appended if it exists).
+ * 5) The text string defined in the code is written into the file.
+ *
+ * Expected output:
+ * - Status messages shown on the Inkplate display.
+ * - File "test.txt" created on the SD card with written content.
+ *
+ * Notes:
+ * - SD card must be properly formatted (FAT/FAT32).
+ * - Always close files after writing to prevent corruption.
+ * - SD card is put into sleep mode after operation to reduce power consumption.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-01-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5

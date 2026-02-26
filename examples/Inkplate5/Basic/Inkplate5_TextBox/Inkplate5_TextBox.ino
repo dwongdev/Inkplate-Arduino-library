@@ -1,14 +1,47 @@
-/*
-   Inkplate5_TextBox example for Soldered Inkplate 5
-   For this example you will need a micro USB cable and an Inkplate 5.
-   Select "Soldered Inkplate 5" from Tools -> Board menu.
-
-   This example will show you how to use the TextBox function with and without special parameters
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   24 April 2025 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_TextBox.ino
+ * @brief       TextBox usage example for Soldered Inkplate 5.
+ *
+ * @details     Demonstrates how to use the drawTextBox() function to render
+ *              multi-line text inside a defined rectangular area.
+ *              The example shows:
+ *              - A basic TextBox with default parameters.
+ *              - A fully customized TextBox using a custom font,
+ *                text scaling, spacing, and optional border.
+ *
+ *              If a word does not fit at the end of a row, it automatically
+ *              wraps to the next line. If the text exceeds the lower boundary
+ *              of the box, it ends with three dots (...) to indicate that
+ *              not all text is displayed.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
+ * - Extra:      Custom font file (e.g. Roboto_Light_36.h)
+ *
+ * Configuration:
+ * - Tools -> Board -> "Soldered Inkplate 5"
+ *
+ * Expected result:
+ * - Two text boxes rendered on the screen:
+ *   1) Default TextBox
+ *   2) Custom styled TextBox using Roboto font
+ *
+ * Notes:
+ * - This example runs in 1-bit (black & white) mode.
+ * - Some custom fonts are drawn bottom-to-top and may require
+ *   a vertical offset for correct positioning.
+ * - Always call display.display() after drawing operations
+ *   to update the physical e-paper screen.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-04-24
+ * @license     GNU GPL V3
+ **************************************************/
 
 #include "Inkplate.h"            //Include Inkplate library to the sketch
 #include "Roboto_Light_36.h"

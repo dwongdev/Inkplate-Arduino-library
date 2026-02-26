@@ -1,12 +1,12 @@
 /**
  **************************************************
- * @file        Inkplate10_Mandelbrot_Set.ino
- * @brief       Renders the Mandelbrot set on Inkplate 10 using per-pixel
+ * @file        Inkplate5_Mandelbrot_Set.ino
+ * @brief       Renders the Mandelbrot set on Inkplate 5 using per-pixel
  *              iteration in 1-bit black/white mode.
  *
  * @details     This example demonstrates CPU-based rendering of the Mandelbrot
  *              fractal directly into the Inkplate framebuffer. For each pixel
- *              on the 1200x825 e-paper panel, the sketch maps screen
+ *              on the 960x540 e-paper panel, the sketch maps screen
  *              coordinates to a region of the complex plane and iterates the
  *              Mandelbrot function up to MAXITERATIONS. Pixels that do not
  *              diverge within the iteration limit are drawn as black; others
@@ -18,21 +18,21 @@
  *              Progress is printed to Serial (one line per rendered row).
  *
  * Requirements:
- * - Board:      Soldered Inkplate 10
- * - Hardware:   Inkplate 10, USB cable
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
  * - Extra:      none
  *
  * Configuration:
- * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
  * - Serial Monitor: 115200 baud
  * - Adjust xFrom/xTo/yFrom/yTo to explore different regions (optional)
  * - Adjust MAXITERATIONS to trade detail vs. render time (optional)
  *
  * Don't have Inkplate Boards in Arduino Boards Manager?
- * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
  *
  * How to use:
- * 1) Upload the sketch to Inkplate 10.
+ * 1) Upload the sketch to Inkplate 5.
  * 2) Open Serial Monitor at 115200 baud to watch rendering progress.
  * 3) Wait for the full frame to finish rendering (can take minutes).
  * 4) After the image is shown, the sketch waits 5 seconds and renders again.

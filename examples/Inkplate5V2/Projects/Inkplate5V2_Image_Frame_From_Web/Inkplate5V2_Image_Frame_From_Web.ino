@@ -59,8 +59,8 @@ Inkplate display(INKPLATE_3BIT);
 
 
 
-const char ssid[] = "Soldered Electronics";    // Your WiFi SSID
-const char *password = "dasduino"; // Your WiFi password
+const char ssid[] = "Stefan";    // Your WiFi SSID
+const char *password = "granatir"; // Your WiFi password
 
 void setup()
 {
@@ -98,7 +98,7 @@ void loop()
 
 void imageUrl(char *out)
 {
-    const char *startUrl = "http://loremflickr.com/1200/825";
+    const char *startUrl = "http://loremflickr.com/960/540";
 
     // For HTTPS targets (redirect), we’ll use a secure client.
     WiFiClientSecure secure;

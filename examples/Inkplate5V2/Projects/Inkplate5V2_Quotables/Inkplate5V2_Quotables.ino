@@ -73,8 +73,8 @@
 //---------- CHANGE HERE  -------------:
 
 // Put in your ssid and password
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Stefan";
+char pass[] = "granatir";
 
 //----------------------------------
 

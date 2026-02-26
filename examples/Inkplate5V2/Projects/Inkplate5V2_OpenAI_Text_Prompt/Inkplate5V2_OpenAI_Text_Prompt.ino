@@ -84,11 +84,11 @@
 #define SLEEP_DURATION_IN_MINS 30*60 
 
 // WiFi credentials
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
+const char* ssid = "Stefan";
+const char* password = "granatir";
 
 // OpenAI API key
-const char* openai_key = "YOUR_API_KEY_HERE"; 
+const char* openai_key = ""; 
 
 // Location and coordinates for weather query
 String location = "Osijek";

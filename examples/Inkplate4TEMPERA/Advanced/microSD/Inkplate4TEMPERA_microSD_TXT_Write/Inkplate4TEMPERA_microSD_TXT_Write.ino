@@ -1,16 +1,48 @@
-/*
-   Inkplate4TEMPERA_SD_TXT_Write example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable, Inkplate 4TEMPERA and a SD card.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to write in .txt file.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   18 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_SD_TXT_Write.ino
+ * @brief       Write text file to SD card on Soldered Inkplate 4TEMPERA.
+ *
+ * @details     Demonstrates how to initialize the SD card, create a .txt file,
+ *              write data into it, and properly close the file using the
+ *              Inkplate SD card interface. The example writes a short text
+ *              string into "test.txt" stored on a FAT-formatted SD card.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4TEMPERA
+ * - Hardware:   Inkplate 4TEMPERA, USB cable, microSD card
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
+ * - SD card format: FAT / FAT32
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
+ *
+ * How to use:
+ * 1) Insert a FAT-formatted SD card into the Inkplate.
+ * 2) Upload the sketch to Inkplate 4TEMPERA.
+ * 3) The program initializes the SD card.
+ * 4) A file named "test.txt" is created (or appended if it exists).
+ * 5) The text string defined in the code is written into the file.
+ *
+ * Expected output:
+ * - Status messages shown on the Inkplate display.
+ * - File "test.txt" created on the SD card with written content.
+ *
+ * Notes:
+ * - SD card must be properly formatted (FAT/FAT32).
+ * - Always close files after writing to prevent corruption.
+ * - SD card is put into sleep mode after operation to reduce power consumption.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-01-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

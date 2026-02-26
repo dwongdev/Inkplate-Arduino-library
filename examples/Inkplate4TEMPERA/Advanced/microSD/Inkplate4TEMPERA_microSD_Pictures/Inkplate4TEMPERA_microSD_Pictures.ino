@@ -1,22 +1,47 @@
-/*
-   Inkplate4TEMPERA_SD_Pictures example for Soldered Inkplate 4 TEMPERA
-   For this example you will need a USB-C cable, Inkplate 4TEMPERA and a SD card 
-   loaded with images that can be found inside folder of this example.
-   Select "Soldered Inkplate4TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate4TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can read .bmp and .jpeg files (pictures) from an SD card and
-   display that image on the e-paper display. You can open .bmp, .jpeg or .png files (but there are 
-   some limitations by the library) that have color depth of 1 bit (BW bitmap), 4 bit, 8 bit and 
-   24 bit AND have resoluton smaller than 600x600 or otherwise it won't fit on screen. Format your
-   SD card in standard FAT fileformat.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-
-   24 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_SD_Pictures.ino
+ * @brief       Display images from SD card on Soldered Inkplate 4TEMPERA.
+ *
+ * @details     Demonstrates how to load image files from an SD card and display
+ *              them on the Inkplate 4TEMPERA e-paper display. The example shows how to
+ *              read supported image formats from a FAT-formatted SD card and
+ *              render them using the Inkplate graphics library.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4TEMPERA
+ * - Hardware:   Inkplate 4TEMPERA, USB cable, microSD card
+ * - Extra:      SD card with compatible image files
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
+ * - SD card format: FAT / FAT32
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
+ *
+ * How to use:
+ * 1) Copy supported image files to a FAT-formatted SD card.
+ * 2) Insert the SD card into the Inkplate.
+ * 3) Upload the sketch to Inkplate 4TEMPERA.
+ * 4) The image is read from the SD card and displayed on the e-paper screen.
+ *
+ * Expected output:
+ * - Selected image from the SD card is shown on the Inkplate display.
+ *
+ * Notes:
+ * - Supported formats include BMP, JPEG, and PNG (with library limitations).
+ * - Supported color depths: 1-bit (BW), 4-bit, 8-bit, and 24-bit.
+ * - Maximum supported resolution is 600 × 600 pixels.
+ * - Images larger than the display resolution will not fit on screen.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-17
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

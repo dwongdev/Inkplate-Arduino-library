@@ -1,21 +1,47 @@
-/*
-   Inkplate4TEMPERA_EEPROM_Usage example for Soldered Inkplate 4 TEMPERA
-   For this example, you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate4TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate4TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use EEPROM with Inkplate board.
-   EEPROM is a permanent memory that holds data even if the power supply is disconnected.
-   You can use EEPROM to store any data you don't want to lose during restarting or powering down the device.
-   It shows how to use basic operations with EEPROM like clearing, writing, and reading.
-
-   On the Serial Monitor at 115200 baud rate you can see what's happening.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   26 April 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_EEPROM_Usage.ino
+ * @brief       EEPROM read/write example for Soldered Inkplate 4TEMPERA.
+ *
+ * @details     Demonstrates how to use the built-in EEPROM on Inkplate 4TEMPERA to
+ *              store data that persists across resets and power cycles.
+ *              The example shows how to safely clear, write, and read user data
+ *              from EEPROM, while respecting reserved address ranges used by
+ *              the e-paper waveform data.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4TEMPERA
+ * - Hardware:   Inkplate 4TEMPERA, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4TEMPERA.
+ * 2) The display will first clear user EEPROM data.
+ * 3) Sample data is written to EEPROM.
+ * 4) Stored data is read back and shown on the display.
+ *
+ * Expected output:
+ * - Messages indicating EEPROM clearing, writing, and reading.
+ * - A list of values read from EEPROM displayed on the screen.
+ *
+ * Notes:
+ * - EEPROM addresses 0–75 are reserved for waveform data.
+ * - DO NOT read from or write to addresses below 76.
+ * - Changing EEPROM size may erase waveform data and affect display operation.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-03-13
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

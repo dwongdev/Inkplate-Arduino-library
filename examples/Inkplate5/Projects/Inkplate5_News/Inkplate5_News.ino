@@ -1,19 +1,75 @@
-/*
-    Inkplate5_News_API Example for Soldered Inkplate 5
-    This example demonstrates how to use the Inkplate 5 to display news headlines and descriptions
-    fetched from the News API. You will need an API key from https://newsapi.org/ to use this example.
-
-    IMPORTANT:
-    - Update your WiFi credentials and API key in the "CHANGE HERE" section below.
-    - Ensure you have the ArduinoJSON library installed: https://arduinojson.org/
-    - Adjust the timezone as needed.
-
-    For more information, visit:
-    - Inkplate documentation: https://www.inkplate.io
-    - Support forums: https://forum.soldered.com/
-
-    Created by Soldered, 6.5.2025
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_News_API.ino
+ * @brief       Fetches latest news via NewsAPI.org over WiFi, renders headlines
+ *              and descriptions in a newspaper layout, then deep-sleeps.
+ *
+ * @details     This example demonstrates a complete online-to-ePaper workflow
+ *              on Inkplate 10. After boot, the ESP32 connects to WiFi, syncs
+ *              time using NTP (required for timestamps and network services),
+ *              then calls NewsAPI.org to retrieve a list of news items.
+ *
+ *              Parsed news entries (title + description) are laid out on the
+ *              display using multiple fonts and text boxes: a centered "World
+ *              News" header, a date/time row ("Date" and "Last update"), and a
+ *              sequence of article blocks below. The display is driven in
+ *              1-bit black/white mode (INKPLATE_1BIT) and updated with a full
+ *              refresh.
+ *
+ *              After rendering, the ESP32 enters deep sleep for a fixed period
+ *              (DELAY_MS). Deep sleep resets the ESP32, so the sketch restarts
+ *              from setup() on every wake-up and fetches fresh headlines again.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable (battery optional for low-power testing)
+ * - Extra:      WiFi Internet connection, NewsAPI.org API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial Monitor: 115200 baud
+ * - Set WiFi credentials (ssid/pass) and News API key in the "CHANGE HERE"
+ *   section
+ * - Set timeZone (UTC offset) appropriate for your location
+ * - ArduinoJson library required by the networking layer (install via Library
+ *   Manager if not already present)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Create an account at NewsAPI.org and generate an API key.
+ * 2) Enter your WiFi SSID, password, API key, and timezone in the sketch.
+ * 3) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 4) On boot, the device connects to WiFi, syncs time, fetches news, and draws
+ *    the newspaper-style page.
+ * 5) The board deep-sleeps for ~1 hour, then wakes and repeats the process.
+ *
+ * Expected output:
+ * - E-paper display shows a "World News" page with current date / last update
+ *   time and multiple news items (headline + description).
+ * - Serial Monitor logs WiFi connection, time sync, fetch status, and drawing
+ *   progress for each news item.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). This example performs full refresh
+ *   updates; partial updates are not used.
+ * - Deep sleep restarts the ESP32 on every wake-up; all state is re-initialized.
+ * - Network reliability matters: API requests can fail due to connectivity,
+ *   rate limits, or invalid credentials. Handle API key secrecy appropriately.
+ * - NewsAPI.org has usage limits depending on plan; frequent polling may hit
+ *   rate limits.
+ * - TLS/HTTPS behavior depends on the networking implementation in
+ *   src/Network.h; if certificates are not validated, treat it as demo-only and
+ *   prefer proper certificate validation/pinning for production deployments.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-05-14
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure the correct board is selected in the Arduino IDE
 #ifndef ARDUINO_INKPLATE5
