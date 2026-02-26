@@ -62,7 +62,7 @@ Inkplate display(INKPLATE_1BIT);
 WiFiClient client;
 
 // Here you can change the interval of sending POST requests (minimum 15 seconds with a free license)
-#define POSTING_INTERVAL_IN_SESCS 20
+#define POSTING_INTERVAL_IN_SECS 20
 
 // Enter your WiFi credentials
 const char *ssid = "";

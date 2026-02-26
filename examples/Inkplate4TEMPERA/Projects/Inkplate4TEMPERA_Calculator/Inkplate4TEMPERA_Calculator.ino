@@ -1,17 +1,63 @@
-/*
-   Inkplate4TEMPERA_Calculator example for Soldered Inkplate 4 TEMPERA
-   For this example you will need USB-C cable and Inkplate 4TEMPERA (and a calculator, if you don't trust Inkplate :) ).
-   Select "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how simple GUI can be created on Inkplate 4TEMPERA with this simple calculator example.
-   You can do simple math calculations on this calculator (like addition, subtraction, multiplication, division).
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   26 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Calculator.ino
+ * @brief       Simple touchscreen calculator GUI using 1-bit e-paper rendering
+ *              and partial updates on Inkplate 4 TEMPERA.
+ *
+ * @details     This example implements a basic on-screen calculator controlled
+ *              entirely via the Inkplate 4 TEMPERA touchscreen. It draws a GUI
+ *              keypad and display area (provided by helper code in Calculator.h)
+ *              and lets you enter numbers and perform the four basic operations:
+ *              addition, subtraction, multiplication, and division.
+ *
+ *              Touch input is handled with touchInArea() checks for each button.
+ *              After most interactions, the UI is redrawn and updated using
+ *              partialUpdate() to reduce flashing and improve responsiveness.
+ *              Results are shown on-screen and the last expression/result can
+ *              be stored as a simple "history" line.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (optional, for touchscreen init messages)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the Inkplate 4 TEMPERA board and upload the sketch.
+ * 2) Use the touchscreen buttons to enter a number.
+ * 3) Tap an operator (+, -, x, /), enter the second number, then tap '='.
+ * 4) Use "Clear" to reset current input, "Clear history" to erase the history
+ *    line, and "Refresh" to redraw the full UI.
+ *
+ * Expected output:
+ * - E-paper: Calculator UI with buttons, an input line, and a history/result
+ *   line. Tapping buttons updates the UI.
+ * - Serial: Touchscreen init status (if Serial Monitor is open).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - For best image quality, perform a full refresh periodically; repeated
+ *   partial updates can leave artifacts on e-paper.
+ * - Touchscreen init is required; if init fails the UI may still draw, but
+ *   touch interaction will not work reliably.
+ * - Division by zero is guarded before calculating (right operand must be non-
+ *   zero to trigger calculation).
+ * - GUI layout, fonts, and helper variables (e.g., text18_content/text19_content)
+ *   are defined in Calculator.h; keep that file with this example.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-07-26
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

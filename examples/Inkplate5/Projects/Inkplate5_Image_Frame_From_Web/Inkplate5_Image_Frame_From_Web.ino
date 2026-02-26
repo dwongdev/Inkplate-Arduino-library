@@ -62,8 +62,8 @@ Inkplate display(INKPLATE_3BIT);
 // ---------------- CHANGE HERE ---------------------:
 
 // WiFi credentials
-const char *ssid = ""; // Your WiFi SSID
-const char *pass = ""; // Your WiFi password
+const char *ssid = "Soldered Electronics"; // Your WiFi SSID
+const char *pass = "dasduino"; // Your WiFi password
 
 // Define delay between 2 images in seconds
 #define SECS_BETWEEN_IMAGES 30
@@ -92,7 +92,7 @@ void setup()
     Serial.println(display.image.drawJpegFromWeb(url, 0, 0, true, false));
     display.display();
 
-    /Serial.println("Going to sleep");
+    Serial.println("Going to sleep");
 
     // Activate wakeup timer
     esp_sleep_enable_timer_wakeup(15ll * 60 * 1000 * 1000);

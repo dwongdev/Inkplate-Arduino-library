@@ -1,29 +1,29 @@
 /**
  **************************************************
- * @file        Inkplate10_Game_Of_Life.ino
- * @brief       Conway’s Game of Life animation (community example) for Soldered Inkplate 10.
+ * @file        Inkplate5_Game_Of_Life.ino
+ * @brief       Conway’s Game of Life animation (community example) for Soldered Inkplate 5.
  *
  * @details     Community-created example that runs Conway’s Game of Life on the
- *              Inkplate 10 e-paper display. A random initial grid is generated,
+ *              Inkplate 5 e-paper display. A random initial grid is generated,
  *              then the cellular automaton evolves over time. The animation is
  *              drawn using rectangle fills per cell and updated using partial
  *              updates for speed, with an occasional full refresh to reduce
  *              ghosting and maintain image quality.
  *
  * Requirements:
- * - Board:      Soldered Inkplate 10
- * - Hardware:   Inkplate 10, USB cable
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
  * - Extra:      None
  *
  * Configuration:
- * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
  * - Serial settings: 115200 baud (optional)
  *
  * Don't have Inkplate Boards in Arduino Boards Manager?
  * See https://docs.soldered.com/inkplate/10/quick-start-guide/
  *
  * How to use:
- * 1) Upload the sketch to Inkplate 10.
+ * 1) Upload the sketch to Inkplate5.
  * 2) The program generates a random initial state and starts the simulation.
  * 3) Watch the Game of Life evolve on the e-paper display.
  *

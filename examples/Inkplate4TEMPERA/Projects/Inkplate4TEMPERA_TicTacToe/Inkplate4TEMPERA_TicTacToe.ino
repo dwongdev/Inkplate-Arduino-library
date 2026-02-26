@@ -1,18 +1,68 @@
-/*
-   Inkplate6PLUS_TicTacToe example for Soldered Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use some higher level touchscreen functions to easily create
-   interactable touchscreen user interfaces.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   17 February 2021 by Soldered
-*/
-
-// Next 3 lines are a precaution, you can ignore those, and the example would also work without them
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_TicTacToe.ino
+ * @brief       Touchscreen Tic-Tac-Toe with optional AI opponent using partial
+ *              updates on Inkplate 4 TEMPERA.
+ *
+ * @details     This example demonstrates building an interactive touchscreen UI
+ *              using higher-level touch helpers (touchInArea()) and rendering
+ *              updates efficiently on e-paper. The sketch provides a menu to
+ *              select game mode (human vs AI with multiple difficulty levels,
+ *              or 2-player), choose who plays first, and choose whether X or O
+ *              starts.
+ *
+ *              During gameplay, taps on the 3x3 grid place X or O. In single-
+ *              player mode, the AI computes its move using a minimax search
+ *              (depth controlled by difficultyDepth[]). The UI is redrawn after
+ *              each action and updated primarily via partialUpdate() to reduce
+ *              flashing. A "Go Back" touch area returns to the menu and resets
+ *              the board.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (optional; for debugging)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Use the touchscreen menu to choose difficulty (or 2-player), who starts,
+ *    and whether X or O goes first.
+ * 3) Tap "Start game" to begin.
+ * 4) Tap a board cell to place your mark. In AI mode, the device responds with
+ *    its move automatically.
+ * 5) Tap "Go Back" to return to the menu and reset the board.
+ *
+ * Expected output:
+ * - E-paper: Menu screen with selectable options, followed by a Tic-Tac-Toe
+ *   board. The top status line shows whose turn it is and the game result
+ *   (ongoing / X won / O won / tie).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - Partial updates are used for most UI interactions; perform occasional full
+ *   refreshes in long sessions if you notice ghosting.
+ * - AI difficulty is controlled by minimax depth; higher depths increase CPU
+ *   time per move.
+ * - This example depends on additional project files:
+ *   - ai.h (minimax implementation)
+ *   - generatedUIMenu.h (UI geometry/constants and text variables)
+ * - Touchscreen must be initialized; if init fails, touch input will not work
+ *   reliably.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-17
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

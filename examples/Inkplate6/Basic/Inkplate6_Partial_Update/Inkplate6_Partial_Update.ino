@@ -1,19 +1,51 @@
-/*
-   Inkplate6_Partial_Update example for Soldered Inkplate 6
-   For this example you will need only USB cable and Inkplate 6
-   Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show  how to use partial update functionality of Inkplate 6 e-paper display.
-   It will scroll text that is saved in char array
-   NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after
-   power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 July 2020 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_Partial_Update.ino
+ * @brief       Partial update text scrolling example for Soldered Inkplate 6.
+ *
+ * @details     Demonstrates how to use partial update functionality on the
+ *              Inkplate 6 e-paper display in 1-bit (black & white) mode.
+ *              The example scrolls a text string across the screen by updating
+ *              only the changed areas using partialUpdate(). A full refresh is
+ *              periodically forced (every N partial updates) to maintain good
+ *              image quality.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6.
+ * 2) The display performs an initial full refresh.
+ * 3) Text scrolls across the screen using partial updates.
+ * 4) A full refresh is automatically forced after a defined number of partial updates.
+ *
+ * Expected output:
+ * - Scrolling text rendered on the display using partial updates.
+ * - Periodic full refresh to reduce ghosting and maintain display quality.
+ *
+ * Notes:
+ * - Partial update is available only in 1-bit (black & white) mode.
+ * - It is not recommended to use partial update on the first refresh after power-up.
+ * - Perform a full refresh every 5–10 partial updates to maintain good picture quality.
+ * - partialUpdate(_forced, leaveOn):
+ *   - _forced: advanced use (e.g. deep sleep workflows) to force a partial update
+ *   - leaveOn: keeps the e-paper power rails enabled between updates for faster refreshes
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)

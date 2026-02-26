@@ -19,6 +19,7 @@
  *
  * Don't have Inkplate Boards in Arduino Boards Manager?
  * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+
  *
  * How to use:
  * 1) Enter your WiFi SSID and password in the sketch.
@@ -53,8 +54,8 @@
 #include "WiFi.h"                //Include library for WiFi
 
 // Enter your WiFi credentials
-const char *ssid = "";
-const char *pass = "";
+const char *ssid = "Soldered Electronics";
+const char *pass = "dasduino";
 
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1 Bit mode (BW)
 

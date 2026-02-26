@@ -1,29 +1,29 @@
 /**
  **************************************************
- * @file        Inkplate10_SD_Pictures.ino
- * @brief       Display images from SD card on Soldered Inkplate 10.
+ * @file        Inkplate6_SD_Pictures.ino
+ * @brief       Display images from SD card on Soldered Inkplate 6.
  *
  * @details     Demonstrates how to load image files from an SD card and display
- *              them on the Inkplate 10 e-paper display. The example shows how to
+ *              them on the Inkplate 6 e-paper display. The example shows how to
  *              read supported image formats from a FAT-formatted SD card and
  *              render them using the Inkplate graphics library.
  *
  * Requirements:
- * - Board:      Soldered Inkplate 10
- * - Hardware:   Inkplate 10, USB cable, microSD card
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable, microSD card
  * - Extra:      SD card with compatible image files
  *
  * Configuration:
- * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
  * - SD card format: FAT / FAT32
  *
  * Don't have Inkplate Boards in Arduino Boards Manager?
- * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
  *
  * How to use:
  * 1) Copy supported image files to a FAT-formatted SD card.
  * 2) Insert the SD card into the Inkplate.
- * 3) Upload the sketch to Inkplate 10.
+ * 3) Upload the sketch to Inkplate 6.
  * 4) The image is read from the SD card and displayed on the e-paper screen.
  *
  * Expected output:
@@ -32,7 +32,7 @@
  * Notes:
  * - Supported formats include BMP, JPEG, and PNG (with library limitations).
  * - Supported color depths: 1-bit (BW), 4-bit, 8-bit, and 24-bit.
- * - Maximum supported resolution is 1200 × 825 pixels.
+ * - Maximum supported resolution is 800 x 600 pixels.
  * - Images larger than the display resolution will not fit on screen.
  *
  * Docs:         https://docs.soldered.com/inkplate
@@ -44,8 +44,8 @@
  **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
-#if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
-#error "Wrong board selection for this example, please select e-radionica Inkplate10 or Soldered Inkplate10 in the boards menu."
+#if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)
+#error "Wrong board selection for this example, please select e-radionica Inkplate6 or Soldered Inkplate6 in the boards menu."
 #endif
 
 #include "Inkplate.h"            // Include Inkplate library to the sketch

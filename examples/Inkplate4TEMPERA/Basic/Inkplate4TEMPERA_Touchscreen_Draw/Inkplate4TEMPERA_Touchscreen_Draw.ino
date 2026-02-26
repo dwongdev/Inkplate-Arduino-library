@@ -1,17 +1,68 @@
-/*
-    Inkplate4TEMPERA_Touch_Registers.ino example for Soldered Inkplate 4 TEMPERA
-    For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-    Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-    Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example shows you how to use Inkplate 6PLUS touchscreen.
-    Once the code is uploaded, try drawing on the screen :)
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    12 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Touchscreen_Draw.ino
+ * @brief       Simple touchscreen drawing demo: reads touch coordinates and
+ *              draws on the e-paper display using fast partial updates.
+ *
+ * @details     This example demonstrates basic touchscreen usage on Inkplate 4
+ *              TEMPERA by reading raw touch coordinates and rendering graphics
+ *              directly to the display. After initializing the touchscreen, the
+ *              sketch continuously checks for touch availability, retrieves up
+ *              to two simultaneous touch points, and draws either:
+ *              - A line segment from the previous touch point to the new point
+ *                (DRAW_LINE), creating a “scribble” effect, or
+ *              - A filled circle at the touch position (DRAW_CIRCLE).
+ *
+ *              The display runs in 1-bit black/white mode (INKPLATE_1BIT) and
+ *              uses partial updates while keeping panel power enabled to make
+ *              the interaction responsive. Because partial updates can leave
+ *              ghosting over time, a periodic full refresh may be desirable in
+ *              longer drawing sessions (not implemented in this sketch).
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (optional, for init logs)
+ * - Select drawing mode:
+ *   - #define DRAW_LINE   (default)
+ *   - #define DRAW_CIRCLE
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Touch and drag on the screen to draw.
+ * 3) If DRAW_LINE is enabled, continuous strokes are drawn by connecting points.
+ *    If DRAW_CIRCLE is enabled, tapping draws filled circles.
+ *
+ * Expected output:
+ * - The text "Draw on the screen!" on startup.
+ * - Drawing appears where you touch, updated quickly via partial refreshes.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). Partial updates are supported only
+ *   in BW mode.
+ * - Partial update behavior: display.partialUpdate(false, true) keeps panel
+ *   power enabled for faster and more reliable repeated partial updates, at the
+ *   cost of increased power consumption.
+ * - Ghosting: repeated partial updates will accumulate artifacts. For longer
+ *   sessions, add an occasional full refresh (display.display()) to clean the
+ *   panel.
+ * - Multi-touch: the API can return up to 2 touch points, but this example uses
+ *   only the first point (x[0], y[0]) for drawing.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-07-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

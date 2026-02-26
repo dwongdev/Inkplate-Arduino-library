@@ -1,17 +1,59 @@
-/*
-   Inkplate4TEMPERA_Game_Of_Life example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only USB-C cable and Inkplate 4TEMPERA
-   Select "Soldered Inkplate4TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate4TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Our first community created example, made by: https://github.com/claud9999
-   To run it, jut upload the code and watch Conways game of life animation!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   24 September 2020 By_Claud9999
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Game_Of_Life.ino
+ * @brief       Conway's Game of Life animation using 1-bit partial updates on
+ *              Inkplate 4 TEMPERA.
+ *
+ * @details     This community example implements Conway's Game of Life on the
+ *              Inkplate 4 TEMPERA e-paper display. The screen is divided into a
+ *              grid of square cells (randomized cell size each run), and each
+ *              iteration updates the grid according to the classic Life rules.
+ *
+ *              To make the animation smoother on e-paper, the sketch draws only
+ *              the changed regions into the frame buffer and uses partialUpdate()
+ *              most frames. A full refresh is performed periodically to reduce
+ *              ghosting and maintain contrast. If the simulation stagnates (too
+ *              little change over time), the grid is re-randomized to keep the
+ *              animation interesting.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (optional; not required for operation)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the Inkplate 4 TEMPERA board and upload the sketch.
+ * 2) The Game of Life simulation starts automatically after boot.
+ * 3) Watch the evolving patterns; the sketch will occasionally re-randomize
+ *    when activity drops.
+ *
+ * Expected output:
+ * - E-paper: Continuous Game of Life animation using black/white cells. New
+ *   cells appear as filled black squares; older cells are drawn with a shrinking
+ *   white interior to indicate age.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - A full refresh is performed every FULLREFRESH frames to reduce ghosting.
+ * - Partial updates can accumulate artifacts; periodic full refresh is a best
+ *   practice for long-running animations.
+ * - The simulation uses two in-RAM grids sized for the minimum cell size; RAM
+ *   usage increases with display resolution and chosen cell size range.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered (community example by Claud9999)
+ * @date        2020-09-24
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

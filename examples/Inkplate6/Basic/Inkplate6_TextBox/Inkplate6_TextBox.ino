@@ -1,50 +1,39 @@
 /**
  **************************************************
- * @file        Inkplate4TEMPERA_TextBox.ino
- * @brief       Demonstrates rendering wrapped text inside bounded text boxes
- *              using the Inkplate TextBox helper.
+ * @file        Inkplate6_TextBox.ino
+ * @brief       TextBox usage example for Soldered Inkplate 6.
  *
- * @details     This example shows how to use the drawTextBox() function on the
- *              Inkplate 4 TEMPERA in 1-bit (BW) mode. It renders a longer text
- *              string inside defined rectangular areas, automatically handling
- *              word wrapping and truncation.
+ * @details     Demonstrates how to use the drawTextBox() function to render
+ *              multi-line text inside a defined rectangular area.
+ *              The example shows:
+ *              - A basic TextBox with default parameters.
+ *              - A fully customized TextBox using a custom font,
+ *                text scaling, spacing, and optional border.
  *
- *              Two text boxes are demonstrated:
- *              - A basic text box using default parameters and the built-in
- *                font.
- *              - An advanced text box using a custom font, adjusted vertical
- *                spacing, font size control, and optional border disabling.
- *
- *              If the text exceeds the vertical bounds of the box, it is
- *              truncated and ends with three dots (...) to indicate that not
- *              all content is visible.
+ *              If a word does not fit at the end of a row, it automatically
+ *              wraps to the next line. If the text exceeds the lower boundary
+ *              of the box, it ends with three dots (...) to indicate that
+ *              not all text is displayed.
  *
  * Requirements:
- * - Board:      Soldered Inkplate 4 TEMPERA
- * - Hardware:   Inkplate 4 TEMPERA, USB cable
- * - Extra:      none
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      Custom font file (e.g. Roboto_Light_36.h)
  *
  * Configuration:
- * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Tools -> Board -> "Soldered Inkplate 6"
  *
- * Don't have Inkplate Boards in Arduino Boards Manager?
- * See https://docs.soldered.com/inkplate/10/quick-start-guide/
- *
- * How to use:
- * 1) Select the Inkplate 4 TEMPERA board and upload the sketch.
- * 2) After boot, two text boxes are rendered on the display.
- * 3) Compare default TextBox behavior with the custom-font example.
- *
- * Expected output:
- * - E-paper: Two rectangular text areas showing wrapped text. The second uses
- *   a larger custom font and adjusted spacing.
+ * Expected result:
+ * - Two text boxes rendered on the screen:
+ *   1) Default TextBox
+ *   2) Custom styled TextBox using Roboto font
  *
  * Notes:
- * - Display mode is 1-bit (BW).
- * - TextBox automatically wraps words; it does not hyphenate.
- * - When using custom fonts, RAM usage increases significantly.
- * - Some fonts are drawn bottom-to-top; a vertical offset may be required to
- *   align text correctly (as shown in this example).
+ * - This example runs in 1-bit (black & white) mode.
+ * - Some custom fonts are drawn bottom-to-top and may require
+ *   a vertical offset for correct positioning.
+ * - Always call display.display() after drawing operations
+ *   to update the physical e-paper screen.
  *
  * Docs:         https://docs.soldered.com/inkplate
  * Support:      https://forum.soldered.com/

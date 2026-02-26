@@ -192,7 +192,7 @@ String getImageUrlFromPrompt(String prompt)
   doc["prompt"] = prompt;
   doc["style"] = "vivid"; 
   doc["n"] = 1;
-  doc["size"] = "512x512";  // or 1792x1024, 1024x1792
+  doc["size"] = "1024x1024";  // or 1792x1024, 1024x1792
 
   String requestBody;
   serializeJson(doc, requestBody); // Convert JSON object to string
