@@ -37,6 +37,7 @@
 #define CMD_READ_TEMP                   0x0028
 #define CMD_READ_TOUCHPAD               0x0029
 #define CMD_READ_BATTERY                0x002A
+#define CMD_EINK_PMIC                   0x002B
 #define CMD_RTC_SET_TIME                0x002C
 #define CMD_RTC_SET_DATE                0x002D
 #define CMD_RTC_SET_EPOCH               0x002E

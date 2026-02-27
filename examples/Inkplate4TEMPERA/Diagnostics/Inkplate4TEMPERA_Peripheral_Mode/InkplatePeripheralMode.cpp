@@ -1077,9 +1077,9 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
         
         case CMD_READ_BATTERY:
         {
-            Serial.println(_display->readBattery());
+            Serial.println(_display->battery.soc());
             char response[50];
-            sprintf(response,"%lf", _display->readBattery());
+            sprintf(response,"%lf", _display->battery.soc());
             sendResponse(CMD_READ_BATTERY, strlen(response), response);
             break;
         }
