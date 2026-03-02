@@ -6,13 +6,14 @@
  *
  * @details     This example calls Inkplate's burnInClean() routine to perform a
  *              repeated full-refresh cleaning sequence intended to reduce heavy
- *              ghosting (burn-in) artifacts on the e-paper panel. The cleaning
- *              runs for a configurable number of cycles (CLEAR_CYCLES) with a
- *              fixed delay between cycles (CYCLES_DELAY) to respect e-paper
- *              refresh limitations.
+ *              ghosting (burn-in) on the e-paper panel. The cleaning process
+ *              runs for a configurable number of cycles, with a fixed delay
+ *              between cycles to respect e-paper refresh limitations.
  *
- *              When the cleaning sequence finishes, a confirmation message is
- *              rendered on the display.
+ *              The display is used in 1-bit (BW) mode and the cleaning routine
+ *              performs multiple full updates, which may take several minutes
+ *              depending on CLEAR_CYCLES and CYCLES_DELAY. When the sequence
+ *              finishes, a confirmation message is rendered on the screen.
  *
  * Requirements:
  * - Board:      Soldered Inkplate 10
@@ -33,7 +34,7 @@
  * 4) Wait until the screen shows "Clearing done."
  *
  * Expected output:
- * - E-paper: The panel will repeatedly full-refresh during the cleaning routine.
+ * - E-paper: The panel will repeatedly refresh during the cleaning routine.
  *   After completion, the message "Clearing done." is displayed.
  *
  * Notes:
@@ -43,7 +44,8 @@
  * - Use CYCLES_DELAY >= 5 seconds to avoid overstressing the panel and to allow
  *   refresh waveforms to complete properly.
  * - Burn-in/ghosting reduction effectiveness depends on the panel condition and
- *   the content that caused the artifact; multiple runs may be required.
+ *   the content that caused the artifact; multiple runs may be required for
+ *   severe cases.
  *
  * Docs:         https://docs.soldered.com/inkplate
  * Support:      https://forum.soldered.com/

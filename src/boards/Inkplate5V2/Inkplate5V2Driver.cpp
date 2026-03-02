@@ -1094,7 +1094,7 @@ bool EPDDriver::setVcom(double vcomVoltage, uint16_t EEPROMaddress)
         internalIO.pinMode(6, INPUT_PULLUP);
         if (writeVCOMToEEPROM(vcomVoltage))
         {
-            EEPROM.write(EEPROMaddress, 170);
+            EEPROM.put(EEPROMaddress, vcomVoltage);
             EEPROM.commit();
             return true;
         }
@@ -1205,7 +1205,12 @@ uint8_t EPDDriver::readReg(uint8_t _reg)
  */
 double EPDDriver::getVcomVoltage()
 {
-    return (double)(readReg(0x03) | ((uint16_t)((readReg(0x04) & 1) << 8))) / (-100);
+    delay(10);                            // Wake up TPS65186 so registers respond
+    uint8_t vcomL = readReg(0x03);        // REad low 8 bits from register 0x03
+    uint8_t vcomH = readReg(0x04) & 0x01; // Read full byte, mask off all but bit 0 (MSB)
+    delay(10);                            // Power down driver
+    int raw = (vcomH << 8) | vcomL;       // Value between 0 - 511
+    return -(raw / 100.0);
 }
 
 /**

@@ -57,7 +57,7 @@
 Inkplate display(INKPLATE_1BIT);
 
 // If you want to write new VCOM voltage and perform all tests change this number
-const int EEPROMaddress = 0;
+const int EEPROMaddress = 1;
 
 // Peripheral mode variables and arrays
 #define BUFFER_SIZE 1000

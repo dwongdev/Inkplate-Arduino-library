@@ -62,9 +62,11 @@
 #define CMD_DISCONNECT_WIFI             0x0042
 #define CMD_GET_REQUEST                 0x0043
 #define CMD_POST_REQUEST                0x0044
-#define CMD_FRONTLIGHT                  0x0045
-#define CMD_FRONTLIGHT_SET              0x0046
-#define CMD_TOUCH_RAW                   0x0047
-#define CMD_TOUCHIN_AREA                0x0048
+// #define CMD_                            0x0042
+// #define CMD_                            0x0043
+// #define CMD_                            0x0044
+// #define CMD_                            0x0045
+// #define CMD_                            0x0046
+// #define CMD_                            0x0047
 
 #endif

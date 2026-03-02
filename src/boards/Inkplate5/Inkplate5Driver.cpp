@@ -1148,7 +1148,7 @@ bool EPDDriver::setVcom(double vcomVoltage, uint16_t EEPROMaddress)
         internalIO.pinMode(6, INPUT_PULLUP);
         if (writeVCOMToEEPROM(vcomVoltage))
         {
-            EEPROM.write(EEPROMaddress, 170);
+            EEPROM.put(EEPROMaddress, vcomVoltage);
             EEPROM.commit();
             return true;
         }

@@ -1,23 +1,51 @@
-/*
-   Inkplate6FLICK_HTTP_Web_Server example for Soldered Inkplate 6FLICK
-   For this example you will need a micro USB cable, Inkplate 6FLICK and a device with WiFi and Internet brower (PC,
-   Laptop, Smartphone, ...). Select "Soldered Inkplate 6FLICK" from Tools -> Board menu. 
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use Inkplate as a small and simple standlone Web Server.
-   You need to connect to Inkplate with WiFi and open IP address shown on Inkplate display.
-   After opening IP address, you will se text box where you can type some text and after that you press "Send to
-   display". Text will apper on Inkplate display! This is just simple example what you can do with it and of course, you
-   can create much more complex stuff.
-
-   HINT: You can change WiFi name and password of your Inkplate WIFi Access point by changing ssid and pass in #define
-   macros!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_HTTP_Web_Server.ino
+ * @brief       Simple HTTP web server demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to run Inkplate 6FLICK as a standalone Wi-Fi
+ *              Access Point with a simple HTTP web server. A client device
+ *              (PC/phone/tablet) connects to the Inkplate Wi-Fi network and
+ *              opens the displayed IP address in a browser. The served web
+ *              page contains a text box; submitted text is sent back to the
+ *              Inkplate and rendered on the e-paper display.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ *
+ * Configuration:
+ * - Access Point SSID/password set via ssid/pass macros in the sketch
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) On the client device, connect to the Wi-Fi network "Inkplate 6FLICK"
+ *    (or the SSID defined in the sketch) using the configured password.
+ * 3) Open the shown IP address in a web browser (e.g., http://192.168.4.1/).
+ * 4) Type text in the web page and press "Send to display".
+ * 5) The submitted text appears on the Inkplate e-paper screen.
+ *
+ * Expected output:
+ * - Inkplate displays Wi-Fi SSID/password and the server IP address to open.
+ * - Web page is served when the client opens the IP address.
+ * - Submitted text is displayed under "User text:" on the e-paper screen.
+ *
+ * Notes:
+ * - This example runs in Access Point mode (no external router required).
+ * - Text wrapping is enabled; very long text may still exceed screen space.
+ * - The HTML content is stored in htmlCode.h and served as a response.
+ * - This is a basic demo; you can expand it with more endpoints/UI.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

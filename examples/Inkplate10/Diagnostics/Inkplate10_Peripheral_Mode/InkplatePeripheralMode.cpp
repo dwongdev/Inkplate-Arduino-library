@@ -1083,6 +1083,30 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             sendResponse(CMD_READ_BATTERY, strlen(response), response);
             break;
         }
+        case CMD_EINK_PMIC:
+        {
+            // Check the number of arguments.
+            if (_numberOfArgs != 1) return;
+
+            // Get the argument.
+            char *_arg1; // H
+
+            _arg1 = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
+
+            // Check if they are valid.
+            if (_arg1 == NULL) return;
+
+            if(atoi(_arg1) == 0)
+            {
+                _display->einkOff();
+            }
+            else
+            {
+                _display->einkOn();
+            }
+
+            break;
+        }
         case CMD_RTC_SET_TIME:
         {
             // Check the number of arguments.

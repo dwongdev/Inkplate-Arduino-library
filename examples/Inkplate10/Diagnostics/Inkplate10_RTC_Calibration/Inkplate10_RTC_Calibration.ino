@@ -1,82 +1,78 @@
 /**
  **************************************************
  * @file        Inkplate10_RTC_Calibration.ino
- * @brief       Demonstrates RTC calibration on Inkplate 10 by adjusting the
- *              RTC crystal load capacitor and clock offset registers, then
- *              showing a running clock using partial updates.
+ * @brief       Calibrate the Inkplate 10 RTC by selecting crystal load
+ *              capacitance and applying a clock offset, then display the time
+ *              with periodic partial/full refreshes.
  *
- * @details     This example is intended to improve real-time clock accuracy on
- *              Inkplate 10 by configuring the on-board RTC (PCF85063(A)). It
- *              demonstrates two calibration mechanisms:
+ * @details     This example demonstrates how to improve RTC accuracy on
+ *              Inkplate 10 by configuring the PCF85063(A) real-time clock.
+ *              Two calibration mechanisms are shown:
  *
- *              1) Crystal load capacitance selection:
- *                 Some boards use external load capacitors for the 32.768 kHz
- *                 crystal. This sketch shows how to enable an internal load
- *                 capacitor (e.g., 7 pF or 12.5 pF). If you switch to the
- *                 internal capacitor, external capacitors must be removed for
- *                 correct operation.
+ *              1) Load capacitance selection:
+ *                 Some boards populate external load capacitors for the 32.768 kHz
+ *                 crystal. If you choose to use the RTC's internal capacitor
+ *                 setting instead, external capacitors must be removed. The
+ *                 sketch shows how to select an internal capacitor value
+ *                 (e.g., 7 pF or 12.5 pF) using SetInternalCapacitor().
  *
  *              2) Clock offset correction:
- *                 The RTC provides an offset register that periodically applies
- *                 small timing corrections. You can choose the correction mode
- *                 (applied every ~2 hours or every ~4 minutes) and a signed
- *                 offset value. The comments include a procedure to calculate
- *                 the required offset either from an oscilloscope frequency
- *                 measurement or from a multi-day drift comparison against a
- *                 reference clock.
+ *                 The RTC supports a programmable offset (in ppm-equivalent
+ *                 steps) applied periodically. SetClockOffset(mode, value)
+ *                 configures how often the correction is applied (mode) and the
+ *                 signed correction magnitude (value).
  *
- *              After configuration, the sketch waits for a button press and
- *              starts the RTC at 00:00:00. It then reads the RTC once per
- *              second and updates the displayed time. To reduce flicker and
- *              speed up updates, it uses partial updates in 1-bit BW mode and
- *              performs a full refresh after a limited number of partial
- *              refreshes.
+ *              After configuration, the sketch waits for a button press, sets
+ *              an initial time, and then reads the RTC once per second and
+ *              updates the e-paper display. To reduce flashing, it uses partial
+ *              updates most of the time and forces a full refresh after a
+ *              defined number of partial updates.
  *
  * Requirements:
  * - Board:      Soldered Inkplate 10
  * - Hardware:   Inkplate 10, USB cable
- * - Extra:      none (optional: reference clock / oscilloscope for calibration)
+ * - Extra:      none
  *
  * Configuration:
  * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
  * - Serial settings (if relevant): none
- * - Select RTC capacitor option:
- *   - display.rtc.SetInternalCapacitor(RTC_7PF) or RTC_12_5PF
- *   - If using external capacitors, do not enable the internal capacitor
- * - Set RTC offset:
- *   - display.rtc.SetClockOffset(mode, value)
- *   - Follow the included procedure to compute mode/value from measured drift
+ * - Calibration settings (edit in sketch):
+ *   - Optional: display.rtc.SetInternalCapacitor(RTC_7PF / RTC_12_5PF)
+ *   - Optional: display.rtc.SetClockOffset(mode, value)
  *
  * Don't have Inkplate Boards in Arduino Boards Manager?
  * See https://docs.soldered.com/inkplate/10/quick-start-guide/
  *
  * How to use:
- * 1) Decide whether you are using external crystal capacitors or internal RTC
- *    capacitance (hardware-dependent). Configure SetInternalCapacitor() only
- *    if appropriate.
- * 2) For drift measurement runs, comment out SetClockOffset() (and optionally
- *    SetInternalCapacitor()) to measure baseline RTC error.
- * 3) Upload the sketch. On the display, press the wake button to start the RTC.
- * 4) Let the clock run and compare against a trusted reference over many hours
- *    or days to compute ppm error and required offset.
- * 5) Apply the calculated SetClockOffset() value, re-upload, and verify.
+ * 1) Decide whether you are using external crystal capacitors or the RTC's
+ *    internal capacitor setting:
+ *    - Using internal capacitor: remove external capacitors and enable
+ *      SetInternalCapacitor(...).
+ *    - Using external capacitors: comment out SetInternalCapacitor(...).
+ * 2) (Optional) Determine and set the clock offset:
+ *    - Best: measure the 32.768 kHz clock frequency and compute ppm deviation,
+ *      then choose mode and offset register value accordingly.
+ *    - Alternative: run without SetClockOffset(), compare RTC time drift over
+ *      2–3 days, estimate frequency error, then compute and apply an offset.
+ * 3) Upload the sketch.
+ * 4) Press the wake button when prompted to start the RTC counter.
+ * 5) Observe the displayed time; adjust capacitor/offset values if needed and
+ *    re-upload.
  *
  * Expected output:
- * - A prompt: "Press the wake button to start RTC!"
- * - After pressing the button: a large HH:MM:SS clock updated roughly once per
- *   second.
+ * - E-paper: A prompt to press the wake button, then a large HH:MM:SS time that
+ *   updates about once per second.
  *
  * Notes:
- * - Display mode: 1-bit BW (INKPLATE_1BIT).
- * - Partial update behavior: partial updates are used for the clock and a full
- *   refresh is forced after MAX_PARTIAL_UPDATES to reduce ghosting. Partial
- *   updates are performed with panel power kept enabled (e.g., via the
- *   partialUpdate(..., true) setting), which can increase power usage but makes
- *   repeated updates faster and more stable.
- * - Refresh timing: e-paper refresh latency can make the shown time appear to
- *   “jump” occasionally; the RTC time itself remains continuous and accurate.
- * - RTC concepts: the RTC alarm/timer/interrupt features are separate from this
- *   calibration example; this sketch focuses on crystal load and offset trim.
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - The displayed seconds may appear to “skip” or look uneven because e-paper
+ *   refresh takes time; the RTC time itself continues accurately.
+ * - Partial update best practice: do a full refresh every 5–10 partial updates
+ *   to maintain image quality (this example enforces a threshold).
+ * - partialUpdate(false, true) keeps the e-paper power enabled for faster
+ *   successive updates (higher power usage).
+ * - RTC offset parameters are hardware-specific; refer to the PCF85063(A)
+ *   datasheet section on offset calibration for exact ppm/LSB behavior.
  *
  * Docs:         https://docs.soldered.com/inkplate
  * Support:      https://forum.soldered.com/

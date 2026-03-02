@@ -1,39 +1,94 @@
 /**
  **************************************************
  * @file        Inkplate6_Factory_Programming_VCOM.ino
+ * @brief       Factory utility for Inkplate 6: program panel VCOM, run hardware
+ *              self-tests, and expose peripheral-mode Serial commands.
  *
- * @brief       File for programming the Inkplate's VCOM
+ * @details     This sketch is intended for factory/production use on Inkplate 6
+ *              (including Inkplate6V2). It performs a first-boot provisioning
+ *              flow to validate hardware and program the e-paper VCOM voltage.
  *
- * @note        !WARNING! VCOM can only be set 100 times, so keep usage to a minimum.
+ *              First boot flow:
+ *              - Performs an I2C sanity check (GPIO expander reachability) and
+ *                runs peripheral tests (see test.h / test.cpp).
+ *              - Prompts the operator over Serial (115200 baud) to enter the
+ *                panel VCOM voltage (typically negative, range 0.0 to -5.0 V),
+ *                then programs it into EEPROM using setVcom().
+ *              - Shows a splash image and prints the programmed VCOM value on
+ *                the display.
  *
- *              !WARNING! This example uses einkOn() and einkOff() methods that turn 
- *                        on power supply for epaper display. They should only be used
- *                        in these examples, otherwise you risk damaging
- *                        your epaper display permanently!
+ *              Subsequent boots:
+ *              - Detects that VCOM was already programmed, enables the e-paper
+ *                power rails (einkOn()) and reads back the stored VCOM value.
+ *              - Enters "peripheral mode": a Serial-driven command loop that
+ *                forwards commands to the Inkplate peripheral interface (see
+ *                Peripheral.h).
  *
- *              !WARNING! Use at your own risk!!
+ *              Display modes:
+ *              - Uses 1-bit (BW) for initialization and fast updates.
+ *              - Switches to 3-bit grayscale to draw the splash bitmap.
  *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6 / Inkplate 6 V2, USB cable
+ * - Extra:      microSD card (formatted, any content), EasyC I2C slave device
+ *              for factory tests (see Notes)
  *
- *              Inkplate 6 does not support auto VCOM, it has to be set manually.
- *              The user will be prompted to enter VCOM via serial (baud 115200).
- *              VCOM ranges from 0.0 to -5.0.
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial Monitor: 115200 baud
+ * - Factory tests (in test.cpp):
+ *   - Set WiFi credentials (if tests require network)
+ *   - Ensure an EasyC/I2C slave responds at the configured address (0x30 by
+ *     default; configurable in test.cpp)
  *
- *              Tests will also be done, to pass all tests:
- *              - Edit the WiFi information in test.cpp.
- *              - Connect a slave device via EasyC on address 0x30 (you may change this in test.cpp also).
- *                In the InkplateEasyCTester folder, you can find the code for uploading to Dasduino Core 
- *                or Dasduino ConnectPlus to convert Dasduino to an I2C slave device for testing an easyC connector
- *                if you don't have a device with address 0x30.
- *              - Insert a formatted microSD card (doesn't have to be empty)
- *              - Press wake button to finish testing
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
  *
- *License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html Please review the
- *LICENSE file included with this example. If you have any questions about
- *licensing, please visit https://soldered.com/contact/ Distributed as-is; no
- *warranty is given.
+ * How to use:
+ * 1) (Factory) Connect required test hardware:
+ *    - Insert a formatted microSD card.
+ *    - Connect an EasyC I2C slave device at the address expected by test.cpp
+ *      (0x30 by default). If you don't have one, flash the helper firmware from
+ *      the InkplateEasyCTester folder onto a compatible Dasduino board and use
+ *      it as the I2C slave.
+ * 2) Open Serial Monitor at 115200 baud.
+ * 3) Upload the sketch. On first startup it will:
+ *    - Run peripheral tests and print results to Serial.
+ *    - Prompt for VCOM voltage; enter the value (include the '-' sign when
+ *      required) until programming succeeds.
+ * 4) After the splash screen appears, the device stays in peripheral mode.
+ *    Send supported peripheral-mode commands over Serial (see Peripheral.h /
+ *    Inkplate peripheral-mode documentation).
  *
- * @authors     Soldered
- ***************************************************/
+ * Expected output:
+ * - Serial Monitor: Test status messages, VCOM prompt, success/failure logs, and
+ *   peripheral-mode interaction.
+ * - E-paper: Splash/demo image with the programmed VCOM voltage printed near
+ *   the bottom.
+ *
+ * Notes:
+ * - Display mode switches between 1-bit (BW) and 3-bit grayscale; grayscale is
+ *   used only for rendering the splash image.
+ * - VCOM programming is limited: the panel VCOM can be programmed a finite
+ *   number of times (typically ~100 writes). Avoid repeated programming and use
+ *   only when necessary.
+ * - einkOn()/einkOff() control the e-paper power supply. They are intended for
+ *   controlled factory/service workflows. Do not toggle them repeatedly in
+ *   normal applications, as incorrect use may damage the display hardware.
+ * - Factory test requirements depend on test.cpp; missing WiFi credentials,
+ *   I2C slave, or microSD may cause tests to fail and stop the process.
+ * - Peripheral mode processes Serial input continuously; ensure your terminal
+ *   does not inject unexpected line endings or extra characters if commands are
+ *   strict.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2026
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)
