@@ -1,21 +1,55 @@
-/*
-   Inkplate6FLICK_HTTPS_With_Certificate example for Soldered Inkplate 6FLICK
-   For this example you will need a micro USB cable, Inkplate 6FLICK, and an available WiFi connection.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   You can open .bmp files that have color depth of 1 bit (BW bitmap), 4 bit, 8 bit and
-   24 bit.
-
-   This example will show you how you can download a .bmp file (picture) from the web securely by providing a 
-   certificate for the website that will be validated upon conncection and
-   display that image on e-paper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_HTTPS_With_Certificate.ino
+ * @brief       HTTPS image download with certificate validation demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to securely download and display a BMP image
+ *              over HTTPS on Inkplate 6FLICK by providing a TLS certificate
+ *              for server validation. The sketch connects to Wi-Fi, applies a
+ *              certificate (for a specific host), and then downloads/displays
+ *              an image from that host. It also shows what happens when trying
+ *              to load an image from a different host while using a certificate
+ *              that is not valid for it.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ *
+ * Configuration:
+ * - Set ssid/password to your Wi-Fi credentials
+ * - Certificate string must match the target HTTPS host
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi SSID and password in the sketch.
+ * 2) Upload the sketch to Inkplate 6FLICK.
+ * 3) The device connects to Wi-Fi and applies the provided certificate.
+ * 4) A BMP image is downloaded securely from the certified host and displayed.
+ * 5) A second download from a different host is attempted to demonstrate
+ *    certificate mismatch handling.
+ *
+ * Expected output:
+ * - Status messages on screen while connecting and downloading.
+ * - First BMP image successfully downloaded and displayed.
+ * - Second image download fails and an explanatory message is shown.
+ *
+ * Notes:
+ * - Certificate validation is host-specific; a certificate that works for one
+ *   domain will not validate a different domain.
+ * - BMP images must be in a supported Windows BMP format (typically uncompressed,
+ *   supported color depths per library).
+ * - Ensure you keep certificates up to date; expired/rotated certificates will
+ *   cause downloads to fail.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

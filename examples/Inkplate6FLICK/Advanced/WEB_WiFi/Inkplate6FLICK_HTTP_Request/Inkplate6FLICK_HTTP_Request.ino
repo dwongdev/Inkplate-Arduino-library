@@ -1,19 +1,47 @@
-/*
-   Inkplate6FLICK_HTTP_Request example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable, Inkplate 6FLICK and stable WiFi Internet connection
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to WiFi network, get data from Internet and display that data on epaper.
-   This example is NOT on to how to parse HTML data from Internet - it will just print HTML on the screen.
-
-   In quotation marks you will need write your WiFi SSID and WiFi password in order to connect to your WiFi network.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_HTTP_Request.ino
+ * @brief       Basic HTTP GET request demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to connect Inkplate 6FLICK to a Wi-Fi network,
+ *              perform a simple HTTP GET request, and display the received
+ *              response on the e-paper display. This example prints the raw
+ *              HTML/text response (it does not parse or extract data from it).
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ *
+ * Configuration:
+ * - Set ssid/pass in the sketch to your Wi-Fi credentials
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi SSID and password in ssid/pass.
+ * 2) Upload the sketch to Inkplate 6FLICK.
+ * 3) Device scans for nearby Wi-Fi networks and lists up to 10 of them.
+ * 4) Inkplate connects to the configured Wi-Fi network.
+ * 5) A GET request is sent to a test URL and the response is printed on screen.
+ *
+ * Expected output:
+ * - List of detected Wi-Fi networks (SSID, encryption marker, RSSI).
+ * - Connection status while joining the configured network.
+ * - Raw HTML/text content from the requested web page shown on the display.
+ *
+ * Notes:
+ * - This example uses plain HTTP (not HTTPS).
+ * - The response is printed directly; long pages may not fit the screen.
+ * - Wi-Fi scanning and connection status are displayed using partial updates.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

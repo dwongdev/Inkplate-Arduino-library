@@ -1,22 +1,47 @@
-/*
-   Inkplate6FLICK_Bluetooth_Serial example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable, Inkplate 6FLICK and smartphone.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows how to use Bluetooth on Inkplate devices.
-   Upload this example to the Inkplate and connect your phone to it via Bluetooth.
-   First, you have to pair the Inkplate with your phone in Bluetooth settings in your phone, then go to the
-   Serial Bluetooth Terminal app and you can find the Inkplate in the device list. You can use another similar app.
-   If Bluetooth starts successfully, you can send anything from your phone to an Inkplate or vice versa.
-   On the screen, you will see what the phone sends while in the app you will see what the Inkplate
-   sends over the Serial Monitor.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Bluetooth_Serial.ino
+ * @brief       Bluetooth SPP serial bridge demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Starts Bluetooth Serial on Inkplate 6FLICK and mirrors text
+ *              between a phone terminal app and the Inkplate (Serial Monitor
+ *              + e-paper display). Useful for validating Bluetooth pairing
+ *              and basic serial communication.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB-C cable
+ * - Extra:      Serial Bluetooth Terminal (Android) or equivalent app
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) Pair your phone with the device named "Inkplate 6FLICK"
+ *    (or the custom name defined in btDeviceName).
+ * 3) Open a Bluetooth serial terminal app and connect.
+ * 4) Send text from the phone → appears on Inkplate display and Serial Monitor.
+ * 5) Send text from Serial Monitor → forwarded to the phone via Bluetooth.
+ *
+ * Expected output:
+ * - Inkplate display shows received Bluetooth text.
+ * - Serial Monitor logs transmitted/received messages.
+ * - Bluetooth device visible for pairing.
+ *
+ * Notes:
+ * - Some iOS apps don’t support classic Bluetooth SPP profiles.
+ * - Partial screen updates are used for faster e-paper refresh.
+ * - Make sure the correct Inkplate board package is installed.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

@@ -1,5 +1,5 @@
 /*
-   Inkplate6FLICK_SD_TXT_Read example for Soldered Inkplate 6FLICK
+   Inkplate6FLICK_microSD_TXT_Read example for Soldered Inkplate 6FLICK
    For this example you will need only a micro USB cable, Inkplate 6FLICK and a SD card
    loaded with text.txt file that can be found inside folder of this example.
    Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.

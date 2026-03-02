@@ -1,19 +1,41 @@
-/*
-   Inkplate6FLICK_EEPROM_Usage example for Soldered Inkplate 6FLICK
-   For this example, you will need only USB cable and Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use EEPROM with Inkplate board.
-   EEPROM is a permanent memory that holds data even if the power supply is disconnected.
-   You can use EEPROM to store any data you don't want to lose during restarting or powering down the device.
-   It shows how to use basic operations with EEPROM like clearing, writing, and reading.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_EEPROM_Usage.ino
+ * @brief       EEPROM usage demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to use EEPROM (non-volatile memory) on the
+ *              Inkplate 6FLICK. The example shows basic EEPROM operations:
+ *              clearing stored data, writing values, and reading them back
+ *              while displaying results on the e-paper screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Libraries:  Inkplate library, ESP32 EEPROM library
+ *
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) EEPROM memory will first be cleared.
+ * 3) Example data is written to EEPROM.
+ * 4) Stored values are read back and displayed on the screen.
+ *
+ * Expected output:
+ * - Messages indicating EEPROM clearing, writing, and reading.
+ * - Printed list of stored EEPROM values on the e-paper display.
+ *
+ * Notes:
+ * - EEPROM retains data even after power loss or reset.
+ * - Always call EEPROM.commit() after writing data on ESP32.
+ * - Partial display updates are used to speed up screen refresh.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
