@@ -1,11 +1,11 @@
 /**
  **************************************************
- * @file        Inkplate10_Peripheral_Mode.ino
- * @brief       Runs Inkplate 10 in “Peripheral Mode”, accepting UART commands
+ * @file        Inkplate6PLUS_Peripheral_Mode.ino
+ * @brief       Runs Inkplate 6PLUS in “Peripheral Mode”, accepting UART commands
  *              to control the e-paper display without custom Arduino drawing
  *              code.
  *
- * @details     This example turns Inkplate 10 into a serial-controlled display
+ * @details     This example turns Inkplate 6PLUS into a serial-controlled display
  *              peripheral. Instead of implementing graphics logic in the sketch
  *              itself, an external host (PC, SBC, or another MCU) sends UART
  *              commands to the ESP32, and the PeripheralMode library parses and
@@ -23,22 +23,22 @@
  *              and use commands that load and render files instead.
  *
  * Requirements:
- * - Board:      Soldered Inkplate 10
- * - Hardware:   Inkplate 10, USB-C cable
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB-C cable
  * - Extra:      none (optional: microSD card for image file rendering)
  *
  * Configuration:
- * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
  * - Serial settings: 115200 baud, standard parity, line ending "\\n\\r"
  *   (both NL & CR) as expected by the command parser
  * - Adjust SERIAL_UART_RX_PIN, SERIAL_UART_TX_PIN, SERIAL_BUFFER_SIZE, and
  *   SERIAL_TIMEOUT_MS in settings.h if needed
  *
  * Don't have Inkplate Boards in Arduino Boards Manager?
- * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
  *
  * How to use:
- * 1) Upload the sketch to Inkplate 10.
+ * 1) Upload the sketch to Inkplate 6PLUS.
  * 2) Open a serial terminal at 115200 baud and wait for the device to print
  *    "READY".
  * 3) Send Peripheral Mode commands terminated with "\\n\\r".

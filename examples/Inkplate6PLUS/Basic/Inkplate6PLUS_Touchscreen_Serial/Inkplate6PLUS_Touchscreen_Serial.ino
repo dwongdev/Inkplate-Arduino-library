@@ -1,17 +1,50 @@
-/*
-   Inkplate6PLUS_Touchscreen_Serial example for Soldered Inkplate 6Plus
-   For this example you will need only USB cable and Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Touchscreen_Serial.ino
+ * @brief       Touchscreen event monitoring via Serial for Inkplate 6PLUS.
+ *
+ * @details     This example demonstrates how to read touch events from the
+ *              Inkplate 6PLUS touchscreen and print the detected touch
+ *              coordinates to the Serial Monitor.
+ *
+ *              The touchscreen supports multi-touch (up to two simultaneous
+ *              fingers). When a touch occurs, the number of detected fingers
+ *              and their coordinates are printed to the serial output.
+ *              When all fingers are released, a "Release" message is printed.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) Open Serial Monitor at 115200 baud.
+ * 3) Touch the display with one or two fingers.
+ * 4) The number of detected fingers and their coordinates will appear in the
+ *    Serial Monitor.
+ *
+ * Expected behavior:
+ * - When a finger touches the screen, coordinates (X,Y) are printed.
+ * - If two fingers touch simultaneously, both coordinates are printed.
+ * - When all fingers are lifted, "Release" is printed.
+ *
+ * Notes:
+ * - The touchscreen supports up to two touch points.
+ * - Coordinates are automatically adjusted if the display rotation is changed.
+ * - This example sets display rotation to orientation "2".
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
-   This example shows you how to use Inkplate 6Plus touchscreen.
-   Once the code is uploaded, open the serial monitor in Arduino IDE and you'll see touchscreen events there.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

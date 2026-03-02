@@ -1,22 +1,47 @@
-/*
-   Inkplate6PLUS_SD_Pictures example for Soldered Inkplate 6PLUS
-   For this example you will need a micro USB cable, Inkplate 6PLUS and a SD card loaded with
-   images that can be found inside folder of this example.
-   Select "e-radionica Inkplate 6PLUS" or "Soldered Inkplate 6PLUS" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6PLUS" or "Soldered Inkplate 6PLUS" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   You can open .bmp, .jpeg or .png files (but there are some limitations by the library) that have 
-   color depth of 1 bit (BW bitmap), 4 bit, 8 bit and 24 bit AND have resoluton smaller than 1024 x 758 
-   or otherwise it won't fit on screen. Format your SD card in standard FAT fileformat.
-
-   This example will show you how you can read .bmp and .jpeg files (pictures) from SD card and
-   display that image on e-paper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   17 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_SD_Pictures.ino
+ * @brief       Display images from SD card on Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates how to load image files from an SD card and display
+ *              them on the Inkplate 6PLUS e-paper display. The example shows how to
+ *              read supported image formats from a FAT-formatted SD card and
+ *              render them using the Inkplate graphics library.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable, microSD card
+ * - Extra:      SD card with compatible image files
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - SD card format: FAT / FAT32
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Copy supported image files to a FAT-formatted SD card.
+ * 2) Insert the SD card into the Inkplate.
+ * 3) Upload the sketch to Inkplate 6PLUS.
+ * 4) The image is read from the SD card and displayed on the e-paper screen.
+ *
+ * Expected output:
+ * - Selected image from the SD card is shown on the Inkplate display.
+ *
+ * Notes:
+ * - Supported formats include BMP, JPEG, and PNG (with library limitations).
+ * - Supported color depths: 1-bit (BW), 4-bit, 8-bit, and 24-bit.
+ * - Maximum supported resolution is 1200 × 825 pixels.
+ * - Images larger than the display resolution will not fit on screen.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-17
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

@@ -1,24 +1,46 @@
-/*
-   Inkplate6PLUS_Show_Pictures_From_Web example for Soldered Inkplate 6Plus
-   For this example you will need a micro USB cable, Inkplate 6Plus, and an available WiFi connection.
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   You can open .bmp files that have color depth of 1 bit (BW bitmap), 4 bit, 8 bit and
-   24 bit AND have resoluton smaller than 800x600 or otherwise it won't fit on screen.
-
-   This example will show you how you can download a .bmp file (picture) from the web and
-   display that image on e-paper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Show_Pictures_From_Web.ino
+ * @brief       Download and display BMP images from the web (Inkplate 6PLUS).
+ *
+ * @details     Demonstrates how to connect Inkplate 6PLUS to a WiFi network,
+ *              download a BMP image from a web URL (HTTP/HTTPS depending on
+ *              the sketch implementation), and render it on the e-paper display
+ *              using the Inkplate image drawing functions.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      Available WiFi connection
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Enter your WiFi credentials in the sketch
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password in the sketch.
+ * 2) Set the image URL to a compatible BMP file.
+ * 3) Upload the sketch to Inkplate 6PLUS.
+ * 4) The board connects to WiFi, downloads the image, and displays it.
+ *
+ * Expected output:
+ * - BMP image downloaded from the web is displayed on the Inkplate screen.
+ *
+ * Notes:
+ * - Supported BMP formats: Windows BMP, 1/4/8/24-bit color depth.
+ * - Images must fit the display; large images may not render properly.
+ * - Ensure the URL is directly pointing to the BMP file (no HTML redirect pages).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

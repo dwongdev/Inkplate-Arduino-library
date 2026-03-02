@@ -1,23 +1,76 @@
-/*
-  Inkplate6PLUS OpenAI text prompt generator
-  Compatible with Soldered Inkplate 6PLUS -> https://soldered.com/documentation/inkplate/projects/OpenAI-text-prompt
-
-  For this example you will need only USB cable and Inkplate 6PLUS.
-  Select "Soldered Inkplate6PLUS" from Tools -> Board menu.
-
-  Overview:
-  This example demonstrates how to fetch the temperature and weather, then with that information it creates a snarky prompt which is displayed 
-  on the Inkplate
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • location
-      • latitude
-      • longitude
-  - After creating an OpenAI API key, enter it in the openai_key variable
-*/
-
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_OpenAI_Text_Prompt.ino
+ * @brief       Fetch current weather over HTTPS, generate a witty summary via
+ *              OpenAI, show it on Inkplate 6PLUS, then deep-sleep.
+ *
+ * @details     This example connects Inkplate 6PLUS to WiFi, downloads current
+ *              weather data from the Open-Meteo API (temperature, weather code,
+ *              timestamp), converts the weather code to a short description, and
+ *              builds a prompt that asks OpenAI to produce a sarcastic, ~80-word
+ *              weather summary for the chosen location.
+ *
+ *              The generated text is rendered to the e-paper display using a
+ *              fixed font and drawTextBox() for wrapping. The display runs in
+ *              1-bit (BW) mode (INKPLATE_1BIT) to keep refresh time and power
+ *              usage low. During WiFi connection feedback, partial updates are
+ *              used to update only the changed screen area.
+ *
+ *              After drawing the result, the sketch schedules an RTC alarm and
+ *              enters ESP32 deep sleep. Deep sleep restarts the ESP32 on wake,
+ *              so setup() runs again each cycle.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      WiFi access, internet connection, OpenAI API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional; used for debugging)
+ * - WiFi credentials: set ssid / password
+ * - Weather location: set location, latitude, longitude
+ * - OpenAI: set openai_key (keep it private)
+ * - Sleep: adjust SLEEP_DURATION_IN_MINS (RTC alarm interval)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID/password.
+ * 2) Set location name + latitude/longitude for your area.
+ * 3) Create an OpenAI API key and paste it into openai_key.
+ * 4) Upload the sketch and open Serial Monitor (optional) for debug logs.
+ * 5) After boot, the device fetches weather, requests a short snarky summary
+ *    from OpenAI, displays it, then goes to deep sleep until the next RTC alarm.
+ *
+ * Expected output:
+ * - Display: A text block with an AI-generated “snarky” weather summary.
+ * - Serial Monitor: Connection and JSON parsing/debug messages, plus raw OpenAI
+ *   response (as printed by the sketch).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). The WiFi connection progress uses partial
+ *   updates; the final content is shown with a full refresh.
+ * - HTTPS security: this example calls client.setInsecure() for both Open-Meteo
+ *   and OpenAI. This disables TLS certificate validation and is intended for
+ *   demos only. For production, use proper certificate validation/pinning that
+ *   matches the target hosts.
+ * - Deep sleep restarts the ESP32 on wake. RTC alarm scheduling uses the
+ *   onboard RTC (PCF85063(A) on Inkplate) and ext0 wakeup (GPIO 39).
+ * - Network/API reliability: timeouts, rate limits, and API key issues can
+ *   cause empty/failed responses. OpenAI usage may incur cost and is subject to
+ *   account limits.
+ * - RAM/response size: long replies may not fit well in the chosen text box and
+ *   font; the prompt asks for ~80 words to keep rendering predictable.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 #include <WiFiClientSecure.h>     // Secure WiFi client for HTTPS communication
 #include <ArduinoJson.h>          // Library for parsing and generating JSON

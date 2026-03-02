@@ -1,14 +1,46 @@
-/*
-   Inkplate6PLUS_TextBox example for Soldered Inkplate 6Plus
-   For this example you will need a micro USB cable and an Inkplate 6Plus.
-   Select "Soldered Inkplate 6Plus" from Tools -> Board menu.
-
-   This example will show you how to use the TextBox function with and without special parameters
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   24 April 2025 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_TextBox.ino
+ * @brief       TextBox rendering demo for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates how to use the drawTextBox() function on
+ *              Inkplate 6PLUS to render multiline text inside a defined
+ *              rectangular area. The example shows both basic usage with
+ *              default parameters and advanced usage with custom font,
+ *              scaling, spacing, and optional border control.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Libraries:  Inkplate library
+ * - Extra:      Custom font header (e.g., Roboto_Light_36.h)
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) The display will show two text boxes:
+ *    - One using default parameters.
+ *    - One using a custom font and additional configuration options.
+ *
+ * Expected output:
+ * - Text automatically wrapped inside defined rectangular areas.
+ * - Words move to the next line if they do not fit.
+ *
+ * Notes:
+ * - Custom fonts may require vertical offset adjustments.
+ * - This example runs in 1-bit (black & white) mode.
+ * - drawTextBox() supports font scaling, spacing, and border options.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 #include "Inkplate.h"            //Include Inkplate library to the sketch
 #include "Roboto_Light_36.h"

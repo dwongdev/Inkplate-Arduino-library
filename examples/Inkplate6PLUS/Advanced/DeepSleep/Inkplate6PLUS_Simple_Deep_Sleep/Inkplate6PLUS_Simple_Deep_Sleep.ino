@@ -1,25 +1,50 @@
-/*
-   Inkplate6PLUS_Simple_Deep_Sleep  example for Soldered Inkplate 6Plus
-   For this example you will need USB cable and Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Simple_Deep_Sleep.ino
+ * @brief       Simple deep sleep slideshow example for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates low-power operation on Inkplate 6PLUS using ESP32 deep
+ *              sleep. On each wake-up (timer-based), the board redraws the screen
+ *              with the next image in a small slideshow, performs a full display
+ *              refresh, and then returns to deep sleep.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable (or battery for low-power testing)
+ * - Extra:      Converted image header files (picture1.h, picture2.h, picture3.h)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: Not required
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Convert 3 images using the Soldered Image Converter and include them as
+ *    picture1.h, picture2.h, and picture3.h.
+ * 2) Upload the sketch to Inkplate 6PLUS.
+ * 3) The board will show an image, go to deep sleep, and wake up every 20 seconds.
+ * 4) After each wake-up, the next image is shown (loops through 3 images).
+ *
+ * Expected output:
+ * - Inkplate display shows a new image every 20 seconds.
+ * - The slideshow loops through all provided images.
+ *
+ * Notes:
+ * - Deep sleep restarts the program from the beginning on every wake-up.
+ * - RAM contents are lost during deep sleep, so standard partial updates cannot be used.
+ * - This example uses 3-bit (grayscale) mode, which requires full refresh updates.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Image tool:   http://soldered.com/image-converter
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
-   This example will show you how you can use low power functionality of Inkplate board.
-   In deep sleep, whole board will consume about 25uA from battery.
-   Inkplate will wake every 20 seconds change content on screen.
-
-   NOTE: Because we are using deep sleep, everytime the board wakes up, it starts program from begining.
-   Also, whole content from RAM gets erased, so you CAN NOT use partial updates.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

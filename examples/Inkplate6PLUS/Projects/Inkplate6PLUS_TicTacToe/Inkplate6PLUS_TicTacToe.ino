@@ -1,16 +1,68 @@
-/*
-   Inkplate6PLUS_TicTacToe example for Soldered Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use some higher level touchscreen functions to easily create
-   interactable touchscreen user interfaces.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   17 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_TicTacToe.ino
+ * @brief       Touchscreen Tic-Tac-Toe game with optional AI opponent and
+ *              partial e-paper updates.
+ *
+ * @details     This example demonstrates building an interactive touchscreen UI
+ *              on Inkplate 6PLUS by implementing a full Tic-Tac-Toe game.
+ *              A menu screen lets you choose difficulty (Easy/Medium/Hard),
+ *              decide who plays first (human/computer), and select whether the
+ *              first player uses X or O. A 2-player mode is also available.
+ *
+ *              In single-player mode, the computer uses a minimax-based solver
+ *              (ai.h) with configurable search depth per difficulty. The game
+ *              view renders a 3x3 board and updates the display after touches
+ *              using partialUpdate() for responsiveness.
+ *
+ *              The display runs in 1-bit (BW) mode (INKPLATE_1BIT). A full
+ *              refresh is used when switching major screens (menu/game), while
+ *              partial updates are used for most UI interactions.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional; touchscreen init messages)
+ * - Touchscreen: must be initialized successfully for interaction
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) On the menu screen, select:
+ *    - Difficulty (or 2 player mode),
+ *    - Who plays first (single-player only),
+ *    - Whether the first player is X or O.
+ * 3) Tap START to begin the game.
+ * 4) Tap a board cell to place your mark. In single-player mode, the AI will
+ *    respond automatically.
+ * 5) Use "Go Back" to return to the menu and start a new game.
+ *
+ * Expected output:
+ * - Display: Menu UI with selectable options, then a Tic-Tac-Toe board with
+ *   current turn and game status (win/lose/tie).
+ * - Touch interaction: Tap-driven moves and menu selections with fast partial
+ *   redraws.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are used heavily for UI
+ *   responsiveness.
+ * - E-paper partial updates can accumulate ghosting; performing a full refresh
+ *   occasionally (e.g., when switching screens) helps maintain contrast.
+ * - This example is fully interactive and does not use WiFi or deep sleep.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2024-03-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

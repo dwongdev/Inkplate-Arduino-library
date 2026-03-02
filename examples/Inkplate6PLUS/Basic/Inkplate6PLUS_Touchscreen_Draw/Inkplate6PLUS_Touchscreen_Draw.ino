@@ -1,17 +1,57 @@
-/*
-   Inkplate6PLUS_Touchscreen_Draw example for Soldered Inkplate 6Plus
-   For this example you will need only USB cable and Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use Inkplate 6PLUS touchscreen.
-   Once the code is uploaded, try drawing on the screen :)
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Touchscreen_Draw.ino
+ * @brief       Touchscreen drawing example for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates how to use the Inkplate 6PLUS touchscreen to draw
+ *              directly on the e-paper display. The sketch reads touch
+ *              coordinates and renders graphics at the touched location.
+ *
+ *              Two drawing modes are available:
+ *              - Line drawing: draws a continuous line following the finger.
+ *              - Circle drawing: draws filled circles at touch points.
+ *
+ *              The display is refreshed using partial updates to allow faster
+ *              drawing and improved responsiveness.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ *
+ * Configuration:
+ * - Select drawing mode by enabling one of the macros:
+ *      #define DRAW_LINE
+ *      #define DRAW_CIRCLE
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) Touch the screen to draw.
+ * 3) In line mode, a continuous line follows your finger.
+ * 4) In circle mode, filled circles are drawn where the screen is touched.
+ *
+ * Expected behavior:
+ * - Touch events are detected by the touchscreen controller.
+ * - Graphics are drawn at the detected coordinates.
+ * - Partial updates refresh only the modified area for faster interaction.
+ *
+ * Notes:
+ * - The touchscreen supports up to two simultaneous touch points, but this
+ *   example uses only the first detected touch.
+ * - Partial updates significantly improve drawing responsiveness compared to
+ *   full display refreshes.
+ * - Touchscreen coordinates are automatically adjusted based on display
+ *   rotation.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

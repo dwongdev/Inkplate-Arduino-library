@@ -1,24 +1,65 @@
-/*
-    Inkplate2_Simple_Deep_Sleep example for Soldered Inkplate 2
-    For this example you will need USB cable and Inkplate 2.
-    Select "Soldered Inkplate2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example will show you how you can use low power functionality of Inkplate board.
-    In deep sleep, whole board will consume about 10uA from battery.
-    Inkplate will wake every 20 seconds change content on screen.
-
-    NOTE: Because we are using deep sleep, everytime the board wakes up, it starts program from begining.
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    29 March 2022 by Soldered
-
-    In order to convert your images into a format compatible with Inkplate
-    use the Soldered Image Converter available at:
-    http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Simple_Deep_Sleep.ino
+ * @brief       Deep sleep demo for Inkplate 2: display a sequence of images,
+ *              then sleep and wake periodically using the ESP32 timer.
+ *
+ * @details     This example demonstrates low-power operation on Inkplate 2 by
+ *              using ESP32 deep sleep with a timer wakeup. On each boot/wakeup,
+ *              the sketch draws one of three pre-converted 1-bit images to the
+ *              e-paper display, performs a full refresh, updates an RTC-persisted
+ *              index, then immediately enters deep sleep again.
+ *
+ *              Deep sleep resets the ESP32 on every wake event, so the program
+ *              always starts from setup(). The currently selected image index
+ *              is stored in RTC memory (RTC_DATA_ATTR) so it survives deep sleep
+ *              cycles and the images rotate across wakeups.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      Battery (recommended for measuring low-power behavior)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Timer period: set TIME_TO_SLEEP (seconds)
+ * - Images: picture1.h / picture2.h / picture3.h must contain Inkplate-compatible
+ *   monochrome bitmap data (generated with Soldered Image Converter)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Convert three monochrome images using the Soldered Image Converter and
+ *    include them as picture1.h, picture2.h, and picture3.h.
+ * 2) Upload the sketch to Inkplate 2.
+ * 3) Power the board (battery preferred). The display updates once, then the
+ *    ESP32 enters deep sleep.
+ * 4) Every TIME_TO_SLEEP seconds the board wakes, shows the next image, and
+ *    returns to deep sleep.
+ *
+ * Expected output:
+ * - Display: one of three images; the image changes on each timed wakeup.
+ * - Power: very low consumption during deep sleep (board-dependent).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This sketch uses full refresh (display()) on
+ *   each wake cycle; no partial updates are used.
+ * - Deep sleep restarts the ESP32 every time it wakes up, so keep the logic in
+ *   setup() and leave loop() empty.
+ * - RTC_DATA_ATTR variables survive deep sleep, but are reset by power loss or
+ *   a full reset/flash.
+ * - For lowest power, avoid leaving GPIOs in a state that increases leakage.
+ *   The optional rtc_gpio_isolate() line can be used to further reduce sleep
+ *   current on some hardware revisions.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-03-29
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
