@@ -43,10 +43,6 @@ class PeripheralMode
     const char *_okResponseString = "OK";
     const char *_failResponseString = "FAIL";
 
-    // Touchscreen parameters
-    uint16_t tx1[2], ty1[2];
-    uint8_t rt[8];
-
     // Variable for timestamping last received data for the automatic buffer clear.
     unsigned long _bufferAutoCleanTimestamp = 0;
 

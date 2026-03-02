@@ -1,19 +1,67 @@
-/*
-    Inkplate6FLICK_News_API Example for Soldered Inkplate 6FLICK
-    This example demonstrates how to use the Inkplate 6FLICK to display news headlines and descriptions
-    fetched from the News API. You will need an API key from https://newsapi.org/ to use this example.
-
-    IMPORTANT:
-    - Update your WiFi credentials and API key in the "CHANGE HERE" section below.
-    - Ensure you have the ArduinoJSON library installed: https://arduinojson.org/
-    - Adjust the timezone as needed.
-
-    For more information, visit:
-    - Inkplate documentation: https://www.inkplate.io
-    - Support forums: https://forum.soldered.com/
-
-    Created by Soldered, 30.4.2025
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_News_API.ino
+ * @brief       Fetch top news headlines from NewsAPI.org over WiFi and render
+ *              them on Inkplate 6FLICK, then deep-sleep between updates.
+ *
+ * @details     This example connects Inkplate 6FLICK to WiFi, synchronizes time
+ *              via NTP, fetches news data from NewsAPI.org using an API key, and
+ *              displays multiple headline + description entries formatted into
+ *              text boxes on the e-paper display.
+ *
+ *              The layout includes a "World News" title, a date row, a "Last
+ *              update" timestamp, and a list of news items. The display runs in
+ *              1-bit (BW) mode (INKPLATE_1BIT), and the sketch performs a full
+ *              refresh after drawing all elements.
+ *
+ *              After updating the screen, the ESP32 enters deep sleep for a
+ *              fixed interval (DELAY_MS). Deep sleep restarts the ESP32 on wake,
+ *              so setup() runs again each cycle (WiFi + NTP + API fetch + draw).
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Extra:      WiFi access, NewsAPI.org API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6FLICK
+ * - Serial settings: 115200 baud (recommended for debugging)
+ * - WiFi credentials: set ssid / pass
+ * - NewsAPI key: set api_key_news (https://newsapi.org/)
+ * - Timezone: set timeZone (UTC offset hours)
+ * - Update interval: adjust DELAY_MS (default: 1 hour)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Create a NewsAPI.org account and generate an API key.
+ * 2) Enter your WiFi SSID/password, NewsAPI key, and timeZone in the sketch.
+ * 3) Upload the sketch to Inkplate 6FLICK.
+ * 4) After boot, the device will connect, sync time, fetch news, and render the
+ *    page. It will then deep-sleep until the next scheduled refresh.
+ *
+ * Expected output:
+ * - Display: "World News" page with current date/time and several news items
+ *   (title + description). If the fetch fails, an error message is shown.
+ * - Serial Monitor: Current time printout and basic status/debug output.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses a full refresh after drawing.
+ * - Deep sleep restarts the ESP32 on wake; the displayed content is refreshed
+ *   only when the device wakes and reruns setup().
+ * - API/network reliability: handle rate limits and connectivity issues. If the
+ *   API call fails, the sketch shows an on-screen error before sleeping.
+ * - Long titles/descriptions are wrapped into text boxes; very verbose feeds may
+ *   be truncated by the chosen font size and box dimensions.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-04-30
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure the correct board is selected in the Arduino IDE
 #ifndef ARDUINO_INKPLATE6FLICK
