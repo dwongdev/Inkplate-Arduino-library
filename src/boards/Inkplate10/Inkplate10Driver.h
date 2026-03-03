@@ -63,9 +63,9 @@ class EPDDriver
 
     RTC rtc;
 
-    #ifdef ARDUINO_INKPLATE10
-      Touchpad touchpad;
-    #endif
+#ifdef ARDUINO_INKPLATE10
+    Touchpad touchpad;
+#endif
 
     Image image;
 

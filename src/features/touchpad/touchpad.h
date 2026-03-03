@@ -24,11 +24,11 @@ class Inkplate;
 
 class Touchpad
 {
-    public:
-        void begin(Inkplate* inkplateptr);
-        uint8_t read(uint8_t pad);
+  public:
+    void begin(Inkplate *inkplateptr);
+    uint8_t read(uint8_t pad);
 
-    private:
-        Inkplate* _inkplate;
+  private:
+    Inkplate *_inkplate;
 };
 #endif
