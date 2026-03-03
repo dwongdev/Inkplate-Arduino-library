@@ -55,6 +55,8 @@ class EPDDriver
 
     RTC rtc;
 
+    Touchpad touchpad;
+
     ImageColor image;
 
     uint8_t _beginDone = 0;

@@ -807,6 +807,8 @@ void EPDDriver::gpioInit()
     internalIO.digitalWrite(11, LOW);
     internalIO.digitalWrite(12, LOW);
 #else
+    // Initialize the touchpad class
+    touchpad.begin(_inkplate);
     internalIO.pinMode(10, INPUT);
     internalIO.pinMode(11, INPUT);
     internalIO.pinMode(12, INPUT);

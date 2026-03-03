@@ -119,7 +119,8 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     internalIO.pinMode(GMOD, OUTPUT, true);
     internalIO.pinMode(SPV, OUTPUT, true);
 
-#ifndef ARDUINO_INKPLATE6V2
+#ifdef ARDUINO_INKPLATE6
+    touchpad.begin(_inkplate);
     internalIO.pinMode(10, INPUT);
     internalIO.pinMode(11, INPUT);
     internalIO.pinMode(12, INPUT);
