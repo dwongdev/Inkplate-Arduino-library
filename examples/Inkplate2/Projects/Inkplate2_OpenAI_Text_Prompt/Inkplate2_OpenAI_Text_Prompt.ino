@@ -1,23 +1,74 @@
-/*
-  Inkplate2 OpenAI text prompt generator
-  Compatible with Soldered Inkplate 2 -> https://soldered.com/documentation/inkplate/projects/OpenAI-text-prompt
-
-  For this example you will need only USB cable and Inkplate 2.
-  Select "Soldered Inkplate2" from Tools -> Board menu.
-  Don't have "Soldered Inkplate2" option? Follow our tutorial and add it: https://soldered.com/documentation/inkplate/2/quick-start-guide/
-
-  Overview:
-  This example demonstrates how to fetch the temperature and weather, then with that information it creates a snarky prompt which is displayed 
-  on the Inkplate
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • location
-      • latitude
-      • longitude
-  - After creating an OpenAI API key, enter it in the openai_key variable
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_OpenAI_Text_Prompt.ino
+ * @brief       Fetch local weather, generate a short snarky summary with OpenAI,
+ *              display it, then deep sleep to save power.
+ *
+ * @details     This example connects Inkplate 2 to WiFi, queries current weather
+ *              data from the Open-Meteo API (temperature, weather code, time),
+ *              and uses that information to build a prompt for the OpenAI Chat
+ *              Completions API. The returned text (a short, witty summary) is
+ *              rendered on the e-paper using drawTextBox(), then the ESP32 goes
+ *              into deep sleep and wakes periodically to refresh the content.
+ *
+ *              Weather is fetched via HTTPS using WiFiClientSecure. The sketch
+ *              parses the JSON response with ArduinoJson, maps Open-Meteo
+ *              weather codes to human-readable descriptions, and then sends an
+ *              HTTPS POST request to OpenAI with the generated prompt.
+ *
+ *              Deep sleep resets the ESP32 on every wake, so all logic runs in
+ *              setup(). The display retains the last image while asleep.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access, OpenAI API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud (recommended for debugging)
+ * - WiFi:           set ssid/password
+ * - Location:       set location/latitude/longitude
+ * - OpenAI:         set openai_key
+ * - Sleep period:   set SLEEP_DURATION_IN_MINS (seconds) and uS_TO_S_FACTOR
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi credentials.
+ * 2) Set location, latitude, and longitude for your area.
+ * 3) Create an OpenAI API key and paste it into openai_key.
+ * 4) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 5) On boot, the device fetches weather, requests a short AI summary, and
+ *    displays it inside a text box.
+ * 6) The device enters deep sleep and repeats the process after the configured
+ *    sleep interval.
+ *
+ * Expected output:
+ * - Display: a short AI-generated weather summary rendered via drawTextBox().
+ * - On failure: "Failed to get weather data." or an empty/failed response
+ *   depending on API errors.
+ * - Serial Monitor: connection logs and (optional) raw API responses.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses a full refresh (display()).
+ * - Deep sleep restarts the ESP32 on every wake. Keep the logic in setup().
+ * - Security warning: client.setInsecure() disables TLS certificate validation
+ *   for both Open-Meteo and OpenAI requests. This is acceptable for demos but
+ *   not recommended for production; use proper CA certificates or pinning.
+ * - API usage and quotas apply (OpenAI). Protect your API key and avoid
+ *   committing it to public repositories.
+ * - RAM usage: ArduinoJson documents and full HTTP responses can be large.
+ *   Keep prompts and expected responses short to reduce memory pressure.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 
 #include <WiFiClientSecure.h>     // Secure WiFi client for HTTPS communication
@@ -30,11 +81,11 @@
 #define uS_TO_S_FACTOR 1000000
 
 // WiFi credentials
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
+const char* ssid = "";
+const char* password = "";
 
 // OpenAI API key
-const char* openai_key = "YOUR_API_KEY_HERE"; 
+const char* openai_key = ""; 
 
 // Location and coordinates for weather query
 String location = "Osijek";
@@ -54,7 +105,7 @@ Inkplate display;
 void setup() {
   display.begin(); // Initialize the Inkplate display
 
-  display.setTextColor(BLACK);
+  display.setTextColor(INKPLATE2_BLACK);
 
   Serial.begin(115200); // Initialize serial for debugging
 

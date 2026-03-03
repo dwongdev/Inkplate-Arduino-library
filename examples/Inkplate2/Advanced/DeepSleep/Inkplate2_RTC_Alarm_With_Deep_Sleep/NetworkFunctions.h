@@ -1,5 +1,5 @@
 /*
-Network.h
+NetworkFunctions.h
 Inkplate 6 Arduino library
 David Zovko, Borna Biro, Denis Vajak, Zvonimir Haramustek @ e-radionica.com
 September 24, 2020
@@ -20,12 +20,12 @@ Distributed as-is; no warranty is given.
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef NETWORKFUNCTIONS_H
+#define NETWORKFUNCTIONS_H
 
 // All functions defined in Network.cpp
 
-class Network
+class NetworkFunctions
 {
   public:
     // Functions we can access in main file

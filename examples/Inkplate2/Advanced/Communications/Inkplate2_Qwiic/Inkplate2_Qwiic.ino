@@ -54,7 +54,7 @@ void setup()
     display.begin();
     display.clearDisplay();
     display.setTextSize(2);
-    display.setTextColor(BLACK);
+    display.setTextColor(INKPLATE2_BLACK);
     display.setCursor(0, 0);
     display.println("Inkplate I2C Scanner");
     display.display();

@@ -1,24 +1,73 @@
-/*
-    Inkplate2_RTC_Alarm_With_Deep_Sleep example for Soldered Inkplate 2
-    For this example you will need USB cable and the Inkplate 2.
-    Select "Soldered Inkplate2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example will show you how to use Inkplate's internal RTC to set an alarm, go to sleep and wake up at a desired
-    time.
-
-    NOTE: This is not a real alarm on the RTC, just an emulation. If you choose to match minutes and seconds,
-    they must be greater than the current time, otherwise the alarm will not be set. If it is necessary,
-    for example, to set an alarm for tomorrow morning, and now it is noon, it is not possible to set only
-    hours and minutes and set a match to them, because that time is earlier than the current time if we only
-    look at hours and minutes. You can set such an alarm by setting the match to days, hours and minutes and
-    then it will work ok, you just have to set the day as well. Likewise for other cases
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    28 Nov 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_RTC_Alarm_With_Deep_Sleep.ino
+ * @brief       RTC alarm emulation with deep sleep: fetch time via NTP, set an
+ *              RTC match alarm, sleep, then wake and show "ALARM".
+ *
+ * @details     This example demonstrates how to combine network time (NTP),
+ *              the Inkplate RTC helper, and ESP32 deep sleep to wake the board
+ *              at a desired time. On first boot (non-timer wake), the sketch:
+ *              connects to WiFi, obtains the current time from the Internet,
+ *              prints the current time/date on the e-paper, then configures an
+ *              RTC "alarm" using a selected match mode (e.g. minutes+seconds).
+ *
+ *              The RTC alarm here is an emulation implemented in software: the
+ *              RTC configuration is converted to a number of seconds until the
+ *              next match, and the ESP32 is put into deep sleep until that
+ *              moment. When the device wakes due to the sleep timer, it prints
+ *              "ALARM" on the display.
+ *
+ *              Because deep sleep resets the ESP32 on every wake, execution
+ *              always starts from setup(). The wake reason is checked with
+ *              esp_sleep_get_wakeup_cause() to distinguish initial boot from an
+ *              alarm wake.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi network (SSID/password), Internet access for NTP
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud
+ * - WiFi:           set ssid/pass
+ * - Timezone:       set timeZone (hours offset from UTC)
+ * - Alarm time:     edit alarmTime fields and the RTC match mode (e.g. RTC_MMSS)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID/password and your local timezone offset.
+ * 2) Set the desired alarmTime and select an RTC match mode (e.g. RTC_MMSS).
+ * 3) Upload the sketch and open Serial Monitor at 115200 baud (optional).
+ * 4) On first run, the display shows current time/date and the configured
+ *    seconds until the alarm, then the board enters deep sleep.
+ * 5) When the alarm time is reached, the board wakes and shows "ALARM".
+ *
+ * Expected output:
+ * - First boot: current time/date plus a message indicating seconds until alarm
+ *   (or an error if the alarm time is not valid), then the device sleeps.
+ * - Alarm wake: large "ALARM" text on the e-paper display.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses full refresh (display()).
+ * - Deep sleep restarts the ESP32 each time it wakes, so keep logic in setup()
+ *   and leave loop() empty.
+ * - RTC "alarm" depends on the selected match mode. If you match only minutes
+ *   and seconds (RTC_MMSS), the chosen values must represent a future match
+ *   relative to the current time; otherwise the alarm cannot be scheduled.
+ *   For alarms on a later day, include day (and possibly month) in the match.
+ * - This example relies on Internet time for initial RTC setup; without WiFi,
+ *   the current time cannot be obtained.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-11-28
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
@@ -27,19 +76,19 @@
 
 #include "Inkplate.h" // Include Inkplate library
 
-#include "Network.h" // Our networking functions, declared in Network.cpp
+#include "NetworkFunctions.h" // Our networking functions, declared in Network.cpp
 
 #include "RTC.h" // Our RTC functions, declared in RTC.cpp
 
 Inkplate display; // Initialize Inkplate object
 
-Network network; // Create network object for WiFi and HTTP functions
+NetworkFunctions network; // Create network object for WiFi and HTTP functions
 
 RTC rtc; // RTC object for RTC functions
 
 // Write your SSID and password (needed to get the correct time from the Internet)
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 // Adjust your time zone, 1 means UTC+1
 int timeZone = 1;
