@@ -63,6 +63,10 @@ class EPDDriver : public Esp
     IOExpander internalIO;
     IOExpander externalIO;
 
+#ifdef ARDUINO_INKPLATE6
+    Touchpad touchpad;
+#endif
+
     RTC rtc;
 
     Image image;

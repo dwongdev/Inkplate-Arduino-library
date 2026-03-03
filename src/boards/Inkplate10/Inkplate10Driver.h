@@ -63,6 +63,10 @@ class EPDDriver
 
     RTC rtc;
 
+#ifdef ARDUINO_INKPLATE10
+    Touchpad touchpad;
+#endif
+
     Image image;
 
     uint8_t _beginDone = 0;

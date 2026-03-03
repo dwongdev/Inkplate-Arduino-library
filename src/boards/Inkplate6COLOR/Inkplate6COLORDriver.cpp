@@ -395,13 +395,9 @@ void EPDDriver::setIOExpanderForLowPower()
     internalIO.begin(IO_INT_ADDR);
 
     // TOUCHPAD PINS
-    internalIO.pinMode(IO_PIN_B2, OUTPUT);
-    internalIO.pinMode(IO_PIN_B3, OUTPUT);
-    internalIO.pinMode(IO_PIN_B4, OUTPUT);
-
-    internalIO.digitalWrite(IO_PIN_B2, LOW);
-    internalIO.digitalWrite(IO_PIN_B3, LOW);
-    internalIO.digitalWrite(IO_PIN_B4, LOW);
+    internalIO.pinMode(IO_PIN_B2, INPUT);
+    internalIO.pinMode(IO_PIN_B3, INPUT);
+    internalIO.pinMode(IO_PIN_B4, INPUT);
 
     // Battery voltage Switch MOSFET
     internalIO.pinMode(IO_PIN_B1, OUTPUT);
