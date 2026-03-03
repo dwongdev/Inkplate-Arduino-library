@@ -37,7 +37,7 @@ void ImageColor::begin(Inkplate *inkplateptr)
     _inkplate = inkplateptr;
     _imagePtrJpeg = this;
     _imagePtrPng = this;
-    setDitherKernel(FloydSteinberg);
+    setDitherKernel(ReducedDiffusion);
 
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
     ditherBuffer =
