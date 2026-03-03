@@ -59,7 +59,7 @@ class ImageColor
         Burkes,
         Stucki,
         SierraLite,
-        ReducedDiffusion  // Floyd-Steinberg pattern at ~69% strength — more vibrant, less washed-out
+        ReducedDiffusion // Floyd-Steinberg pattern at ~69% strength — more vibrant, less washed-out
     } DitherKernel;
 
     struct bitmapHeader

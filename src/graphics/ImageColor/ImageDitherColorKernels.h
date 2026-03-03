@@ -62,9 +62,9 @@ static const unsigned char _kernelReducedDiffusion[] = {
 };
 
 static const DitherKernelDef DITHER_KERNELS[] = {
-    {3, 2, 1, 16, _kernelFloydSteinberg}, {5, 3, 2, 48, _kernelJarvisJudiceNinke},
-    {4, 3, 1, 8, _kernelAtkinson},        {5, 3, 2, 32, _kernelBurkes},
-    {5, 3, 2, 42, _kernelStucki},         {3, 3, 1, 4, _kernelSierraLite},
+    {3, 2, 1, 16, _kernelFloydSteinberg},   {5, 3, 2, 48, _kernelJarvisJudiceNinke},
+    {4, 3, 1, 8, _kernelAtkinson},          {5, 3, 2, 32, _kernelBurkes},
+    {5, 3, 2, 42, _kernelStucki},           {3, 3, 1, 4, _kernelSierraLite},
     {3, 2, 1, 26, _kernelReducedDiffusion},
 };
 
