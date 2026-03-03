@@ -46,8 +46,12 @@ uint8_t ImageColor::findClosestPalette(int16_t r, int16_t g, int16_t b)
         int32_t dg = g - pg;
         int32_t db = b - pb;
 
-        // Perceptual weighted RGB distance (Rec.601)
-        int32_t currentDistance = 30 * dr * dr + 59 * dg * dg + 11 * db * db;
+        // Perceptual weighted RGB distance.
+        // Rec.601 weights (30,59,11) give green a dominant 59% share, which causes
+        // yellow (high R+G, zero B) to win far too often on limited e-ink palettes.
+        // Using (30,40,30) reduces green dominance and raises the blue penalty,
+        // so yellow only wins when a pixel genuinely has negligible blue content.
+        int32_t currentDistance = 30 * dr * dr + 40 * dg * dg + 30 * db * db;
 
         if (currentDistance < minDistance)
         {
