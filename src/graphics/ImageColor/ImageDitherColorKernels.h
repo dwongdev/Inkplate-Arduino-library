@@ -57,10 +57,15 @@ static const unsigned char _kernelSierraLite[] = {
     0, 0, 2, 1, 1, 0, 0, 0, 0,
 };
 
+static const unsigned char _kernelReducedDiffusion[] = {
+    0, 0, 5, 2, 3, 1,
+};
+
 static const DitherKernelDef DITHER_KERNELS[] = {
     {3, 2, 1, 16, _kernelFloydSteinberg}, {5, 3, 2, 48, _kernelJarvisJudiceNinke},
     {4, 3, 1, 8, _kernelAtkinson},        {5, 3, 2, 32, _kernelBurkes},
     {5, 3, 2, 42, _kernelStucki},         {3, 3, 1, 4, _kernelSierraLite},
+    {3, 2, 1, 26, _kernelReducedDiffusion},
 };
 
 static const uint8_t DITHER_KERNEL_COUNT = sizeof DITHER_KERNELS / sizeof DITHER_KERNELS[0];
