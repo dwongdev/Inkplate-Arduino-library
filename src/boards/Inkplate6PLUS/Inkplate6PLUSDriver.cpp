@@ -1089,133 +1089,125 @@ void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
     }
 }
 
-/**
- * @brief       setVcom sets VCOM voltage of the panel and saves it in EEPROM
- *
- * @param       double vcomVoltage
- *              VCOM voltage to be set, should be in range from -5.0 to 0.0
- *
- * @param       uint16_t EEPROMaddress
- *              Address in EEPROM where VCOM value will be saved
- *
- * @return      true if VCOM voltage was successfully set and saved in EEPROM, false otherwise
- */
-bool EPDDriver::setVcom(double vcomVoltage, uint16_t EEPROMaddress)
+bool EPDDriver::setVCOM(double vcom)
 {
+    EEPROM.begin(512);
     // Check for out of bounds
-    if (vcomVoltage < -5.0 || vcomVoltage > 0.0)
+    if (vcom < -5.0 || vcom > 0.0)
     {
         return false;
     }
 
-    else
-    {
-        // Write VCOM to EEPROM
-        internalIO.pinMode(6, INPUT_PULLUP);
-        if (writeVCOMToEEPROM(vcomVoltage))
-        {
-            EEPROM.write(EEPROMaddress, 170);
-            EEPROM.commit();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+    if(!writeVCOMToPanelEEPROM(vcom)){
+        return false;
     }
+
+    EEPROM.put(0,vcom);
+    EEPROM.commit();
+    return true;
+}
+
+
+
+bool EPDDriver::writeVCOMToPanelEEPROM(double v)
+{
+    internalIO.pinModeInternal(6, INPUT_PULLUP);
+    int raw = abs((int)(v * 100.0)) & 0x1FF;
+
+    uint8_t vcomL = (uint8_t)(raw & 0xFF);
+    uint8_t vcomMSB = (uint8_t)((raw >> 8) & 0x01); // goes into bit0 of reg 0x04
+
+    // Power up TPS65186
+    einkOn();
+    delay(10);
+
+    // Write low 8 bits
+    writeReg(0x03, vcomL);
+
+    // Read current reg 0x04 and preserve everything except bit0/bit6
+    uint8_t r4 = readReg(0x04);
+    r4 &= (uint8_t)~((1 << 0) | (1 << 6));     // clear bit0 (MSB) and bit6 (program)
+    r4 |= vcomMSB;                              // set bit0 as needed
+
+    // Write updated reg 0x04 (bit6 still 0)
+    writeReg(0x04, r4);
+    delay(1);
+
+    // Strobe "program to EEPROM" (bit6 = 1)
+    writeReg(0x04, (uint8_t)(r4 | (1 << 6)));
+
+    // Wait until EEPROM has been programmed (INT goes LOW)
+    // Make sure INT pin is configured correctly elsewhere (usually input pullup).
+    while (internalIO.digitalRead(6)) {
+        delay(1);
+    }
+
+    // Clear interrupt flag by reading INT1 register
+    (void)readReg(0x07);
+
+    
+
+    // Read back registers for verification
+    uint8_t rdL = readReg(0x03);
+    //uint8_t rdH_bit0 = readReg(0x04) & 0x01;
+    uint8_t reg04full = readReg(0x04);
+    uint8_t rdH_bit0 = reg04full & 0x01;
+
+    int check = ((int)rdH_bit0 << 8) | rdL;
+
+    // DEBUG PRINTS
+Serial.printf("\nraw=%d (0x%03X), vcomL=0x%02X, vcomMSB=%d\n", raw, raw, vcomL, vcomMSB);
+Serial.printf("readback: rdL=0x%02X, rdHbit0=%d => check=%d (0x%03X)\n",
+              rdL, rdH_bit0, check, check);
+Serial.printf("reg04 full=0x%02X\n", reg04full);
+    // Turn off TPS/EPD power (your function)
+    einkOff();
+    delay(100);
+
+ 
+
+    return (check == raw);
+}
+
+double EPDDriver::getVCOMValue(){
+    EEPROM.begin(512);
+    double vcom;
+    EEPROM.get(0,vcom);
+    return vcom;
+}
+/**
+ * @brief Write to a register of the TPS e-Paper power supply chip
+ *
+ * @param _reg The selected register
+ * @param _data The data to write
+ */
+void EPDDriver::writeReg(uint8_t _reg, float _data)
+{
+    Serial.printf("value that will be stored: %d", _data);
+    Wire.beginTransmission(0x48);
+    Wire.write(_reg);
+    Wire.write((uint8_t)_data);
+    uint8_t err=Wire.endTransmission();
+    Serial.printf("W reg 0x%02X = 0x%02X, endTx=%u\n", _reg, _data, err);
 }
 
 /**
- * @brief       writeVCOMToEEPROM writes VCOM voltage to EEPROM
+ * @brief Read a register of the TPS e-Paper power supply chip
  *
- * @param       double v
- *              VCOM voltage to be written to EEPROM, should be in range from -5.0 to 0.0
- *
- * @return      true if VCOM voltage was successfully written to EEPROM, false otherwise
+ * @param _reg The selected register to read
+ * @return uint8_t The data stored in the register
  */
-uint8_t EPDDriver::writeVCOMToEEPROM(double v)
-{
-    int vcom = int(abs(v) * 100);
-    int vcomH = (vcom >> 8) & 1;
-    int vcomL = vcom & 0xFF;
-
-    // Set PCAL pin where TPS65186 INT pin is connectet to input pull up
-    internalIO.pinMode(6, INPUT_PULLUP);
-
-    // First power up TPS65186 so we can communicate with it
-    einkOn();
-
-    // Wait a little bit
-    delay(250);
-
-    // Send to TPS65186 first 8 bits of VCOM
-    writeReg(0x03, vcomL);
-
-    // Send new value of register to TPS
-    writeReg(0x04, vcomH);
-    delay(1);
-
-    // Program VCOM value to EEPROM
-    writeReg(0x04, vcomH | (1 << 6));
-
-    // Wait until EEPROM has been programmed
-    delay(100);
-    do
-    {
-        delay(1);
-    } while (internalIO.digitalRead(6));
-
-    // Clear Interrupt flag by reading INT1 register
-    readReg(0x07);
-
-    // Now, power off whole TPS
-    einkOff();
-
-    // Wait a little bit...
-    delay(1000);
-
-    // Power up TPS again
-    einkOn();
-
-    delay(10);
-
-    // Read VCOM valuse from registers
-    vcomL = readReg(0x03);
-    vcomH = readReg(0x04);
-
-    // Trun off the TPS65186 and wait a little bit
-    einkOff();
-    delay(100);
-
-    if (vcom != (vcomL | (vcomH << 8)))
-    {
-        Serial.println("\nVCOM EEPROM PROGRAMMING FAILED!\n");
-        return 0;
-    }
-    else
-    {
-        return 1;
-    }
-    return 0;
-}
-
-// Functions that writes data in register over I2C communication
-void EPDDriver::writeReg(uint8_t _reg, uint8_t _data)
-{
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    Wire.write(_data);
-    Wire.endTransmission();
-}
-
-// Functions that reads data from register over I2C communication
 uint8_t EPDDriver::readReg(uint8_t _reg)
 {
     Wire.beginTransmission(0x48);
     Wire.write(_reg);
+    uint8_t err = Wire.endTransmission(false);
     Wire.endTransmission(false);
-    Wire.requestFrom(0x48, 1);
-    return Wire.read();
+    uint8_t got=Wire.requestFrom(0x48, (uint8_t)1);
+    uint8_t v = got ? Wire.read() : 0xFF;
+
+    Serial.printf("R reg 0x%02X, endTx=%u, got=%u, val=0x%02X\n", _reg, err, got, v);
+    return v;
 }
 
 /**
@@ -1223,9 +1215,14 @@ uint8_t EPDDriver::readReg(uint8_t _reg)
  *
  * @return      VCOM voltage in volts
  */
-double EPDDriver::getVcomVoltage()
+double EPDDriver::getStoredVCOM()
 {
-    return (double)(readReg(0x03) | ((uint16_t)((readReg(0x04) & 1) << 8))) / (-100);
+    delay(10);                            // Wake up TPS65186 so registers respond
+    uint8_t vcomL = readReg(0x03);        // REad low 8 bits from register 0x03
+    uint8_t vcomH = readReg(0x04) & 0x01; // Read full byte, mask off all but bit 0 (MSB)
+    delay(10);                            // Power down driver
+    int raw = (vcomH << 8) | vcomL;       // Value between 0 - 511
+    return -(raw / 100.0);
 }
 
 /**

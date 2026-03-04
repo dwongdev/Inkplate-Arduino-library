@@ -100,6 +100,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // Calculate color LUTs to optimize drawing to the screen
     calculateLUTs();
 
+    
     _beginDone = 1;
     return 1;
 }
@@ -1021,111 +1022,106 @@ void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
     }
 }
 
-bool EPDDriver::setVcom(double vcomVoltage, uint16_t EEPROMaddress)
+bool EPDDriver::setVCOM(double vcom)
 {
+    EEPROM.begin(512);
     // Check for out of bounds
-    if (vcomVoltage < -5.0 || vcomVoltage > 0.0)
+    if (vcom < -5.0 || vcom > 0.0)
     {
         return false;
     }
 
-    else
-    {
-        // Write VCOM to EEPROM
-        internalIO.pinMode(6, INPUT_PULLUP);
-        if (writeVCOMToEEPROM(vcomVoltage))
-        {
-            EEPROM.put(EEPROMaddress, vcomVoltage);
-            EEPROM.commit();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+    if(!writeVCOMToPanelEEPROM(vcom)){
+        return false;
     }
+
+    EEPROM.put(0,vcom);
+    EEPROM.commit();
+    return true;
 }
 
-uint8_t EPDDriver::writeVCOMToEEPROM(double v)
-{
-    int vcom = int(abs(v) * 100);
-    int vcomH = (vcom >> 8) & 1;
-    int vcomL = vcom & 0xFF;
-    // First, we have to power up TPS65186
-    // Pull TPS65186 WAKEUP pin to High
-    internalIO.digitalWrite(3, HIGH);
 
-    // Pull TPS65186 PWR pin to High
-    internalIO.digitalWrite(4, HIGH);
+
+bool EPDDriver::writeVCOMToPanelEEPROM(double v)
+{
+    internalIO.pinModeInternal(6, INPUT_PULLUP);
+    int raw = abs((int)(v * 100.0)) & 0x1FF;
+
+    uint8_t vcomL = (uint8_t)(raw & 0xFF);
+    uint8_t vcomMSB = (uint8_t)((raw >> 8) & 0x01); // goes into bit0 of reg 0x04
+
+    // Power up TPS65186
+    einkOn();
     delay(10);
 
-    // Send to TPS65186 first 8 bits of VCOM
+    // Write low 8 bits
     writeReg(0x03, vcomL);
 
-    // Send new value of register to TPS
-    writeReg(0x04, vcomH);
+    // Read current reg 0x04 and preserve everything except bit0/bit6
+    uint8_t r4 = readReg(0x04);
+    r4 &= (uint8_t)~((1 << 0) | (1 << 6));     // clear bit0 (MSB) and bit6 (program)
+    r4 |= vcomMSB;                              // set bit0 as needed
+
+    // Write updated reg 0x04 (bit6 still 0)
+    writeReg(0x04, r4);
     delay(1);
 
-    // Program VCOM value to EEPROM
-    writeReg(0x04, vcomH | (1 << 6));
+    // Strobe "program to EEPROM" (bit6 = 1)
+    writeReg(0x04, (uint8_t)(r4 | (1 << 6)));
 
-    // Wait until EEPROM has been programmed
-    delay(1);
-    do
-    {
+    // Wait until EEPROM has been programmed (INT goes LOW)
+    // Make sure INT pin is configured correctly elsewhere (usually input pullup).
+    while (internalIO.digitalRead(6)) {
         delay(1);
-    } while (internalIO.digitalRead(6));
+    }
 
-    // Clear Interrupt flag by reading INT1 register
-    readReg(0x07);
+    // Clear interrupt flag by reading INT1 register
+    (void)readReg(0x07);
 
-    // Now, power off whole TPS
-    // Pull TPS65186 WAKEUP pin to Low
-    internalIO.digitalWrite(3, LOW);
+    
 
-    // Pull TPS65186 PWR pin to Low
-    internalIO.digitalWrite(4, LOW);
+    // Read back registers for verification
+    uint8_t rdL = readReg(0x03);
+    //uint8_t rdH_bit0 = readReg(0x04) & 0x01;
+    uint8_t reg04full = readReg(0x04);
+    uint8_t rdH_bit0 = reg04full & 0x01;
 
-    // Wait a little bit...
-    delay(1000);
+    int check = ((int)rdH_bit0 << 8) | rdL;
 
-    // Power up TPS again
-    internalIO.digitalWrite(3, HIGH);
-
-    delay(10);
-
-    // Read VCOM valuse from registers
-    vcomL = readReg(0x03);
-    vcomH = readReg(0x04);
-
-    // Trun off the TPS65186 and wait a little bit
+    // DEBUG PRINTS
+Serial.printf("\nraw=%d (0x%03X), vcomL=0x%02X, vcomMSB=%d\n", raw, raw, vcomL, vcomMSB);
+Serial.printf("readback: rdL=0x%02X, rdHbit0=%d => check=%d (0x%03X)\n",
+              rdL, rdH_bit0, check, check);
+Serial.printf("reg04 full=0x%02X\n", reg04full);
+    // Turn off TPS/EPD power (your function)
     einkOff();
     delay(100);
 
-    if (vcom != (vcomL | (vcomH << 8)))
-    {
-        // Serial.println("\nVCOM EEPROM PROGRAMMING FAILED!\n");
-        return 0;
-    }
-    else
-    {
-        // Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
-        return 1;
-    }
+ 
+
+    return (check == raw);
 }
 
+double EPDDriver::getVCOMValue(){
+    EEPROM.begin(512);
+    double vcom;
+    EEPROM.get(0,vcom);
+    return vcom;
+}
 /**
  * @brief Write to a register of the TPS e-Paper power supply chip
  *
  * @param _reg The selected register
  * @param _data The data to write
  */
-void EPDDriver::writeReg(uint8_t _reg, uint8_t _data)
+void EPDDriver::writeReg(uint8_t _reg, float _data)
 {
+    Serial.printf("value that will be stored: %d", _data);
     Wire.beginTransmission(0x48);
     Wire.write(_reg);
-    Wire.write(_data);
-    Wire.endTransmission();
+    Wire.write((uint8_t)_data);
+    uint8_t err=Wire.endTransmission();
+    Serial.printf("W reg 0x%02X = 0x%02X, endTx=%u\n", _reg, _data, err);
 }
 
 /**
@@ -1138,9 +1134,13 @@ uint8_t EPDDriver::readReg(uint8_t _reg)
 {
     Wire.beginTransmission(0x48);
     Wire.write(_reg);
+    uint8_t err = Wire.endTransmission(false);
     Wire.endTransmission(false);
-    Wire.requestFrom(0x48, 1);
-    return Wire.read();
+    uint8_t got=Wire.requestFrom(0x48, (uint8_t)1);
+    uint8_t v = got ? Wire.read() : 0xFF;
+
+    Serial.printf("R reg 0x%02X, endTx=%u, got=%u, val=0x%02X\n", _reg, err, got, v);
+    return v;
 }
 
 /**
@@ -1148,7 +1148,7 @@ uint8_t EPDDriver::readReg(uint8_t _reg)
  *
  * @return      VCOM voltage in volts
  */
-double EPDDriver::getVcomVoltage()
+double EPDDriver::getStoredVCOM()
 {
     delay(10);                            // Wake up TPS65186 so registers respond
     uint8_t vcomL = readReg(0x03);        // REad low 8 bits from register 0x03
@@ -1210,4 +1210,13 @@ void EPDDriver::blockGpioPins()
     internalIO.blockPinUsage(SPV);
 }
 
+
+struct waveformData
+{
+    uint8_t header = 'W';
+    uint8_t waveformId;
+    uint8_t waveform[8][9];
+    uint8_t temp = 20;
+    uint8_t checksum;
+};
 #endif

@@ -58,9 +58,11 @@ void setup()
     display.setCursor(0, 0);
     display.println("Inkplate I2C Scanner");
     display.display();
+    display.internalIO.digitalWrite(3,HIGH, true);
+    display.internalIO.digitalWrite(4,HIGH, true);
 
     // Initialize I2C and Serial
-    Wire.begin();
+    //Wire.begin();
     Serial.begin(115200);
 
     Serial.println("\nSoldered Inkplate I2C Scanner!");

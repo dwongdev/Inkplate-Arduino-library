@@ -63,12 +63,12 @@ class EPDDriver
 
     void burnInClean(uint8_t clear_cycles, uint16_t cycles_delay);
 
-    bool setVcom(double vcomVoltage, uint16_t EEPROMaddress);
 
     bool isPowerGood();
 
-    double getVcomVoltage();
-
+    bool setVCOM(double vcom);
+    double getStoredVCOM();
+    double getVCOMValue();
     IOExpander internalIO;
     IOExpander externalIO;
 
@@ -93,13 +93,21 @@ class EPDDriver
     uint8_t _blockPartial = 1;
     int16_t _sdCardOk = 0;
 
-
+  struct waveformData
+  {
+    uint8_t header = 'W';
+    uint8_t waveformId;
+    uint8_t waveform[8][9];
+    uint8_t temp = 20;
+    uint8_t checksum;
+  };
   private:
     void calculateLUTs();
     void pmicBegin();
     uint8_t initializeFramebuffers();
     void gpioInit();
     uint8_t readPowerGood();
+    void blockGpioPins();
     void pinsAsOutputs();
     void display1b(bool _leaveOn);
     void display3b(bool _leaveOn);
@@ -112,8 +120,8 @@ class EPDDriver
     void vscan_end();
     uint8_t _panelState = 0;
     Inkplate *_inkplate;
-    uint8_t writeVCOMToEEPROM(double v);
-    void writeReg(uint8_t reg, uint8_t data);
+    bool writeVCOMToPanelEEPROM(double vcom);
+    void writeReg(uint8_t reg, float data);
     uint8_t readReg(uint8_t reg);
 };
 

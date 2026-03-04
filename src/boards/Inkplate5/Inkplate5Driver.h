@@ -63,11 +63,12 @@ class EPDDriver
 
     void burnInClean(uint8_t clear_cycles, uint16_t cycles_delay);
 
-    bool setVcom(double vcomVoltage, uint16_t EEPROMaddress);
+    bool setVCOM(double vcom);
+    double getStoredVCOM();
+    double getVCOMValue();
 
     bool isPowerGood();
 
-    double getVcomVoltage();
 
     IOExpander internalIO;
 
@@ -99,6 +100,7 @@ class EPDDriver
     uint8_t initializeFramebuffers();
     void gpioInit();
     uint8_t readPowerGood();
+    void blockGpioPins();
     void pinsAsOutputs();
     void display1b(bool _leaveOn);
     void display3b(bool _leaveOn);
@@ -111,8 +113,8 @@ class EPDDriver
     void vscan_end();
     uint8_t _panelState = 0;
     Inkplate *_inkplate;
-    uint8_t writeVCOMToEEPROM(double v);
-    void writeReg(uint8_t reg, uint8_t data);
+    bool writeVCOMToPanelEEPROM(double vcom);
+    void writeReg(uint8_t reg, float data);
     uint8_t readReg(uint8_t reg);
 };
 
