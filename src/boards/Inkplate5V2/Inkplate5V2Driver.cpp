@@ -1078,15 +1078,15 @@ bool EPDDriver::setVCOM(double vcom)
         return false;
     }
 
-    if(!writeVCOMToPanelEEPROM(vcom)){
+    if (!writeVCOMToPanelEEPROM(vcom))
+    {
         return false;
     }
 
-    EEPROM.put(0,vcom);
+    EEPROM.put(0, vcom);
     EEPROM.commit();
     return true;
 }
-
 
 
 bool EPDDriver::writeVCOMToPanelEEPROM(double v)
@@ -1106,8 +1106,8 @@ bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 
     // Read current reg 0x04 and preserve everything except bit0/bit6
     uint8_t r4 = readReg(0x04);
-    r4 &= (uint8_t)~((1 << 0) | (1 << 6));     // clear bit0 (MSB) and bit6 (program)
-    r4 |= vcomMSB;                              // set bit0 as needed
+    r4 &= (uint8_t) ~((1 << 0) | (1 << 6)); // clear bit0 (MSB) and bit6 (program)
+    r4 |= vcomMSB;                          // set bit0 as needed
 
     // Write updated reg 0x04 (bit6 still 0)
     writeReg(0x04, r4);
@@ -1118,41 +1118,40 @@ bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 
     // Wait until EEPROM has been programmed (INT goes LOW)
     // Make sure INT pin is configured correctly elsewhere (usually input pullup).
-    while (internalIO.digitalRead(6)) {
+    while (internalIO.digitalRead(6))
+    {
         delay(1);
     }
 
     // Clear interrupt flag by reading INT1 register
     (void)readReg(0x07);
 
-    
 
     // Read back registers for verification
     uint8_t rdL = readReg(0x03);
-    //uint8_t rdH_bit0 = readReg(0x04) & 0x01;
+    // uint8_t rdH_bit0 = readReg(0x04) & 0x01;
     uint8_t reg04full = readReg(0x04);
     uint8_t rdH_bit0 = reg04full & 0x01;
 
     int check = ((int)rdH_bit0 << 8) | rdL;
 
     // DEBUG PRINTS
-Serial.printf("\nraw=%d (0x%03X), vcomL=0x%02X, vcomMSB=%d\n", raw, raw, vcomL, vcomMSB);
-Serial.printf("readback: rdL=0x%02X, rdHbit0=%d => check=%d (0x%03X)\n",
-              rdL, rdH_bit0, check, check);
-Serial.printf("reg04 full=0x%02X\n", reg04full);
+    Serial.printf("\nraw=%d (0x%03X), vcomL=0x%02X, vcomMSB=%d\n", raw, raw, vcomL, vcomMSB);
+    Serial.printf("readback: rdL=0x%02X, rdHbit0=%d => check=%d (0x%03X)\n", rdL, rdH_bit0, check, check);
+    Serial.printf("reg04 full=0x%02X\n", reg04full);
     // Turn off TPS/EPD power (your function)
     einkOff();
     delay(100);
 
- 
 
     return (check == raw);
 }
 
-double EPDDriver::getVCOMValue(){
+double EPDDriver::getVCOMValue()
+{
     EEPROM.begin(512);
     double vcom;
-    EEPROM.get(0,vcom);
+    EEPROM.get(0, vcom);
     return vcom;
 }
 /**
@@ -1167,7 +1166,7 @@ void EPDDriver::writeReg(uint8_t _reg, float _data)
     Wire.beginTransmission(0x48);
     Wire.write(_reg);
     Wire.write((uint8_t)_data);
-    uint8_t err=Wire.endTransmission();
+    uint8_t err = Wire.endTransmission();
     Serial.printf("W reg 0x%02X = 0x%02X, endTx=%u\n", _reg, _data, err);
 }
 
@@ -1183,7 +1182,7 @@ uint8_t EPDDriver::readReg(uint8_t _reg)
     Wire.write(_reg);
     uint8_t err = Wire.endTransmission(false);
     Wire.endTransmission(false);
-    uint8_t got=Wire.requestFrom(0x48, (uint8_t)1);
+    uint8_t got = Wire.requestFrom(0x48, (uint8_t)1);
     uint8_t v = got ? Wire.read() : 0xFF;
 
     Serial.printf("R reg 0x%02X, endTx=%u, got=%u, val=0x%02X\n", _reg, err, got, v);

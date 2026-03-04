@@ -93,14 +93,15 @@ class EPDDriver
     uint8_t _blockPartial = 1;
     int16_t _sdCardOk = 0;
 
-  struct waveformData
-  {
-    uint8_t header = 'W';
-    uint8_t waveformId;
-    uint8_t waveform[8][9];
-    uint8_t temp = 20;
-    uint8_t checksum;
-  };
+    struct waveformData
+    {
+        uint8_t header = 'W';
+        uint8_t waveformId;
+        uint8_t waveform[8][9];
+        uint8_t temp = 20;
+        uint8_t checksum;
+    };
+
   private:
     void calculateLUTs();
     void pmicBegin();

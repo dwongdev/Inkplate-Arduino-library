@@ -109,6 +109,7 @@ class IOExpander
     void unblockPinUsage(uint8_t _pin);
     uint8_t _ioExpanderRegs[23];
     void pinModeInternal(uint8_t _pin, uint8_t _mode);
+
   private:
     // I/O expander interal register copy to avoid read-modify-write.
 
@@ -127,7 +128,7 @@ class IOExpander
 
     uint8_t _ioExpanderI2CAddress;
 
-    
+
     void digitalWriteInternal(uint8_t _pin, uint8_t _state);
     uint8_t digitalReadInternal(uint8_t _pin);
     void setIntPinInternal(uint8_t _pin);
