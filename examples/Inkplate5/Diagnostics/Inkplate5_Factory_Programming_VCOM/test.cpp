@@ -3,11 +3,11 @@
 const char sdCardTestStringLength = 100;
 const char *testString = {"This is some test string..."};
 
-const char *WSSID = {""};
-const char *WPASS = {""};
+const char *WSSID = {"Soldered Electronics"};
+const char *WPASS = {"dasduino"};
 
 // Change this to your used slave device
-const uint8_t easyCDeviceAddress = 0x30;
+const uint8_t easyCDeviceAddress = 0x76;
 
 void testPeripheral()
 {    

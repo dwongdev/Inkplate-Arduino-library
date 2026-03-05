@@ -111,7 +111,7 @@ void setup()
           display.print(vcomVoltage);
           display.partialUpdate();
 
-          if (display.setVcom(vcomVoltage, EEPROMaddress))
+          if (display.setVCOM(vcomVoltage))
           {
             Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
             break;
@@ -133,7 +133,6 @@ void setup()
         //          can damage your display if used incorrectly!
         // *****************************************************
         display.einkOn();
-        vcomVoltage = display.getVcomVoltage();
     }
 
     // Clear buffer for peripheral commands

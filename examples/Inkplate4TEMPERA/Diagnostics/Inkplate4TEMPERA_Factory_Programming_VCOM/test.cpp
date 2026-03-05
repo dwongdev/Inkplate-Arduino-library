@@ -3,11 +3,11 @@
 const char sdCardTestStringLength = 100;
 const char *testString = {"This is some test string..."};
 
-const char *WSSID = {""};
-const char *WPASS = {""};
+const char *WSSID = {"Soldered Electronics"};
+const char *WPASS = {"dasduino"};
 
 // Change this to your used slave device
-const uint8_t easyCDeviceAddress = 0x30;
+const uint8_t easyCDeviceAddress = 0x76;
 
 const int TOUCHSCREEN_TIMEOUT = 30;
 const int GESTURE_TIMEOUT = 30;
@@ -544,6 +544,7 @@ int checkTouch(uint8_t _tsTimeout)
 
 int checkBME(float *temp, float *hum, float *pres)
 {
+    display.wakePeripheral(INKPLATE_BME688);
     // Init BME
     int beginResult = display.bme688.begin();
 

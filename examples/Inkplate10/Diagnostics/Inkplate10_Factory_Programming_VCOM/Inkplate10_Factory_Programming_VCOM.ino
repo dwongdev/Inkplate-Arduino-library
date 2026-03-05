@@ -1,120 +1,53 @@
 /**
  **************************************************
  * @file        Inkplate10_Factory_Programming_VCOM.ino
- * @brief       Factory utility for Inkplate 10: program panel VCOM, run hardware
- *              self-tests, select and store a display waveform, then play the
- *              onboarding slide sequence.
  *
- * @details     This sketch is intended for factory/production use on Inkplate 10
- *              (including Inkplate10V2). It performs a first-boot provisioning
- *              flow and a subsequent onboarding/demo flow.
+ * @brief       File for programming the Inkplate's VCOM
  *
- *              First boot flow:
- *              - Performs I2C sanity checks and peripheral tests (see test.h /
- *                test.cpp).
- *              - Prompts the operator over Serial (115200 baud) to enter the
- *                panel VCOM voltage (typically negative, range 0.0 to -5.0 V),
- *                then programs it into EEPROM using setVcom().
- *              - Prompts the operator to select one of several pre-defined
- *                waveform tables and previews a grayscale gradient to help
- *                choose the best match for the panel.
- *              - Displays a splash screen showing the programmed VCOM and the
- *                selected waveform ID.
+ * @note        !WARNING! VCOM can only be set 100 times, so keep usage to a minimum.
  *
- *              Normal boot flow:
- *              - Reads the stored VCOM, enables the panel (einkOn()), allocates
- *                PSRAM for slide decompression, and runs the onboarding sequence
- *                consisting of a sidebar UI and multiple slides. Some slides are
- *                stored in RLE-compressed form and are decompressed at runtime
- *                into a large buffer to save flash space.
+ *              !WARNING! This example uses einkOn() and einkOff() methods that turn 
+ *                        on power supply for epaper display. They should only be used
+ *                        in these examples, otherwise you risk damaging
+ *                        your epaper display permanently!
  *
- *              Display modes:
- *              - Uses 1-bit (BW) mode for partial-update demonstrations and fast
- *                UI elements.
- *              - Switches to 3-bit grayscale for most onboarding slides.
+ *              !WARNING! Use at your own risk!!
+ * 
+ * 
+ *              !WARNING! If it's a USB Power only Inkplate 10, set the #define in test.cpp
  *
- * Requirements:
- * - Board:      Soldered Inkplate 10
- * - Hardware:   Inkplate 10 / Inkplate 10 V2, USB cable
- * - Extra:      microSD card (formatted, any content), EasyC I2C slave device
- *              for factory tests (see Notes)
+ *              Inkplate 10 does not support auto VCOM, it has to be set manually.
+ *              The user will be prompted to enter VCOM via serial (baud 115200).
+ *              VCOM ranges from 0 to -5.0.
  *
- * Configuration:
- * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
- * - Serial Monitor: 115200 baud
- * - Factory tests (in test.cpp):
- *   - Set WiFi credentials (if tests require network)
- *   - Ensure an EasyC/I2C slave responds at the configured address (0x30 by
- *     default; configurable in test.cpp)
+ *              Tests will also be done, to pass all tests:
+ *              - Edit the WiFi information in test.cpp.
+ *              - Connect a slave device via EasyC on address 0x30 (you may change this in test.cpp also).
+ *                In the InkplateEasyCTester folder, you can find the code for uploading to Dasduino Core
+ *                or Dasduino ConnectPlus to convert Dasduino to an I2C slave device for testing an easyC connector
+ *                if you don't have a device with address 0x30.
+ *              - Insert a formatted microSD card (doesn't have to be empty)
+ *              - Press wake button to finish testing
  *
- * Don't have Inkplate Boards in Arduino Boards Manager?
- * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html Please review the
+ *LICENSE file included with this example. If you have any questions about
+ *licensing, please visit https://soldered.com/contact/ Distributed as-is; no
+ *warranty is given.
  *
- * How to use:
- * 1) (Factory) Connect required test hardware:
- *    - Insert a formatted microSD card.
- *    - Connect an EasyC I2C slave device at the address expected by test.cpp
- *      (0x30 by default). If you don't have one, flash the helper firmware from
- *      the InkplateEasyCTester folder onto a compatible Dasduino board and use
- *      it as the I2C slave.
- * 2) Open Serial Monitor at 115200 baud.
- * 3) Upload the sketch. On first startup it will:
- *    - Run peripheral tests and print results to Serial.
- *    - Prompt for VCOM voltage; enter the value (include the '-' sign when
- *      required) and confirm until programming succeeds.
- *    - Prompt to select a waveform (send '1'..'5' and then 'OK' to confirm).
- * 4) After successful setup, the device shows a splash screen and then remains
- *    idle. Power-cycle or reset to start the onboarding slideshow.
- * 5) During onboarding, press the wake button to advance through slides.
- *
- * Expected output:
- * - Serial Monitor: Test status messages, prompts for VCOM and waveform
- *   selection, and programming success/failure messages.
- * - E-paper: Splash screen showing VCOM and waveform ID, then a multi-slide
- *   onboarding sequence with a sidebar and BW/grayscale slides (including a
- *   partial-update animation demo).
- *
- * Notes:
- * - Display mode switches between 1-bit (BW) and 3-bit grayscale depending on
- *   slide content. Partial updates are used only in BW mode.
- * - VCOM programming is limited: the panel VCOM can be programmed a finite
- *   number of times (typically ~100 writes). Avoid repeated programming and use
- *   only when necessary.
- * - This sketch allocates a large PSRAM buffer for decompression
- *   (ps_malloc(393938)). It requires sufficient PSRAM and will halt with an
- *   on-screen error if allocation fails.
- * - RLE decompression expands compressed slide data into a raw 3-bit bitmap
- *   buffer; avoid modifying buffer sizes unless you also update assets.
- * - Factory test requirements depend on test.cpp; missing WiFi credentials,
- *   I2C slave, or microSD may cause tests to fail and stop the process.
- *
- * Docs:         https://docs.soldered.com/inkplate
- * Support:      https://forum.soldered.com/
- *
- * @author      Soldered
- * @date        2026
- * @license     GNU GPL V3
- **************************************************/
+ * @authors     Soldered
+ ***************************************************/
 
-// Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
 #error                                                                                                                 \
     "Wrong board selection for this example, please select e-radionica Inkplate10 or Soldered Inkplate10 in the boards menu."
 #endif
 
-// Include needed libraries in the sketch
 #include "Inkplate.h"
 #include "Wire.h"
+#include "EEPROM.h"
 
 // Include our test functions
 #include "test.h"
-
-struct waveformData
-{
-    uint8_t waveformId;
-    uint8_t waveform[8][9];
-    uint32_t checksum;
-};
 
 // Include different images and fonts for the onboarding sequence
 #include "fonts/Open_Sans_SemiBold_24.h"
@@ -128,80 +61,39 @@ struct waveformData
 #include "images/slide_06.h"
 #include "images/welcome.h"
 
-// Create object on Inkplate library and set library to work in monochorme mode
-// It starts off in monochrome but then changes between grayscale and monochrome mode during the onboarding sequence
+// Create object on Inkplate library and set library to work in monochrome mode
 Inkplate display(INKPLATE_1BIT);
 
-// If you want to write new VCOM voltage and perform all tests change this number
-const int EEPROMoffset = 0;
-int EEPROMaddress = EEPROMoffset;
+// We only store: provision marker + waveform number for UI / reselection.
+// Driver stores the actual VCOM and waveform data internally.
+int EEPROM_PROVISION_MARKER_ADDR = 0; // 170 => provisioned
+int EEPROM_WAVEFORM_NUM_ADDR     = 1; // 1..5
 
-// Peripheral mode variables and arrays
+// Peripheral mode variables and arrays (kept from original)
 #define BUFFER_SIZE 1000
 char commandBuffer[BUFFER_SIZE + 1];
 
-// The entered voltage to use for VCOM
-double vcomVoltage;
+// Entered voltage to use for VCOM
+double vcomVoltage = 0.0;
 
-// All waveforms for Inkplate 10 boards
-uint8_t waveform1[8][9] = {{0, 0, 0, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 2, 2, 2, 1, 1, 0}, {0, 0, 2, 1, 1, 2, 2, 1, 0},
-                           {0, 1, 2, 2, 1, 2, 2, 1, 0}, {0, 0, 2, 1, 2, 2, 2, 1, 0}, {0, 2, 2, 2, 2, 2, 2, 1, 0},
-                           {0, 0, 0, 0, 0, 2, 1, 2, 0}, {0, 0, 0, 2, 2, 2, 2, 2, 0}};
-uint8_t waveform2[8][9] = {{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 2, 1, 2, 1, 1, 0}, {0, 0, 0, 2, 2, 1, 2, 1, 0},
-                           {0, 0, 2, 2, 1, 2, 2, 1, 0}, {0, 0, 0, 2, 1, 1, 1, 2, 0}, {0, 0, 2, 2, 2, 1, 1, 2, 0},
-                           {0, 0, 0, 0, 0, 1, 2, 2, 0}, {0, 0, 0, 0, 2, 2, 2, 2, 0}};
-uint8_t waveform3[8][9] = {{0, 3, 3, 3, 3, 3, 3, 3, 0}, {0, 1, 2, 1, 1, 2, 2, 1, 0}, {0, 2, 2, 2, 1, 2, 2, 1, 0},
-                           {0, 0, 2, 2, 2, 2, 2, 1, 0}, {0, 3, 3, 2, 1, 1, 1, 2, 0}, {0, 3, 3, 2, 2, 1, 1, 2, 0},
-                           {0, 2, 1, 2, 1, 2, 1, 2, 0}, {0, 3, 3, 3, 2, 2, 2, 2, 0}};
-uint8_t waveform4[8][9] = {{0, 0, 0, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 2, 2, 2, 1, 1, 0}, {0, 0, 2, 1, 1, 2, 2, 1, 0},
-                           {1, 1, 2, 2, 1, 2, 2, 1, 0}, {0, 0, 2, 1, 2, 2, 2, 1, 0}, {0, 1, 2, 2, 2, 2, 2, 1, 0},
-                           {0, 0, 0, 2, 2, 2, 1, 2, 0}, {0, 0, 0, 2, 2, 2, 2, 2, 0}};
-uint8_t waveform5[8][9] = {{0, 0, 0, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 2, 2, 2, 1, 1, 0}, {2, 2, 2, 1, 0, 2, 1, 0, 0},
-                           {2, 1, 1, 2, 1, 1, 1, 2, 0}, {2, 2, 2, 1, 1, 1, 0, 2, 0}, {2, 2, 2, 1, 1, 2, 1, 2, 0},
-                           {0, 0, 0, 0, 2, 1, 2, 2, 0}, {0, 0, 0, 0, 2, 2, 2, 2, 0}};
-uint8_t *waveformList[] = {&waveform1[0][0], &waveform2[0][0], &waveform3[0][0], &waveform4[0][0], &waveform5[0][0]};
-
-// Calculate number of possible waveforms
-uint8_t waveformListSize = (sizeof(waveformList) / sizeof(uint8_t *));
-
-// Struct for reading waveform from EEPROM memory of ESP32
-struct waveformData waveformEEPROM;
-
-// Waveform 1 is index 0
-// Waveform 2 is index 1
-// Waveform 3 is index 2
-// Waveform 4 is index 3
-// Waveform 5 is index 4
-int selectedWaveform = 0;
-
-// Declare the functions that are used in this file to keep the compiler happy
-
-// Show the welcome screen
-void showSplashScreen(struct waveformData _w);
-
-// Show the selected waveform's gradient so that it can be determined which is best
-void showGradient(int _selected);
-
-// Read from the Serial input so that the waveform can be selected
-int getWaveformFromSerial(int *selected);
-
-// Read the VCOM from the Serial input
-double getVCOMFromSerial(double *_vcom);
-
-// For the onboarding sequence - draw the sidebar
-void drawSidebar(int selectedItem, bool bw);
-
-// Does the partial update animation for slide 3 in the onboarding sequence
-void partialUpdateAnimation();
-
-// Decompress the slide for the onboarding sequence
-void decompressRLE(const uint8_t *input, size_t inputSize);
+// Waveform selection:
+// - selectedWaveformIndex:  0..4 (for UI selection logic)
+// - selectedWaveformNumber: 1..5 (for display.setWaveform())
+int selectedWaveformIndex = 0;
+uint8_t selectedWaveformNumber = 1;
 
 // The array to hold the frame data for frames which have been compressed
-// They get uncompressed into this array
-uint8_t *uncompressedFrame;
+uint8_t *uncompressedFrame = nullptr;
 
-// Simple function to wait for button press
+void showSplashScreen();
+void showGradient(int _selectedIndex);
+int  getWaveformFromSerial(int *selectedIndex);
+double getVCOMFromSerial(double *vcomOut);
+
+void drawSidebar(int selectedItem, bool bw);
+void partialUpdateAnimation();
+void decompressRLE(const uint8_t *input, size_t inputSize);
+
 void waitForWakeButtonPress()
 {
     while (digitalRead(GPIO_NUM_36) == HIGH)
@@ -210,7 +102,6 @@ void waitForWakeButtonPress()
     }
 }
 
-// Setup function, runs only once
 void setup()
 {
     Serial.begin(115200);
@@ -218,15 +109,10 @@ void setup()
     EEPROM.begin(512);
     Wire.begin();
 
-    // Check for the first run of this code. If it is first run, check the I2C bus.
-    bool isFirstStartup = (EEPROM.read(EEPROMaddress) != 170);
+    bool isFirstStartup = (EEPROM.read(EEPROM_PROVISION_MARKER_ADDR) != 170);
+
     if (isFirstStartup)
     {
-        // First, test I2C as all the peripherals are connected with it
-        // A slave must be connected on the address set in test.cpp (0x30 by default) for the tests to pass
-        // Will print results to serial
-
-        // Try to ping first expander.
         Wire.setTimeOut(1000);
         Wire.beginTransmission(IO_INT_ADDR);
         int result = Wire.endTransmission();
@@ -238,190 +124,199 @@ void setup()
         }
     }
 
-    // Init the Inkplate library (after the check of the I2C bus).
+    // Init Inkplate
     display.begin();
 
     if (isFirstStartup)
     {
-        // Test all the peripherals
+        // Run peripheral tests
         testPeripheral();
 
         while (true)
         {
-          // Get VCOM voltage from serial from user
-          uint8_t flag = getVCOMFromSerial(&vcomVoltage);
+            getVCOMFromSerial(&vcomVoltage);
 
-          // Show the user the entered VCOM voltage
-          Serial.print("Entered VCOM: ");
-          Serial.println(vcomVoltage);
-          display.print(vcomVoltage);
-          display.partialUpdate();
+            Serial.print("Entered VCOM: ");
+            Serial.println(vcomVoltage, 3);
 
-          if (display.setVcom(vcomVoltage, EEPROMaddress))
-          {
-            Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
-            break;
-          }
-          else
-          {
-            Serial.println("ERROR");
-          }
+            // Quick operator feedback on screen
+            display.print(vcomVoltage);
+            display.partialUpdate();
+
+            // NEW API: setVCOM -> setVCOM
+            if (display.setVCOM(vcomVoltage))
+            {
+                Serial.println("\nVCOM PROGRAMMING OK\n");
+                break;
+            }
+            else
+            {
+                Serial.println("VCOM PROGRAMMING ERROR");
+            }
         }
 
         display.selectDisplayMode(INKPLATE_3BIT);
 
-        // Select the waveform via serial
-        // Write "OK" to confirm input
         int result = 1;
         do
         {
-            result = getWaveformFromSerial(&selectedWaveform);
+            result = getWaveformFromSerial(&selectedWaveformIndex);
         } while (result != 0);
 
-        // Write waveform to EEPROM
-        waveformEEPROM.waveformId = INKPLATE10_WAVEFORM1 + selectedWaveform;
-        memcpy(&waveformEEPROM.waveform, waveformList[selectedWaveform], sizeof(waveformEEPROM.waveform));
-        //waveformEEPROM.checksum = display.calculateChecksum(waveformEEPROM);
-        //display.burnWaveformToEEPROM(waveformEEPROM);
+        // Convert 0..4 -> 1..5 for driver API
+        selectedWaveformNumber = (uint8_t)(selectedWaveformIndex + 1);
 
-        // Show the splash screen at first startup:
-        showSplashScreen(waveformEEPROM);
-        // Now go to infinite loop. The onboarding sequence will start upon turning on next time!
+        // NEW API: setWaveform(waveformNumber, burnToEEPROM)
+        if (display.setWaveform(selectedWaveformNumber, true))
+        {
+            Serial.print("Waveform ");
+            Serial.print(selectedWaveformNumber);
+            Serial.println(" programmed OK (burned to EEPROM).");
+        }
+        else
+        {
+            Serial.println("Waveform programming FAILED.");
+            // If this is a factory flow, you may want to stop here:
+            // failHandler(true);
+        }
+
+        // Mark provisioned and store waveform number for UI purposes
+        EEPROM.write(EEPROM_PROVISION_MARKER_ADDR, 170);
+        EEPROM.write(EEPROM_WAVEFORM_NUM_ADDR, selectedWaveformNumber);
+        EEPROM.commit();
+
+        // Splash screen at first startup
+        showSplashScreen();
+
+        // Stop here; onboarding starts after power-cycle / reset (same behavior as original)
         while (true)
             ;
     }
     else
     {
+        // Normal boot flow
         display.einkOn();
-        vcomVoltage = display.getVcomVoltage();
-        waveformEEPROM.waveformId = INKPLATE10_WAVEFORM1 + selectedWaveform;
-        memcpy(&waveformEEPROM.waveform, waveformList[selectedWaveform], sizeof(waveformEEPROM.waveform));
+
+        vcomVoltage = display.getStoredVCOM();
+
+        // Read waveform number chosen during provisioning (fallback to 1 if missing/invalid)
+        uint8_t wf = (uint8_t)EEPROM.read(EEPROM_WAVEFORM_NUM_ADDR);
+        if (wf < 1 || wf > 5)
+            wf = 1;
+
+        selectedWaveformNumber = wf;
+        selectedWaveformIndex  = (int)wf - 1;
+
+        // Make sure driver is using the chosen waveform without reburning EEPROM
+        display.setWaveform(selectedWaveformNumber, false);
     }
 
-    // It's time to start the onboarding sequence
-    // Let's memory allocate for the slides
+    // Allocate PSRAM for slide decompression
     uncompressedFrame = (uint8_t *)ps_malloc(393938);
     if (uncompressedFrame == nullptr)
     {
-        // Something really went wrong!
-        // Let's show it on the display as it has inited at this point
         display.clearDisplay();
         display.setCursor(50, 50);
         display.setTextSize(2);
-        display.print("ERROR: Couldn't allocate memory for the onboarding sequence!");
+        display.print("ERROR: Couldn't allocate memory for onboarding!");
         display.display();
-        // Go to infinite loop...
         while (true)
             ;
     }
 }
 
-// Loop code runs repeteadly, in this case it's the onboarding sequence
+// -------------------- Loop (onboarding sequence) --------------------
 void loop()
 {
-    // Let's show the slides!
-    // The first slide is the splash screen
-    showSplashScreen(waveformEEPROM);
-    waitForWakeButtonPress(); // Wait until the wake button is pressed to go to the next slide
+    // Slide 00: splash screen
+    showSplashScreen();
+    waitForWakeButtonPress();
 
-    // First, certain slides have to be decompressed, so this is not done in a loop automatically
-    // This slide is the 'welcome' slide
+    // Slide 00 - welcome (grayscale, RLE)
     display.selectDisplayMode(INKPLATE_3BIT);
     display.clearDisplay();
     decompressRLE(slide_00_compressed, sizeof(slide_00_compressed));
-    display.image.drawBitmap3Bit(245, 0, uncompressedFrame, 955, 825); // Draw the slide
-    drawSidebar(0, false);                                       // Draw sidebar for first menu item, in grayscale mode
-    display.display();                                           // Show it!
-    waitForWakeButtonPress(); // Wait until the wake button is pressed to go to the next slide
-
-    // Slide 01 - Black and white mode
-    display.selectDisplayMode(INKPLATE_1BIT); // Go to BW mode
-    display.clearDisplay();
-    display.drawBitmap(245, 0, slide_01_cropped, 955, 825, BLACK); // Draw the BW bitmap
-    drawSidebar(1, true); // Draw sidebar for element 1 in black and white
+    display.image.drawBitmap3Bit(245, 0, uncompressedFrame, 955, 825);
+    drawSidebar(0, false);
     display.display();
-    waitForWakeButtonPress(); // Wait until the wake button is pressed to go to the next slide
+    waitForWakeButtonPress();
 
-    // Slide 02 - Grayscale mode
-    // Go back to grayscale mode
+    // Slide 01 - BW
+    display.selectDisplayMode(INKPLATE_1BIT);
+    display.clearDisplay();
+    display.drawBitmap(245, 0, slide_01_cropped, 955, 825, BLACK);
+    drawSidebar(1, true);
+    display.display();
+    waitForWakeButtonPress();
+
+    // Slide 02 - Grayscale (RLE)
     display.selectDisplayMode(INKPLATE_3BIT);
     display.clearDisplay();
-    // Same principle as slide 00
     decompressRLE(slide_02_compressed, sizeof(slide_02_compressed));
     display.image.drawBitmap3Bit(245, 0, uncompressedFrame, 955, 825);
     drawSidebar(2, false);
     display.display();
-    waitForWakeButtonPress(); // Wait until the wake button is pressed to go to the next slide
+    waitForWakeButtonPress();
 
-    // Slide 03 - Partial update
-    // Go back to BW mode
+    // Slide 03 - Partial update demo (BW)
     display.selectDisplayMode(INKPLATE_1BIT);
     display.clearDisplay();
     drawSidebar(3, true);
     display.drawRect(248, 2, 949, 820, BLACK);
     display.image.drawBitmap3Bit(282, 21, partial_update_text, partial_update_text_w, partial_update_text_h);
-    partialUpdateAnimation(); // This function will also wait for button press
+    partialUpdateAnimation(); // waits for button press internally to exit
 
-    // Slide 04 - Connectivity
-    // Go back to grayscale mode
+    // Slide 04 - Connectivity (RLE)
     display.selectDisplayMode(INKPLATE_3BIT);
     display.clearDisplay();
-    // Same principle as slide 00
     decompressRLE(slide_04_compressed, sizeof(slide_04_compressed));
     display.image.drawBitmap3Bit(245, 0, uncompressedFrame, 955, 825);
     drawSidebar(4, false);
     display.display();
-    waitForWakeButtonPress(); // Wait until the wake button is pressed to go to the next slide
+    waitForWakeButtonPress();
 
-    // Slide 05 - Peripherals
+    // Slide 05 - Peripherals (RLE)
     display.clearDisplay();
-    // Same principle as slide 00
     decompressRLE(slide_05_compressed, sizeof(slide_05_compressed));
     display.image.drawBitmap3Bit(245, 0, uncompressedFrame, 955, 825);
     drawSidebar(5, false);
     display.display();
-    waitForWakeButtonPress(); // Wait until the wake button is pressed to go to the next slide
+    waitForWakeButtonPress();
 
-    // Slide 06 - Uploading code
+    // Slide 06 - Uploading code (RLE)
     display.clearDisplay();
-    // Same principle as slide 00
     decompressRLE(slide_06_compressed, sizeof(slide_06_compressed));
     display.image.drawBitmap3Bit(245, 0, uncompressedFrame, 955, 825);
     drawSidebar(6, false);
     display.display();
-    waitForWakeButtonPress(); // Wait until the wake button is pressed to go to the next slide
+    waitForWakeButtonPress();
 }
 
-// The rest are helper functions used throughout this code
+// -------------------- Helper functions --------------------
 
-/**
- * @brief Show the welcome screen with written VCOM and selected waveform
- *
- * @param _w the waveform data
- */
-void showSplashScreen(struct waveformData _w)
+void showSplashScreen()
 {
     display.clearDisplay();
     display.display();
+
     display.selectDisplayMode(INKPLATE_3BIT);
     display.image.drawBitmap3Bit(0, 0, welcome, E_INK_WIDTH, E_INK_HEIGHT);
+
     display.setTextColor(0, 7);
     display.setTextSize(1);
+
     display.setCursor(19, 796);
     display.print(vcomVoltage, 2);
     display.print("V");
+
     display.setCursor(19, 808);
-    display.print("Waveform");
-    display.print(_w.waveformId - 20 + 1, DEC);
+    display.print("Waveform ");
+    display.print(selectedWaveformNumber, DEC);
+
     display.display();
 }
 
-/**
- * @brief Show the selected waveform's gradient - used while selecting the waveform
- *
- * @param _selected the index of the selected waveform
- */
-void showGradient(int _selected)
+void showGradient(int _selectedIndex)
 {
     int w = display.width() / 8;
     int h = display.height() - 100;
@@ -434,7 +329,7 @@ void showGradient(int _selected)
     display.print("Send '1', '2', '3', '4' or '5' via serial to select waveform.");
     display.setCursor(50, 780);
     display.print("Currently selected: ");
-    display.print(_selected + 1); // Increment by 1 for printing
+    display.print(_selectedIndex + 1);
     display.print(", send 'OK' to confirm.");
 
     for (int i = 0; i < 8; i++)
@@ -444,18 +339,14 @@ void showGradient(int _selected)
     display.display();
 }
 
-/**
- * @brief Get the Waveform index from Serial communication
- *
- * @param selected the index of the selected waveform
- * @return int 1 if it was successful, 0 if it failed
- */
-int getWaveformFromSerial(int *selected)
+int getWaveformFromSerial(int *selectedIndex)
 {
     char serialBuffer[50];
     unsigned long serialTimeout;
 
-    showGradient(*selected);
+    // Ensure we're in grayscale while previewing gradients/UI text
+    display.selectDisplayMode(INKPLATE_3BIT);
+    showGradient(*selectedIndex);
 
     while (true)
     {
@@ -469,34 +360,35 @@ int getWaveformFromSerial(int *selected)
         {
             if ((Serial.available()) && (i < 49))
             {
-                serialBuffer[i++] = Serial.read();
+                serialBuffer[i++] = (char)Serial.read();
                 serialTimeout = millis();
             }
         }
         serialBuffer[i] = 0;
+
         if (strstr(serialBuffer, "1") != NULL)
         {
-            *selected = 0;
+            *selectedIndex = 0;
             return 1;
         }
         else if (strstr(serialBuffer, "2") != NULL)
         {
-            *selected = 1;
+            *selectedIndex = 1;
             return 1;
         }
-        if (strstr(serialBuffer, "3") != NULL)
+        else if (strstr(serialBuffer, "3") != NULL)
         {
-            *selected = 2;
+            *selectedIndex = 2;
             return 1;
         }
-        if (strstr(serialBuffer, "4") != NULL)
+        else if (strstr(serialBuffer, "4") != NULL)
         {
-            *selected = 3;
+            *selectedIndex = 3;
             return 1;
         }
-        if (strstr(serialBuffer, "5") != NULL)
+        else if (strstr(serialBuffer, "5") != NULL)
         {
-            *selected = 4;
+            *selectedIndex = 4;
             return 1;
         }
         else if (strstr(serialBuffer, "OK") != NULL || strstr(serialBuffer, "ok") != NULL ||
@@ -510,13 +402,7 @@ int getWaveformFromSerial(int *selected)
     return 0;
 }
 
-/**
- * @brief Read the VCOM input from Serial at 115200 baud
- *
- * @param _vcom pointer to where to save VCOM
- * @return double
- */
-double getVCOMFromSerial(double *_vcom)
+double getVCOMFromSerial(double *vcomOut)
 {
     double vcom = 1;
     char serialBuffer[50];
@@ -540,14 +426,15 @@ double getVCOMFromSerial(double *_vcom)
         {
             if ((Serial.available()) && (i < 49))
             {
-                serialBuffer[i++] = Serial.read();
+                serialBuffer[i++] = (char)Serial.read();
                 serialTimeout = millis();
             }
         }
         serialBuffer[i] = 0;
+
         if (sscanf(serialBuffer, "%lf", &vcom) == 1)
         {
-            *_vcom = vcom;
+            *vcomOut = vcom;
             return 1;
         }
     }
@@ -555,49 +442,33 @@ double getVCOMFromSerial(double *_vcom)
     return 0;
 }
 
-/**
- * @brief For the onboarding sequence - draw the sidebar
- *
- * @note The screen is split like this to save memory - the sidebar is mostly the same
- *
- * @param selectedItem The index of the selected menu item in the sidebar
- * @param bw To draw in 1-bit mode or not, depends on the slide
- */
 void drawSidebar(int selectedItem, bool bw)
 {
-    // Make sure value is not out of bounds
     if (selectedItem < 0)
         selectedItem = 0;
     if (selectedItem >= 6)
         selectedItem = 6;
 
-    // If not black and white, draw it in grayscale
     if (!bw)
     {
-        // Draw the part of the image which is always the same
         display.image.drawBitmap3Bit(0, 0, sidebar, sidebar_w, sidebar_h);
     }
     else
-    // If it's BW, draw it in bw
     {
         display.drawBitmap(0, 0, bw_sidebar, bw_sidebar_w, bw_sidebar_h, BLACK);
     }
 
-    // Set the font for this part of the process
     display.setFont(&Open_Sans_SemiBold_24);
-    // Set the text size which is constant
     display.setTextSize(1);
 
-    // Go through the menu items...
     for (int i = 0; i <= 6; i++)
     {
         int yOffset = 53 * i;
-        // We're drawing the item currently selected with this code
+
         if (i == selectedItem)
         {
             if (bw)
             {
-                // For BW mode, draw like this:
                 display.fillRoundRect(3, 61 + yOffset, 239, 50, 5, WHITE);
                 display.fillTriangle(0, 67 + yOffset, 11, 84 + yOffset, 0, 100 + yOffset, BLACK);
                 display.setCursor(sidebarXOffsets[i], 96 + yOffset);
@@ -606,7 +477,6 @@ void drawSidebar(int selectedItem, bool bw)
             }
             else
             {
-                // For grayscale mode, draw like this:
                 display.fillRoundRect(3, 61 + yOffset, 239, 50, 5, 6);
                 display.drawRoundRect(3, 61 + yOffset, 239, 50, 5, 3);
                 display.fillTriangle(0, 67 + yOffset, 11, 84 + yOffset, 0, 100 + yOffset, 1);
@@ -615,21 +485,17 @@ void drawSidebar(int selectedItem, bool bw)
                 display.print(sidebarMenuTitles[i]);
             }
         }
-        // This is code for the rest of the items
         else
         {
             if (bw)
             {
-                // For BW mode, draw like this:
                 display.fillRoundRect(3, 61 + yOffset, 239, 50, 5, BLACK);
                 display.setCursor(sidebarXOffsets[i], 96 + yOffset);
                 display.setTextColor(WHITE);
                 display.print(sidebarMenuTitles[i]);
             }
-
             else
             {
-                // For grayscale mode, draw like this:
                 display.fillRoundRect(3, 61 + yOffset, 239, 50, 5, 1);
                 display.drawRoundRect(3, 61 + yOffset, 239, 50, 5, 4);
                 display.setCursor(sidebarXOffsets[i], 96 + yOffset);
@@ -640,63 +506,44 @@ void drawSidebar(int selectedItem, bool bw)
     }
 }
 
-/**
- * @brief This function runs repeteadly during the partial update slide. Similar to a DVD logo animation.
- *
- */
 void partialUpdateAnimation()
 {
-    // To count the number of updates
     int numUpdates = 0;
     int maxPartialUpdates = 20;
 
-    // Some basic coordinations and dimensions of the animation
     int x = 272;
     int y = 190;
-    int dx = 40; // Change in x direction
-    int dy = 40; // Change in y direction
+    int dx = 40;
+    int dy = 40;
     int width = 840;
     int height = 560;
 
-    // The logo which gets bounced around is also in slide_03.h
     int logoWidth = soldered_s_w;
     int logoHeight = soldered_s_h;
 
-    // Manually draw the rectangle around the animation
     display.drawRect(271, 189, 880, 600, BLACK);
     display.fillRect(272, 190, 880 - 2, 600 - 2, WHITE);
-
-    // Show everything
     display.display();
 
     while (true)
     {
-        // Clear the previous position
         display.fillRect(272, 190, 880 - 2, 600 - 2, WHITE);
 
-        // Update the position of the logo
         x += dx;
         y += dy;
 
-        // Check for button press to exit the function
-        // This is done multiple times during this while loop to increase responsiveness
         if (digitalRead(GPIO_NUM_36) == LOW)
             return;
 
-        // Check for collisions with the edges and reverse direction if necessary
         if (x <= 272 || x + logoWidth >= 272 + width)
-        {
             dx = -dx;
-        }
+
         if (y <= 190 || y + logoHeight >= 190 + height)
-        {
             dy = -dy;
-        }
 
         if (digitalRead(GPIO_NUM_36) == LOW)
             return;
 
-        // Draw the logo at the new position
         display.image.draw(soldered_s, x, y, logoWidth, logoHeight, BLACK);
         display.partialUpdate(false, true);
         numUpdates++;
@@ -715,23 +562,6 @@ void partialUpdateAnimation()
     }
 }
 
-/**
- * @brief Decompress the compressed grayscale slide into the memory allocated array
- *
- * @note The data is compressed in this way, it goes by two bytes:
- *
- * Pixel value, how many pixels
- *
- * So, if there are 800 white pixels in a row, the compression algorithm (which is in compress.py)
- * will write it as:
- *
- * White, 800
- *
- * The decompression process does this in reverse to get the full image
- *
- * @param input
- * @param inputSize
- */
 void decompressRLE(const uint8_t *input, size_t inputSize)
 {
     size_t inIndex = 0;

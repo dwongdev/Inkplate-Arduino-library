@@ -904,7 +904,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
                 _path[_argSize / 2] = '\0';
 
                 // Try to open an image from microSD card. Send reponse back if the opening was successful or not.
-                if (_display->drawImage((const char*)_path, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
+                if (_display->image.draw((const char*)_path, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
                 {
                     sendResponse(CMD_DRAW_IMAGE, strlen((char*)_okResponseString), (char*)_okResponseString);
                 }
@@ -920,7 +920,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
                 strncpy(_pathNew, _path, _argSize);
                 _pathNew[_argSize]='\0';
                 // Try to open an image from microSD card. Send reponse back if the opening was successful or not.
-                if (_display->drawImage((const char*)_pathNew, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
+                if (_display->image.draw((const char*)_pathNew, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
                 {
                     sendResponse(CMD_DRAW_IMAGE, strlen((char*)_okResponseString), (char*)_okResponseString);
                 }
@@ -961,7 +961,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             hexAsciiToAscii(_hexData, _argSize);
 
             // Display the image from the buffer.
-            _display->drawImage((const uint8_t*)_hexData, atol(_xPos), atol(_yPos), atol(_w), atol(_h)); 
+            _display->image.draw((const uint8_t*)_hexData, atol(_xPos), atol(_yPos), atol(_w), atol(_h)); 
             break;
         }
         case CMD_CLEAR_DISPLAY:
