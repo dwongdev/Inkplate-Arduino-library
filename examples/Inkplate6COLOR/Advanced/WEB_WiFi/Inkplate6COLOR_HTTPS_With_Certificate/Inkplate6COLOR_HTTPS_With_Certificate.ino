@@ -1,22 +1,80 @@
-/*
-   Inkplate6COLOR_HTTPS_With_Certificate example for Soldered Inkplate 6 COLOR
-   For this example you will need a micro USB cable, Inkplate 6COLOR, and an available WiFi connection.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   You can open .bmp files that have color depth of 1 bit (BW bitmap), 4 bit, 8 bit and
-   24 bit.
-
-   This example will show you how you can download a .bmp file (picture) from the web securely by providing a 
-   certificate for the website that will be validated upon conncection and
-   display that image on e-paper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
-
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_HTTPS_With_Certificate.ino
+ * @brief       Downloads and displays a BMP image over HTTPS using certificate
+ *              validation on Inkplate 6COLOR.
+ *
+ * @details     This example demonstrates secure image download over Wi-Fi on
+ *              Inkplate 6COLOR by applying a trusted TLS certificate before
+ *              making an HTTPS request. The sketch connects to a Wi-Fi network,
+ *              displays connection progress on the e-paper screen, applies a
+ *              PEM certificate, and then downloads a BMP image from a remote
+ *              server for display.
+ *
+ *              The example also shows what happens when the certificate does
+ *              not match the target host. After successfully loading an image
+ *              from a website covered by the provided certificate, it attempts
+ *              to load a second image from a different domain. That request is
+ *              expected to fail because the certificate is not valid for that
+ *              host.
+ *
+ *              This is a practical demonstration of HTTPS certificate-based
+ *              validation for web image workflows. It is more secure than
+ *              insecure TLS modes, but the certificate must match the server
+ *              you are connecting to. For web image examples, supported image
+ *              formats and available RAM must also be considered.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      WiFi
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Enter your Wi-Fi SSID and password in the sketch
+ * - Provide a valid PEM certificate for the target HTTPS host
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi credentials in the sketch.
+ * 2) Verify that the embedded PEM certificate matches the HTTPS host you want
+ *    to access.
+ * 3) Upload the sketch to Inkplate 6COLOR.
+ * 4) The board connects to Wi-Fi and applies the configured certificate.
+ * 5) A BMP image is downloaded securely from the matching host and displayed
+ *    on the screen.
+ * 6) The sketch then attempts to load an image from a different host to
+ *    demonstrate certificate validation failure.
+ *
+ * Expected output:
+ * - Display: Wi-Fi connection progress messages followed by the downloaded BMP
+ *   image from the certificate-matched server.
+ * - Display: An error message when attempting to load content from a host that
+ *   does not match the applied certificate.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode with full refreshes.
+ * - For remote image loading, BMP support is the safest option in embedded
+ *   workflows. The original example uses BMP over HTTPS.
+ * - BMP files should use supported bit depths and, in typical Inkplate image
+ *   workflows, uncompressed formats are preferred.
+ * - Certificate pinning/validation must match the target host. A certificate
+ *   valid for one domain will not validate a different domain.
+ * - Web image downloads can be limited by RAM, image size, and network
+ *   stability. Keep image dimensions suitable for the 600x448 display.
+ * - This example demonstrates secure validation, unlike setInsecure()-based
+ *   demos.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2024-03-15
+ * @license     GNU GPL V3
+ **************************************************/
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
 #error "Wrong board selection for this example, please select Soldered Inkplate 6COLOR in the boards menu."

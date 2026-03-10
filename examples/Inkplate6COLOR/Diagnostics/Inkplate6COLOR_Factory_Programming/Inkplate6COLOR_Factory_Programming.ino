@@ -1,26 +1,79 @@
 /**
  **************************************************
  * @file        Inkplate6COLOR_Factory_Programming.ino
+ * @brief       Factory programming and production test firmware for
+ *              Soldered Inkplate 6COLOR.
  *
- * @brief       File for factory programming Inkplate6 COLOR
+ * @details     This firmware is intended for factory flashing, hardware
+ *              validation, and final production testing of Inkplate 6COLOR.
+ *              On first startup, it initializes core subsystems, checks the
+ *              I2C bus, runs peripheral test routines, stores a marker in
+ *              EEPROM, and then shows a splash screen on the display.
  *
- * @note        Tests will also be done, to pass all tests:
- *              - Edit the WiFi information in test.cpp.
- *              - Connect a slave device via EasyC on address 0x30 (you may change this in test.cpp also).
- *                In the InkplateEasyCTester folder, you can find the code for uploading to Dasduino Core 
- *                or Dasduino ConnectPlus to convert Dasduino to an I2C slave device for testing an easyC connector
- *                if you don't have a device with address 0x30.
- *              - Insert a formatted microSD card (doesn't have to be empty)
- *              - Press wake button to finish testing
- *              Output of the tests will be done via Serial due to slow screen refresh rate.
+ *              After initialization, the firmware enters Peripheral Mode and
+ *              listens for incoming Serial commands that can control the
+ *              display. This makes the firmware suitable both for production
+ *              verification and for preloading a ready-to-use serial control
+ *              interface on the device.
  *
- *License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html Please review the
- *LICENSE file included with this example. If you have any questions about
- *licensing, please visit https://soldered.com/contact/ Distributed as-is; no
- *warranty is given.
+ *              Test output is sent primarily over Serial because full color
+ *              e-paper refreshes are relatively slow. The production test flow
+ *              may require additional hardware such as a microSD card, a device
+ *              connected to the EasyC port, valid Wi-Fi credentials inside the
+ *              test sources, and user interaction through the wake button.
  *
- * @authors     Soldered
- ***************************************************/
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      WiFi, microSD card, EasyC slave device, Serial Monitor
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial Monitor: 115200 baud
+ * - Edit WiFi credentials in test.cpp before running full tests
+ * - Connect an EasyC / I2C slave device on the expected address
+ *   (default noted in test.cpp)
+ * - Insert a formatted microSD card
+ * - Press the wake button when required by the test sequence
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Prepare the required test setup: Wi-Fi credentials, EasyC slave device,
+ *    formatted microSD card, and Serial Monitor at 115200 baud.
+ * 2) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the firmware.
+ * 3) On startup, the firmware initializes EEPROM, I2C, and display hardware.
+ * 4) The factory test routine checks connected peripherals and reports results
+ *    over Serial.
+ * 5) After testing, a splash screen is shown on the display.
+ * 6) The firmware remains in Peripheral Mode and processes incoming Serial
+ *    commands for display control.
+ *
+ * Expected output:
+ * - Serial: Factory test progress, pass/fail information, and diagnostic
+ *   output from peripheral checks.
+ * - Display: Splash screen image after initialization/testing.
+ * - Runtime: Peripheral Mode command handling over Serial.
+ *
+ * Notes:
+ * - Display mode: 3-bit color mode is used for the splash screen bitmap.
+ * - This is factory/support firmware, not a minimal end-user demo.
+ * - EEPROM is used to store a marker after the first test/programming pass.
+ *   Avoid repurposing reserved EEPROM locations without reviewing the factory
+ *   workflow.
+ * - Peripheral Mode relies on Serial command parsing and is slower than direct
+ *   native drawing code for high-volume pixel updates.
+ * - EasyC/I2C, SD card, Wi-Fi, wake button, and EEPROM checks may all be part
+ *   of the production validation path depending on the linked test sources.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATECOLOR) && !defined(ARDUINO_INKPLATECOLORV2)

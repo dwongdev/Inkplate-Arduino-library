@@ -1,14 +1,71 @@
-/*
-   Inkplate6COLOR_TextBox example for Soldered Inkplate 6COLOR
-   For this example you will need a micro USB cable and an Inkplate 6COLOR
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-
-   This example will show you how to use the TextBox function with and without special parameters
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   24 April 2025 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_TextBox.ino
+ * @brief       Demonstrates automatic text wrapping using the drawTextBox()
+ *              function on Inkplate 6COLOR.
+ *
+ * @details     This example shows how to render formatted text inside a
+ *              rectangular text box on the Inkplate 6COLOR display. The
+ *              drawTextBox() helper function automatically wraps words to the
+ *              next line when they no longer fit within the horizontal bounds
+ *              of the defined box.
+ *
+ *              If the text reaches the bottom of the box, the function stops
+ *              rendering and adds an ellipsis ("...") to indicate that the
+ *              content has been truncated.
+ *
+ *              The example demonstrates two ways of using drawTextBox():
+ *
+ *              1) A minimal version with only the required parameters
+ *                 (coordinates and text).
+ *
+ *              2) An extended version that uses optional parameters to control
+ *                 font selection, font size scaling, vertical spacing, and
+ *                 whether a border should be drawn around the text box.
+ *
+ *              The second example also uses a custom font (Roboto Light) to
+ *              demonstrate how external fonts can be used with text boxes.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Ensure the Roboto_Light_36 font file is present in the sketch folder
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 2) After startup, the display is cleared.
+ * 3) The sketch renders two text boxes:
+ *    - One using the default font and minimal parameters.
+ *    - One using a custom font with advanced formatting options.
+ * 4) The display refreshes to show both formatted text regions.
+ *
+ * Expected output:
+ * - Display: Two rectangular text areas containing wrapped text. Words
+ *   automatically move to the next line when they reach the box edge. If the
+ *   text exceeds the vertical space, it ends with "...".
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - Custom fonts may render relative to the font baseline, which can require
+ *   a vertical offset adjustment when positioning the text box.
+ * - Each display update performs a full refresh on the color e-paper panel.
+ * - drawTextBox() simplifies UI layout for menus, descriptions, and other
+ *   formatted text content.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-04-24
+ * @license     GNU GPL V3
+ **************************************************/
 
 #include "Inkplate.h"            //Include Inkplate library to the sketch
 #include "Roboto_Light_36.h"
@@ -23,6 +80,7 @@ void setup()
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
     display.clearDisplay(); // Clear frame buffer of display
     display.display();      // Put clear image on display
+    display.setTextColor(INKPLATE_BLACK);
 
     // Create a text box without any optional parameters
     // x0- x coordinate of upper left corner

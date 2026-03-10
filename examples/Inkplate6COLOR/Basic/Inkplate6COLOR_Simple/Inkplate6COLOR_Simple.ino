@@ -1,15 +1,64 @@
-/*
-   Inkplate6COLOR_Simple example for Soldered Inkplate 6COLOR
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Simple Inkplate example showing drawing functionalities of the Inkplate 6COLOR library.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   17 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_Simple.ino
+ * @brief       Demonstrates basic drawing functions of the Inkplate 6COLOR
+ *              graphics library.
+ *
+ * @details     This example showcases the core drawing capabilities available
+ *              in the Inkplate 6COLOR Arduino library. It demonstrates how to
+ *              render different graphical primitives and text using the
+ *              display framebuffer before performing a full refresh of the
+ *              e-paper panel.
+ *
+ *              The sketch draws multiple shapes using the supported display
+ *              colors, including filled and outlined rectangles, circles,
+ *              and triangles. It also prints colored text strings and renders
+ *              bitmap graphics from an included image file.
+ *
+ *              The example provides a quick overview of the graphics API and
+ *              serves as a reference for developers building custom user
+ *              interfaces, dashboards, or graphical applications on Inkplate.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Ensure the bitmap header file (logoImg.h) is included in the sketch folder
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE.
+ * 2) Upload the sketch to the board.
+ * 3) The example draws various shapes, colored text, and bitmap graphics in
+ *    the framebuffer.
+ * 4) The display is refreshed once to render the complete graphics demo.
+ *
+ * Expected output:
+ * - Display: A graphical test screen showing colored rectangles, circles,
+ *   triangles, repeated text in different colors, and multiple instances of
+ *   the Inkplate logo bitmap.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - All drawing operations occur in the framebuffer and appear on the display
+ *   only after display() is called.
+ * - Color e-paper displays require a full refresh for updates, which is slower
+ *   than monochrome partial-update workflows on supported boards.
+ * - Bitmap images must be converted to compatible header arrays before use in
+ *   embedded applications.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-17
+ * @license     GNU GPL V3
+ **************************************************/
 
 #ifndef ARDUINO_INKPLATECOLOR
 #error "Wrong board selection for this example, please select Soldered Inkplate 6COLOR in the boards menu."

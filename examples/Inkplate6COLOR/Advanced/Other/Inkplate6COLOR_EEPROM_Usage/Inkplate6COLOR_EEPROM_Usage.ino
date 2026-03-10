@@ -1,19 +1,66 @@
-/*
-   Inkplate6COLOR_EEPROM_Usage example for Soldered Inkplate 6COLOR
-   For this example, you will need only USB cable and Inkplate 6COLOR.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use EEPROM with Inkplate board.
-   EEPROM is a permanent memory that holds data even if the power supply is disconnected.
-   You can use EEPROM to store any data you don't want to lose during restarting or powering down the device.
-   It shows how to use basic operations with EEPROM like clearing, writing, and reading.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   5 December 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_EEPROM_Usage.ino
+ * @brief       Demonstrates basic EEPROM operations on Inkplate 6COLOR.
+ *
+ * @details     This example shows how to use the EEPROM memory available on
+ *              the ESP32 used by Inkplate boards. EEPROM is non-volatile
+ *              storage, meaning the data remains stored even after power loss
+ *              or device reset.
+ *
+ *              The sketch demonstrates three basic EEPROM operations:
+ *              clearing previously stored data, writing new values, and
+ *              reading the stored values back. After initialization, the
+ *              example clears a defined EEPROM region, writes sequential
+ *              numbers into memory, and then reads those values back.
+ *
+ *              The read data is printed both to the Serial Monitor and the
+ *              Inkplate display so that the stored values can be verified.
+ *
+ *              This technique is useful for storing persistent configuration
+ *              values such as device settings, counters, calibration values,
+ *              or user preferences.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial Monitor: 115200 baud
+ * - EEPROM_SIZE defines how many bytes are used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 2) Open the Serial Monitor at 115200 baud.
+ * 3) The sketch clears the defined EEPROM region.
+ * 4) Sequential values are written into EEPROM.
+ * 5) The stored values are read back and displayed on both the Serial Monitor
+ *    and the Inkplate screen.
+ *
+ * Expected output:
+ * - Serial Monitor: A list of stored EEPROM values.
+ * - Display: The same list of values printed on the screen.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode (used only for text
+ *   output in this example).
+ * - EEPROM on ESP32 is emulated in flash memory. Frequent writes may reduce
+ *   flash lifespan, so avoid unnecessary write operations in production code.
+ * - Always call EEPROM.commit() after writing to ensure changes are stored.
+ * - The EEPROM region size must be defined during EEPROM.begin().
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-12-05
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR

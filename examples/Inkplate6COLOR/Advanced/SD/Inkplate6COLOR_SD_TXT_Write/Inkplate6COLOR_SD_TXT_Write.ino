@@ -1,17 +1,71 @@
-/*
-   Inkplate6COLOR_SD_TXT_Write example for Soldered Inkplate 6COLOR
-   For this example you will need only a micro USB cable, Inkplate 6COLOR and a SD card.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to write in .txt files.
-   NOTE: Open the Serial monitor at 115200 baud to see what happens.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   23 January 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_SD_TXT_Write.ino
+ * @brief       Demonstrates writing text data to a file on an SD card using
+ *              Inkplate 6COLOR.
+ *
+ * @details     This example shows how to initialize the SD card interface on
+ *              Inkplate 6COLOR and create or open a text file for writing.
+ *              The sketch writes a predefined string into a file named
+ *              "test.txt" stored on the microSD card.
+ *
+ *              The example uses the SdFat-based file interface provided by
+ *              the Inkplate library. After initializing the SD card, the
+ *              program opens a file in write mode, writes a text string,
+ *              closes the file, and powers down the SD card interface.
+ *
+ *              Status messages are printed to the Serial Monitor to show
+ *              whether the SD card initialization and file operations were
+ *              successful.
+ *
+ *              This workflow can be used for logging data, storing settings,
+ *              writing sensor measurements, or generating files for later
+ *              retrieval.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      microSD card formatted as FAT/FAT32
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial Monitor: 115200 baud
+ * - Insert a compatible microSD card before running the sketch
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Format a microSD card using FAT or FAT32.
+ * 2) Insert the SD card into the Inkplate 6COLOR slot.
+ * 3) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 4) Open the Serial Monitor at 115200 baud.
+ * 5) The sketch initializes the SD card and attempts to create/open
+ *    "test.txt".
+ * 6) A text string is written to the file, then the file is closed.
+ *
+ * Expected output:
+ * - Serial Monitor: Messages indicating SD card initialization success and
+ *   confirmation that data has been written to the file.
+ * - SD Card: A file named "test.txt" containing the example text string.
+ *
+ * Notes:
+ * - Display mode: not used in this example (no screen output).
+ * - The SdFat file interface allows more advanced file operations such as
+ *   appending data or managing multiple files.
+ * - Always close files after writing to ensure data is flushed to the card.
+ * - The SD card power rail is disabled with sdCardSleep() after operations
+ *   to reduce power consumption.
+ * - Ensure the SD card is properly formatted and inserted before running
+ *   the sketch.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-01-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR

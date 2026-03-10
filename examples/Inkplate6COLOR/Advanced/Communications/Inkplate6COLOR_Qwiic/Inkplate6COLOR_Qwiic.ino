@@ -1,97 +1,134 @@
-/*
-   Inkplate6COLOR_EasyC example for Soldered Inkplate 6COLOR
-   For this example you will need a micro USB cable, Inkplate 6COLOR,
-   BME680 sensor with easyC connector on it: https://soldered.com/product/enviromental-air-quality-sensor-bme680-breakout/
-   and a easyC cable: https://soldered.com/product/easyc-cable-20cm/
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can read temperature, humidity, and air pressure data from BME680.
-   In order to compile this example successfuly, you will also need to download and install
-   Soldered BME680 library: https://github.com/SolderedElectronics/Soldered-BME280-BME680-Gas-Sensor-Arduino-Library
-   If you don't know how to install library you can read our tutorial https://e-radionica.com/en/blog/arduino-library/
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   2 December 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_Qwiic.ino
+ * @brief       I2C (Qwiic) scanner example for Soldered Inkplate 6COLOR.
+ *
+ * @details     Scans the I2C bus for connected Qwiic/I2C devices and displays
+ *              detected device addresses both on the Serial Monitor and on
+ *              the Inkplate 6COLOR e-paper display. Useful for validating proper
+ *              wiring and confirming device communication.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable, optional Qwiic/I2C device
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6COLOR
+ * - Serial settings: 115200 baud
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6COLOR/quick-start-guide/
+ *
+ * How to use:
+ * 1) Connect a Qwiic/I2C device to the Inkplate.
+ * 2) Upload the sketch to Inkplate 6COLOR.
+ * 3) Open the Serial Monitor (115200 baud).
+ * 4) Detected I2C addresses will be shown on both the display and Serial.
+ *
+ * Expected output:
+ * - Inkplate display lists detected I2C device addresses
+ * - Serial Monitor logs scanning progress and addresses
+ *
+ * Notes:
+ * - Valid I2C addresses range from 0x01 to 0x7E.
+ * - Scan repeats every 5 seconds.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2026-02-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
 #error "Wrong board selection for this example, please select Soldered Inkplate 6COLOR in the boards menu."
 #endif
 
-#include <BME680-SOLDERED.h> // Soldered library for BME680 Sensor
-#include "Inkplate.h"        // Include Inkplate library to the sketch
-#include "icons.h"
+#include "Inkplate.h"
+#include "Wire.h"
 
-Inkplate display; // Create an object on Inkplate library
-BME680 bme680;    // Create an object on Soldered BME680 library (with no arguments sent to constructor, that means we are
-                  // using I2C or easyC communication for BME680 sensor)
-
-// Add temperature offset to calibrate the sensor
-const float temperatureOffset = 0.0;
+Inkplate display;
 
 void setup()
 {
-    Serial.begin(115200);
-    display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
-    display.clearDisplay(); // Clear frame buffer of display
-    display.setTextSize(2); // Set text scaling to two (text will be two times bigger than normal)
-    display.setTextColor(INKPLATE_ORANGE);
+    // Initialize Inkplate
+    display.begin();
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setTextColor(BLACK);
     display.setCursor(0, 0);
+    display.println("Inkplate I2C Scanner");
+    display.display();
+    display.internalIO.digitalWrite(3,HIGH, true);
+    display.internalIO.digitalWrite(4,HIGH, true);
 
-    // Init. BME680 library. Soldered BME680 sensor board uses 0x76 I2C address for the sensor but doesn't need to
-    // specify it
-    if (!bme680.begin())
-    {
-        display.println("Sensor init failed!");
-        display.println("Check sensor wiring/connection!");
-        display.display();
-        while (1)
-            ;
-    }
+    // Initialize I2C and Serial
+    //Wire.begin();
+    Serial.begin(115200);
+
+    Serial.println("\nSoldered Inkplate I2C Scanner!");
 }
 
 void loop()
 {
-    // Clear frame buffer of the display
+    byte error, address;
+    int nDevices = 0;
+    int yCursor = 30; // Vertical position for listing devices
+
     display.clearDisplay();
+    display.setCursor(0, 0);
+    display.setTextSize(2);
+    display.println("Scanning I2C...");
+    display.setTextSize(1);
 
-    // Set text size to print big numbers for temperature and humidity
-    display.setTextSize(6);
+    Serial.println("Scanning...");
 
-    // Display the temperature icon and measured value
-    display.setCursor(200, 45);
-    display.print(bme680.readTemperature() + temperatureOffset);
-    display.print(" *C");
-    display.drawBitmap(50, 5, temperature_icon, temperature_icon_w, temperature_icon_h, INKPLATE_RED); // Arguments are: start X, start Y, array variable name, size X, size Y, color
-    
+    for (address = 1; address < 127; address++)
+    {
+        Wire.beginTransmission(address);
+        error = Wire.endTransmission();
 
-    // Display humidity icon and measured value
-    display.setCursor(200, 180);
-    display.print(bme680.readHumidity() / 10);
-    display.print(" %");
-    display.drawBitmap(43, 140, humidity_icon, humidity_icon_w, humidity_icon_h, INKPLATE_GREEN); // Arguments are: start X, start Y, array variable name, size X, size Y, color
+        if (error == 0)
+        {
+            Serial.print("I2C device found at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.print(address, HEX);
+            Serial.println(" !");
 
+            display.setCursor(0, yCursor);
+            display.print("Found: 0x");
+            if (address < 16)
+                display.print("0");
+            display.println(address, HEX);
 
-    // Display the pressure icon and measured value
-    display.setTextSize(5);
-    display.setCursor(200, 315);
-    display.print(bme680.readPressure() * 10);
-    display.print(" hPa");
-    display.drawBitmap(50, 270, pressure_icon, pressure_icon_w, pressure_icon_h, INKPLATE_BLUE); // Arguments are: start X, start Y, array variable name, size X, size Y, color
+            yCursor += 12;
+            nDevices++;
+        }
+        else if (error == 4)
+        {
+            Serial.print("Unknown error at address 0x");
+            if (address < 16)
+                Serial.print("0");
+            Serial.println(address, HEX);
+        }
+    }
 
-    // Display Soldered logo
-    display.drawBitmap(425, 401, logo, logo_w, logo_h, INKPLATE_YELLOW); // Arguments are: start X, start Y, array variable name, size X, size Y, color
+    if (nDevices == 0)
+    {
+        Serial.println("No I2C devices found\n");
+        display.setCursor(0, yCursor);
+        display.println("No devices found.");
+    }
+    else
+    {
+        Serial.println("Done.\n");
+    }
 
-    // This line actually drawing on the Inkplate screen, previous lines just drawing into the frame buffer
     display.display();
 
-    // Wait a minute bit between readings due to slow refresh rate
-    delay(60000);
-
-    // If you want to save energy, instead of the delay function, you can use deep sleep as we used in DeepSleep
-    // examples
+    delay(5000);
 }

@@ -1,23 +1,65 @@
-/*
-   Inkplate6COLOR_SD_TXT_Read example for Soldered Inkplate 6COLOR
-   For this example you will need only a micro USB cable, Inkplate 6COLOR and a SD card
-   loaded with text.txt file that can be found inside folder of this example.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   To work with SD card on Inkplate, you will need to add one extra library.
-   Download and install it from here: https://github.com/e-radionicacom/Inkplate-6-SDFat-Arduino-Library
-
-   You can open your own .txt file, but in order to this example works properly it should
-   not have more than 200 chars and you should name it text.txt
-
-   This example will show you how to open .txt files and display the content of that file on Inkplate epaper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 July 2020 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_SD_TXT_Read.ino
+ * @brief       Reads a text file from an SD card and displays its contents on
+ *              Inkplate 6COLOR.
+ *
+ * @details     This example demonstrates how to access a microSD card on
+ *              Inkplate 6COLOR, open a text file, read its contents, and render
+ *              the text on the e-paper display.
+ *
+ *              The sketch initializes the SD card, opens a file named
+ *              "text.txt", reads its contents into a memory buffer, and prints
+ *              the text on the screen. The file is accessed using the SdFat
+ *              file system interface provided by the Inkplate SD integration.
+ *
+ *              This example is intended as a simple demonstration of reading
+ *              text data from removable storage. It can be adapted for use
+ *              cases such as displaying configuration files, logs, notes,
+ *              menus, or dynamically updated content stored on an SD card.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      microSD card formatted as FAT/FAT32 containing text.txt
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Install required SD library support (SdFat) if not already included
+ * - Place a file named "text.txt" in the root directory of the SD card
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Format a microSD card using FAT or FAT32.
+ * 2) Create a file named "text.txt" and place it in the root directory of the
+ *    SD card.
+ * 3) Insert the SD card into the Inkplate 6COLOR slot.
+ * 4) Upload the sketch to the board.
+ * 5) The sketch initializes the SD card, opens the file, reads its contents,
+ *    and prints the text on the display.
+ *
+ * Expected output:
+ * - Display: Contents of text.txt rendered on the Inkplate screen.
+ * - Display: Error message if the SD card or file cannot be opened.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - This example performs a full display refresh when showing the text.
+ * - The example limits how much data is read into RAM to prevent excessive
+ *   memory usage. Large files are truncated to fit the buffer.
+ * - The SD card power rail is disabled with sdCardSleep() after reading to
+ *   reduce power consumption.
+ * - Ensure the SD card is formatted as FAT/FAT32 for compatibility.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2020-07-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
