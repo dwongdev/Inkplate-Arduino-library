@@ -33,11 +33,11 @@
 
 struct waveformData
 {
-        uint8_t header = 'W';
-        uint8_t waveformId;
-        uint8_t waveform[8][9];
-        uint8_t temp = 20;
-        uint8_t checksum;
+    uint8_t header = 'W';
+    uint8_t waveformId;
+    uint8_t waveform[8][9];
+    uint8_t temp = 20;
+    uint8_t checksum;
 };
 
 class Inkplate;
@@ -80,7 +80,7 @@ class EPDDriver
     double getVCOMValue();
 
     bool setWaveform(uint8_t waveformNumber, bool burnToEEPROM = true);
-    
+
     IOExpander internalIO;
     IOExpander externalIO;
 
@@ -106,7 +106,6 @@ class EPDDriver
     int16_t _sdCardOk = 0;
 
 
-
   private:
     void calculateLUTs();
     void pmicBegin();
@@ -129,7 +128,7 @@ class EPDDriver
     bool writeVCOMToPanelEEPROM(double vcom);
     void writeReg(uint8_t reg, float data);
     uint8_t readReg(uint8_t reg);
-    
+
     void changeWaveform(uint8_t *_wf);
     uint8_t calculateChecksum(struct waveformData _w);
     bool getWaveformFromEEPROM(struct waveformData *_w);
@@ -141,7 +140,7 @@ class EPDDriver
     static const uint8_t waveform4[8][9];
     static const uint8_t waveform5[8][9];
 
-    static const uint8_t* const waveformList[5];
+    static const uint8_t *const waveformList[5];
 };
 
 #endif
