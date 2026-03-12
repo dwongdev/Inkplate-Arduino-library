@@ -1016,16 +1016,10 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             char *_arg1;
             _arg1 = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
 
-            _display->selectDisplayMode(atol(_arg1));
+            _display->selectDisplayMode((uint8_t)atol(_arg1));
             break;
         }
-        case CMD_GET_MODE:
-        {
-            char response[1];
-            itoa(_display->getDisplayMode(), response, 10);
-            sendResponse(CMD_GET_MODE, strlen(response), response);
-            break;
-        }
+        
         case CMD_CLEAR_DISPLAY:
         {
             // No payload check needed, just clear the display
