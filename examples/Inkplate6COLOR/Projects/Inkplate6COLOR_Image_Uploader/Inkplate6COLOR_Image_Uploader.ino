@@ -1,14 +1,73 @@
-/*
-  Inkplate6COLOR Image Uploader Example
-  Compatible with Soldered Inkplate 6COLOR -> https://soldered.com/documentation/inkplate/projects/image-uploader
-
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to upload an image to a webapp hosted by Inkplate 6COLOR
-  and display it on the e‐ink display. Image will be automatically resized.
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_Image_Uploader.ino
+ * @brief       Hosts a local web app for uploading an image and displaying it
+ *              on Inkplate 6COLOR.
+ *
+ * @details     This example turns Inkplate 6COLOR into a small standalone
+ *              Wi-Fi access point and HTTP web server that accepts an uploaded
+ *              JPEG image from a browser and renders it on the e-paper display.
+ *
+ *              A client device connects directly to the Inkplate-hosted Wi-Fi
+ *              network, opens the local upload page, selects an image, and
+ *              sends it to the board. The uploaded JPEG is stored temporarily
+ *              in RAM and then drawn from memory onto the display.
+ *
+ *              This workflow is useful for quick local image transfer without
+ *              cloud services, external apps, or removable media. Because the
+ *              upload buffer is RAM-based, practical image size is limited by
+ *              available memory. The image is intended to be resized by the
+ *              web app / workflow before display, but large uploads may still
+ *              fail if memory usage exceeds what the board can hold.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      phone / browser
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial Monitor: 115200 baud (optional for debugging)
+ * - AP SSID/password can be changed in the sketch
+ * - Keep uploaded image sizes reasonable to avoid RAM-related failures
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6COLOR.
+ * 2) After boot, note the Wi-Fi SSID, password, and local IP shown on the
+ *    display.
+ * 3) Connect a phone or computer to the Inkplate Wi-Fi network.
+ * 4) Open a browser and navigate to the IP address shown on the display.
+ * 5) Use the upload page to select and send a JPEG image to the board.
+ * 6) After the upload finishes, the image is rendered on the Inkplate display.
+ *
+ * Expected output:
+ * - Display: Startup instructions showing SSID, password, and local IP address.
+ * - Display: The uploaded JPEG image after a successful browser upload.
+ * - Browser: Local upload page and preview endpoint served by Inkplate.
+ * - Serial: Upload progress, buffer allocation details, and image transfer logs.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode with full refreshes.
+ * - This example is RAM-sensitive because the uploaded image is buffered in
+ *   memory before rendering.
+ * - JPEG decoding and large uploads can consume substantial RAM; smaller images
+ *   are safer for reliable operation.
+ * - The board runs as a local access point and web server, so Internet access
+ *   is not required.
+ * - The image is drawn from a memory buffer, not from SD storage.
+ * - Frequent full color refreshes are slower than monochrome partial-update
+ *   workflows on supported boards.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure correct board is selected
 #ifndef ARDUINO_INKPLATECOLOR
