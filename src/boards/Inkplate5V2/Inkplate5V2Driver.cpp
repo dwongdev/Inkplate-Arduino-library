@@ -710,6 +710,16 @@ uint8_t EPDDriver::readPowerGood()
 }
 
 /**
+ * @brief       isPowerGood checks if power good status is ok for all rails
+ *
+ * @return      true if power good status is ok for all rails, false otherwise
+ */
+bool EPDDriver::isPowerGood()
+{
+    return readPowerGood() == PWR_GOOD_OK;
+}
+
+/**
  * @brief       pinsZstate sets all tps pins at high z state
  *
  * @note        this is used only when turning off epaper
@@ -1023,6 +1033,175 @@ double EPDDriver::readBattery()
 
     // Calculate the voltage at the battery terminal (voltage is divided in half by voltage divider).
     return (double(adc) * 2.0 / 1000);
+}
+
+/**
+ * @brief       burnInClean function cleans the screen of any potential burn in by
+ *              by writing a clear sequence to the panel
+ *
+ *
+ * @param       uint8_t clear_cycles
+ *              number of clear cycles
+ *
+ * @param       uint16_t cycles delay
+ *              delay between clear cycles (in milliseconds)
+ *
+ *
+ * @note        Cycles delay should not be smaller than 5 seconds
+ */
+void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
+{
+    einkOn();
+
+    while (clear_cycles)
+    {
+        clean(1, 21);
+        clean(2, 1);
+        clean(0, 12);
+        clean(2, 1);
+        clean(1, 21);
+        clean(2, 1);
+        clean(0, 12);
+        clean(2, 1);
+
+        delay(cycles_delay);
+        clear_cycles--;
+    }
+}
+
+bool EPDDriver::setVCOM(double vcom)
+{
+    EEPROM.begin(512);
+    // Check for out of bounds
+    if (vcom < -5.0 || vcom > 0.0)
+    {
+        return false;
+    }
+
+    if (!writeVCOMToPanelEEPROM(vcom))
+    {
+        return false;
+    }
+
+    EEPROM.put(0, vcom);
+    EEPROM.commit();
+    return true;
+}
+
+
+bool EPDDriver::writeVCOMToPanelEEPROM(double v)
+{
+    internalIO.pinModeInternal(6, INPUT_PULLUP);
+    int raw = abs((int)(v * 100.0)) & 0x1FF;
+
+    uint8_t vcomL = (uint8_t)(raw & 0xFF);
+    uint8_t vcomMSB = (uint8_t)((raw >> 8) & 0x01); // goes into bit0 of reg 0x04
+
+    // Power up TPS65186
+    einkOn();
+    delay(10);
+
+    // Write low 8 bits
+    writeReg(0x03, vcomL);
+
+    // Read current reg 0x04 and preserve everything except bit0/bit6
+    uint8_t r4 = readReg(0x04);
+    r4 &= (uint8_t) ~((1 << 0) | (1 << 6)); // clear bit0 (MSB) and bit6 (program)
+    r4 |= vcomMSB;                          // set bit0 as needed
+
+    // Write updated reg 0x04 (bit6 still 0)
+    writeReg(0x04, r4);
+    delay(1);
+
+    // Strobe "program to EEPROM" (bit6 = 1)
+    writeReg(0x04, (uint8_t)(r4 | (1 << 6)));
+
+    // Wait until EEPROM has been programmed (INT goes LOW)
+    // Make sure INT pin is configured correctly elsewhere (usually input pullup).
+    while (internalIO.digitalRead(6))
+    {
+        delay(1);
+    }
+
+    // Clear interrupt flag by reading INT1 register
+    (void)readReg(0x07);
+
+
+    // Read back registers for verification
+    uint8_t rdL = readReg(0x03);
+    // uint8_t rdH_bit0 = readReg(0x04) & 0x01;
+    uint8_t reg04full = readReg(0x04);
+    uint8_t rdH_bit0 = reg04full & 0x01;
+
+    int check = ((int)rdH_bit0 << 8) | rdL;
+
+    // DEBUG PRINTS
+    Serial.printf("\nraw=%d (0x%03X), vcomL=0x%02X, vcomMSB=%d\n", raw, raw, vcomL, vcomMSB);
+    Serial.printf("readback: rdL=0x%02X, rdHbit0=%d => check=%d (0x%03X)\n", rdL, rdH_bit0, check, check);
+    Serial.printf("reg04 full=0x%02X\n", reg04full);
+    // Turn off TPS/EPD power (your function)
+    einkOff();
+    delay(100);
+
+
+    return (check == raw);
+}
+
+double EPDDriver::getVCOMValue()
+{
+    EEPROM.begin(512);
+    double vcom;
+    EEPROM.get(0, vcom);
+    return vcom;
+}
+/**
+ * @brief Write to a register of the TPS e-Paper power supply chip
+ *
+ * @param _reg The selected register
+ * @param _data The data to write
+ */
+void EPDDriver::writeReg(uint8_t _reg, float _data)
+{
+    Serial.printf("value that will be stored: %d", _data);
+    Wire.beginTransmission(0x48);
+    Wire.write(_reg);
+    Wire.write((uint8_t)_data);
+    uint8_t err = Wire.endTransmission();
+    Serial.printf("W reg 0x%02X = 0x%02X, endTx=%u\n", _reg, _data, err);
+}
+
+/**
+ * @brief Read a register of the TPS e-Paper power supply chip
+ *
+ * @param _reg The selected register to read
+ * @return uint8_t The data stored in the register
+ */
+uint8_t EPDDriver::readReg(uint8_t _reg)
+{
+    Wire.beginTransmission(0x48);
+    Wire.write(_reg);
+    uint8_t err = Wire.endTransmission(false);
+    Wire.endTransmission(false);
+    uint8_t got = Wire.requestFrom(0x48, (uint8_t)1);
+    uint8_t v = got ? Wire.read() : 0xFF;
+
+    Serial.printf("R reg 0x%02X, endTx=%u, got=%u, val=0x%02X\n", _reg, err, got, v);
+    return v;
+}
+
+/**
+ * @brief       getVcomVoltage reads VCOM voltage from registers
+ *
+ * @return      VCOM voltage in volts
+ */
+double EPDDriver::getStoredVCOM()
+{
+    delay(10);                            // Wake up TPS65186 so registers respond
+    uint8_t vcomL = readReg(0x03);        // REad low 8 bits from register 0x03
+    uint8_t vcomH = readReg(0x04) & 0x01; // Read full byte, mask off all but bit 0 (MSB)
+    delay(10);                            // Power down driver
+    int raw = (vcomH << 8) | vcomL;       // Value between 0 - 511
+    return -(raw / 100.0);
 }
 
 /**

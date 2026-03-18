@@ -1,19 +1,51 @@
-/*
-   Inkplate6FLICK_RTC_Interrupt_Alarm example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use PCF85063A RTC Alarm functionality with interrupt.
-   This example will show how to set time and date, how to set up a alarm, how to read time, how to print time on Inkplate using partial updates and how to handle interrupt.
-   NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after
-   power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_RTC_Interrupt_Alarm.ino
+ * @brief       RTC interrupt alarm demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to use the PCF85063A RTC alarm interrupt
+ *              functionality on Inkplate 6FLICK. The example sets the current
+ *              time using an epoch value, configures an alarm event, and uses
+ *              an interrupt on GPIO39 to detect when the alarm occurs.
+ *              The current time and date are periodically read from the RTC
+ *              and displayed on the Inkplate e-paper display. When the alarm
+ *              triggers, a message is shown on the screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Libraries:  Inkplate library
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) The RTC time is set using an epoch timestamp.
+ * 3) An alarm is scheduled to trigger shortly after startup.
+ * 4) When the RTC alarm fires, the interrupt sets a flag and
+ *    the display shows an "ALARM" message.
+ *
+ * Expected output:
+ * - Current time and date displayed on the e-paper screen.
+ * - "ALARM" text appears when the RTC alarm interrupt occurs.
+ *
+ * Notes:
+ * - RTC interrupt line is connected to ESP32 GPIO39.
+ * - Interrupt Service Routine (ISR) sets a volatile flag that
+ *   is processed in the main loop.
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - It is recommended to perform a full refresh every 5–10
+ *   partial updates to maintain good display quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -40,7 +72,7 @@ void setup()
     display.display();      // Put clear image on display
     display.setTextSize(5); // Set text to be 5 times bigger than classic 5x7 px text
   
-    display.rtc.SetEpoch(1589610300);
+    display.rtc.SetEpoch(1772184403);
     display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
 
     // display.rtc.SetTime(6, 25, 0);        // Or you can use other way to set the time and date

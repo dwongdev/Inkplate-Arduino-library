@@ -1,23 +1,73 @@
-/*
-  Inkplate6COLOR OpenAI text prompt generator
-  Compatible with Soldered Inkplate 6COLOR -> https://soldered.com/documentation/inkplate/projects/OpenAI-text-prompt
-
-  For this example you will need only USB cable and Inkplate 6COLOR.
-  Select "Soldered Inkplate6COLOR" from Tools -> Board menu.
-  Don't have "Soldered Inkplate6COLOR" option? Follow our tutorial and add it:https://soldered.com/documentation/inkplate/6color/quick-start-guide/
-
-  Overview:
-  This example demonstrates how to fetch the temperature and weather, then with that information it creates a snarky prompt which is displayed 
-  on the Inkplate
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • location
-      • latitude
-      • longitude
-  - After creating an OpenAI API key, enter it in the openai_key variable
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_OpenAI_Text_Prompt.ino
+ * @brief       Fetches local weather data, generates a humorous text prompt
+ *              with OpenAI, and displays it on Inkplate 6COLOR.
+ *
+ * @details     This example demonstrates a multi-step internet-connected
+ *              workflow on Inkplate 6COLOR. The device connects to Wi-Fi,
+ *              retrieves weather data for a configured location, sends that
+ *              context to the OpenAI API, and receives a generated text
+ *              response which is then rendered on the e-paper display.
+ *
+ *              In this version, the generated result is intended to be a
+ *              snarky or playful text prompt based on current weather
+ *              conditions. This makes the example useful as a starting point
+ *              for AI-powered display projects such as smart message boards,
+ *              contextual assistants, or dynamic dashboard widgets.
+ *
+ *              Because this workflow depends on online API calls, correct
+ *              Wi-Fi setup, valid location data, and a working OpenAI API key
+ *              are all required. If weather retrieval or API communication
+ *              fails, the sketch should handle and report that condition.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      WiFi, OpenAI API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Enter your Wi-Fi SSID and password in the sketch
+ * - Set your location, latitude, and longitude for correct weather data
+ * - Enter a valid OpenAI API key
+ * - Serial settings (if relevant)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi credentials in the sketch.
+ * 2) Set the correct location, latitude, and longitude for your area.
+ * 3) Generate an OpenAI API key and place it in the configured variable.
+ * 4) Upload the sketch to Inkplate 6COLOR.
+ * 5) The board connects to Wi-Fi, fetches weather information, and sends that
+ *    context to the OpenAI API.
+ * 6) The generated text response is displayed on the Inkplate screen.
+ *
+ * Expected output:
+ * - Display: A generated text prompt/message based on current weather data.
+ * - Serial Monitor: Optional connection, request, or error diagnostics if used
+ *   in the sketch.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode with full refreshes.
+ * - This example depends on internet connectivity and external API
+ *   availability.
+ * - API requests and JSON payloads can use significant RAM on embedded
+ *   systems, so payload size should be kept reasonable.
+ * - If HTTPS is used, certificate handling should be configured correctly.
+ *   Using insecure TLS modes is acceptable for demos only, not production.
+ * - OpenAI API usage may incur cost depending on account settings and request
+ *   volume.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 
 #include <WiFiClientSecure.h>     // Secure WiFi client for HTTPS communication

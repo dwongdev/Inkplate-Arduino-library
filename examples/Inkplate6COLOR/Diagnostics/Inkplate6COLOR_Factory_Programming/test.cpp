@@ -7,7 +7,7 @@ const char *WSSID = {"Soldered Electronics"};
 const char *WPASS = {"dasduino"};
 
 // Change this to your used slave device
-const uint8_t easyCDeviceAddress = 0x30;
+const uint8_t easyCDeviceAddress = 0x70;
 
 void testPeripheral()
 {

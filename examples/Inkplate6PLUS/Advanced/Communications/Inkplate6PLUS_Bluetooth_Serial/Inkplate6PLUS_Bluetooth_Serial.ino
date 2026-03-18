@@ -1,22 +1,60 @@
-/*
-   Inkplate6PLUS_Bluetooth_Serial example for Soldered Inkplate 6PLUS
-   For this example you will need USB cable, Inkplate 6PLUS and smartphone.
-   Select "e-radionica Inkplate 6PLUS" or "Soldered Inkplate 6PLUS" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6PLUS" or "Soldered Inkplate 6PLUS" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows how to use Bluetooth on Inkplate devices.
-   Upload this example to the Inkplate and connect your phone to it via Bluetooth.
-   First, you have to pair the Inkplate with your phone in Bluetooth settings in your phone, then go to the
-   Serial Bluetooth Terminal app and you can find the Inkplate in the device list. You can use another similar app.
-   If Bluetooth starts successfully, you can send anything from your phone to an Inkplate or vice versa.
-   On the screen, you will see what the phone sends while in the app you will see what the Inkplate
-   sends over the Serial Monitor.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   17 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Bluetooth_Serial.ino
+ * @brief       Bluetooth Serial demo: exchange text between Inkplate and a
+ *              smartphone, and show received data on the e-paper display.
+ *
+ * @details     This example starts a Bluetooth SPP (Serial Port Profile)
+ *              service using ESP32 BluetoothSerial. Pair a smartphone with the
+ *              Inkplate, then connect using a Bluetooth serial terminal app.
+ *              Data typed in the Arduino Serial Monitor is forwarded to the
+ *              phone over Bluetooth. Data received from the phone is rendered
+ *              on the e-paper display.
+ *
+ *              The sketch uses 1-bit (black/white) display mode and relies on
+ *              partial updates for fast refresh. When the text reaches the
+ *              bottom of the screen, the framebuffer is cleared and a full
+ *              refresh is performed to prevent ghosting buildup.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      Smartphone + Bluetooth serial terminal app
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial Monitor: 115200 baud
+ * - Bluetooth name: edit btDeviceName (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the Inkplate 6PLUS board in Tools and upload the sketch.
+ * 2) Open Serial Monitor at 115200 baud (optional, for sending text to phone).
+ * 3) On your phone, pair with the advertised device name (btDeviceName).
+ * 4) Open a Bluetooth serial terminal app and connect to the Inkplate.
+ * 5) Type in the app to display text on Inkplate; type in Serial Monitor to
+ *    send text back to the phone.
+ *
+ * Expected output:
+ * - Display: "Bluetooth Serial Example" header, then received Bluetooth text
+ *   appended line-by-line with partial updates; full refresh when screen fills.
+ * - Phone app: shows bytes sent from Arduino Serial Monitor via Bluetooth.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial update is supported only in 1-bit mode.
+ * - For best image quality, do a full refresh periodically (this sketch does
+ *   one automatically when the screen is full).
+ * - This is classic Bluetooth SPP (not BLE). Pairing is required before use.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-17
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

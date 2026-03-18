@@ -40,6 +40,8 @@ class EPDDriver
     void selectDisplayMode(uint8_t displayMode);
     void clearDisplay();
 
+    int einkOn();
+    void einkOff();
 
     void setSdCardOk(int16_t s);
     int16_t getSdCardOk();

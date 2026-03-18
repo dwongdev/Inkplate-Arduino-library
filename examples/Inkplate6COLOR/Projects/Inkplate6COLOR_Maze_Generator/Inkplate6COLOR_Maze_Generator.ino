@@ -1,17 +1,59 @@
-/*
-   Inkplate6COLOR_Maze_Generator sketch for Soldered Inkplate 6COLOR
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example renders a random maze every time!
-   You can write on it with a whiteboard marker or a graphite pen to solve it.
-   Just be sure not to use pernament markers!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 July 2020 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_Maze_Generator.ino
+ * @brief       Generates and displays a random maze on Inkplate 6COLOR.
+ *
+ * @details     This example creates a new random maze each time the sketch is
+ *              run and renders it on the Inkplate 6COLOR e-paper display. It
+ *              is intended as a fun procedural-generation demo and as a simple
+ *              example of algorithmic graphics on Inkplate.
+ *
+ *              Because the maze is generated programmatically, the layout is
+ *              different on each run. Once displayed, the maze can be solved
+ *              directly on the screen using a dry-erase whiteboard marker or a
+ *              graphite pencil, then cleaned afterward for reuse.
+ *
+ *              This example is useful both as an entertaining demo and as a
+ *              starting point for grid-based games, puzzle generation, and
+ *              other procedural drawing projects on Inkplate.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 2) Wait for the maze to be generated and rendered on the display.
+ * 3) Solve the maze directly on the screen if desired using a dry-erase marker
+ *    or graphite pencil.
+ * 4) Reset or rerun the sketch to generate a different maze.
+ *
+ * Expected output:
+ * - Display: A newly generated random maze filling the screen or a large
+ *   portion of it.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - This example likely uses a full refresh after the maze is generated.
+ * - Use only non-permanent writing tools if drawing on the display surface.
+ *   Do not use permanent markers.
+ * - Procedural maze generation time depends on the algorithm and maze size.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2020-07-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR

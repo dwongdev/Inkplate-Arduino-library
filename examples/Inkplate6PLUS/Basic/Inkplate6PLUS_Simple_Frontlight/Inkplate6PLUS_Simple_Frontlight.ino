@@ -1,16 +1,48 @@
-/*
-   Inkplate6PLUS_Simple_Frontlight example for Soldered Inkplate 6Plus
-   For this example you will need a micro USB cable, Inkplate 6PLUS and a device with WiFi and Internet brower (PC,
-   Laptop, Smartphone, ...). Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu. 
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? 
-   Follow our tutorial and add it: https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use Inkplate 6Plus frontlight.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        InkplatePLUS_Simple_Frontlight.ino
+ * @brief       Frontlight control demo for Soldered Inkplate PLUS.
+ *
+ * @details     Demonstrates how to enable and control the frontlight on the
+ *              Inkplate PLUS. The example allows adjusting frontlight
+ *              brightness through the Serial Monitor by sending characters
+ *              that increase or decrease intensity. A small light animation
+ *              ("lightshow") can also be triggered.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate PLUS
+ * - Hardware:   Inkplate PLUS with integrated frontlight, USB cable
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate PLUS.
+ * 2) Open the Serial Monitor at 115200 baud.
+ * 3) Send the following characters to control brightness:
+ *      '+' → Increase frontlight intensity
+ *      '-' → Decrease frontlight intensity
+ *      's' → Run a simple frontlight animation ("lightshow")
+ *
+ * Expected output:
+ * - Frontlight turns on during setup.
+ * - Brightness level changes when '+' or '-' is sent via Serial Monitor.
+ * - Current brightness value (0–63) is printed in the Serial Monitor.
+ * - The 's' command runs a short brightness sweep animation.
+ *
+ * Notes:
+ * - Frontlight brightness range is 0–63.
+ * - display.frontlight.setState(true) enables the frontlight driver circuit.
+ * - display.frontlight.setState(value) sets brightness level.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

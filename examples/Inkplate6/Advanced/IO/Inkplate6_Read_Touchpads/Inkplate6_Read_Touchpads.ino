@@ -1,24 +1,67 @@
-/*
-   Inkplate6_Read_Touchpads example for Soldered Inkplate 6
-   For this example you will need only a micro USB cable and Inkplate 6.
-   Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use built-in touchpads (on PCB marked with numbers 1, 2 and 3).
-   These are basically touch sensitive switches. You can read state each of these with function readTouchpad()
-   and the argument you need to pass to this function is PAD1 if you want to read the state of touchpad marked
-   as "1" on PCB, PAD2 for second touchpad, PAD3 for third. You can also use numbers as arguments.
-   For that you need to pass number 0 for touchpad that is marked as 1 on PCB, 1 for second touchpad and 2 for third.
-   Function will return 1 if selected touchpad is pressed, zero if not.
-
-   In this example, if you touch first pad, ti will decrese number showed on screen, if you touch thirs touch pad,
-   it will increase the number, if you touch second touchpad, it will reset number to zero.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 July 2020 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_Read_Touchpads.ino
+ * @brief       Uses the built-in capacitive touchpads on Inkplate 6 to control
+ *              a counter displayed on the screen.
+ *
+ * @details     This example demonstrates how to use the three capacitive
+ *              touchpads integrated on the Inkplate 6 PCB. These pads are
+ *              labeled 1, 2, and 3 and function as simple touch-sensitive
+ *              switches that can be used for user input.
+ *
+ *              The sketch continuously reads the state of the touchpads using
+ *              display.touchpad.read(). Each pad performs a specific action on
+ *              a counter displayed on the screen:
+ *
+ *              - Pad 1 decreases the number
+ *              - Pad 2 resets the number to zero
+ *              - Pad 3 increases the number
+ *
+ *              The example uses 1-bit display mode and partial updates to keep
+ *              screen refreshes fast. After several partial updates, a full
+ *              refresh is automatically performed to maintain display quality.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate6 in Arduino IDE and upload the sketch.
+ * 2) After startup, a number appears in the center of the display.
+ * 3) Touch the pads on the bottom of the PCB:
+ *    - Touch pad 1 to decrease the number.
+ *    - Touch pad 2 to reset the number to zero.
+ *    - Touch pad 3 to increase the number.
+ * 4) The display updates each time a pad is touched.
+ *
+ * Expected output:
+ * - Display: A large number that changes according to touchpad input.
+ * - Display: Symbols "-", "0", and "+" printed above the touchpads as visual
+ *   indicators of their functions.
+ *
+ * Notes:
+ * - Display mode: 1-bit black-and-white (INKPLATE_1BIT).
+ * - Partial updates are used for faster refresh. After ~20 partial updates,
+ *   a full refresh is performed automatically.
+ * - Capacitive touchpads are sensitive to environment and grounding and may
+ *   behave differently depending on humidity, grounding, or enclosures.
+ * - touchpad.read() returns 1 when the pad is touched and 0 when it is not.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2020-07-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 
 #include "Inkplate.h"            //Include Inkplate library to the sketch

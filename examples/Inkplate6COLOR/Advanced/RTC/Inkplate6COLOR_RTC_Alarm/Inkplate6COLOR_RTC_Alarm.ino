@@ -1,17 +1,71 @@
-/*
-   Inkplate6COLOR_RTC_Alarm example for Soldered Inkplate 6COLOR
-   For this example you will need USB cable and Inkplate 6COLOR.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use basic alarm and clock functions of PCF85063 RTC on Inkplate board.
-   This example will show how to set time and date, how to set alarm, how to read time and how to print time on Inkplate.
-   
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   20 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_RTC_Alarm.ino
+ * @brief       Demonstrates RTC clock setup, alarm configuration, and alarm
+ *              flag handling on Inkplate 6COLOR.
+ *
+ * @details     This example shows how to use the onboard PCF85063(A) real-time
+ *              clock on Inkplate 6COLOR for basic timekeeping and alarm
+ *              generation. The sketch resets the RTC, sets an initial time and
+ *              date, configures an alarm, then repeatedly reads the current RTC
+ *              values and prints them on the e-paper display.
+ *
+ *              The example also demonstrates how to check whether the RTC alarm
+ *              has triggered by reading the alarm flag, and how to clear that
+ *              flag after the event occurs. In this sketch, the alarm is set to
+ *              occur about 60 seconds after startup, and the display is updated
+ *              once per minute.
+ *
+ *              This is a polling-based RTC example: it checks the alarm status
+ *              in software during normal execution. It does not use the RTC
+ *              interrupt pin or deep sleep wake-up. For interrupt-based wake-up
+ *              behavior, use the dedicated RTC alarm + deep sleep examples.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Edit the initial time/date and alarm values in the sketch before upload
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 2) Adjust the initial RTC time/date and alarm values in the sketch if needed.
+ * 3) On startup, the sketch resets the RTC and writes the configured time/date.
+ * 4) The sketch sets an RTC alarm using hour, minute, second, day, and weekday
+ *    parameters.
+ * 5) The current time and date are read from the RTC and shown on the display.
+ * 6) When the alarm flag becomes active, "ALARM!" is printed on the screen and
+ *    the flag is cleared.
+ *
+ * Expected output:
+ * - Display: Current time, weekday, and date.
+ * - Display: "ALARM!" appears after the configured RTC alarm condition occurs.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - This example uses full display refreshes with a 60-second delay between
+ *   updates.
+ * - RTC alarm, RTC timer, and RTC interrupt are related but different features:
+ *   this sketch demonstrates alarm configuration and software flag polling only.
+ * - display.rtc.Reset() clears previous RTC state, so the configured time/date
+ *   is reapplied on every reset or power cycle.
+ * - The PCF85063(A) RTC is suitable for general timekeeping, but like typical
+ *   RTCs it depends on proper setup and backup power behavior for persistence.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-20
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR

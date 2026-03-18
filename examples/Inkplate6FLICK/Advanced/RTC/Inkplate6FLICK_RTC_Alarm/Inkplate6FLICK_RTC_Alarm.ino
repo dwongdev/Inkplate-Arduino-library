@@ -1,20 +1,49 @@
-/*
-   Inkplate6FLICK_RTC_Alarm example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use basic alarm and clock functions of PCF85063 RTC on Inkplate board.
-   This example will show how to set time and date, how to set alarm, how to read time and how to print time on Inkplate
-   using partial updates. NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it
-   on first refresh after power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good
-   picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_RTC_Alarm.ino
+ * @brief       RTC clock and alarm demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates basic time, date, and alarm functionality of the
+ *              onboard PCF85063 RTC on Inkplate 6FLICK. The example sets an
+ *              initial time/date, configures an alarm, periodically reads RTC
+ *              data, and prints the current time/date on the e-paper display.
+ *              When the alarm triggers, an "ALARM!" message is shown.
+ *              The display is updated using partial refreshes with occasional
+ *              full refreshes to preserve image quality.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Libraries:  Inkplate library
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) The sketch sets the RTC time/date and arms an alarm (10 s after start).
+ * 3) Current time/date is refreshed on screen once per second.
+ * 4) When the alarm fires, "ALARM!" appears and the alarm flag is cleared.
+ *
+ * Expected output:
+ * - Time shown as HH:MM:SS and date/weekday printed on the display.
+ * - "ALARM!" message appears when the configured alarm triggers.
+ * - Mostly partial updates, with periodic full refreshes.
+ *
+ * Notes:
+ * - Partial update is available only in 1-bit (black & white) mode.
+ * - Avoid partial update immediately after power-on; use a full refresh first.
+ * - Doing a full refresh every 5–10 partial refreshes helps maintain quality.
+ * - This example keeps the e-paper power supply enabled during partial updates.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

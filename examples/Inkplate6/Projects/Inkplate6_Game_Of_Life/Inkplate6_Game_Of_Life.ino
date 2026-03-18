@@ -1,17 +1,50 @@
-/*
-   Inkplate6_Game_Of_Life example for Soldered Inkplate 6
-   For this example you will need only USB cable and Inkplate 6
-   Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Our first community created example, made by: https://github.com/claud9999
-   To run it, jut upload the code and watch Conways game of life animation!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   24 September 2020 By_Claud9999
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_Game_Of_Life.ino
+ * @brief       Conway’s Game of Life animation (community example) for Soldered Inkplate 6.
+ *
+ * @details     Community-created example that runs Conway’s Game of Life on the
+ *              Inkplate 6 e-paper display. A random initial grid is generated,
+ *              then the cellular automaton evolves over time. The animation is
+ *              drawn using rectangle fills per cell and updated using partial
+ *              updates for speed, with an occasional full refresh to reduce
+ *              ghosting and maintain image quality.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial settings: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6.
+ * 2) The program generates a random initial state and starts the simulation.
+ * 3) Watch the Game of Life evolve on the e-paper display.
+ *
+ * Expected output:
+ * - A continuously updating Conway’s Game of Life animation.
+ * - Periodic full refresh after a number of partial updates.
+ * - Automatic re-randomization when the simulation becomes too static.
+ *
+ * Notes:
+ * - This example uses 1-bit (black & white) mode.
+ * - Partial updates are used for faster animation.
+ * - A full refresh is performed periodically (FULLREFRESH) to reduce ghosting.
+ * - Original community author: claud9999 (https://github.com/claud9999)
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      claud9999 (community), adapted for Soldered examples
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)

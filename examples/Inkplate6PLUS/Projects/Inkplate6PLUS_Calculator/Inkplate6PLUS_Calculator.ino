@@ -1,18 +1,57 @@
-/*
-   Inkplate6PLUS_Calculator example for Soldered Inkplate 6Plus
-   For this example you will need USB cable and Inkplate 6PLUS (and a calculator, if you don't trust Inkplate :) ).
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how simple GUI can be created on Inkplate 6PLUS with this simple calculator example.
-   You can do simple math calculations on this calculator (like addition, subtraction, multiplication, division).
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   28 July 2020 by Soldered
-*/
-
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Calculator.ino
+ * @brief       Touchscreen calculator GUI for Inkplate 6PLUS with partial
+ *              e-paper updates.
+ *
+ * @details     This example implements a simple on-screen calculator using the
+ *              Inkplate 6PLUS touchscreen. It draws a calculator-style GUI and
+ *              handles touch events for number entry, decimal point input, basic
+ *              operators (+, -, x, /), calculation, and clearing the current
+ *              entry or the on-screen history.
+ *
+ *              The display runs in 1-bit (BW) mode and uses partialUpdate() for
+ *              responsive UI redraws after each touch. A full refresh is
+ *              recommended periodically (every 5–10 partial updates) to reduce
+ *              ghosting; the example provides a dedicated Refresh button for a
+ *              full redraw.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional; used for init status messages)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the correct board (Soldered Inkplate 6PLUS) and upload the sketch.
+ * 2) After boot, the calculator UI appears on the e-paper display.
+ * 3) Tap digits and operators to build an expression, then tap "=" to calculate.
+ * 4) Use "Clear" to reset the current entry or "Clear history" to erase history.
+ * 5) Use "Refresh" to perform a full redraw and reduce partial-update ghosting.
+ *
+ * Expected output:
+ * - Display: Calculator GUI with current expression/result and a running history.
+ * - Serial Monitor: Touchscreen init status (e.g., failure message if init fails).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are used heavily for snappy UI.
+ * - E-paper partial updates accumulate ghosting; perform a full refresh regularly
+ *   (about every 5–10 partial updates) for best image quality.
+ * - This example is interactive and does not use deep sleep.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2024-03-15
+ * @license     GNU GPL V3
+ **************************************************/
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
 #error                                                                                                                 \

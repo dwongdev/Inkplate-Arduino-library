@@ -1,26 +1,77 @@
-/*
-  Inkplate6COLOR OpenMeteo Weather Station Example
-  Compatible with Soldered Inkplate 6 COLOR -> https://soldered.com/documentation/inkplate/projects/open-meteo-weather-station
-
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to fetch and display weather data from the OpenMeteo API
-  using the Inkplate 10 e-paper display.
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • timeZone
-      • latitude
-      • longitude
-  Set your username and city with `myUsername` and `myCity` (for display only, not essential for the API).
-
-  Units:
-  By default, the app uses the metric system.
-  To switch to Imperial units, change the metricUnits to "bool metricUnits = false;"
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_OpenMeteo_Weather_Station.ino
+ * @brief       Connects to Wi-Fi, fetches weather data from Open-Meteo, and
+ *              displays it on Inkplate 6COLOR.
+ *
+ * @details     This example demonstrates a connected weather dashboard for
+ *              Inkplate 6COLOR using the Open-Meteo API. The sketch connects
+ *              to a Wi-Fi network, requests current weather data for a
+ *              configured location, and renders the results on the e-paper
+ *              display in a user-friendly weather station layout.
+ *
+ *              The displayed data is based on the configured latitude,
+ *              longitude, and timezone. Optional user-facing values such as
+ *              username and city name can also be shown on the screen for a
+ *              more personalized layout, but they are not required by the API
+ *              request itself.
+ *
+ *              The example supports both metric and imperial units. By
+ *              default, metric units are used, but the sketch can be switched
+ *              to imperial mode through a configuration flag.
+ *
+ *              This is a practical starting point for always-on home weather
+ *              displays, desk dashboards, and low-power Wi-Fi information
+ *              panels.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      WiFi
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Enter your Wi-Fi SSID and password in the sketch
+ * - Set the correct timezone, latitude, and longitude for your location
+ * - Optionally set myUsername and myCity for display personalization
+ * - Set metricUnits to true or false depending on the preferred unit system
+ * - Serial settings (if relevant)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi credentials in the sketch.
+ * 2) Set the correct timezone, latitude, and longitude for your location.
+ * 3) Optionally customize the displayed username and city.
+ * 4) Choose metric or imperial units in the sketch configuration.
+ * 5) Upload the sketch to Inkplate 6COLOR.
+ * 6) After connecting to Wi-Fi, the board requests weather data from the
+ *    Open-Meteo API and renders it on the display.
+ *
+ * Expected output:
+ * - Display: A weather station screen showing current weather information for
+ *   the configured location.
+ * - Serial Monitor: Optional debug, connection, or API status output if used
+ *   in the sketch.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode with full refreshes.
+ * - This example depends on internet connectivity and successful API access.
+ * - Weather API responses and parsing may use significant RAM depending on the
+ *   amount of requested data and the implementation.
+ * - Timezone, latitude, and longitude must match the intended location or the
+ *   displayed weather data may be misleading.
+ * - Frequent refreshes increase power use; for battery-powered projects,
+ *   combine this workflow with timed deep sleep where appropriate.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR

@@ -1,19 +1,50 @@
-/*
-   Inkplate6PLUS_RTC_Interrupt_Alarm example for Soldered Inkplate 6Plus
-   For this example you will need USB cable and Inkplate 6Plus.
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use PCF85063A RTC Alarm functionality with interrupt.
-   This example will show how to set time and date, how to set up a alarm, how to read time, how to print time on Inkplate using partial updates and how to handle interrupt.
-   NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after
-   power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   12 November 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_RTC_Interrupt_Alarm.ino
+ * @brief       RTC alarm with interrupt example for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates how to use the PCF85063A real-time clock (RTC)
+ *              alarm functionality together with its interrupt output on
+ *              Inkplate 6PLUS. The example shows how to set time and date,
+ *              configure an alarm, read current time, print it on the display
+ *              using partial updates, and handle the RTC interrupt event.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) Initialize RTC time and date if not already set.
+ * 3) Configure the RTC alarm and enable interrupt handling.
+ * 4) When the alarm triggers, the interrupt is handled in software.
+ * 5) Current time and alarm status are displayed on the screen.
+ *
+ * Expected output:
+ * - Inkplate display shows current date and time.
+ * - Alarm interrupt is triggered at the configured time.
+ *
+ * Notes:
+ * - Inkplate 6PLUS uses the PCF85063A RTC chip.
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - It is not recommended to use partial update on the first refresh after power-up.
+ * - Perform a full refresh every 5–10 partial updates to maintain display quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-11-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)

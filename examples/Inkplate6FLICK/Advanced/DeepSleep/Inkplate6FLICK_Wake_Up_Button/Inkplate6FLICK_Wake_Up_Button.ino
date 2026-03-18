@@ -1,17 +1,46 @@
-/*
-   Inkplate6FLICK_Wake_Up_Button example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and an Inkplate 6FLICK
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Here is shown how to use ESP interrupts to wake up the MCU from deepsleep when touchscreen or wake up button
-   is pressed. Also, wake up on timer after 30 seconds of deep sleep if the button is not pressed.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Wake_Up_Button.ino
+ * @brief       Wake-up button and timer deep sleep demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to wake the ESP32 from deep sleep using an
+ *              external wake-up source (Inkplate wake-up button on GPIO36)
+ *              and a fallback timer wake-up (30 seconds by default). After each
+ *              wake-up, the example displays the boot count and the wake-up
+ *              reason on the Inkplate e-paper screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Libraries:  Inkplate library
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) Device enters deep sleep after updating the display.
+ * 3) Wake the device by pressing the wake-up button (GPIO36),
+ *    or wait for the timer to trigger (30 s).
+ * 4) On each wake-up, the display shows boot count and wake-up reason.
+ *
+ * Expected output:
+ * - "Boot count" increments after every wake-up cycle.
+ * - Wake-up reason shown as either button wake-up or timer wake-up.
+ *
+ * Notes:
+ * - With deep sleep, the program restarts from setup() after each wake-up.
+ * - bootCount is stored in RTC memory (RTC_DATA_ATTR) to persist across sleep.
+ * - This example uses ext0 wake-up (single RTC-capable pin, level triggered).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

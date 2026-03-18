@@ -1,20 +1,47 @@
-/*
-   Inkplate5_RTC_Simple example for Soldered Inkplate 5
-   For this example you will need a USB-C cable and Inkplate 5.
-   Select "Soldered Inkplate5" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Example shows how to use basic clock functions of PCF85063A RTC on Inkplate board.
-   This example will show how to set time and date, how to read time and how to print time on Inkplate using partial
-   updates. NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first
-   refresh after power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture
-   quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   21 March 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_RTC_Simple.ino
+ * @brief       Basic RTC time and date example for Soldered Inkplate 5.
+ *
+ * @details     Demonstrates basic usage of the PCF85063A real-time clock (RTC)
+ *              integrated on the Inkplate 5 board. The example shows how to
+ *              set the current time and date, read the RTC values, and display
+ *              the time on the e-paper screen using partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
+ * - Serial settings: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 5.
+ * 2) Set the initial RTC time and date in the code if not already configured.
+ * 3) The current time is periodically read from the RTC.
+ * 4) Time and date are displayed on the Inkplate screen.
+ *
+ * Expected output:
+ * - Inkplate display shows the current date and time.
+ *
+ * Notes:
+ * - Inkplate 5 uses the PCF85063A RTC chip.
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - It is not recommended to use partial update on the first refresh after power-up.
+ * - Perform a full refresh every 5–10 partial updates to maintain display quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-11-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5

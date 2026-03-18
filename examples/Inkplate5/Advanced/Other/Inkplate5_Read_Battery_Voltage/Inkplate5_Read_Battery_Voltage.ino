@@ -1,20 +1,46 @@
-/*
-   Inkplate5_Read_Battery_Voltage example for Soldered Inkplate 5
-   For this example you will need a USB-C cable, Inkplate 5 and a Lithium battery (3.6V) with two pin JST connector.
-   Select "Soldered Inkplate5" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read voltage of the battery
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   21 March 2023 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_Read_Battery_Voltage.ino
+ * @brief       Battery voltage reading example for Soldered Inkplate 5.
+ *
+ * @details     Demonstrates how to read the connected Li-ion/Li-Po battery
+ *              voltage using Inkplate’s built-in battery measurement circuitry.
+ *              The example shows how to obtain the battery voltage value in
+ *              software and display or process it as needed.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable, 3.6–4.2 V Li-ion/Li-Po battery (JST connector)
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+ *
+ * How to use:
+ * 1) Connect a supported Li-ion/Li-Po battery to the Inkplate battery connector.
+ * 2) Upload the sketch to Inkplate 5.
+ * 3) The battery voltage is read and can be displayed or logged by the sketch.
+ *
+ * Expected output:
+ * - Measured battery voltage value reported by the program.
+ *
+ * Notes:
+ * - Battery voltage reading is enabled through the onboard circuitry.
+ * - Accuracy depends on battery condition and load.
+ * - Battery reading typically requires enabling the battery measurement path
+ *   in hardware (see Inkplate documentation).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ * Image tool:   http://soldered.com/image-converter
+ *
+ * @author      Soldered
+ * @date        2023-01-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5

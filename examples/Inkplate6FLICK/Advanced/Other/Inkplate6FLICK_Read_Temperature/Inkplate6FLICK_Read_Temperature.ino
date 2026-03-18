@@ -1,21 +1,43 @@
-/*
-   Inkplate6FLICK_Read_Temperature example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read temperature from on-board
-   temperature sensor which is part of TPS65186 e-paper PMIC.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Read_Temperature.ino
+ * @brief       On-board temperature sensor reading demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to read temperature from the on-board
+ *              temperature sensor integrated in the TPS65186 e-paper
+ *              PMIC (Power Management IC) on Inkplate 6FLICK.
+ *              The measured temperature is displayed on the e-paper screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Libraries:  Inkplate library
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) After initialization, the measured temperature will be displayed.
+ * 3) Screen refresh behavior depends on implementation (full or partial update).
+ *
+ * Expected output:
+ * - Temperature value (°C) shown on the e-paper display.
+ *
+ * Notes:
+ * - Temperature is read from the TPS65186 PMIC internal sensor.
+ * - This temperature reflects the PMIC/chip temperature,
+ *   not the ambient air temperature so the readings are not
+ *   100% accurate.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -26,7 +48,6 @@
 #include "tempSymbol.h" // Include .h file that contains byte array for temperature symbol.
 // It is in same folder as this sketch. You can even open it (read it) by clicking on tempSymbol.h tab in Arduino IDE
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1-bit mode (BW)
-
 void setup()
 {
     display.begin();                    // Init Inkplate library (you should call this function ONLY ONCE)
@@ -37,6 +58,9 @@ void setup()
 void loop()
 {
     int temperature = display.readTemperature();            // Read temperature from on-board temperature sensor
+                                                            // NOTE: The temperature readings are not 100% accurate!
+                                                            // See header comment for more details.
+
     display.clearDisplay();                                 // Clear everything in frame buffer of e-paper display
     display.image.draw(tempSymbol, 100, 100, 38, 79, BLACK); // Draw temperature symbol at position X=100, Y=100
     display.setCursor(150, 120);

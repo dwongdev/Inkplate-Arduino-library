@@ -1,16 +1,62 @@
-/*
-   Inkplate10_Mandelbrot_Set example for Soldered Inkplate 10
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example renders the mandelbrot set to coordiantes to Inkplate.
-    Due to the nature of Mandelbrot set, it is quite slow on low powered MCUs, so please be patient :)
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_Mandelbrot_Set.ino
+ * @brief       Renders the Mandelbrot set on Inkplate 10 using per-pixel
+ *              iteration in 1-bit black/white mode.
+ *
+ * @details     This example demonstrates CPU-based rendering of the Mandelbrot
+ *              fractal directly into the Inkplate framebuffer. For each pixel
+ *              on the 1200x825 e-paper panel, the sketch maps screen
+ *              coordinates to a region of the complex plane and iterates the
+ *              Mandelbrot function up to MAXITERATIONS. Pixels that do not
+ *              diverge within the iteration limit are drawn as black; others
+ *              are white, producing a 1-bit (BW) fractal image.
+ *
+ *              Rendering is intentionally done in a simple nested loop and is
+ *              computationally heavy for a microcontroller. Expect a long
+ *              render time before the final full refresh is sent to the panel.
+ *              Progress is printed to Serial (one line per rendered row).
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial Monitor: 115200 baud
+ * - Adjust xFrom/xTo/yFrom/yTo to explore different regions (optional)
+ * - Adjust MAXITERATIONS to trade detail vs. render time (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 10.
+ * 2) Open Serial Monitor at 115200 baud to watch rendering progress.
+ * 3) Wait for the full frame to finish rendering (can take minutes).
+ * 4) After the image is shown, the sketch waits 5 seconds and renders again.
+ *
+ * Expected output:
+ * - A black/white Mandelbrot fractal image on the Inkplate display.
+ * - Serial output showing the current rendered row index (0..824).
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). Partial updates are possible in BW
+ *   mode in general, but this example performs a full-frame render followed by
+ *   a full refresh.
+ * - Rendering speed is limited by per-pixel double-precision math and the
+ *   selected iteration count; increasing MAXITERATIONS significantly increases
+ *   runtime.
+ * - For a full-set view, a reference mapping is included in commented code.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)

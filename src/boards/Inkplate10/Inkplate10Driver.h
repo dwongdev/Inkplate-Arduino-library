@@ -10,6 +10,8 @@
 // Include main header file for the Arduino.
 #include "Arduino.h"
 
+#include "EEPROM.h"
+
 // Include GPIO expander selection.
 #include "../../system/ExpanderSelect.h"
 
@@ -29,6 +31,15 @@
 #include "../../system/defines.h"
 
 
+struct waveformData
+{
+    uint8_t header = 'W';
+    uint8_t waveformId;
+    uint8_t waveform[8][9];
+    uint8_t temp = 20;
+    uint8_t checksum;
+};
+
 class Inkplate;
 
 
@@ -45,6 +56,8 @@ class EPDDriver
     void setFullUpdateThreshold(uint16_t _numberOfPartialUpdates);
     uint8_t getDisplayMode();
 
+    int einkOn();
+    void einkOff();
 
     void setSdCardOk(int16_t s);
     int16_t getSdCardOk();
@@ -57,6 +70,16 @@ class EPDDriver
 
     double readBattery();
 
+    void burnInClean(uint8_t clear_cycles, uint16_t cycles_delay);
+
+
+    bool isPowerGood();
+
+    bool setVCOM(double vcom);
+    double getStoredVCOM();
+    double getVCOMValue();
+
+    bool setWaveform(uint8_t waveformNumber, bool burnToEEPROM = true);
 
     IOExpander internalIO;
     IOExpander externalIO;
@@ -90,13 +113,11 @@ class EPDDriver
   private:
     void calculateLUTs();
     void pmicBegin();
-    void blockGpioPins();
     uint8_t initializeFramebuffers();
     void gpioInit();
     uint8_t readPowerGood();
+    void blockGpioPins();
     void pinsAsOutputs();
-    int einkOn();
-    void einkOff();
     void display1b(bool _leaveOn);
     void display3b(bool _leaveOn);
     void pinsZstate();
@@ -108,6 +129,22 @@ class EPDDriver
     void vscan_end();
     uint8_t _panelState = 0;
     Inkplate *_inkplate;
+    bool writeVCOMToPanelEEPROM(double vcom);
+    void writeReg(uint8_t reg, float data);
+    uint8_t readReg(uint8_t reg);
+
+    void changeWaveform(uint8_t *_wf);
+    uint8_t calculateChecksum(struct waveformData _w);
+    bool getWaveformFromEEPROM(struct waveformData *_w);
+    void burnWaveformToEEPROM(struct waveformData _w);
+
+    static const uint8_t waveform1[8][9];
+    static const uint8_t waveform2[8][9];
+    static const uint8_t waveform3[8][9];
+    static const uint8_t waveform4[8][9];
+    static const uint8_t waveform5[8][9];
+
+    static const uint8_t *const waveformList[5];
 };
 
 #endif

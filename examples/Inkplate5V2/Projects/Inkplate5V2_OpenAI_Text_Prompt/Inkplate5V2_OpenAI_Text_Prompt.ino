@@ -1,24 +1,79 @@
-/*
-  Inkplate5V2 OpenAI text prompt generator
-  Compatible with Soldered Inkplate 5V2 -> https://soldered.com/documentation/inkplate/projects/OpenAI-text-prompt
-
-  For this example you will need only USB cable and Inkplate 5V2.
-  Select "e-radionica Inkplate5V2" or "Soldered Inkplate5V2" from Tools -> Board menu.
-  Don't have "e-radionica Inkplate5V2" or "Soldered Inkplate5V2" option? Follow our tutorial and add it:https://soldered.com/documentation/inkplate/5v2/quick-start-guide/
-
-  Overview:
-  This example demonstrates how to fetch the temperature and weather, then with that information it creates a snarky prompt which is displayed 
-  on the Inkplate
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • location
-      • latitude
-      • longitude
-  - After creating an OpenAI API key, enter it in the openai_key variable
-*/
-
+/**
+ **************************************************
+ * @file        Inkplate5v2_OpenAI_Text_Prompt_Generator.ino
+ * @brief       Fetches current weather from Open-Meteo, asks OpenAI for a short
+ *              sarcastic summary, displays it, then deep-sleeps.
+ *
+ * @details     This example combines two HTTPS web services to create a dynamic
+ *              “weather commentary” page on Inkplate 5v2. On boot, the ESP32
+ *              connects to WiFi and queries the Open-Meteo API for current
+ *              weather at a configured latitude/longitude. The response is
+ *              parsed with ArduinoJson to extract temperature, a weather code
+ *              (converted to a short description), and the current time string.
+ *
+ *              Using these values, the sketch builds a prompt that asks OpenAI
+ *              to generate a witty, slightly condescending weather summary with
+ *              a strict length target. The prompt is sent to the OpenAI Chat
+ *              Completions endpoint, and the returned text is rendered on the
+ *              e-paper display in a large monospaced font using drawTextBox().
+ *
+ *              After updating the screen, the sketch schedules the next wake-up
+ *              using the on-board RTC (PCF85063(A)) alarm and enters deep sleep.
+ *              Deep sleep resets the ESP32, so the entire workflow repeats from
+ *              setup() after each wake cycle.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5v2
+ * - Hardware:   Inkplate 5v2, USB cable (battery optional)
+ * - Extra:      WiFi Internet connection, OpenAI API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5v2
+ * - Serial Monitor: 115200 baud
+ * - Install library: ArduinoJson (Arduino Library Manager)
+ * - Set WiFi credentials (ssid, password)
+ * - Set your OpenAI API key (openai_key)
+ * - Set location, latitude, longitude for weather query
+ * - Adjust sleep interval (SLEEP_DURATION_IN_MINS) if desired
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5v2/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID/password, OpenAI API key, and your location/coordinates.
+ * 2) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 3) On boot, the device fetches current weather from Open-Meteo.
+ * 4) The sketch sends a generated prompt to OpenAI and receives a short text reply.
+ * 5) The reply is rendered on the display, then the board deep-sleeps and repeats
+ *    the process periodically.
+ *
+ * Expected output:
+ * - A text-only “snarky” weather summary rendered on the Inkplate display.
+ * - Serial output showing connection status, raw API responses (debug), and any
+ *   JSON parsing errors.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). Partial updates are used only while
+ *   printing connection progress; the final page is shown with a full refresh.
+ * - Deep sleep restarts the ESP32 on every wake-up; no state is preserved.
+ * - HTTPS security: this example uses client.setInsecure() for both Open-Meteo
+ *   and OpenAI, disabling TLS certificate validation. This is demo-friendly but
+ *   insecure; for production use, validate certificates or pin the correct CA/
+ *   host certificate.
+ * - API reliability: network errors, rate limits, or invalid keys may result in
+ *   empty output. The sketch prints error details to Serial where possible.
+ * - JSON sizes are tuned for typical responses; unusually large responses may
+ *   require increasing DynamicJsonDocument capacity.
+ * - RTC alarm wake: wake-up is configured via RTC alarm epoch and external wake
+ *   on GPIO 39 (RTC interrupt). Ensure your hardware revision matches this.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 #include <WiFiClientSecure.h>     // Secure WiFi client for HTTPS communication
 #include <ArduinoJson.h>          // Library for parsing and generating JSON
@@ -29,11 +84,11 @@
 #define SLEEP_DURATION_IN_MINS 30*60 
 
 // WiFi credentials
-const char* ssid = "YOUR_SSID";
-const char* password = "YOUR_PASSWORD";
+const char* ssid = "Stefan";
+const char* password = "granatir";
 
 // OpenAI API key
-const char* openai_key = "YOUR_API_KEY_HERE"; 
+const char* openai_key = ""; 
 
 // Location and coordinates for weather query
 String location = "Osijek";

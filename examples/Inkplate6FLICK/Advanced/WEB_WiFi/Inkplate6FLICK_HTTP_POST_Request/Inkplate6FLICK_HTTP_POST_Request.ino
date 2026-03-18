@@ -1,26 +1,50 @@
-/*
-   Inkplate6FLICK_HTTP_POST_Request example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable, Inkplate 6FLICK and stable WiFi Internet connection.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to a WiFi network and send a POST request via HTTP.
-   We will use ThingSpeak API to see post requests. It's a free API that allows you to store and retrieve data using
-   HTTP.
-   1. Go to the ThingSpeak.com and create a free account
-   2. Open the Channels tab
-   3. Create a new channel
-   4. Create fields you want to use (this example uses 1 field called field1 and this name must be used when sending data)
-   5. Open the channel, go to the API Keys tab and copy your Write API Key
-   6. Enter your API key in the code below
-
-   When you send a POST request, open your channel and you will see the graph where is your sent data.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_HTTP_POST_Request.ino
+ * @brief       HTTP POST request demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to connect Inkplate 6FLICK to a Wi-Fi network
+ *              and send periodic HTTP POST requests. This example uses the
+ *              ThingSpeak API as a simple endpoint for storing and visualizing
+ *              posted data. Sent values are printed to the Serial Monitor.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ *
+ * Configuration:
+ * - Set ssid/pass to your Wi-Fi credentials
+ * - Set writeAPIKey to your ThingSpeak Write API Key
+ * - POST interval: POSTING_INTERVAL_IN_SESCS (min ~15 s for free ThingSpeak)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Create a free ThingSpeak account and a channel with at least "field1".
+ * 2) Copy the channel Write API Key into writeAPIKey.
+ * 3) Enter your Wi-Fi SSID and password in ssid/pass.
+ * 4) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 5) Every interval, the device sends a POST request with field1 data.
+ * 6) Open your ThingSpeak channel to view the received data/graph.
+ *
+ * Expected output:
+ * - Inkplate display shows basic instructions to open Serial Monitor.
+ * - Serial Monitor shows Wi-Fi connection status and posted field data.
+ * - ThingSpeak channel graph updates with the posted values.
+ *
+ * Notes:
+ * - This example posts a random value as field1; replace it with real sensor data.
+ * - Uses plain HTTP on port 80 (not HTTPS).
+ * - If connection fails, the sketch retries on the next interval.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

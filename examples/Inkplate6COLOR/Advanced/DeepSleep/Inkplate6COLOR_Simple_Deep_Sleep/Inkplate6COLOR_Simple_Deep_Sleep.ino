@@ -1,25 +1,78 @@
-/*
-   Inkplate6COLOR_Simple_Deep_Sleep  example for Soldered Inkplate 6COLOR
-   For this example you will need USB cable and Inkplate 6COLOR.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use low power functionality of Inkplate board.
-   In deep sleep, whole board will consume about 25uA from battery.
-   Inkplate will wake every 20 seconds change content on screen.
-
-   NOTE: Because we are using deep sleep, everytime the board wakes up, it starts program from begining.
-   Also, whole content from RAM gets erased, so you CAN NOT use partial updates.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 July 2020 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_Simple_Deep_Sleep.ino
+ * @brief       Demonstrates timed deep sleep with rotating full-screen images
+ *              on Inkplate 6COLOR.
+ *
+ * @details     This example shows a simple low-power slideshow workflow on
+ *              Inkplate 6COLOR. On each boot, the sketch initializes the
+ *              display, draws one full-screen image from an array of converted
+ *              image assets, performs a display refresh, updates the slide
+ *              index stored in RTC memory, and then enters ESP32 deep sleep.
+ *
+ *              A timer wake-up is used to restart the board after a fixed
+ *              delay, allowing the next image to be shown automatically. The
+ *              selected slide index is preserved across deep sleep cycles using
+ *              RTC_DATA_ATTR, while normal RAM contents are lost. Because deep
+ *              sleep resets the ESP32 and framebuffer contents do not survive
+ *              sleep, this workflow uses full refreshes only.
+ *
+ *              This is a practical starting point for battery-powered signage,
+ *              periodic status boards, and image rotation projects where the
+ *              display only needs to update occasionally.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      battery optional, preconverted image header files
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial settings: 115200 baud (optional for debugging)
+ * - Provide image header files (picture1.h, picture2.h, picture3.h) converted
+ *   for Inkplate and matching the expected 600x448 resolution
+ * - Adjust TIME_TO_SLEEP in the sketch if a different sleep interval is needed
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Convert compatible images using the Soldered Image Converter and include
+ *    them as header files in the sketch project.
+ * 2) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 3) On boot, the sketch displays one image full screen and refreshes the
+ *    panel.
+ * 4) The slide index is incremented and stored in RTC memory.
+ * 5) The ESP32 enters deep sleep for the configured interval.
+ * 6) After wake-up, the ESP32 restarts from setup(), displays the next image,
+ *    and repeats the cycle.
+ *
+ * Expected output:
+ * - Display: A rotating sequence of full-screen images, one image per wake-up.
+ * - Power behavior: The board sleeps between updates and wakes automatically
+ *   using the internal timer.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - Deep sleep restarts the ESP32, so all runtime logic must be placed in
+ *   setup(); loop() should remain empty.
+ * - Partial updates cannot be used in this workflow because RAM/framebuffer
+ *   state is lost during deep sleep and 6COLOR examples use full color refresh.
+ * - Full-screen image refreshes on color e-paper are slower and consume more
+ *   energy than monochrome partial-update workflows on supported boards.
+ * - RTC_DATA_ATTR preserves only the slide index across deep sleep cycles.
+ * - Older boards with older ESP32 modules may benefit from GPIO12 isolation to
+ *   minimize sleep current, as noted in the example.
+ * - Ensure converted image data fits available memory and uses the correct
+ *   format/resolution for Inkplate 6COLOR.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2020-07-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR

@@ -1,17 +1,57 @@
-/*
-   Inkplate4TEMPERA_Touch_In_Area.ino example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use Inkplate 6Plus touchscreen.
-   Once the code is uploaded, try to touch the rectangle on the screen :)
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   12 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Touch_In_Area.ino
+ * @brief       Detect touchscreen taps inside a defined rectangle and move it
+ *              across the e-paper display using partial updates.
+ *
+ * @details     This example initializes the Inkplate 4 TEMPERA in 1-bit (BW)
+ *              mode and enables the touchscreen. A black rectangle is drawn on
+ *              the display and the sketch continuously checks whether a touch
+ *              occurred inside that rectangle using touchInArea().
+ *
+ *              When the rectangle is tapped, its position is shifted by a fixed
+ *              offset and the new position is rendered using a partial update
+ *              to reduce refresh time and flashing. When the rectangle reaches
+ *              the bottom area of the screen, the position is reset and a full
+ *              refresh is performed.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (optional, for init status messages)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the Inkplate 4 TEMPERA board and upload the sketch.
+ * 2) After the intro text, a black rectangle appears on the display.
+ * 3) Tap inside the rectangle to move it diagonally.
+ * 4) Keep tapping until it reaches the bottom; it will reset and do a full
+ *    refresh.
+ *
+ * Expected output:
+ * - E-paper: Intro text, then a black rectangle that moves when tapped.
+ * - Serial: "Touchscreen init ok" (or "Touchscreen init fail").
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported in BW mode.
+ * - For best visual quality, perform a full refresh periodically (this example
+ *   does a full refresh when resetting the rectangle).
+ * - Touch detection is limited to the rectangle area via touchInArea(); touches
+ *   elsewhere are ignored.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-07-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

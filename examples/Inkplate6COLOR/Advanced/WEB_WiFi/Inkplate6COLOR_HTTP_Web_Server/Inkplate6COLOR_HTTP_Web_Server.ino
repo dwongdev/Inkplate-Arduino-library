@@ -1,22 +1,74 @@
-/*
-   Inkplate6COLOR_HTTP_Web_Server example for Soldered Inkplate 6COLOR
-   For this example you will need a micro USB cable, Inkplate 6COLOR and a device with WiFi and Internet brower (PC, Laptop,
-   Smartphone, ...). Select "Soldered Inkplate 6COLOR" from Tools -> Board menu. Don't have "Soldered Inkplate 6COLOR" option? Follow
-   our tutorial and add it: https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use Inkplate as a small and simple standlone Web Server.
-   You need to connect to Inkplate with WiFi and open IP address shown on Inkplate display.
-   After opening IP address, you will se text box where you can type some text and after that you press "Send to
-   display". Text will apper on Inkplate display! This is just simple example what you can do with it and of course, you
-   can create much more complex stuff.
-
-   HINT: You can change WiFi name and password of your Inkplate WIFi Access point by changing ssid and pass in #define
-   macros!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   2 December 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_HTTP_Web_Server.ino
+ * @brief       Runs Inkplate 6COLOR as a simple Wi-Fi access point and HTTP web
+ *              server for sending text to the display.
+ *
+ * @details     This example demonstrates how to use Inkplate 6COLOR as a
+ *              standalone HTTP web server. The board creates its own Wi-Fi
+ *              access point, hosts a simple web page, and accepts user text
+ *              entered from a phone, tablet, or computer browser. When text is
+ *              submitted through the page, the sketch updates the e-paper
+ *              display and shows the received message.
+ *
+ *              This workflow is useful for quick user interaction without an
+ *              external router, cloud service, or companion app. A client
+ *              device connects directly to the Inkplate access point, opens the
+ *              IP address shown on the display, and interacts with the hosted
+ *              web interface.
+ *
+ *              The example uses plain HTTP on port 80 and is designed as a
+ *              simple demonstration of local browser-to-display communication.
+ *              It can be extended into richer local dashboards, message boards,
+ *              control panels, and custom interfaces.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      Phone / tablet / computer with Wi-Fi and web browser
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Change the AP SSID and password in the sketch if needed
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6COLOR.
+ * 2) After boot, Inkplate starts a Wi-Fi access point using the configured
+ *    SSID and password.
+ * 3) On the display, note the network name, password, and local server IP.
+ * 4) Connect a phone, tablet, or computer to the Inkplate Wi-Fi network.
+ * 5) Open a browser and navigate to the IP address shown on the display.
+ * 6) Enter text in the web form and submit it.
+ * 7) The submitted text is shown on the Inkplate display.
+ *
+ * Expected output:
+ * - Display: Wi-Fi SSID, password, local server URL, and the most recently
+ *   submitted user text.
+ * - Browser: A simple web page with a text input field for sending text to the
+ *   display.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode with full refreshes.
+ * - This example uses plain HTTP only. It is intended for local/demo use and
+ *   does not provide HTTPS or authentication beyond Wi-Fi access control.
+ * - Because the board runs as an access point, Internet access is not required
+ *   for basic operation.
+ * - Long submitted text may wrap across multiple lines depending on available
+ *   display space and current text settings.
+ * - Frequent full color refreshes are slower than monochrome partial-update
+ *   workflows on supported boards.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-12-02
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR

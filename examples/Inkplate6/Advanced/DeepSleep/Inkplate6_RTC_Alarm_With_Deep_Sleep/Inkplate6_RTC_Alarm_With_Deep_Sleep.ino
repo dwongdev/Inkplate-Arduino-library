@@ -1,23 +1,49 @@
-/*
-   Inkplate6_RTC_Alarm_With_Deep_Sleep example for Soldered Inkplate 6
-   For this example you will need only USB cable and Inkplate 6
-   Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use RTC alarm interrupt with deep sleep.
-   Inkplate features RTC chip with interrupt for alarm connected to GPIO39
-   Inkplate board will wake up every 10 seconds, refresh screen and go back to sleep.
-
-   NOTE: External PCF85603 is only available on newer versions of Inkplate 6 boards.
-   If your board doesn't have one, you can't run this example.
-   If there is a battery holder on the back of Inkplate board, you have external RTC on Inkplate board and you can run
-   this example.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   20 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_RTC_Alarm_With_Deep_Sleep.ino
+ * @brief       RTC alarm wake-up with deep sleep for Soldered Inkplate 6.
+ *
+ * @details     Demonstrates how to use the onboard RTC alarm interrupt to wake
+ *              the Inkplate 6 from ESP32 deep sleep. The RTC alarm is configured
+ *              to trigger periodically, waking the board, refreshing the
+ *              e-paper display with the current date and time, and then
+ *              returning the system back to low-power deep sleep mode.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial settings: 115200 baud (optional, not required for output)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6.
+ * 2) On first boot, the RTC time and date are initialized if not already set.
+ * 3) The current time and date are shown on the display.
+ * 4) The board enters deep sleep and wakes up every 10 seconds using the RTC alarm.
+ * 5) After each wake-up, the display is refreshed and the board goes back to sleep.
+ *
+ * Expected output:
+ * - Inkplate display shows the current weekday, date, and time.
+ * - Display refreshes automatically on every RTC alarm wake-up.
+ *
+ * Notes:
+ * - RTC alarm interrupt is connected to GPIO39 on Inkplate 6.
+ * - When using deep sleep, all application logic must be placed in setup().
+ * - loop() must remain empty when deep sleep is used.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-20
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)

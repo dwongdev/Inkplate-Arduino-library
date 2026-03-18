@@ -1,20 +1,44 @@
-/*
-   Inkplate6FLICK_Read_Battery_Voltage example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable, Inkplate 6FLICK and a Lithium battery (3.6V) with two pin JST connector.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read voltage of the battery.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Read_Battery_Voltage.ino
+ * @brief       Battery voltage reading demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to measure and display the connected Li-ion
+ *              battery voltage using the built-in battery measurement circuit
+ *              on Inkplate 6FLICK. The measured voltage is shown on the
+ *              e-paper display together with a battery icon.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable,
+ *               3.6–3.7V Li-ion/LiPo battery with 2-pin JST connector
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Connect a compatible Li-ion/LiPo battery to the JST connector.
+ * 2) Upload the sketch to Inkplate 6FLICK.
+ * 3) The screen will display the measured battery voltage.
+ * 4) Voltage updates every 10 seconds.
+ *
+ * Expected output:
+ * - Battery icon rendered on screen.
+ * - Measured battery voltage displayed in volts (e.g., 3.92V).
+ *
+ * Notes:
+ * - Uses display.readBattery() to read battery voltage.
+ * - Example runs in 1-bit (black & white) mode.
+ * - Ensure correct battery polarity before connecting.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

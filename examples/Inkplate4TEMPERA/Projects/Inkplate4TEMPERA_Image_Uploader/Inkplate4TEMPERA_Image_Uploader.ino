@@ -1,14 +1,75 @@
-/*
-  Inkplate4TEMPERA Image Uploader Example
-  Compatible with Soldered Inkplate 4TEMPERA -> https://soldered.com/documentation/inkplate/projects/image-uploader
-
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to upload an image to a webapp hosted by Inkplate 4TEMPERA
-  and display it on the e‐ink display. Image will be automatically resized.
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Image_Uploader.ino
+ * @brief       Host a WiFi web page to upload a JPEG image and display it on
+ *              Inkplate 4 TEMPERA in 3-bit grayscale.
+ *
+ * @details     This example starts a simple HTTP web server on the Inkplate 4
+ *              TEMPERA and exposes a small web app that lets you upload an
+ *              image from a phone or PC browser. The device creates its own
+ *              WiFi Access Point (AP) so you can connect directly without an
+ *              existing router.
+ *
+ *              When a file is uploaded via HTTP POST, the sketch stores the
+ *              received JPEG bytes in RAM and serves them back at /image.jpg
+ *              for preview. After an upload completes, the image is rendered on
+ *              the e-paper display using drawJpegFromBuffer().
+ *
+ *              The display is operated in 3-bit grayscale mode (INKPLATE_3BIT),
+ *              which supports 8 intensity levels. Image resizing/fit behavior
+ *              depends on the Inkplate JPEG draw function parameters; large
+ *              images may be scaled to fit the screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      WiFi-capable phone/PC with a browser (connects to Inkplate AP)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (recommended for upload/debug logs)
+ * - WiFi credentials / API keys / timezone:
+ *   - Configure AP SSID/password (ap_ssid / ap_password).
+ *   - Password must be at least 8 characters for WPA2 AP mode.
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) On the e-paper screen, note the AP SSID, password, and IP address.
+ * 3) On your phone/PC, connect to the shown WiFi network (AP mode).
+ * 4) Open a browser and navigate to the displayed IP address.
+ * 5) Upload a JPEG image through the web page; after upload, the image is
+ *    rendered on the e-paper display. You can also open /preview to view the
+ *    last uploaded image in the browser.
+ *
+ * Expected output:
+ * - E-paper: First shows connection instructions (SSID/password/IP). After an
+ *   upload, displays the uploaded image in 3-bit grayscale.
+ * - Browser: Upload UI at '/', preview page at '/preview', image bytes at
+ *   '/image.jpg'.
+ * - Serial: Upload progress, buffer allocation size, bytes received/sent.
+ *
+ * Notes:
+ * - Display mode is 3-bit grayscale (8 levels). Partial update is not available
+ *   in grayscale mode; image rendering uses full refresh (display.display()).
+ * - RAM usage: the uploaded image is stored fully in RAM. Large uploads can
+ *   fail due to limited heap memory; keep images reasonably sized.
+ * - The buffer capacity is derived from the HTTP Content-Length header; if the
+ *   header is missing/invalid, a fallback buffer size is used.
+ * - This sketch accepts and renders JPEG data as provided. For production use,
+ *   consider validating file type/size and adding upload size limits/timeouts.
+ * - AP+STA mode is enabled; this example primarily uses AP mode for direct
+ *   connections.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure correct board is selected
 #if !defined(ARDUINO_INKPLATE4TEMPERA)

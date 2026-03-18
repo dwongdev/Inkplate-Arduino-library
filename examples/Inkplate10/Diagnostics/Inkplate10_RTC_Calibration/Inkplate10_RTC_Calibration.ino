@@ -1,18 +1,86 @@
-/*
-   Inkplate10_RTC_Calibration example for Soldered Inkplate 10
-   For this example you will need USB cable and Inkplate 10.
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to Calibrate RTC to be more precise and accurate.
-   If you have any issues with the time precision, in this way you can change the internal capacitor value, 
-   and set the clock offset. Please follow the instructions below carefully.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   27 April 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_RTC_Calibration.ino
+ * @brief       Calibrate the Inkplate 10 RTC by selecting crystal load
+ *              capacitance and applying a clock offset, then display the time
+ *              with periodic partial/full refreshes.
+ *
+ * @details     This example demonstrates how to improve RTC accuracy on
+ *              Inkplate 10 by configuring the PCF85063(A) real-time clock.
+ *              Two calibration mechanisms are shown:
+ *
+ *              1) Load capacitance selection:
+ *                 Some boards populate external load capacitors for the 32.768 kHz
+ *                 crystal. If you choose to use the RTC's internal capacitor
+ *                 setting instead, external capacitors must be removed. The
+ *                 sketch shows how to select an internal capacitor value
+ *                 (e.g., 7 pF or 12.5 pF) using SetInternalCapacitor().
+ *
+ *              2) Clock offset correction:
+ *                 The RTC supports a programmable offset (in ppm-equivalent
+ *                 steps) applied periodically. SetClockOffset(mode, value)
+ *                 configures how often the correction is applied (mode) and the
+ *                 signed correction magnitude (value).
+ *
+ *              After configuration, the sketch waits for a button press, sets
+ *              an initial time, and then reads the RTC once per second and
+ *              updates the e-paper display. To reduce flashing, it uses partial
+ *              updates most of the time and forces a full refresh after a
+ *              defined number of partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial settings (if relevant): none
+ * - Calibration settings (edit in sketch):
+ *   - Optional: display.rtc.SetInternalCapacitor(RTC_7PF / RTC_12_5PF)
+ *   - Optional: display.rtc.SetClockOffset(mode, value)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Decide whether you are using external crystal capacitors or the RTC's
+ *    internal capacitor setting:
+ *    - Using internal capacitor: remove external capacitors and enable
+ *      SetInternalCapacitor(...).
+ *    - Using external capacitors: comment out SetInternalCapacitor(...).
+ * 2) (Optional) Determine and set the clock offset:
+ *    - Best: measure the 32.768 kHz clock frequency and compute ppm deviation,
+ *      then choose mode and offset register value accordingly.
+ *    - Alternative: run without SetClockOffset(), compare RTC time drift over
+ *      2–3 days, estimate frequency error, then compute and apply an offset.
+ * 3) Upload the sketch.
+ * 4) Press the wake button when prompted to start the RTC counter.
+ * 5) Observe the displayed time; adjust capacitor/offset values if needed and
+ *    re-upload.
+ *
+ * Expected output:
+ * - E-paper: A prompt to press the wake button, then a large HH:MM:SS time that
+ *   updates about once per second.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - The displayed seconds may appear to “skip” or look uneven because e-paper
+ *   refresh takes time; the RTC time itself continues accurately.
+ * - Partial update best practice: do a full refresh every 5–10 partial updates
+ *   to maintain image quality (this example enforces a threshold).
+ * - partialUpdate(false, true) keeps the e-paper power enabled for faster
+ *   successive updates (higher power usage).
+ * - RTC offset parameters are hardware-specific; refer to the PCF85063(A)
+ *   datasheet section on offset calibration for exact ppm/LSB behavior.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-04-27
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)

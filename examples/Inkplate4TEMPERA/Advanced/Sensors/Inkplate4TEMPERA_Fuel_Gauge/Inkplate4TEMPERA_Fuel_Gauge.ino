@@ -1,20 +1,71 @@
-/*
-   Inkplate4TEMPERA_Fuel_Gauge example for Soldered Inkplate 4 TEMPERA
-   For this example you will need a USB-C cable and Inkplate 4TEMPERA and a Li-Ion battery.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read data from the built-in BQ27441 Fuel Gauge,
-   the data will also be displayed on the ePaper screen.
-
-   To run this sketch successfully, connect a Li-Ion battery and set the BATTERY_CAPACITY
-   to the capacity of your battery in mAh.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 Sep 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Fuel_Gauge.ino
+ * @brief       Reads battery statistics from the on-board BQ27441 fuel gauge
+ *              and displays them with a simple battery graphic.
+ *
+ * @details     This example demonstrates how to use the built-in BQ27441-G1A
+ *              fuel gauge on Inkplate 4 TEMPERA. After enabling the fuel gauge
+ *              peripheral (disabled by default), the sketch initializes the
+ *              battery interface, sets the configured battery capacity (mAh),
+ *              and then periodically reads key battery parameters:
+ *              - State of charge (SoC)
+ *              - Voltage
+ *              - Average current
+ *              - Full and remaining capacity
+ *              - Average power draw
+ *              - State of health (SoH)
+ *
+ *              The values are rendered on the e-paper display in 1-bit BW mode
+ *              along with a large battery icon. A filled rectangle inside the
+ *              icon represents the current SoC. The display is updated every
+ *              2 seconds; to reduce flicker and speed up updates, the sketch
+ *              performs partial updates most of the time and forces a full
+ *              refresh after a configurable number of partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable, Li-Ion battery
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial settings (if relevant): none
+ * - Set BATTERY_CAPACITY (mAh) to match your battery for accurate readings
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Connect a Li-Ion battery to Inkplate 4 TEMPERA.
+ * 2) Set BATTERY_CAPACITY to your battery capacity in mAh (e.g., 1200 mAh for
+ *    the typical bundled battery).
+ * 3) Upload the sketch.
+ * 4) The screen updates every ~2 seconds with live fuel gauge readings.
+ *
+ * Expected output:
+ * - A battery icon with a fill bar proportional to the state of charge.
+ * - Text lines showing SoC (%), voltage (mV), average current (mA), full and
+ *   remaining capacity (mAh), power (mW), and state of health (%).
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT).
+ * - Fuel gauge power: the fuel gauge is disabled by default. Enabling it
+ *   improves SoC accuracy, but increases deep sleep current by ~30–50 µA.
+ * - Partial update: partial updates are used for faster refreshes; a full
+ *   refresh is forced after NUM_PARTIAL_UPDATES_BEFORE_FULL_REFRESH to reduce
+ *   ghosting. Panel power is kept enabled during partial updates for stability
+ *   and speed (higher power usage).
+ * - The fuel gauge must be configured with the correct battery capacity for
+ *   meaningful capacity/SoC values.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-09-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

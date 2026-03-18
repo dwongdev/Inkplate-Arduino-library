@@ -1,19 +1,49 @@
-/*
-   Inkplate6FLICK_RTC_Timer example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use PCF85063A RTC Timer functionality.
-   This example will show how to set time and date, how to set up a timer, how to read time and how to print time on Inkplate using partial updates.
-   NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after
-   power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_RTC_Timer.ino
+ * @brief       RTC timer demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to use the PCF85063A RTC timer functionality
+ *              on Inkplate 6FLICK. The example sets an initial time and date,
+ *              configures an RTC timer (15 seconds by default), periodically
+ *              reads RTC data, and prints the current time/date on the e-paper
+ *              display using partial updates. When the timer expires, a
+ *              "Timer!" message is displayed and the timer is cleared.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Libraries:  Inkplate library (RTC support included)
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) The sketch sets RTC time/date and starts an RTC timer.
+ * 3) The display updates with the current time/date.
+ * 4) When the timer expires, "Timer!" appears on the screen.
+ *
+ * Expected output:
+ * - Time and date printed on the e-paper display.
+ * - "Timer!" message shown after the timer interval elapses.
+ * - Mostly partial updates, with periodic full refreshes.
+ *
+ * Notes:
+ * - Partial update is available only in 1-bit (black & white) mode.
+ * - Avoid partial update immediately after power-on; use a full refresh first.
+ * - Doing a full refresh every 5–10 partial refreshes helps maintain quality.
+ * - The timer is disabled after firing once (DisableTimer()); comment that
+ *   line if you want the timer to be repeatable.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

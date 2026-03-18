@@ -1,20 +1,49 @@
-/*
-   Inkplate4TEMPERA_RTC_Alarm example for Soldered Inkplate 4 TEMPERA
-   For this example you will need USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use basic alarm and clock functions of PCF85063 RTC on Inkplate board.
-   This example will show how to set time and date, how to set alarm, how to read time and how to print time on Inkplate
-   using partial updates. NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it
-   on first refresh after power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good
-   picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   18 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_RTC_Alarm.ino
+ * @brief       RTC time and alarm example for Soldered Inkplate 4TEMPERA.
+ *
+ * @details     Demonstrates how to use the PCF85063 real-time clock (RTC)
+ *              integrated on the Inkplate 4TEMPERA board. The example shows how
+ *              to set time and date, configure an alarm, read current time,
+ *              and display it on the e-paper screen using partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4TEMPERA
+ * - Hardware:   Inkplate 4TEMPERA, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
+ * - Serial settings: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4TEMPERA.
+ * 2) If RTC is not set, initialize time and date in the code.
+ * 3) The program configures an RTC alarm.
+ * 4) Current time is periodically read and displayed on the screen.
+ *
+ * Expected output:
+ * - Inkplate display shows current date and time.
+ * - Alarm event can be detected and handled in the sketch.
+ *
+ * Notes:
+ * - Inkplate 4TEMPERA uses the PCF85063 RTC chip.
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - It is not recommended to use partial update on the first refresh after power-up.
+ * - Perform a full refresh every 5–10 partial updates to maintain display quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-20
+ * @license     GNU GPL V3
+ * 
+ * **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA

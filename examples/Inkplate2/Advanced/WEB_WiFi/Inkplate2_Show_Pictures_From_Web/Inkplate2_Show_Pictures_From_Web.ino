@@ -1,26 +1,71 @@
-/*
-    Inkplate2_Show_Pictures_From_Web  example for Soldered Inkplate 2
-    For this example you will need a micro USB cable, Inkplate 2, and an available WiFi connection.
-    Select "Soldered Inkplate2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example will show you how to simply download pictures from the web and
-    display them on Inkplate 2's e-paper display.
-
-    You can open .jpg, .png and.bmp files smaller than or exactly 212x104 px.
-
-    .jpg files encoded with Baseline DCT, Huffman coding are supported
-    .png and .bmp files are generally well supported
-    The built-in dithering function works best on .png and .jpg
-
-    If an image isn't displaying, open it in an image editor and save it as a different file.
-    This usually resolves encoding issues.
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    28 March 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Show_Pictures_From_Web.ino
+ * @brief       Download JPG/BMP/PNG images over WiFi and display them on the
+ *              Inkplate 2 e-paper display.
+ *
+ * @details     This example demonstrates how to fetch images from the Internet
+ *              using WiFi and HTTP, then render them on Inkplate 2. It shows
+ *              two workflows:
+ *              - Direct URL drawing via display.image.draw() for JPG/PNG/BMP
+ *              - Manual download using HTTPClient and rendering a BMP stream
+ *                via drawBitmapFromWeb()
+ *
+ *              The display runs in 1-bit (black/white) mode. Optional dithering
+ *              can be enabled when drawing to convert grayscale/color sources
+ *              into a 1-bit dithered image. Image size must fit the Inkplate 2
+ *              resolution (212x104 px) and format/encoding must be supported.
+ *
+ *              After showing several images with delays, WiFi is turned off and
+ *              the ESP32 enters deep sleep. Deep sleep restarts the ESP32 on
+ *              wake; this sketch does not configure a wake source.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud (optional, for connection logs)
+ * - WiFi:           set ssid/password
+ * - Image URLs:     update the URLs if you want to load your own images
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password.
+ * 2) Upload the sketch to Inkplate 2.
+ * 3) Open Serial Monitor at 115200 baud to watch WiFi connection status.
+ * 4) The sketch connects to WiFi, downloads and displays multiple images,
+ *    then turns WiFi off and enters deep sleep.
+ *
+ * Expected output:
+ * - Display: downloaded images rendered full-screen (212x104), each followed by
+ *   a full refresh.
+ * - Serial Monitor: WiFi connection progress and a "Going to sleep.." message.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses full refresh (display()).
+ * - Image constraints:
+ *   - Max size: 212x104 px (larger images may fail or render incorrectly).
+ *   - JPG: Baseline DCT with Huffman coding (common "baseline" JPEG).
+ *   - BMP: Windows BMP, 1/4/8/24-bit, uncompressed (no RLE compression).
+ *   - PNG: generally supported; if an image fails, re-save it with an editor.
+ * - Large 24-bit images can be slow to download and decode.
+ * - Dithering improves appearance for grayscale/color sources but increases
+ *   processing time.
+ * - Deep sleep restarts the ESP32; no wakeup source is configured here, so a
+ *   reset or power cycle is required to run again.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-03-28
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
@@ -32,8 +77,8 @@
 #include "WiFi.h"       // Include library for WiFi
 Inkplate display;       // Create an object on Inkplate library and also set library into 1 Bit mode (BW)
 
-const char ssid[] = "";     // Your WiFi SSID
-const char password[] = ""; // Your WiFi password
+const char ssid[] = "Soldered Electronics";     // Your WiFi SSID
+const char password[] = "dasduino"; // Your WiFi password
 
 void setup()
 {
@@ -44,7 +89,7 @@ void setup()
     // Set settings for error printing
     display.setCursor(10, 10);
     display.setTextSize(2);
-    display.setTextColor(BLACK);
+    display.setTextColor(INKPLATE2_BLACK);
 
     // Connect to the WiFi network.
     WiFi.mode(WIFI_MODE_STA);

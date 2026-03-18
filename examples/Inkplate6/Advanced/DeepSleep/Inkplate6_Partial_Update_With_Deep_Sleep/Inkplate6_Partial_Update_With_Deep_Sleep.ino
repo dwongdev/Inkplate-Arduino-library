@@ -1,24 +1,53 @@
-/*
-   Inkplate6_Partial_Update_With_Deep_Sleep example for Soldered Inkplate 6
-   For this example you will need only USB cable and Inkplate 6
-   Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use partial update of epaper screen with deep sleep functionality of ESP32.
-   This example is not same as Inkplate-basic_partial_update! Do not use Inkplate-basic_partial_update with deep sleep,
-   IT WON'T WORK! Reason why you have to use this method with deep sleep is down how partail update works. It saves
-   content from screen in RAM. By calling partialUpdate() function, code finds difference between what is currently on
-   screen and what will be written and sends only that. When deep sleep is used, all content form the RAM has been
-   deleted, so ESP32 doesn't know what is currently on the screen, so you have to "rewrite" what is currently on the
-   screen, preload that and then create new screen that will be updated with partial update. NOTE: Partial update is
-   only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after power up. It is
-   recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   4 November 2020 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_Partial_Update_With_Deep_Sleep.ino
+ * @brief       Partial e-paper update with ESP32 deep sleep for Soldered Inkplate 6.
+ *
+ * @details     Demonstrates how to correctly use partial screen updates together
+ *              with ESP32 deep sleep on Inkplate 6. Since partial updates rely
+ *              on previously stored screen content in RAM, the screen must be
+ *              recreated after waking from deep sleep before calling
+ *              partialUpdate(). This example shows how to preserve variables in
+ *              RTC memory, rebuild the screen, and safely perform partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial settings: 115200 baud
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6.
+ * 2) After first full refresh, the device will enter deep sleep.
+ * 3) Every 10 seconds the ESP32 wakes up, updates variables,
+ *    rebuilds the screen buffer, and performs a partial update.
+ * 4) Observe changing values on the display after each wake cycle.
+ *
+ * Expected output:
+ * - First boot performs a full refresh.
+ * - Subsequent wake-ups perform partial updates only.
+ * - Counter and decimal value increment after each deep sleep cycle.
+ *
+ * Notes:
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - Do NOT use standard partial update examples together with deep sleep.
+ * - Always rebuild the screen content after deep sleep before calling partialUpdate().
+ * - It is recommended to perform a full refresh every 5–10 partial updates
+ *   to maintain good image quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)

@@ -1,18 +1,75 @@
-/*
-   Inkplate6COLOR_RTC_Alarm_With_Deep_Sleep example for Soldered Inkplate 6COLOR
-   For this example you will need only USB cable and Inkplate 6COLOR
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use RTC alarm interrupt with deep sleep.
-   Inkplate features RTC chip with interrupt for alarm connected to GPIO39
-   Inkplate board will wake up every 60 seconds, refresh screen and go back to sleep.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   20 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_RTC_Alarm_With_Deep_Sleep.ino
+ * @brief       Uses the RTC alarm interrupt to wake Inkplate 6COLOR from
+ *              deep sleep at fixed intervals.
+ *
+ * @details     This example demonstrates how to use the onboard RTC on
+ *              Inkplate 6COLOR to schedule a timed wake-up every 60 seconds.
+ *              On each boot, the sketch initializes the display, checks
+ *              whether the RTC time/date is already set, prints the current
+ *              date and time on the e-paper display, programs the next RTC
+ *              alarm, and then enters deep sleep.
+ *
+ *              The RTC alarm output is connected to GPIO39 and is used as the
+ *              wake source. Because ESP32 deep sleep resets the MCU, the full
+ *              application flow must be placed inside setup(). After each
+ *              wake-up, the board starts execution again from the beginning of
+ *              setup(), refreshes the display, schedules the next alarm, and
+ *              returns to sleep.
+ *
+ *              This example is useful for low-power clock, scheduler, and
+ *              periodic refresh applications where the display only needs to
+ *              update occasionally.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Edit the initial RTC time/date in the sketch if the RTC is not already set
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 2) If needed, adjust the initial RTC time/date values in the sketch before
+ *    uploading.
+ * 3) After boot, the current date and time are drawn on the display.
+ * 4) The sketch sets an RTC alarm for 60 seconds in the future.
+ * 5) Inkplate enters deep sleep and wakes again when the RTC alarm triggers
+ *    on GPIO39.
+ * 6) After wake-up, the ESP32 restarts, redraws the time, sets the next alarm,
+ *    and repeats the cycle.
+ *
+ * Expected output:
+ * - Display: Current weekday, date, and time rendered on the Inkplate 6COLOR
+ *   screen.
+ * - Power behavior: The board wakes once per minute, refreshes the display,
+ *   then returns to deep sleep.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - Deep sleep restarts the ESP32, so loop() must remain empty and all logic
+ *   must run from setup().
+ * - RTC alarm and wake-up are different steps: the RTC generates the interrupt,
+ *   and ESP32 deep sleep wake-up is enabled separately on GPIO39.
+ * - This example only sets the RTC time/date if the RTC is not already
+ *   configured.
+ * - Frequent full color refreshes consume more time and energy than monochrome
+ *   partial-update workflows on supported boards.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-20
+ * @license     GNU GPL V3
+ **************************************************/
 
 #ifndef ARDUINO_INKPLATECOLOR
 #error "Wrong board selection for this example, please select Soldered Inkplate 6COLOR in the boards menu."

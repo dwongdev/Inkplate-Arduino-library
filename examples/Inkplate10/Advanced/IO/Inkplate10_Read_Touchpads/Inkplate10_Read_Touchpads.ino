@@ -1,26 +1,69 @@
-/*
-   Inkplate10_Read_Touchpads example for Soldered Inkplate 10
-   For this example you will need only a micro USB cable and Inkplate 10.
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use the built-in touchpads (on PCB marked with numbers 1, 2 and 3).
-   These are basically touch sensitive switches. You can read state each of these with function touchpad.read(  and the argument you need to pass to this function is PAD1 if you want to read the state of touchpad marked
-   as "1" on PCB, PAD2 for second touchpad, PAD3 for third. You can also use numbers as arguments.
-   For that you need to pass number 0 for touchpad that is marked as 1 on the PCB, 1 for the second touchpad and 2 for the third.
-   The function touchpad.read(ill return 1 if selected touchpad is pressed, zero if not.
-
-   In this example, if you touch the first pad, it will decrese number showed on screen, if you touch the third touch pad,
-   it will increase the number, if you touch second touchpad, it will reset the number to zero.
-
-   NOTE: You can not use touch pads when an enclosure is fitted on the Inkplate - they are not that sensitive!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
-
+/**
+ **************************************************
+ * @file        Inkplate10_Read_Touchpads.ino
+ * @brief       Reads the three built-in capacitive touchpads on Inkplate 10
+ *              and updates a counter displayed on the screen.
+ *
+ * @details     This example demonstrates how to use the capacitive touchpads
+ *              integrated on the Inkplate 10 PCB. The board includes three
+ *              touch-sensitive pads labeled 1, 2, and 3 that can be used as
+ *              simple input controls for user interaction.
+ *
+ *              The sketch continuously reads the state of the touchpads using
+ *              display.touchpad.read(). Each pad performs a different action
+ *              on a displayed counter value:
+ *
+ *              - Pad 1 decreases the displayed number
+ *              - Pad 2 resets the number to zero
+ *              - Pad 3 increases the number
+ *
+ *              To improve refresh speed and reduce panel wear, the example uses
+ *              partial display updates in 1-bit mode. After several partial
+ *              updates, a full refresh is automatically performed to maintain
+ *              display quality.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate10 in Arduino IDE and upload the sketch.
+ * 2) After initialization, a number appears in the center of the display.
+ * 3) Touch the pads on the bottom of the PCB:
+ *    - Touch pad 1 to decrease the number.
+ *    - Touch pad 2 to reset the number to zero.
+ *    - Touch pad 3 to increase the number.
+ * 4) The display updates each time a pad is touched.
+ *
+ * Expected output:
+ * - Display: A large number that changes according to touchpad input.
+ * - Display: Symbols "-", "0", and "+" printed above the touchpads as
+ *   visual indicators of their function.
+ *
+ * Notes:
+ * - Display mode: 1-bit black-and-white (INKPLATE_1BIT).
+ * - Partial updates are used for faster refresh. After ~20 partial updates,
+ *   a full refresh is performed automatically.
+ * - Capacitive touchpads are sensitive to environment and grounding and may
+ *   not work reliably through thick enclosures or insulating materials.
+ * - The function touchpad.read() returns 1 when the pad is touched and 0
+ *   otherwise.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
 #error "Wrong board selection for this example, please select e-radionica Inkplate10 or Soldered Inkplate10 in the boards menu."

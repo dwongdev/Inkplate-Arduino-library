@@ -1,16 +1,52 @@
-/*
-    Inkplate6_Image_Frame_From_Web example for Soldered Inkplate 6
-    For this example you will need only USB cable and Inkplate 6.
-    Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-    Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
+/**
+ **************************************************
+ * @file        Inkplate6_Image_Frame_From_Web.ino
+ * @brief       Web image frame example using Unsplash random images (Inkplate 6).
+ *
+ * @details     Demonstrates how to use Inkplate 6 as a simple “image frame”
+ *              by downloading an image from the web, rendering it on the
+ *              e-paper display, and then entering deep sleep to save power.
+ *              The sketch requests a random image (1200×825) from Unsplash,
+ *              extracts the final redirected image URL, and draws it on the
+ *              Inkplate in 3-bit (grayscale) mode.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable (or battery for low-power testing)
+ * - Extra:      Stable WiFi Internet connection
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Enter your WiFi credentials (ssid, password) in the code
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password in the sketch.
+ * 2) Upload the sketch to Inkplate 6.
+ * 3) The board connects to WiFi, fetches a random image URL, and displays it.
+ * 4) The device enters deep sleep and wakes periodically to refresh the image.
+ *
+ * Expected output:
+ * - A randomly selected image displayed on the Inkplate screen.
+ * - Device sleeps after drawing to reduce power consumption.
+ *
+ * Notes:
+ * - This example uses 3-bit (grayscale) mode (INKPLATE_3BIT).
+ * - Deep sleep restarts the program on every wake-up.
+ * - The Unsplash “random” endpoint returns a redirect; the sketch extracts the
+ *   final image URL before downloading and rendering.
+ * - Sleep interval in this sketch is set to 15 minutes.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2020-07-28
+ * @license     GNU GPL V3
+ **************************************************/
 
-    This example shows how you can set inkplate to show random pictures from web.
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    28 July 2020 by Soldered
-*/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)
@@ -18,11 +54,15 @@
 #endif
 
 #include "Inkplate.h"
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
 
 Inkplate display(INKPLATE_3BIT);
 
-const char ssid[] = ""; // Your WiFi SSID
-const char *password = "";     // Your WiFi password
+
+
+const char ssid[] = "Soldered Electronics";    // Your WiFi SSID
+const char *password = "dasduino"; // Your WiFi password
 
 void setup()
 {
@@ -60,56 +100,61 @@ void loop()
 
 void imageUrl(char *out)
 {
-    HTTPClient http;
-
-    // Starting URL that always redirects to a random image
     const char *startUrl = "http://loremflickr.com/800/600";
 
-    // Tell HTTPClient to store the "Location" header sowe can read it later
+    // For HTTPS targets (redirect), we’ll use a secure client.
+    WiFiClientSecure secure;
+    secure.setInsecure();           // quick test; later replace with proper CA
+
+    HTTPClient http;
+
     const char* keys[] = {"Location"};
     http.collectHeaders(keys, 1);
-
-    // Disable automatic redirect following, because we want to manually read the Location header
     http.setFollowRedirects(HTTPC_DISABLE_FOLLOW_REDIRECTS);
+    http.setTimeout(15000);
+    http.setUserAgent("Mozilla/5.0");   // some CDNs are picky
 
-    // Start HTTP connection
-    if (!http.begin(startUrl))
-    {
+    // Use plain begin for the initial http:// request
+    if (!http.begin(startUrl)) {
         strcpy(out, startUrl);
         return;
     }
 
-    // Perform HTTP GET request
     int code = http.GET();
     Serial.printf("HTTP code: %d\n", code);
-
-    // Try header() first (works when collectHeaders is used)
-    String loc = http.header("Location");
-
-    // Fallback to getLocation() (sometimes works even if header() is empty)
-    if (loc.length() == 0)
-        loc = http.getLocation();
-
-    Serial.print("Location: ");
-    Serial.println(loc);
-
-    if (loc.length() == 0)
-    {
+    if (code < 0) {
+        Serial.printf("HTTP error: %s\n", http.errorToString(code).c_str());
         strcpy(out, startUrl);
         http.end();
         return;
     }
 
-    // If the path is relative, make it absolute
-    if (loc.startsWith("/"))
-        loc = String("http://loremflickr.com") + loc;
+    String loc = http.header("Location");
+    if (loc.length() == 0) loc = http.getLocation();
+    http.end();
 
-    // If the redirect is protocol-relative (redirect starts with "//"), add "http:"
-    if (loc.startsWith("//"))
-        loc = String("http:") + loc;
+    if (loc.length() == 0) {
+        strcpy(out, startUrl);
+        return;
+    }
+
+    if (loc.startsWith("/"))  loc = String("http://loremflickr.com") + loc;
+    if (loc.startsWith("//")) loc = String("http:") + loc;
+
+    // If redirected URL is https://, sanity check we can connect to it
+    if (loc.startsWith("https://")) {
+        HTTPClient https;
+        https.setTimeout(15000);
+        https.setUserAgent("Mozilla/5.0");
+        if (!https.begin(secure, loc)) {
+            Serial.println("https begin failed");
+        } else {
+            int c2 = https.GET();
+            Serial.printf("Redirect HTTPS test code: %d (%s)\n", c2, https.errorToString(c2).c_str());
+            https.end();
+        }
+    }
 
     strncpy(out, loc.c_str(), 255);
     out[255] = 0;
-
-    http.end();
 }

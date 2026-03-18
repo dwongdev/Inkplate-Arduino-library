@@ -1,20 +1,69 @@
-/*
-   Inkplate4TEMPERA_Wake_Up_On_Touchscreen example for Soldered Inkplate 4 TEMPERA
-   For this example you will need USB-C cable and an Inkplate 4TEMPERA
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Here is shown how to use I/O expander and ESP interrupts to wake up the MCU from deepsleep when touchscreen or wake
-   up button is pressed.
-
-   IMPORTANT: Some old Inkplate boards require an additional 10k PULL-UP resistor for this to work
-   For more info, see https://github.com/SolderedElectronics/Inkplate-Arduino-library/issues/179#issuecomment-1562360919
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   19 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Wake_Up_On_Touchscreen.ino
+ * @brief       Wakes Inkplate 4 TEMPERA from deep sleep using the wake button
+ *              or touchscreen interrupt, and displays the wake-up reason.
+ *
+ * @details     This example demonstrates low-power wake-up behavior on Inkplate
+ *              4 TEMPERA using ESP32 deep sleep and external wake sources. The
+ *              touchscreen controller is initialized and kept powered, and its
+ *              interrupt line is routed through the board’s I/O expander to an
+ *              ESP32-capable wake input. A press on the wake button or a
+ *              touchscreen event can then wake the MCU from deep sleep.
+ *
+ *              On each boot, a counter stored in RTC memory (RTC_DATA_ATTR) is
+ *              incremented so it persists across deep sleep cycles. The sketch
+ *              prints the boot count and the ESP32 wake-up cause on the e-paper
+ *              display. It then arms a timer wake-up as a fallback and enters
+ *              deep sleep again.
+ *
+ *              Deep sleep resets the MCU, so all application logic is placed in
+ *              setup(), while loop() remains empty.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (optional, for init logs)
+ * - Adjust TIME_TO_SLEEP (seconds) to change timer wake interval
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) The screen shows the current boot count and the wake-up reason.
+ * 3) Wait for the timer wake-up, or press the wake button / touch the screen to
+ *    wake the device.
+ * 4) Observe the boot count increment and the reported wake-up cause.
+ *
+ * Expected output:
+ * - Display shows:
+ *   - Boot count: <number>
+ *   - Wakeup caused by timer / external signal / other cause
+ * - Serial prints touchscreen init status.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT).
+ * - Deep sleep behavior: waking from deep sleep restarts the program; RTC_DATA_ATTR
+ *   variables (bootCount) persist, but normal RAM does not.
+ * - Wake sources:
+ *   - EXT0 wake is enabled on GPIO 36 (wake button) in this sketch.
+ *   - Touchscreen interrupt wiring may vary by hardware revision; some older
+ *     boards require an additional 10k pull-up resistor for reliable operation.
+ * - If touchscreen initialization fails, the sketch halts to avoid entering a
+ *   sleep state without a functional wake source.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-07-19
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
