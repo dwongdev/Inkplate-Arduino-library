@@ -1046,7 +1046,7 @@ bool EPDDriver::setVCOM(double vcom)
 
 bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 {
-    internalIO.pinModeInternal(6, INPUT_PULLUP);
+    internalIO.pinMode(6, INPUT_PULLUP);
     int raw = abs((int)(v * 100.0)) & 0x1FF;
 
     uint8_t vcomL = (uint8_t)(raw & 0xFF);
