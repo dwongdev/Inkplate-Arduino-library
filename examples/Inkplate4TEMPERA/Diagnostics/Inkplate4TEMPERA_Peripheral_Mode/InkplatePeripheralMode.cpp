@@ -1566,6 +1566,7 @@ int PeripheralMode::charToInt(char a)
       return a - '0';
     if (a >= 'A' && a <= 'F')
       return ((a - 'A') + 10);
+    return -1;
 }
 
 void PeripheralMode::checkArguments(int *_noOfArgs, int _maxArg, int _repeat)
