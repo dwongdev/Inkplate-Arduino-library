@@ -65,9 +65,7 @@
  * @license     GNU GPL V3
  **************************************************/
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
-#if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
-#error "Wrong board selection for this example, please select e-radionica Inkplate10 or Soldered Inkplate10 in the boards menu."
-#endif
+#if defined(ARDUINO_INKPLATE10)
 
 #include "Inkplate.h"            //Include Inkplate library to the sketch
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1 Bit mode (BW)
@@ -131,3 +129,4 @@ void displayNumber()
         n++;
     }
 }
+#endif

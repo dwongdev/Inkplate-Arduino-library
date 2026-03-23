@@ -46,7 +46,7 @@
  * @license     GNU GPL V3
  **************************************************/
 
-#if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)
+#if !defined(ARDUINO_INKPLATE6) && !defined(ARDUINO_INKPLATE6V2)
 #error "Wrong board selection for this example, please select e-radionica Inkplate6 or Soldered Inkplate6 in the boards menu."
 #endif
 

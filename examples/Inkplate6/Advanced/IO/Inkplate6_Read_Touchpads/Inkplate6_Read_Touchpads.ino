@@ -62,7 +62,7 @@
  * @date        2020-07-15
  * @license     GNU GPL V3
  **************************************************/
-
+#if defined(ARDUINO_INKPLATE6)
 
 #include "Inkplate.h"            //Include Inkplate library to the sketch
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1 Bit mode (BW)
@@ -125,3 +125,4 @@ void displayNumber()
         n++;
     }
 }
+#endif

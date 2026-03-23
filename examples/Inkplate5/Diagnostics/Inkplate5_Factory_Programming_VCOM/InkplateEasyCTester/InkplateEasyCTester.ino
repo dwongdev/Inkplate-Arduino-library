@@ -30,7 +30,7 @@
  ***************************************************/
 
 // Block usage of this code on Inkplate boards.
-#ifndef ARDUINO_INKPLATE5V2
+#ifndef ARDUINO_INKPLATE5
 
 // Include a Wire library (for I2C communication)
 #include "Wire.h"
