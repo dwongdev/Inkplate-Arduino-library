@@ -50,7 +50,7 @@
 #include "test.h"
 
 // Include different images and fonts for the onboarding sequence
-#include "fonts/Open_Sans_SemiBold_24.h"
+#include "Fonts/Open_Sans_SemiBold_24.h"
 #include "images/sidebar.h"
 #include "images/slide_00.h"
 #include "images/slide_01.h"
