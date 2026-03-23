@@ -125,4 +125,13 @@ void displayNumber()
         n++;
     }
 }
+#else
+void setup()
+{
+
+}
+void loop()
+{
+
+}
 #endif
