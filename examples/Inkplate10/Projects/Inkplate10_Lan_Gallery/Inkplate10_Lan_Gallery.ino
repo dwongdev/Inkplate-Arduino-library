@@ -17,7 +17,7 @@
  *              display. Basic image dimension detection is implemented for BMP
  *              and JPEG to help with centering; if size detection fails, a
  *              fallback size is used. Images are drawn using Inkplate's
- *              drawImage() helper and a full refresh is performed.
+ *              image.draw() helper and a full refresh is performed.
  *
  *              The display runs in 3-bit grayscale mode (INKPLATE_3BIT), which
  *              is suitable for photos but does not support partial updates.
@@ -323,7 +323,7 @@ void showImage(const char* path) {
   Serial.printf("Draw at x=%d, y=%d (disp=%dx%d)\n", x, y, dispW, dispH);
 
   // Draw image fron SD card
-  if (!display.drawImage(path, x, y, 3)) {
+  if (!display.image.draw(path, x, y, 3)) {
     display.setTextSize(2);
     display.setCursor(100, 300);
     display.println("Image load failed!");
