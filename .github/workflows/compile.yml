@@ -71,4 +71,4 @@ jobs:
           sketch-paths: |
             ${{ matrix.additional-sketch-paths }}
           cli-compile-flags: |
-            - --warnings="default"
+            - --warnings="none"
