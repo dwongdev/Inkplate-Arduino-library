@@ -39,15 +39,15 @@ int countdown_time = 30;
 void setup()
 {
   inkplate.begin();         // Init Inkplate library (you should call this function ONLY ONCE)
-  inkplate.rtc.Reset();     //  Reset RTC if there is some data in it
+  inkplate.rtc.reset();     //  reset RTC if there is some data in it
   inkplate.clearDisplay();  // Clear frame buffer of display
   inkplate.display();       // Put clear image on display
   inkplate.setTextSize(5);  // Set text to be 5 times bigger than classic 5x7 px text
 
   pinMode(2, INPUT_PULLUP); // Set RTC INT pin on ESP32 GPIO2 as input with pullup resistor enabled
 
-  inkplate.rtc.SetTime(hour, minutes, seconds);    // Send time to RTC
-  inkplate.rtc.SetDate(weekday, day, month, year); // Send date to RTC
+  inkplate.rtc.setTime(hour, minutes, seconds);    // Send time to RTC
+  inkplate.rtc.setDate(weekday, day, month, year); // Send date to RTC
 
   // Set up a timer
   /*   source_clock
@@ -62,29 +62,29 @@ void setup()
     *   int_pulse
     *       true = interrupt generate a pulse; false = interrupt follows timer flag
   */
-  inkplate.rtc.TimerSet(RTC::TIMER_CLOCK_1HZ, countdown_time, true, false);
+  inkplate.rtc.timerSet(RTC::TIMER_CLOCK_1HZ, countdown_time, true, false);
 }
 
 void loop()
 {
-  inkplate.rtc.GetRtcData();           // Get the time and date from RTC
-  seconds = inkplate.rtc.GetSecond();  // Store senconds in a variable
-  minutes = inkplate.rtc.GetMinute();  // Store minutes in a variable
-  hour = inkplate.rtc.GetHour();       // Store hours in a variable
-  day = inkplate.rtc.GetDay();         // Store day of month in a variable
-  weekday = inkplate.rtc.GetWeekday(); // Store day of week in a variable
-  month = inkplate.rtc.GetMonth();     // Store month in a variable
-  year = inkplate.rtc.GetYear();       // Store year in a variable
+  inkplate.rtc.getRtcData();           // Get the time and date from RTC
+  seconds = inkplate.rtc.getSecond();  // Store senconds in a variable
+  minutes = inkplate.rtc.getMinute();  // Store minutes in a variable
+  hour = inkplate.rtc.getHour();       // Store hours in a variable
+  day = inkplate.rtc.getDay();         // Store day of month in a variable
+  weekday = inkplate.rtc.getWeekday(); // Store day of week in a variable
+  month = inkplate.rtc.getMonth();     // Store month in a variable
+  year = inkplate.rtc.getYear();       // Store year in a variable
 
   inkplate.clearDisplay();             // Clear content in frame buffer
   inkplate.setCursor(60, 300);         // Set position of the text
   inkplate.setTextColor(INKPLATE_BLACK, INKPLATE_WHITE);   // Set text color and background
   printTime(hour, minutes, seconds, day, weekday, month, year); // Print the time on screen
 
-  if (inkplate.rtc.CheckTimerFlag())  // Check if timer event has occurred
+  if (inkplate.rtc.checkTimerFlag())  // Check if timer event has occurred
   {
-    inkplate.rtc.ClearTimerFlag();    // It's recommended to clear timer flag after timer has occurred
-    inkplate.rtc.DisableTimer();      // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
+    inkplate.rtc.clearTimerFlag();    // It's recommended to clear timer flag after timer has occurred
+    inkplate.rtc.disableTimer();      // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
     inkplate.setCursor(400, 400);     // Set new position for cursor
     inkplate.setTextColor(INKPLATE_RED, INKPLATE_WHITE);   // Set text color and background
     inkplate.print("Timer!");

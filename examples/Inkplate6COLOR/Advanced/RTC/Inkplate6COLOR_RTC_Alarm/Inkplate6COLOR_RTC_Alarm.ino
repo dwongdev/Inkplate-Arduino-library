@@ -54,7 +54,7 @@
  *   updates.
  * - RTC alarm, RTC timer, and RTC interrupt are related but different features:
  *   this sketch demonstrates alarm configuration and software flag polling only.
- * - display.rtc.Reset() clears previous RTC state, so the configured time/date
+ * - display.rtc.reset() clears previous RTC state, so the configured time/date
  *   is reapplied on every reset or power cycle.
  * - The PCF85063(A) RTC is suitable for general timekeeping, but like typical
  *   RTCs it depends on proper setup and backup power behavior for persistence.
@@ -96,34 +96,34 @@ uint8_t alarmDay = 20;
 void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
-    display.rtc.Reset();     // Reset RTC if there is some data in it
+    display.rtc.reset();     // reset RTC if there is some data in it
     display.clearDisplay(); // Clear frame buffer of display
     display.setTextSize(3); // Set text to be 3 times bigger than classic 5x7 px text
 
-    display.rtc.SetTime(hour, minutes, seconds);    // Send time to RTC
-    display.rtc.SetDate(weekday, day, month, year); // Send date to RTC
-    display.rtc.SetAlarm(alarmSeconds, alarmMinutes, alarmHour, alarmDay, alarmWeekday); // Set alarm
+    display.rtc.setTime(hour, minutes, seconds);    // Send time to RTC
+    display.rtc.setDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.setAlarm(alarmSeconds, alarmMinutes, alarmHour, alarmDay, alarmWeekday); // Set alarm
 }
 
 void loop()
 {
-    display.rtc.GetRtcData();           // Get the time and date from RTC
-    seconds = display.rtc.GetSecond();  // Store senconds in a variable
-    minutes = display.rtc.GetMinute();  // Store minutes in a variable
-    hour = display.rtc.GetHour();       // Store hours in a variable
-    day = display.rtc.GetDay();         // Store day of month in a variable
-    weekday = display.rtc.GetWeekday(); // Store day of week in a variable
-    month = display.rtc.GetMonth();     // Store month in a variable
-    year = display.rtc.GetYear();       // Store year in a variable
+    display.rtc.getRtcData();           // Get the time and date from RTC
+    seconds = display.rtc.getSecond();  // Store senconds in a variable
+    minutes = display.rtc.getMinute();  // Store minutes in a variable
+    hour = display.rtc.getHour();       // Store hours in a variable
+    day = display.rtc.getDay();         // Store day of month in a variable
+    weekday = display.rtc.getWeekday(); // Store day of week in a variable
+    month = display.rtc.getMonth();     // Store month in a variable
+    year = display.rtc.getYear();       // Store year in a variable
 
     display.clearDisplay();                                       // Clear content in frame buffer
     display.setCursor(100, 300);                                  // Set position of the text
     display.setTextColor(INKPLATE_GREEN, INKPLATE_WHITE);         // Set text color and background
     printTime(hour, minutes, seconds, day, weekday, month, year); // Print the time on screen
 
-    if (display.rtc.CheckAlarmFlag())  // Check if alarm has occurred
+    if (display.rtc.checkAlarmFlag())  // Check if alarm has occurred
     {
-      display.rtc.ClearAlarmFlag();    // It's recommended to clear alarm flag after alarm has occurred
+      display.rtc.clearAlarmFlag();    // It's recommended to clear alarm flag after alarm has occurred
       display.setCursor(400, 400);    // Set new position for cursor
       display.print("ALARM!");
     }

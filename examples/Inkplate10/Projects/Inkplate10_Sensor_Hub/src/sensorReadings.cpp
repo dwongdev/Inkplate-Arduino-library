@@ -94,7 +94,7 @@ bool initSensors()
 
 void readAllSensors(SensorData &data)
 {
-    // Reset status flags before reading
+    // reset status flags before reading
     data.bmeOk = false;
     data.inaOk = false;
     data.imuOk = false;

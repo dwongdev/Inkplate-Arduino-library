@@ -206,15 +206,15 @@ int rtcCheck()
     if (res != 0)
         return 0;
 
-    inkplate.rtc.Reset();
+    inkplate.rtc.reset();
 
     // 2022-01-01 00:00:00 UTC
     uint32_t epoch = 1640995200UL;
-    inkplate.rtc.SetEpoch(epoch);
+    inkplate.rtc.setEpoch(epoch);
 
     delay(1500);
 
-    return (inkplate.rtc.GetEpoch() != epoch) ? 1 : 0;
+    return (inkplate.rtc.getEpoch() != epoch) ? 1 : 0;
 }
 
 void failHandler()

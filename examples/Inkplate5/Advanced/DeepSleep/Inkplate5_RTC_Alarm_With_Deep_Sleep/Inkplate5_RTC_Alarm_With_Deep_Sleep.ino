@@ -62,17 +62,17 @@ void setup()
     display.begin(); 
 
     // Clear alarm flag from any previous alarm
-    display.rtc.ClearAlarmFlag(); 
+    display.rtc.clearAlarmFlag(); 
 
     // Check if RTC is already set. If it's not, set a time and date
-    if (!display.rtc.IsSet()) 
+    if (!display.rtc.isSet()) 
     {
         // display.setTime(hour, minute, sec);
-        display.rtc.SetTime(6, 54, 00); // 24H mode, ex. 6:54:00
+        display.rtc.setTime(6, 54, 00); // 24H mode, ex. 6:54:00
         // display.setDate(weekday, day, month, yr);
-        display.rtc.SetDate(2, 21, 3, 2023); // 0 for Sunday, 1 for Monday, ... for example Tuesday, 21.3.2023.
+        display.rtc.setDate(2, 21, 3, 2023); // 0 for Sunday, 1 for Monday, ... for example Tuesday, 21.3.2023.
 
-        // display.rtc.SetEpoch(1679386177); // Or use epoch for setting the time and date
+        // display.rtc.setEpoch(1679386177); // Or use epoch for setting the time and date
     }
 
     // Display current time and date
@@ -80,7 +80,7 @@ void setup()
     display.display();
 
     // Set RTC alarm 10 seconds from now
-    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
+    display.rtc.setAlarmEpoch(display.rtc.getEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
 
     // Enable wakup from deep sleep on gpio 39 where RTC interrupt is connected
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);
@@ -103,10 +103,10 @@ void printCurrentTime()
     display.setTextSize(3);
 
     // Get data from the RTC
-    display.rtc.GetRtcData();
+    display.rtc.getRtcData();
 
     // Find a weekday and print its full name
-    switch (display.rtc.GetWeekday())
+    switch (display.rtc.getWeekday())
     {
     case 0:
         display.print("Sunday, ");
@@ -132,17 +132,17 @@ void printCurrentTime()
     }
 
     // Print date and time
-    display.print(display.rtc.GetDay());
+    display.print(display.rtc.getDay());
     display.print(".");
-    display.print(display.rtc.GetMonth());
+    display.print(display.rtc.getMonth());
     display.print(".");
-    display.print(display.rtc.GetYear());
+    display.print(display.rtc.getYear());
     display.print(". ");
-    print2Digits(display.rtc.GetHour());
+    print2Digits(display.rtc.getHour());
     display.print(':');
-    print2Digits(display.rtc.GetMinute());
+    print2Digits(display.rtc.getMinute());
     display.print(':');
-    print2Digits(display.rtc.GetSecond());
+    print2Digits(display.rtc.getSecond());
 }
 
 // A function that prints 2 digits

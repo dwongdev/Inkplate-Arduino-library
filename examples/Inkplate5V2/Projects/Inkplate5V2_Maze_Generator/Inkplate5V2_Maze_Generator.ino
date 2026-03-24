@@ -39,7 +39,7 @@
  * 2) On boot, a new random maze is generated and shown on the display.
  * 3) Solve the maze directly on the screen using an erasable whiteboard marker
  *    or a non-permanent pencil/graphite tool, then wipe clean when finished.
- * 4) Reset the board to generate a new maze.
+ * 4) reset the board to generate a new maze.
  *
  * Expected output:
  * - A randomly generated maze drawn in black on a white background, with an

@@ -34,19 +34,19 @@ void setup()
   pinMode(2, INPUT_PULLUP);      // Set RTC INT pin on ESP32 GPIO2 as input with pullup resistor enabled
 
   inkplate.begin();           // Init Inkplate library (you should call this function ONLY ONCE)
-  inkplate.rtc.Reset();       // Reset RTC if there is some data in it
+  inkplate.rtc.reset();       // reset RTC if there is some data in it
   inkplate.clearDisplay();    // Clear frame buffer of display
   inkplate.display();         // Put clear image on display
   inkplate.setTextSize(4);    // Set text to be 4 times bigger than classic 5x7 px text
 
   // Set RTC time and date via Epoch
-  inkplate.rtc.SetEpoch(1770032087);
+  inkplate.rtc.setEpoch(1770032087);
   // Set alarm using Epoch
-  inkplate.rtc.SetAlarmEpoch(inkplate.rtc.GetEpoch() + 60, RTC_ALARM_MATCH_DHHMMSS);
+  inkplate.rtc.setAlarmEpoch(inkplate.rtc.getEpoch() + 60, RTC_ALARM_MATCH_DHHMMSS);
 
-  // inkplate.rtc.SetTime(12, 40, 30);        // Or you can use other way to set the time and date
-  // inkplate.rtc.SetDate(1, 2, 2, 2026);
-  // inkplate.rtc.SetAlarm(50, 40, 12, 2, 1); // Set alarm 20 seconds from now
+  // inkplate.rtc.setTime(12, 40, 30);        // Or you can use other way to set the time and date
+  // inkplate.rtc.setDate(1, 2, 2, 2026);
+  // inkplate.rtc.setAlarm(50, 40, 12, 2, 1); // Set alarm 20 seconds from now
 
   attachInterrupt(2, alarmISR, FALLING); // Set interrupt function and interrupt mode
 }
@@ -56,15 +56,15 @@ void loop()
   inkplate.clearDisplay();         // Clear frame buffer of display
   inkplate.setCursor(60, 100);     // Set position of the text
   inkplate.setTextColor(INKPLATE_RED, INKPLATE_WHITE);         // Set text color and background
-  inkplate.rtc.GetRtcData();          // Get the time and date from RTC
+  inkplate.rtc.getRtcData();          // Get the time and date from RTC
 
   // Print the time on screen
-  printTime(inkplate.rtc.GetHour(), inkplate.rtc.GetMinute(), inkplate.rtc.GetSecond(), inkplate.rtc.GetDay(), inkplate.rtc.GetWeekday(), inkplate.rtc.GetMonth(), inkplate.rtc.GetYear());
+  printTime(inkplate.rtc.getHour(), inkplate.rtc.getMinute(), inkplate.rtc.getSecond(), inkplate.rtc.getDay(), inkplate.rtc.getWeekday(), inkplate.rtc.getMonth(), inkplate.rtc.getYear());
   
   if (_alarmFlag)     // Check alarm flag
   {
     // _alarmFlag = 0;                  // Uncomment if you want to clear this flag
-    inkplate.rtc.ClearAlarmFlag();      // It's recommended to clear alarm flag after alarm has occurred
+    inkplate.rtc.clearAlarmFlag();      // It's recommended to clear alarm flag after alarm has occurred
     inkplate.setCursor(200, 200);       // Set position of the text
     inkplate.print("ALARM");            // Print text
   }

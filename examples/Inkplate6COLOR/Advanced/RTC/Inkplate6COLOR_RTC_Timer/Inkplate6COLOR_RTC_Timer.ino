@@ -47,7 +47,7 @@
  * Notes:
  * - Display mode: Inkplate 6COLOR color e-paper mode.
  * - This example uses full display refreshes every 60 seconds.
- * - display.rtc.Reset() clears previous RTC state, so the configured time/date
+ * - display.rtc.reset() clears previous RTC state, so the configured time/date
  *   is reapplied on every reset or power cycle.
  * - This is a simple RTC polling example only. It does not demonstrate alarm,
  *   interrupt, timer, or deep sleep behavior.
@@ -87,7 +87,7 @@ int countdown_time = 60;
 void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
-    display.rtc.Reset();           //  Reset RTC if there is some data in it
+    display.rtc.reset();           //  reset RTC if there is some data in it
     display.clearDisplay(); // Clear frame buffer of display
     display.display();      // Put clear image on display
     display.setTextSize(3); // Set text to be 4 times bigger than classic 5x7 px text
@@ -95,8 +95,8 @@ void setup()
 
     pinMode(39, INPUT_PULLUP); // Set RTC INT pin on ESP32 GPIO39 as input with pullup resistor enabled
 
-    display.rtc.SetTime(hour, minutes, seconds);    // Send time to RTC
-    display.rtc.SetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.setTime(hour, minutes, seconds);    // Send time to RTC
+    display.rtc.setDate(weekday, day, month, year); // Send date to RTC
 
     // Set up a timer
     /*   source_clock
@@ -111,19 +111,19 @@ void setup()
      *   int_pulse
      *       true = interrupt generate a pulse; false = interrupt follows timer flag
      */
-    display.rtc.TimerSet(RTC::TIMER_CLOCK_1HZ, countdown_time, true, false);
+    display.rtc.timerSet(RTC::TIMER_CLOCK_1HZ, countdown_time, true, false);
 }
 
 void loop()
 {
-    display.rtc.GetRtcData();             // Get the time and date from RTC
-    seconds = display.rtc.GetSecond();  // Store senconds in a variable
-    minutes = display.rtc.GetMinute();  // Store minutes in a variable
-    hour = display.rtc.GetHour();       // Store hours in a variable
-    day = display.rtc.GetDay();         // Store day of month in a variable
-    weekday = display.rtc.GetWeekday(); // Store day of week in a variable
-    month = display.rtc.GetMonth();     // Store month in a variable
-    year = display.rtc.GetYear();       // Store year in a variable
+    display.rtc.getRtcData();             // Get the time and date from RTC
+    seconds = display.rtc.getSecond();  // Store senconds in a variable
+    minutes = display.rtc.getMinute();  // Store minutes in a variable
+    hour = display.rtc.getHour();       // Store hours in a variable
+    day = display.rtc.getDay();         // Store day of month in a variable
+    weekday = display.rtc.getWeekday(); // Store day of week in a variable
+    month = display.rtc.getMonth();     // Store month in a variable
+    year = display.rtc.getYear();       // Store year in a variable
 
     display.clearDisplay();                                       // Clear content in frame buffer
     display.setCursor(60, 300);                                  // Set position of the text
@@ -157,10 +157,10 @@ void printTime(uint8_t _hour, uint8_t _minutes, uint8_t _seconds, uint8_t _day, 
     display.print('/');
     display.print(_year, DEC);
 
-    if (display.rtc.CheckTimerFlag())  // Check if timer event has occurred
+    if (display.rtc.checkTimerFlag())  // Check if timer event has occurred
     {
-      display.rtc.ClearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
-      display.rtc.DisableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
+      display.rtc.clearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
+      display.rtc.disableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
       display.setCursor(400, 400);  // Set new position for cursor
       display.print("Timer!");
     }

@@ -26,20 +26,20 @@ Inkplate inkplate; //Create an object on Inkplate library
 
 void setup() {
   inkplate.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
-  inkplate.rtc.ClearAlarmFlag(); // Clear alarm flag from any previous alarm
-  if(!inkplate.rtc.IsSet()) // Check if RTC is already is set. If ts not, set time and date
+  inkplate.rtc.clearAlarmFlag(); // Clear alarm flag from any previous alarm
+  if(!inkplate.rtc.isSet()) // Check if RTC is already is set. If ts not, set time and date
   {  
     //  display.setTime(hour, minute, sec);
-    inkplate.rtc.SetTime(13,30,00); // 24H mode, ex. 13:30:00
+    inkplate.rtc.setTime(13,30,00); // 24H mode, ex. 13:30:00
     //  display.setDate(weekday, day, month, yr);
-    inkplate.rtc.SetDate(1,5,12,2022); // 0 for Monday, ex. Saturday, 5.12.2022.
+    inkplate.rtc.setDate(1,5,12,2022); // 0 for Monday, ex. Saturday, 5.12.2022.
 
-    // display.rtc.SetEpoch(1589610300); // Or use epoch for setting the time and date
+    // display.rtc.setEpoch(1589610300); // Or use epoch for setting the time and date
   }
   printCurrentTime(); // Display current time and date
   inkplate.display();
 
-  inkplate.rtc.SetAlarmEpoch(inkplate.rtc.GetEpoch() + 60, RTC_ALARM_MATCH_DHHMMSS); // Set RTC alarm 60 seconds from now
+  inkplate.rtc.setAlarmEpoch(inkplate.rtc.getEpoch() + 60, RTC_ALARM_MATCH_DHHMMSS); // Set RTC alarm 60 seconds from now
 
   // Enable wakup from deep sleep on gpio 18 where RTC interrupt is connected
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_18, 0);
@@ -58,8 +58,8 @@ void printCurrentTime(){
   inkplate.setTextSize(3);
   inkplate.setTextColor(INKPLATE_BLUE, INKPLATE_WHITE); // Set text color and background
 
-  inkplate.rtc.GetRtcData();
-  switch (inkplate.rtc.GetWeekday())
+  inkplate.rtc.getRtcData();
+  switch (inkplate.rtc.getWeekday())
     {
     case 0:
         inkplate.print("Sunday , ");
@@ -83,17 +83,17 @@ void printCurrentTime(){
         inkplate.print("Saturday , ");
         break;
     }
-    inkplate.print(inkplate.rtc.GetDay());
+    inkplate.print(inkplate.rtc.getDay());
     inkplate.print(".");
-    inkplate.print(inkplate.rtc.GetMonth());
+    inkplate.print(inkplate.rtc.getMonth());
     inkplate.print(".");
-    inkplate.print(inkplate.rtc.GetYear());
+    inkplate.print(inkplate.rtc.getYear());
     inkplate.print(". ");
-    print2Digits(inkplate.rtc.GetHour());
+    print2Digits(inkplate.rtc.getHour());
     inkplate.print(':');
-    print2Digits(inkplate.rtc.GetMinute());
+    print2Digits(inkplate.rtc.getMinute());
     inkplate.print(':');
-    print2Digits(inkplate.rtc.GetSecond());
+    print2Digits(inkplate.rtc.getSecond());
 }
 
 void print2Digits(uint8_t _d)

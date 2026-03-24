@@ -95,7 +95,7 @@ void setup()
   }
 
   // Schedule the next wakeup time using the real-time clock
-  inkplate.rtc.SetAlarmEpoch(inkplate.rtc.GetEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
+  inkplate.rtc.setAlarmEpoch(inkplate.rtc.getEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
 
   // Enable external wakeup on GPIO 18 (typically tied to RTC alarm)
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_18, 0);

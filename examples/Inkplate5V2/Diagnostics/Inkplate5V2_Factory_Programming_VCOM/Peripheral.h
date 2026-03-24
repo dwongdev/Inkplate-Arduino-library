@@ -351,26 +351,26 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 sscanf(s + 3, "%d,%d,%d", &hr, &min, &sec);
                 // sprintf(temp, "display->rtcSetTime(%d, %d, %d);\n\r", hr, min, sec);
                 // Serial.println(temp);
-                display->rtc.SetTime(hr, min, sec);
+                display->rtc.setTime(hr, min, sec);
                 break;
             case 'X':
                 sscanf(s + 3, "%d,%d,%d,%d", &wday, &day, &mon, &yr);
                 // sprintf(temp, "display->rtcSetDate(%d, %d, %d, %d);\n\r", wday, day, mon, yr);
                 // Serial.println(temp);
-                display->rtc.SetDate(wday, day, mon, yr);
+                display->rtc.setDate(wday, day, mon, yr);
                 break;
             case 'Y':
                 sscanf(s + 3, "%d", &ep);
                 // sprintf(temp, "display->rtcSetEpoch(%d);\n\r", ep);
                 // Serial.println(temp);
-                display->rtc.SetEpoch(ep);
+                display->rtc.setEpoch(ep);
                 break;
             case 'Z':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     Serial.print("#Z(");
-                    Serial.print(display->rtc.GetEpoch());
+                    Serial.print(display->rtc.getEpoch());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -382,30 +382,30 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                     Serial.println("INVALID");
                     break;
                 }
-                display->rtc.GetRtcData();
+                display->rtc.getRtcData();
                 Serial.print("#a(");
                 switch (k)
                 {
                 case 0:
-                    Serial.print(display->rtc.GetSecond());
+                    Serial.print(display->rtc.getSecond());
                     break;
                 case 1:
-                    Serial.print(display->rtc.GetMinute());
+                    Serial.print(display->rtc.getMinute());
                     break;
                 case 2:
-                    Serial.print(display->rtc.GetHour());
+                    Serial.print(display->rtc.getHour());
                     break;
                 case 3:
-                    Serial.print(display->rtc.GetDay());
+                    Serial.print(display->rtc.getDay());
                     break;
                 case 4:
-                    Serial.print(display->rtc.GetWeekday());
+                    Serial.print(display->rtc.getWeekday());
                     break;
                 case 5:
-                    Serial.print(display->rtc.GetMonth());
+                    Serial.print(display->rtc.getMonth());
                     break;
                 case 6:
-                    Serial.print(display->rtc.GetYear());
+                    Serial.print(display->rtc.getYear());
                     break;
                 }
                 Serial.println(")*");
@@ -415,20 +415,20 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 sscanf(s + 3, "%d,%d,%d,%d,%d", &as, &am, &ah, &ad, &aw);
                 // sprintf(temp, "display->rtcSetAlarm(%d, %d, %d, %d, %d);\n\r", as, am, ah, ad, aw);
                 // Serial.println(temp);
-                display->rtc.SetAlarm(as, am, ah, ad, aw);
+                display->rtc.setAlarm(as, am, ah, ad, aw);
                 break;
             case 'c':
                 sscanf(s + 3, "%d,%d", &ae, &amc);
                 // sprintf(temp, "display->rtcSetAlarmEpoch(%d, %d);\n\r", ae, amc);
                 // Serial.println(temp);
-                display->rtc.SetAlarmEpoch(ae, amc);
+                display->rtc.setAlarmEpoch(ae, amc);
                 break;
             case 'd':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
                 {
                     Serial.print("#d(");
-                    Serial.print(display->rtc.CheckAlarmFlag());
+                    Serial.print(display->rtc.checkAlarmFlag());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -438,7 +438,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 if (b == '1')
                 {
                     // Serial.println("display->rtcClearAlarmFlag()");
-                    display->rtc.ClearAlarmFlag();
+                    display->rtc.clearAlarmFlag();
                     Serial.flush();
                 }
                 break;
@@ -453,19 +453,19 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 switch (k)
                 {
                 case 0:
-                    Serial.print(display->rtc.GetAlarmSecond());
+                    Serial.print(display->rtc.getAlarmSecond());
                     break;
                 case 1:
-                    Serial.print(display->rtc.GetAlarmMinute());
+                    Serial.print(display->rtc.getAlarmMinute());
                     break;
                 case 2:
-                    Serial.print(display->rtc.GetAlarmHour());
+                    Serial.print(display->rtc.getAlarmHour());
                     break;
                 case 3:
-                    Serial.print(display->rtc.GetAlarmDay());
+                    Serial.print(display->rtc.getAlarmDay());
                     break;
                 case 4:
-                    Serial.print(display->rtc.GetAlarmWeekday());
+                    Serial.print(display->rtc.getAlarmWeekday());
                     break;
                 }
                 Serial.println(")*");
@@ -477,7 +477,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 if (b == '?')
                 {
                     Serial.print("#h(");
-                    Serial.print(display->rtc.CheckTimerFlag());
+                    Serial.print(display->rtc.checkTimerFlag());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -487,7 +487,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 if (b == '1')
                 {
                     // Serial.println("display->rtcClearTimerFlag()");
-                    display->rtc.ClearTimerFlag();
+                    display->rtc.clearTimerFlag();
                 }
                 break;
             case 'j':
@@ -495,7 +495,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 if (b == '1')
                 {
                     // Serial.println("display->rtcDisableTimer()");
-                    display->rtc.DisableTimer();
+                    display->rtc.disableTimer();
                 }
                 break;
             case 'k':
@@ -503,7 +503,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 if (b == '?')
                 {
                     Serial.print("#k(");
-                    Serial.print(display->rtc.IsSet());
+                    Serial.print(display->rtc.isSet());
                     Serial.println(")*");
                     Serial.flush();
                 }
@@ -513,7 +513,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 if (b == '1')
                 {
                     // Serial.println("display->rtcReset()");
-                    display->rtc.Reset();
+                    display->rtc.reset();
                 }
                 break;
             }

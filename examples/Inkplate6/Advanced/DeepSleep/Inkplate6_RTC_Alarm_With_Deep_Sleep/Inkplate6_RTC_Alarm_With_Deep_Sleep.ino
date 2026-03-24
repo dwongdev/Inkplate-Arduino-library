@@ -61,22 +61,22 @@ void setup()
 {
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
 
-    display.rtc.ClearAlarmFlag(); // Clear alarm flag from any previous alarm
+    display.rtc.clearAlarmFlag(); // Clear alarm flag from any previous alarm
 
-    if (!display.rtc.IsSet()) // Check if RTC is already is set. If ts not, set time and date
+    if (!display.rtc.isSet()) // Check if RTC is already is set. If ts not, set time and date
     {
         //  display.setTime(hour, minute, sec);
-        display.rtc.SetTime(6, 54, 00); // 24H mode, ex. 6:54:00
+        display.rtc.setTime(6, 54, 00); // 24H mode, ex. 6:54:00
         //  display.setDate(weekday, day, month, yr);
-        display.rtc.SetDate(6, 16, 5, 2020); // 0 for Sunday, ex. Saturday, 16.5.2020.
+        display.rtc.setDate(6, 16, 5, 2020); // 0 for Sunday, ex. Saturday, 16.5.2020.
 
-        // display.rtc.SetEpoch(1589610300); // Or use epoch for setting the time and date
+        // display.rtc.setEpoch(1589610300); // Or use epoch for setting the time and date
     }
 
     printCurrentTime(); // Display current time and date
     display.display();
 
-    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS); // Set RTC alarm 10 seconds from now
+    display.rtc.setAlarmEpoch(display.rtc.getEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS); // Set RTC alarm 10 seconds from now
 
     // Enable wakup from deep sleep on gpio 39 where RTC interrupt is connected
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);
@@ -96,9 +96,9 @@ void printCurrentTime()
     display.setCursor(100, 300);
     display.setTextSize(3);
 
-    display.rtc.GetRtcData();
+    display.rtc.getRtcData();
 
-    switch (display.rtc.GetWeekday())
+    switch (display.rtc.getWeekday())
     {
     case 0:
         display.print("Sunday , ");
@@ -123,17 +123,17 @@ void printCurrentTime()
         break;
     }
 
-    display.print(display.rtc.GetDay());
+    display.print(display.rtc.getDay());
     display.print(".");
-    display.print(display.rtc.GetMonth());
+    display.print(display.rtc.getMonth());
     display.print(".");
-    display.print(display.rtc.GetYear());
+    display.print(display.rtc.getYear());
     display.print(". ");
-    print2Digits(display.rtc.GetHour());
+    print2Digits(display.rtc.getHour());
     display.print(':');
-    print2Digits(display.rtc.GetMinute());
+    print2Digits(display.rtc.getMinute());
     display.print(':');
-    print2Digits(display.rtc.GetSecond());
+    print2Digits(display.rtc.getSecond());
 }
 
 void print2Digits(uint8_t _d)

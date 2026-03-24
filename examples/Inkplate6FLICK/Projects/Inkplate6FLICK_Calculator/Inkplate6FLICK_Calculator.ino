@@ -115,7 +115,7 @@ void keysEvents()
 
     if (display.touchscreen.touchInArea(600, 20, 200, 80)) // Clear
     {
-        // Reset the state of the calculator
+        // reset the state of the calculator
         text18_cursor_x = 800;
         text18_cursor_y = 260;
         text18_content = "";
@@ -165,7 +165,7 @@ void keysEvents()
         mainDraw();
         display.partialUpdate();
 
-        // Reset the state of the calculator
+        // reset the state of the calculator
         text18_content = "";
         text18_cursor_x = 800;
         text18_cursor_y = 260;

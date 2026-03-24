@@ -345,18 +345,18 @@ int rtcCheck()
     if (_res != 0)
         return 0;
 
-    // Reset and re-init RTC.
-    display.rtc.Reset();
+    // reset and re-init RTC.
+    display.rtc.reset();
 
     // Set some time in epoch in RTC.
     uint32_t _epoch = 1640995200ULL;
-    display.rtc.SetEpoch(_epoch);
+    display.rtc.setEpoch(_epoch);
 
     // Wait at least one and a half second
     delay(1500);
 
     // Read the epoch (if everything is ok, epoch from RTC should not be the same)
-    if (display.rtc.GetEpoch() != _epoch)
+    if (display.rtc.getEpoch() != _epoch)
     {
         return 1;
     }

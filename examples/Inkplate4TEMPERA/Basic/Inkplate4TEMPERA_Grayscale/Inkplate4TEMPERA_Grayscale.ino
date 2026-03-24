@@ -340,7 +340,7 @@ void loop()
     display.display();
     delay(DELAY_MS);
 
-    display.setTextColor(0, 7); // Reset text color to black
+    display.setTextColor(0, 7); // reset text color to black
 
     // Draws an elipse with x radius, y radius, center x, center y and color
     display.clearDisplay();

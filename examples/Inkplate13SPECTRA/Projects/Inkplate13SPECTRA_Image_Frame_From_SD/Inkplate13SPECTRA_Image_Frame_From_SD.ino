@@ -90,7 +90,7 @@ void loop()
             // Get name of the pucture, create path and draw image on the screen
             if (!displayImage())
             {
-                // Reset the loop if there is an error displaying the image
+                // reset the loop if there is an error displaying the image
                 return;
             }
 

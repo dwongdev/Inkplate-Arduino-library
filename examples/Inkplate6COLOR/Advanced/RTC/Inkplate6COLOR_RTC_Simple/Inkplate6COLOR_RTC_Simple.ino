@@ -47,7 +47,7 @@
  * Notes:
  * - Display mode: Inkplate 6COLOR color e-paper mode.
  * - This example uses full display refreshes every 60 seconds.
- * - display.rtc.Reset() clears previous RTC state, so the configured time/date
+ * - display.rtc.reset() clears previous RTC state, so the configured time/date
  *   is reapplied on every reset or power cycle.
  * - This is a simple RTC polling example only. It does not demonstrate alarm,
  *   interrupt, timer, or deep sleep behavior.
@@ -87,13 +87,13 @@ uint8_t year = 23;
 void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
-    display.rtc.Reset();     // Reset RTC if there is some data in it
+    display.rtc.reset();     // reset RTC if there is some data in it
     display.clearDisplay(); // Clear frame buffer of display
     display.setTextSize(3); // Set text to be 3 times bigger than classic 5x7 px text
     display.setTextColor(INKPLATE_BLACK, INKPLATE_WHITE); // Set text color and background
 
-    display.rtc.SetTime(hour, minutes, seconds);    // Send time to RTC
-    display.rtc.SetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.setTime(hour, minutes, seconds);    // Send time to RTC
+    display.rtc.setDate(weekday, day, month, year); // Send date to RTC
     getAndDisplayTime();                           // Display time on the screen
 }
 
@@ -112,15 +112,15 @@ void loop()
 
 void getAndDisplayTime()
 {
-    display.rtc.GetRtcData(); // Get the time and date from RTC
+    display.rtc.getRtcData(); // Get the time and date from RTC
 
-    seconds = display.rtc.GetSecond();  // Store senconds in a variable
-    minutes = display.rtc.GetMinute();  // Store minutes in a variable
-    hour = display.rtc.GetHour();       // Store hours in a variable
-    day = display.rtc.GetDay();         // Store day of month in a variable
-    weekday = display.rtc.GetWeekday(); // Store day of week in a variable
-    month = display.rtc.GetMonth();     // Store month in a variable
-    year = display.rtc.GetYear();       // Store year in a variable
+    seconds = display.rtc.getSecond();  // Store senconds in a variable
+    minutes = display.rtc.getMinute();  // Store minutes in a variable
+    hour = display.rtc.getHour();       // Store hours in a variable
+    day = display.rtc.getDay();         // Store day of month in a variable
+    weekday = display.rtc.getWeekday(); // Store day of week in a variable
+    month = display.rtc.getMonth();     // Store month in a variable
+    year = display.rtc.getYear();       // Store year in a variable
 
     display.clearDisplay();                                       // Clear content in frame buffer
     display.setCursor(80, 300);                                   // Set position of the text

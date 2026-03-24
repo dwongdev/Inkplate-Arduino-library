@@ -66,12 +66,12 @@ void setup()
     // Force visible text: black on white
     display.setTextColor(BLACK, WHITE);
 
-    display.rtc.ClearAlarmFlag();
+    display.rtc.clearAlarmFlag();
 
-    if (!display.rtc.IsSet())
+    if (!display.rtc.isSet())
     {
-        display.rtc.SetTime(6, 54, 0);
-        display.rtc.SetDate(2, 21, 3, 2023);
+        display.rtc.setTime(6, 54, 0);
+        display.rtc.setDate(2, 21, 3, 2023);
     }
 
     printCurrentTime();
@@ -82,7 +82,7 @@ void setup()
     // Give it a moment (debug safety)
     delay(500);
 
-    display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
+    display.rtc.setAlarmEpoch(display.rtc.getEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
 
     // NOTE: GPIO39 is NOT guaranteed for Inkplate 5v2; this only affects wakeups,
     // not the first draw. Still, keep this for now.
@@ -105,10 +105,10 @@ void printCurrentTime()
     display.setTextSize(3);
 
     // Get data from the RTC
-    display.rtc.GetRtcData();
+    display.rtc.getRtcData();
 
     // Find a weekday and print its full name
-    switch (display.rtc.GetWeekday())
+    switch (display.rtc.getWeekday())
     {
     case 0:
         display.print("Sunday, ");
@@ -134,17 +134,17 @@ void printCurrentTime()
     }
 
     // Print date and time
-    display.print(display.rtc.GetDay());
+    display.print(display.rtc.getDay());
     display.print(".");
-    display.print(display.rtc.GetMonth());
+    display.print(display.rtc.getMonth());
     display.print(".");
-    display.print(display.rtc.GetYear());
+    display.print(display.rtc.getYear());
     display.print(". ");
-    print2Digits(display.rtc.GetHour());
+    print2Digits(display.rtc.getHour());
     display.print(':');
-    print2Digits(display.rtc.GetMinute());
+    print2Digits(display.rtc.getMinute());
     display.print(':');
-    print2Digits(display.rtc.GetSecond());
+    print2Digits(display.rtc.getSecond());
 }
 
 // A function that prints 2 digits

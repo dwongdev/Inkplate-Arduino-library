@@ -34,7 +34,7 @@
  * 2) Wait for the maze to be generated and rendered on the display.
  * 3) Solve the maze directly on the screen if desired using a dry-erase marker
  *    or graphite pencil.
- * 4) Reset or rerun the sketch to generate a different maze.
+ * 4) reset or rerun the sketch to generate a different maze.
  *
  * Expected output:
  * - Display: A newly generated random maze filling the screen or a large

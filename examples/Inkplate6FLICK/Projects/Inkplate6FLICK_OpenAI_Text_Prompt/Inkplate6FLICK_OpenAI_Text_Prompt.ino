@@ -142,7 +142,7 @@ void setup() {
   }
 
   // Set a wakeup alarm 30 seconds from now (RTC-based wakeup)
-  display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
+  display.rtc.setAlarmEpoch(display.rtc.getEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
 
   // Configure ESP32 to wake up from deep sleep using RTC interrupt on GPIO 39
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);

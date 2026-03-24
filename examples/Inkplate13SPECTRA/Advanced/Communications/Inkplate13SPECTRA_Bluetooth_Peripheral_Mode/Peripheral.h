@@ -277,17 +277,17 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
 
             case 'W':
                 sscanf(s + 3, "%d,%d,%d", &hr, &min, &sec);
-                display->rtc.SetTime(hr, min, sec);
+                display->rtc.setTime(hr, min, sec);
                 break;
 
             case 'X':
                 sscanf(s + 3, "%d,%d,%d,%d", &wday, &day, &mon, &yr);
-                display->rtc.SetDate(wday, day, mon, yr);
+                display->rtc.setDate(wday, day, mon, yr);
                 break;
 
             case 'Y':
                 sscanf(s + 3, "%d", &ep);
-                display->rtc.SetEpoch(ep);
+                display->rtc.setEpoch(ep);
                 break;
 
             case 'Z':
@@ -298,7 +298,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                     String command;
 
                     command += "#Z(";
-                    command += display->rtc.GetEpoch();
+                    command += display->rtc.getEpoch();
                     command += ")*"; 
 
                     pTxCharacteristic->setValue(command.c_str());
@@ -316,31 +316,31 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                     pTxCharacteristic->notify();
                     break;
                 }
-                display->rtc.GetRtcData();
+                display->rtc.getRtcData();
                 String command;
                 command += "#a(";
                 switch (k)
                 {
                     case 0:
-                        command += String(display->rtc.GetSecond());
+                        command += String(display->rtc.getSecond());
                         break;
                     case 1:
-                        command += String(display->rtc.GetMinute());
+                        command += String(display->rtc.getMinute());
                         break;
                     case 2:
-                        command += String(display->rtc.GetHour());
+                        command += String(display->rtc.getHour());
                         break;
                     case 3:
-                        command += String(display->rtc.GetDay());
+                        command += String(display->rtc.getDay());
                         break;
                     case 4:
-                        command += String(display->rtc.GetWeekday());
+                        command += String(display->rtc.getWeekday());
                         break;
                     case 5:
-                        command += String(display->rtc.GetMonth());
+                        command += String(display->rtc.getMonth());
                         break;
                     case 6:
-                        command += String(display->rtc.GetYear());
+                        command += String(display->rtc.getYear());
                         break;
                 }
                 command += ")*";
@@ -350,12 +350,12 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
 
             case 'b':
                 sscanf(s + 3, "%d,%d,%d,%d,%d", &as, &am, &ah, &ad, &aw);
-                display->rtc.SetAlarm(as, am, ah, ad, aw);
+                display->rtc.setAlarm(as, am, ah, ad, aw);
                 break;
 
             case 'c':
                 sscanf(s + 3, "%d,%d", &ae, &amc);
-                display->rtc.SetAlarmEpoch(ae, amc);
+                display->rtc.setAlarmEpoch(ae, amc);
                 break;
 
             case 'd':
@@ -365,7 +365,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                 {
                     String command;
                     command += "#d(";
-                    command += display->rtc.CheckAlarmFlag();
+                    command += display->rtc.checkAlarmFlag();
                     command += ")*";
                     pTxCharacteristic->setValue(command.c_str());
                     pTxCharacteristic->notify();
@@ -377,7 +377,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    display->rtc.ClearAlarmFlag();
+                    display->rtc.clearAlarmFlag();
                 }
                 break;
 
@@ -396,19 +396,19 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                     switch (k)
                     {
                     case 0:
-                        command += String(display->rtc.GetAlarmSecond());
+                        command += String(display->rtc.getAlarmSecond());
                         break;
                     case 1:
-                        command += String(display->rtc.GetAlarmMinute());
+                        command += String(display->rtc.getAlarmMinute());
                         break;
                     case 2:
-                        command += String(display->rtc.GetAlarmHour());
+                        command += String(display->rtc.getAlarmHour());
                         break;
                     case 3:
-                        command += String(display->rtc.GetAlarmDay());
+                        command += String(display->rtc.getAlarmDay());
                         break;
                     case 4:
-                        command += String(display->rtc.GetAlarmWeekday());
+                        command += String(display->rtc.getAlarmWeekday());
                         break;
                     }
                     command += ")*";
@@ -426,7 +426,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                     pTxCharacteristic->notify();
                     break;
                 }
-                display->rtc.TimerSet(sc, v, ie, ip);
+                display->rtc.timerSet(sc, v, ie, ip);
                 break;
 
             case 'h':
@@ -436,7 +436,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                 {
                     String command;
                     command += "#h(";
-                    command += display->rtc.CheckTimerFlag();
+                    command += display->rtc.checkTimerFlag();
                     command += ")*";
                     pTxCharacteristic->setValue(command.c_str());
                     pTxCharacteristic->notify();
@@ -448,7 +448,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    display->rtc.ClearTimerFlag();
+                    display->rtc.clearTimerFlag();
                 }
                 break;
 
@@ -456,7 +456,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    display->rtc.DisableTimer();
+                    display->rtc.disableTimer();
                 }
                 break;
 
@@ -467,7 +467,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                 {
                     String command;
                     command += "#k(";
-                    command += display->rtc.IsSet();
+                    command += display->rtc.isSet();
                     command += ")*";
                     pTxCharacteristic->setValue(command.c_str());
                     pTxCharacteristic->notify();
@@ -479,7 +479,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display, BLECharacteristic *p
                 sscanf(s + 3, "%c", &b);
                 if (b == '1')
                 {
-                    display->rtc.Reset();
+                    display->rtc.reset();
                 }
                 break;
             }

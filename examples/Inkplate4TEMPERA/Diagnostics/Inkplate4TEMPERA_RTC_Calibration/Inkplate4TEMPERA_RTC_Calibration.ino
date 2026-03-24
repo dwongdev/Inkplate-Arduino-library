@@ -14,11 +14,11 @@
  *                 crystal. If you choose to use the RTC's internal capacitor
  *                 setting instead, external capacitors must be removed. The
  *                 sketch shows how to select an internal capacitor value
- *                 (e.g., 7 pF or 12.5 pF) using SetInternalCapacitor().
+ *                 (e.g., 7 pF or 12.5 pF) using setInternalCapacitor().
  *
  *              2) Clock offset correction:
  *                 The RTC supports a programmable offset (in ppm-equivalent
- *                 steps) applied periodically. SetClockOffset(mode, value)
+ *                 steps) applied periodically. setClockOffset(mode, value)
  *                 configures how often the correction is applied (mode) and the
  *                 signed correction magnitude (value).
  *
@@ -37,8 +37,8 @@
  * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
  * - Serial settings (if relevant): none
  * - Calibration settings (edit in sketch):
- *   - Optional: display.rtc.SetInternalCapacitor(RTC_7PF / RTC_12_5PF)
- *   - Optional: display.rtc.SetClockOffset(mode, value)
+ *   - Optional: display.rtc.setInternalCapacitor(RTC_7PF / RTC_12_5PF)
+ *   - Optional: display.rtc.setClockOffset(mode, value)
  *
  * Don't have Inkplate Boards in Arduino Boards Manager?
  * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
@@ -47,12 +47,12 @@
  * 1) Decide whether you are using external crystal capacitors or the RTC's
  *    internal capacitor setting:
  *    - Using internal capacitor: remove external capacitors and enable
- *      SetInternalCapacitor(...).
- *    - Using external capacitors: comment out SetInternalCapacitor(...).
+ *      setInternalCapacitor(...).
+ *    - Using external capacitors: comment out setInternalCapacitor(...).
  * 2) (Optional) Determine and set the clock offset:
  *    - Best: measure the 32.768 kHz clock frequency and compute ppm deviation,
  *      then choose mode and offset register value accordingly.
- *    - Alternative: run without SetClockOffset(), compare RTC time drift over
+ *    - Alternative: run without setClockOffset(), compare RTC time drift over
  *      2–3 days, estimate frequency error, then compute and apply an offset.
  * 3) Upload the sketch.
  * 4) Press the wake button when prompted to start the RTC counter.
@@ -117,9 +117,9 @@ void setup()
     //  - If you use an internal capacitor, you have to remove the external ones. 
     //  - If you use an external one, you don't have the next line of code. 
     // Here we setting internal capacitor value (7 pF):
-    // display.rtc.SetInternalCapacitor(RTC_7PF); 
+    // display.rtc.setInternalCapacitor(RTC_7PF); 
     // Another option is 12.5 pF:
-    display.rtc.SetInternalCapacitor(RTC_12_5PF);
+    display.rtc.setInternalCapacitor(RTC_12_5PF);
 
     // Set offset for RTC crystal
     // The first argument is a mode (0 or 1):
@@ -130,7 +130,7 @@ void setup()
     // decimal. For example: mode 0 (4.34 ppm), offset value 15 = + 65.1 ppm every 2 hours
     // See 8.2.3 in the datasheet for more details
     
-    display.rtc.SetClockOffset(1, -63); 
+    display.rtc.setClockOffset(1, -63); 
 
     // How to calculate this offset?
     // 1. Measure the frequency on the clock pin of the RTC (let's call it fMeasured)
@@ -145,9 +145,9 @@ void setup()
     // If you don't have an oscilloscope or something to measure the frequency, here is a procedure for you. 
     // NOTE: This is a longer, but more precise method to calibrate RTC.
     // When you run for the first time to see how much rtc misses, 
-    // you MUST comment the display.rtc.SetClockOffset() function above.
+    // you MUST comment the display.rtc.setClockOffset() function above.
     // Once again, if you are using external capacitor, you don't need neither 
-    // display.rtc.SetInternalCapacitor(); so also comment this line.
+    // display.rtc.setInternalCapacitor(); so also comment this line.
 
     // First, upload the code to the Inkplate.
     // It would be best if you had a clock on the side (on a phone or computer).
@@ -178,7 +178,7 @@ void setup()
     }
 
     // Set the RTC to begin
-    display.rtc.SetTime(hours, minutes, seconds);    // Send time to RTC
+    display.rtc.setTime(hours, minutes, seconds);    // Send time to RTC
 }
 
 void loop()
@@ -188,10 +188,10 @@ void loop()
     // sometimes seem wrong but that actual RTC time will be precise
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtc.GetRtcData();           // Get the time and date from RTC
-        seconds = display.rtc.GetSecond();  // Store senconds in a variable
-        minutes = display.rtc.GetMinute();  // Store minutes in a variable
-        hours = display.rtc.GetHour();      // Store hours in a variable
+        display.rtc.getRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.getSecond();  // Store senconds in a variable
+        minutes = display.rtc.getMinute();  // Store minutes in a variable
+        hours = display.rtc.getHour();      // Store hours in a variable
 
         display.clearDisplay();             // Clear content in frame buffer
         display.setTextSize(5);             // Set text to be 5 times bigger than classic 5x7 px text

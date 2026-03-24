@@ -50,9 +50,9 @@ void setup()
     //  - If you use an internal capacitor, you have to remove the external ones. 
     //  - If you use an external one, you don't have the next line of code. 
     // Here we setting internal capacitor value (7 pF):
-    // display.rtc.SetInternalCapacitor(RTC_7PF); 
+    // display.rtc.setInternalCapacitor(RTC_7PF); 
     // Another option is 12.5 pF:
-    display.rtc.SetInternalCapacitor(RTC_12_5PF);
+    display.rtc.setInternalCapacitor(RTC_12_5PF);
 
     // Set offset for RTC crystal
     // The first argument is a mode (0 or 1):
@@ -63,7 +63,7 @@ void setup()
     // decimal. For example: mode 0 (4.34 ppm), offset value 15 = + 65.1 ppm every 2 hours
     // See 8.2.3 in the datasheet for more details
     
-    display.rtc.SetClockOffset(1, -63); 
+    display.rtc.setClockOffset(1, -63); 
 
     // How to calculate this offset?
     // 1. Measure the frequency on the clock pin of the RTC (let's call it fMeasured)
@@ -78,9 +78,9 @@ void setup()
     // If you don't have an oscilloscope or something to measure the frequency, here is a procedure for you. 
     // NOTE: This is a longer, but more precise method to calibrate RTC.
     // When you run for the first time to see how much rtc misses, 
-    // you MUST comment the display.rtc.SetClockOffset() function above.
+    // you MUST comment the display.rtc.setClockOffset() function above.
     // Once again, if you are using external capacitor, you don't need neither 
-    // display.rtc.SetInternalCapacitor(); so also comment this line.
+    // display.rtc.setInternalCapacitor(); so also comment this line.
 
     // First, upload the code to the Inkplate.
     // It would be best if you had a clock on the side (on a phone or computer).
@@ -109,7 +109,7 @@ void setup()
     }
 
     // Set the RTC to begin
-    display.rtc.SetTime(hours, minutes, seconds);    // Send time to RTC
+    display.rtc.setTime(hours, minutes, seconds);    // Send time to RTC
 }
 
 void loop()
@@ -119,10 +119,10 @@ void loop()
     // sometimes seem wrong but that actual RTC time will be precise
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtc.GetRtcData();           // Get the time and date from RTC
-        seconds = display.rtc.GetSecond();  // Store senconds in a variable
-        minutes = display.rtc.GetMinute();  // Store minutes in a variable
-        hours = display.rtc.GetHour();      // Store hours in a variable
+        display.rtc.getRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.getSecond();  // Store senconds in a variable
+        minutes = display.rtc.getMinute();  // Store minutes in a variable
+        hours = display.rtc.getHour();      // Store hours in a variable
 
         display.clearDisplay();             // Clear content in frame buffer
         display.setTextSize(5);             // Set text to be 5 times bigger than classic 5x7 px text

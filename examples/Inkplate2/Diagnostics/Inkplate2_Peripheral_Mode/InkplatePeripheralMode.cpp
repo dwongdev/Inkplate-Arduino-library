@@ -80,7 +80,7 @@ bool PeripheralMode::getDataFromSerial(unsigned long _timeout)
                 // If is a valid command, try to parse it.
                 parseCommand(_command, _repeatable, _payloadSize, _payload);
 
-                // Reset the counter.
+                // reset the counter.
                 _serialBufferIndex = 0;
 
                 // Go to the next command by advancing to the next index.
@@ -95,7 +95,7 @@ bool PeripheralMode::getDataFromSerial(unsigned long _timeout)
         // Clear the buffer.
         memset(_serialBuffer, 0, _bufferSize);
         
-        // Reset the index variable.
+        // reset the index variable.
         _serialBufferIndex = 0;
 
         Serial.println("Cleaned");

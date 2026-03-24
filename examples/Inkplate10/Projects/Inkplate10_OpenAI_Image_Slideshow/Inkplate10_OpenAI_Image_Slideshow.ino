@@ -162,7 +162,7 @@ void setup() {
   }
 
   // Schedule the next wakeup time using the real-time clock
-  display.rtc.SetAlarmEpoch(display.rtc.GetEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
+  display.rtc.setAlarmEpoch(display.rtc.getEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
 
   // Enable external wakeup on GPIO 39 (typically tied to RTC alarm)
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);

@@ -153,7 +153,7 @@ void loop()
     if (numRefreshes > NUM_PARTIAL_UPDATES_BEFORE_FULL_REFRESH)
     {                      // Check if you need to do full refresh or you can do partial update
         display.display(); // Do a full refresh
-        numRefreshes = 0;  // Reset the counter
+        numRefreshes = 0;  // reset the counter
     }
     else
     {

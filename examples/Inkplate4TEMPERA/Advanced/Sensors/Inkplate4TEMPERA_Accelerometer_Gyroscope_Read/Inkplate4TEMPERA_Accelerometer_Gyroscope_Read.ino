@@ -214,7 +214,7 @@ void loop()
     {
         // Time for a full refresh? Do it
         display.display();
-        numRefreshes = 0; // Reset the counter
+        numRefreshes = 0; // reset the counter
     }
     else
     {

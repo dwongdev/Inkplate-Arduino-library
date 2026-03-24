@@ -81,7 +81,7 @@ void setup()
         {
             display.clearDisplay();    // Clear everything that is stored in frame buffer of epaper
             display.setCursor(0, 0);   // Set print position at the begining of the screen
-            display.setTextSize(1);    // Reset text size
+            display.setTextSize(1);    // reset text size
             char text[3001];           // Array where data from SD card is stored (max 200 chars here)
             int len = file.fileSize(); // Read how big is file that we are opening
             if (len > 3000)

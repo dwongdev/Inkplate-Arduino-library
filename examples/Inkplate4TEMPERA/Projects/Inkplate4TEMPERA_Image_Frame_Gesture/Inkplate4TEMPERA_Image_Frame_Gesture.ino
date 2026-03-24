@@ -152,7 +152,7 @@ void setup()
             case DIR_LEFT:
                 skip = false;        // Picture should be changed
                 currentImageIndex++; // Go to next picture
-                // Reset counter if it overflowed
+                // reset counter if it overflowed
                 if (currentImageIndex > numFiles - 1)
                     currentImageIndex = 0;
                 break;
@@ -198,7 +198,7 @@ void loop()
                 // Get name of the picture, create path and draw image on the screen
                 if (!displayImage())
                 {
-                    // Reset the loop if there is an error displaying the image
+                    // reset the loop if there is an error displaying the image
                     return;
                 }
 
