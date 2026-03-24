@@ -62,14 +62,14 @@ Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and als
 void setup()
 {
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
-    display.internalIO.pinMode(LED_PIN, OUTPUT); // Set P1-7 to output. On that pin, we sholud connect LED with current
+    display.expander1.pinMode(LED_PIN, OUTPUT); // Set P1-7 to output. On that pin, we sholud connect LED with current
                                     // limiting resistor and specify that we want use internal IO expander
 }
 
 void loop()
 {
-    display.internalIO.digitalWrite(LED_PIN, LOW, IO_INT_ADDR);  // Set output to low (LED does not light up)
+    display.expander1.digitalWrite(LED_PIN, LOW, IO_INT_ADDR);  // Set output to low (LED does not light up)
     delay(1000);                                        // Wait for one second
-    display.internalIO.digitalWrite(LED_PIN, HIGH, IO_INT_ADDR); // Set output to high (LED lights up)
+    display.expander1.digitalWrite(LED_PIN, HIGH, IO_INT_ADDR); // Set output to high (LED lights up)
     delay(1000);                                        // Wait for one second
 }

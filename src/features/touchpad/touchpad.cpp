@@ -25,6 +25,6 @@ uint8_t Touchpad::read(uint8_t pad)
     default:
         return 0;
     }
-    return _inkplate->internalIO.digitalRead(pin);
+    return _inkplate->expander1.digitalRead(pin);
 }
 #endif

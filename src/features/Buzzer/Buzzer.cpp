@@ -95,7 +95,7 @@ void Buzzer::beep(uint32_t length)
 void Buzzer::beepOn(int freq)
 {
     // Turn on the buzzer
-    _inkplate->internalIO.digitalWrite(BUZZ_EN, LOW);
+    _inkplate->expander1.digitalWrite(BUZZ_EN, LOW);
 
     // Calculate the Wiper% based on the desired frequency
     int wiperPercent = freqToWiperPercent(freq);
@@ -112,7 +112,7 @@ void Buzzer::beepOn(int freq)
 void Buzzer::beepOn()
 {
     // Turn on the buzzer
-    _inkplate->internalIO.digitalWrite(BUZZ_EN, LOW);
+    _inkplate->expander1.digitalWrite(BUZZ_EN, LOW);
 
     // Set the default frequency
     digipot.setWiperPercent(50);
@@ -126,7 +126,7 @@ void Buzzer::beepOn()
 void Buzzer::beepOff()
 {
     // Turn off the buzzer
-    _inkplate->internalIO.digitalWrite(BUZZ_EN, HIGH);
+    _inkplate->expander1.digitalWrite(BUZZ_EN, HIGH);
 }
 
 /**

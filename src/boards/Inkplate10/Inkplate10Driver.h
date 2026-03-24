@@ -81,8 +81,8 @@ class EPDDriver
 
     bool setWaveform(uint8_t waveformNumber, bool burnToEEPROM = true);
 
-    IOExpander internalIO;
-    IOExpander externalIO;
+    IOExpander expander1;
+    IOExpander expander2;
 
     RTC rtc;
 

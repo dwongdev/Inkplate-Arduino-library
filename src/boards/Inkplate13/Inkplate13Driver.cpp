@@ -87,7 +87,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
         // Save the given inkplate pointer for internal use
         _inkplate = _inkplatePtr;
 
-        internalIO.begin(IO_INT_ADDR);
+        expander1.begin(IO_INT_ADDR);
 
         image.begin(_inkplatePtr);
 
@@ -373,8 +373,8 @@ void EPDDriver::screenInit()
  */
 int16_t EPDDriver::sdCardInit()
 {
-    internalIO.pinMode(SD_PMOS_PIN, OUTPUT);
-    internalIO.digitalWrite(SD_PMOS_PIN, LOW);
+    expander1.pinMode(SD_PMOS_PIN, OUTPUT);
+    expander1.digitalWrite(SD_PMOS_PIN, LOW);
     delay(200);
     spi1.begin(12, 13, 11, 10);
     setSdCardOk(sd.begin(SdSpiConfig(10, SHARED_SPI, SD_SCK_MHZ(25), &spi1)));
@@ -393,7 +393,7 @@ void EPDDriver::sdCardSleep()
     pinMode(13, INPUT);
 
     // And also disable uSD card supply
-    internalIO.pinMode(SD_PMOS_PIN, INPUT);
+    expander1.pinMode(SD_PMOS_PIN, INPUT);
 }
 
 /**
@@ -448,19 +448,19 @@ double EPDDriver::readBattery()
 {
     // Read the pin on the battery MOSFET. If is high, that means is older version of the board
     // that uses PMOS only. If it's low, newer board with both PMOS and NMOS.
-    internalIO.pinMode(9, INPUT);
-    int state = internalIO.digitalRead(9);
-    internalIO.pinMode(9, OUTPUT);
+    expander1.pinMode(9, INPUT);
+    int state = expander1.digitalRead(9);
+    expander1.pinMode(9, OUTPUT);
 
     // If the input is pulled high, it's PMOS only.
     // If it's pulled low, it's PMOS and NMOS.
     if (state)
     {
-        internalIO.digitalWrite(9, LOW);
+        expander1.digitalWrite(9, LOW);
     }
     else
     {
-        internalIO.digitalWrite(9, HIGH);
+        expander1.digitalWrite(9, HIGH);
     }
 
     // Wait a little bit after a MOSFET enable.
@@ -473,11 +473,11 @@ double EPDDriver::readBattery()
     // Turn off the MOSFET (and voltage divider).
     if (state)
     {
-        internalIO.digitalWrite(9, HIGH);
+        expander1.digitalWrite(9, HIGH);
     }
     else
     {
-        internalIO.digitalWrite(9, LOW);
+        expander1.digitalWrite(9, LOW);
     }
 
     // Calculate the voltage at the battery terminal (voltage is divided in half by voltage divider).

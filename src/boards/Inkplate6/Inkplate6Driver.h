@@ -70,8 +70,8 @@ class EPDDriver : public Esp
     double getStoredVCOM();
     double getVCOMValue();
 
-    IOExpander internalIO;
-    IOExpander externalIO;
+    IOExpander expander1;
+    IOExpander expander2;
 
 #ifdef ARDUINO_INKPLATE6
     Touchpad touchpad;

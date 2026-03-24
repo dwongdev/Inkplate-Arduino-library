@@ -51,7 +51,7 @@ class EPDDriver
     double readBattery();
 
 
-    IOExpander internalIO;
+    IOExpander expander1;
 
     RTC rtc;
 

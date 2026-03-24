@@ -64,8 +64,8 @@ void setup()
     display.begin();
 
     // Configure LED pin on both IO expanders
-    display.externalIO.pinMode(LED_PIN, OUTPUT); // IO Expander 2
-    display.internalIO.pinMode(LED_PIN, OUTPUT); // IO Expander 1
+    display.expander2.pinMode(LED_PIN, OUTPUT); // IO Expander 2
+    display.expander1.pinMode(LED_PIN, OUTPUT); // IO Expander 1
 }
 
 void loop()
@@ -73,9 +73,9 @@ void loop()
     // External IO Expander (IO Expander 2) 
     for (int i = 0; i < 5; i++)
     {
-        display.externalIO.digitalWrite(LED_PIN, HIGH);
+        display.expander2.digitalWrite(LED_PIN, HIGH);
         delay(500);
-        display.externalIO.digitalWrite(LED_PIN, LOW);
+        display.expander2.digitalWrite(LED_PIN, LOW);
         delay(500);
     }
 
@@ -84,9 +84,9 @@ void loop()
     // Internal IO Expander (IO Expander 1)
     for (int i = 0; i < 5; i++)
     {
-        display.internalIO.digitalWrite(LED_PIN, HIGH, IO_INT_ADDR);
+        display.expander1.digitalWrite(LED_PIN, HIGH, IO_INT_ADDR);
         delay(500);
-        display.internalIO.digitalWrite(LED_PIN, LOW, IO_INT_ADDR);
+        display.expander1.digitalWrite(LED_PIN, LOW, IO_INT_ADDR);
         delay(500);
     }
 

@@ -11,7 +11,7 @@
  *              In this example, pin P1-7 on the IO Expander 2 header is
  *              configured as a digital output and used to blink an LED.
  *              The LED is connected through a current-limiting resistor and
- *              toggled every second using the Inkplate library’s internalIO
+ *              toggled every second using the Inkplate library’s expander1
  *              interface.
  *
  *              Inkplate boards provide two MCP23017-based I/O expanders. The
@@ -49,7 +49,7 @@
  * Notes:
  * - Display mode: not used in this example (no screen updates occur).
  * - I/O expander pins are controlled through the Inkplate library using
- *   display.internalIO.
+ *   display.expander1.
  * - If no expander is explicitly selected, the default target is the
  *   IO Expander 2 header on the board.
  * - I/O expanders communicate via I2C, so switching speeds are slower
@@ -80,7 +80,7 @@ Inkplate display; // Create an object on Inkplate library and also set library i
 void setup()
 {
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
-    display.internalIO.pinMode(LED_PIN,
+    display.expander1.pinMode(LED_PIN,
                       OUTPUT); // Set P1-7 to output. On that pin, we sholud connect LED with current limiting resistor
                                // If we do not specify which IO expander we want to use, by the default external IO
                                // expander will be used of the one with header named IO Expander 2.
@@ -88,8 +88,8 @@ void setup()
 
 void loop()
 {
-    display.internalIO.digitalWrite(LED_PIN, LOW);  // Set output to low (LED does not light up)
+    display.expander1.digitalWrite(LED_PIN, LOW);  // Set output to low (LED does not light up)
     delay(1000);                           // Wait for one second
-    display.internalIO.digitalWrite(LED_PIN, HIGH); // Set output to high (LED lights up)
+    display.expander1.digitalWrite(LED_PIN, HIGH); // Set output to high (LED lights up)
     delay(1000);                           // Wait for one second
 }

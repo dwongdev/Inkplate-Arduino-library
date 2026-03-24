@@ -122,14 +122,14 @@ void Touch::tsReadRegs(uint8_t _addr, uint8_t *_buff, uint8_t _size)
 void Touch::tsHardwareReset()
 {
 #ifdef ARDUINO_INKPLATE4TEMPERA
-    _inkplate->externalIO.digitalWrite(TOUCHSCREEN_RST, LOW);
+    _inkplate->expander2.digitalWrite(TOUCHSCREEN_RST, LOW);
     delay(15);
-    _inkplate->externalIO.digitalWrite(TOUCHSCREEN_RST, HIGH);
+    _inkplate->expander2.digitalWrite(TOUCHSCREEN_RST, HIGH);
     delay(15);
 #else
-    _inkplate->internalIO.digitalWrite(TOUCHSCREEN_RST, LOW);
+    _inkplate->expander1.digitalWrite(TOUCHSCREEN_RST, LOW);
     delay(15);
-    _inkplate->internalIO.digitalWrite(TOUCHSCREEN_RST, HIGH);
+    _inkplate->expander1.digitalWrite(TOUCHSCREEN_RST, HIGH);
     delay(15);
 #endif
 }
@@ -182,9 +182,9 @@ bool Touch::init(uint8_t _pwrState)
     if (!_inkplate)
         return false;
 #ifdef ARDUINO_INKPLATE4TEMPERA
-    _inkplate->externalIO.digitalWrite(TOUCHSCREEN_EN, LOW);
+    _inkplate->expander2.digitalWrite(TOUCHSCREEN_EN, LOW);
 #else
-    _inkplate->internalIO.digitalWrite(TOUCHSCREEN_EN, LOW);
+    _inkplate->expander1.digitalWrite(TOUCHSCREEN_EN, LOW);
 #endif
     // Enable power to TS
 
@@ -403,16 +403,16 @@ void Touch::power(bool _pwr)
 {
     if (_pwr)
     {
-        _inkplate->internalIO.digitalWrite(TOUCHSCREEN_EN, LOW);
+        _inkplate->expander1.digitalWrite(TOUCHSCREEN_EN, LOW);
         delay(50);
-        _inkplate->internalIO.digitalWrite(TOUCHSCREEN_RST, HIGH);
+        _inkplate->expander1.digitalWrite(TOUCHSCREEN_RST, HIGH);
         delay(50);
     }
     else
     {
-        _inkplate->internalIO.digitalWrite(TOUCHSCREEN_EN, HIGH);
+        _inkplate->expander1.digitalWrite(TOUCHSCREEN_EN, HIGH);
         delay(50);
-        _inkplate->internalIO.digitalWrite(TOUCHSCREEN_RST, LOW);
+        _inkplate->expander1.digitalWrite(TOUCHSCREEN_RST, LOW);
     }
 }
 

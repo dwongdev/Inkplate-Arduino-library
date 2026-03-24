@@ -256,7 +256,7 @@ uint8_t writeVCOMToEEPROM(double v)
     int vcomL = vcom & 0xFF;
 
     // Set PCAL pin where TPS65186 INT pin is connectet to input pull up
-    display.internalIO.pinMode(6, INPUT_PULLUP);
+    display.expander1.pinMode(6, INPUT_PULLUP);
 
     // First power up TPS65186 so we can communicate with it
     display.einkOn();
@@ -279,7 +279,7 @@ uint8_t writeVCOMToEEPROM(double v)
     do
     {
         delay(1);
-    } while (display.internalIO.digitalRead(6));
+    } while (display.expander1.digitalRead(6));
 
     // Clear Interrupt flag by reading INT1 register
     readReg(0x07);

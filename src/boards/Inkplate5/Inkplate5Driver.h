@@ -70,7 +70,7 @@ class EPDDriver
     bool isPowerGood();
 
 
-    IOExpander internalIO;
+    IOExpander expander1;
 
     RTC rtc;
 

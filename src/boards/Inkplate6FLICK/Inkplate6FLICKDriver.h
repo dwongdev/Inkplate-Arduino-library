@@ -70,8 +70,8 @@ class EPDDriver : public Esp
     bool setVCOM(double vcom);
     double getStoredVCOM();
     double getVCOMValue();
-    IOExpander internalIO;
-    IOExpander externalIO;
+    IOExpander expander1;
+    IOExpander expander2;
 
     RTC rtc;
 

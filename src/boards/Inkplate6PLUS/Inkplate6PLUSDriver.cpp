@@ -647,9 +647,9 @@ void EPDDriver::pinsAsOutputs()
     pinMode(2, OUTPUT);
     pinMode(32, OUTPUT);
     pinMode(33, OUTPUT);
-    internalIO.pinMode(OE, OUTPUT, true);
-    internalIO.pinMode(GMOD, OUTPUT, true);
-    internalIO.pinMode(SPV, OUTPUT, true);
+    expander1.pinMode(OE, OUTPUT, true);
+    expander1.pinMode(GMOD, OUTPUT, true);
+    expander1.pinMode(SPV, OUTPUT, true);
 
     pinMode(0, OUTPUT);
     pinMode(4, OUTPUT);
@@ -705,9 +705,9 @@ void EPDDriver::pinsZstate()
     pinMode(2, INPUT);
     pinMode(32, INPUT);
     pinMode(33, INPUT);
-    internalIO.pinMode(OE, INPUT, true);
-    internalIO.pinMode(GMOD, INPUT, true);
-    internalIO.pinMode(SPV, INPUT, true);
+    expander1.pinMode(OE, INPUT, true);
+    expander1.pinMode(GMOD, INPUT, true);
+    expander1.pinMode(SPV, INPUT, true);
 
     // Set up the EPD Data and CL pins for I2S .
     pinMode(0, INPUT);
@@ -815,25 +815,25 @@ uint8_t EPDDriver::getDisplayMode()
 void EPDDriver::gpioInit()
 {
 
-    internalIO.begin(IO_INT_ADDR);
+    expander1.begin(IO_INT_ADDR);
 #if defined(ARDUINO_INKPLATE6PLUS)
-    internalIO.digitalWrite(9, HIGH);
+    expander1.digitalWrite(9, HIGH);
 #else
-    internalIO.digitalWrite(9, LOW);
+    expander1.digitalWrite(9, LOW);
 #endif
-    externalIO.begin(IO_EXT_ADDR);
+    expander2.begin(IO_EXT_ADDR);
 
     for (uint32_t i = 0; i < 256; ++i)
         pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
                     (((i & B11100000) >> 5) << 25);
 
     // Set all IO expander registers to 0
-    memset(internalIO._ioExpanderRegs, 0, 22);
-    memset(externalIO._ioExpanderRegs, 0, 22);
+    memset(expander1._ioExpanderRegs, 0, 22);
+    memset(expander2._ioExpanderRegs, 0, 22);
 
-    internalIO.pinMode(VCOM, OUTPUT, true);
-    internalIO.pinMode(PWRUP, OUTPUT, true);
-    internalIO.pinMode(WAKEUP, OUTPUT, true);
+    expander1.pinMode(VCOM, OUTPUT, true);
+    expander1.pinMode(PWRUP, OUTPUT, true);
+    expander1.pinMode(WAKEUP, OUTPUT, true);
 
     // Initialize I2C communication with the TPS chip
     pmicBegin();
@@ -843,26 +843,26 @@ void EPDDriver::gpioInit()
     // inputs...
     for (int i = 0; i < 15; i++)
     {
-        externalIO.pinMode(i, OUTPUT);
-        externalIO.digitalWrite(i, LOW);
+        expander2.pinMode(i, OUTPUT);
+        expander2.digitalWrite(i, LOW);
     }
 
-    internalIO.pinMode(9, OUTPUT);
-    internalIO.pinMode(TOUCHSCREEN_EN, OUTPUT);
-    internalIO.pinMode(TOUCHSCREEN_RST, OUTPUT);
-    internalIO.digitalWrite(TOUCHSCREEN_EN, HIGH);
+    expander1.pinMode(9, OUTPUT);
+    expander1.pinMode(TOUCHSCREEN_EN, OUTPUT);
+    expander1.pinMode(TOUCHSCREEN_RST, OUTPUT);
+    expander1.digitalWrite(TOUCHSCREEN_EN, HIGH);
 
 
     // Frontlight
-    internalIO.pinMode(FRONTLIGHT_EN, OUTPUT);
-    internalIO.digitalWrite(FRONTLIGHT_EN, LOW);
+    expander1.pinMode(FRONTLIGHT_EN, OUTPUT);
+    expander1.digitalWrite(FRONTLIGHT_EN, LOW);
 
     // For same reason, unused pins of first I/O expander have to be also set as
     // outputs, low.
-    internalIO.pinMode(14, OUTPUT);
-    internalIO.pinMode(15, OUTPUT);
-    internalIO.digitalWrite(14, LOW);
-    internalIO.digitalWrite(15, LOW);
+    expander1.pinMode(14, OUTPUT);
+    expander1.pinMode(15, OUTPUT);
+    expander1.digitalWrite(14, LOW);
+    expander1.digitalWrite(15, LOW);
 
 #ifdef ARDUINO_INKPLATE6PLUSV2
     // Set SPI pins to input to reduce power consumption in deep sleep
@@ -872,24 +872,24 @@ void EPDDriver::gpioInit()
     pinMode(15, INPUT);
 
     // And also disable uSD card supply
-    internalIO.pinMode(SD_PMOS_PIN, INPUT);
+    expander1.pinMode(SD_PMOS_PIN, INPUT);
 #else
-    internalIO.pinMode(13, OUTPUT);
-    internalIO.digitalWrite(13, LOW);
+    expander1.pinMode(13, OUTPUT);
+    expander1.digitalWrite(13, LOW);
 #endif
 
     pinsAsOutputs();
 
     // Battery voltage Switch MOSFET
-    internalIO.pinMode(9, OUTPUT);
+    expander1.pinMode(9, OUTPUT);
 
     // Disable/Enable Touchscreen PWR
-    internalIO.pinMode(TOUCHSCREEN_EN, OUTPUT);
-    internalIO.digitalWrite(TOUCHSCREEN_EN, HIGH);
+    expander1.pinMode(TOUCHSCREEN_EN, OUTPUT);
+    expander1.digitalWrite(TOUCHSCREEN_EN, HIGH);
 
     // Disable/Enable Frontlight PWR
-    internalIO.pinMode(FRONTLIGHT_EN, OUTPUT);
-    internalIO.digitalWrite(FRONTLIGHT_EN, LOW);
+    expander1.pinMode(FRONTLIGHT_EN, OUTPUT);
+    expander1.digitalWrite(FRONTLIGHT_EN, LOW);
 }
 
 /**
@@ -944,8 +944,8 @@ void EPDDriver::setInkplatePowerMode(uint8_t _mode)
  */
 int16_t EPDDriver::sdCardInit()
 {
-    internalIO.pinMode(SD_PMOS_PIN, OUTPUT);
-    internalIO.digitalWrite(SD_PMOS_PIN, LOW);
+    expander1.pinMode(SD_PMOS_PIN, OUTPUT);
+    expander1.digitalWrite(SD_PMOS_PIN, LOW);
     delay(50);
     spi2.begin(14, 12, 13, 15);
     setSdCardOk(sd.begin(SdSpiConfig(15, SHARED_SPI, SD_SCK_MHZ(25), &spi2)));
@@ -964,7 +964,7 @@ void EPDDriver::sdCardSleep()
     pinMode(15, INPUT);
 
     // And also disable uSD card supply
-    internalIO.pinMode(SD_PMOS_PIN, INPUT);
+    expander1.pinMode(SD_PMOS_PIN, INPUT);
 }
 
 /**
@@ -1019,19 +1019,19 @@ double EPDDriver::readBattery()
 {
     // Read the pin on the battery MOSFET. If is high, that means is older version of the board
     // that uses PMOS only. If it's low, newer board with both PMOS and NMOS.
-    internalIO.pinMode(9, INPUT);
-    int state = internalIO.digitalRead(9);
-    internalIO.pinMode(9, OUTPUT);
+    expander1.pinMode(9, INPUT);
+    int state = expander1.digitalRead(9);
+    expander1.pinMode(9, OUTPUT);
 
     // If the input is pulled high, it's PMOS only.
     // If it's pulled low, it's PMOS and NMOS.
     if (state)
     {
-        internalIO.digitalWrite(9, LOW);
+        expander1.digitalWrite(9, LOW);
     }
     else
     {
-        internalIO.digitalWrite(9, HIGH);
+        expander1.digitalWrite(9, HIGH);
     }
 
     // Wait a little bit after a MOSFET enable.
@@ -1044,11 +1044,11 @@ double EPDDriver::readBattery()
     // Turn off the MOSFET (and voltage divider).
     if (state)
     {
-        internalIO.digitalWrite(9, HIGH);
+        expander1.digitalWrite(9, HIGH);
     }
     else
     {
-        internalIO.digitalWrite(9, LOW);
+        expander1.digitalWrite(9, LOW);
     }
 
     // Calculate the voltage at the battery terminal (voltage is divided in half by voltage divider).
@@ -1111,7 +1111,7 @@ bool EPDDriver::setVCOM(double vcom)
 
 bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 {
-    internalIO.pinMode(6, INPUT_PULLUP);
+    expander1.pinMode(6, INPUT_PULLUP);
     int raw = abs((int)(v * 100.0)) & 0x1FF;
 
     uint8_t vcomL = (uint8_t)(raw & 0xFF);
@@ -1138,7 +1138,7 @@ bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 
     // Wait until EEPROM has been programmed (INT goes LOW)
     // Make sure INT pin is configured correctly elsewhere (usually input pullup).
-    while (internalIO.digitalRead(6))
+    while (expander1.digitalRead(6))
     {
         delay(1);
     }
@@ -1268,12 +1268,12 @@ int8_t EPDDriver::readTemperature()
  */
 void EPDDriver::blockGpioPins()
 {
-    internalIO.blockPinUsage(WAKEUP);
-    internalIO.blockPinUsage(PWRUP);
-    internalIO.blockPinUsage(VCOM);
-    internalIO.blockPinUsage(OE);
-    internalIO.blockPinUsage(GMOD);
-    internalIO.blockPinUsage(SPV);
+    expander1.blockPinUsage(WAKEUP);
+    expander1.blockPinUsage(PWRUP);
+    expander1.blockPinUsage(VCOM);
+    expander1.blockPinUsage(OE);
+    expander1.blockPinUsage(GMOD);
+    expander1.blockPinUsage(SPV);
 }
 
 #endif

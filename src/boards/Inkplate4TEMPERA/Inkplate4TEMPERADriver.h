@@ -72,8 +72,8 @@ class EPDDriver
 
     double getVcomVoltage();
 
-    IOExpander internalIO;
-    IOExpander externalIO;
+    IOExpander expander1;
+    IOExpander expander2;
 
     RTC rtc;
 

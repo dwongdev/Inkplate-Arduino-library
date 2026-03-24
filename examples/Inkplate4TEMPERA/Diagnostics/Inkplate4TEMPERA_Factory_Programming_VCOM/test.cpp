@@ -636,8 +636,8 @@ int checkGestureSensor(int _gestTimeout, String *gesture)
     // Finally, enable the light sensor
 
     // Set the interrupt chain from the APDS, to the GPIO expander to the ESP32
-    display.internalIO.pinMode(9, INPUT);
-    display.internalIO.setIntPin(9);
+    display.expander1.pinMode(9, INPUT);
+    display.expander1.setIntPin(9);
     attachInterrupt(digitalPinToInterrupt(34), ioExpanderISR, CHANGE);
 
     // Clear out any previous detected gestures.
@@ -652,7 +652,7 @@ int checkGestureSensor(int _gestTimeout, String *gesture)
         // If the APDS interrupt was read
         if (apdsIntFlag)
         {
-            if (!display.internalIO.digitalRead(9, IO_INT_ADDR))
+            if (!display.expander1.digitalRead(9, IO_INT_ADDR))
             {
                 // Get the gesture
                 if (display.apds9960.isGestureAvailable())
