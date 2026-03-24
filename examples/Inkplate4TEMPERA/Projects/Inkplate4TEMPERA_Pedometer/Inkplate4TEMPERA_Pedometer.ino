@@ -67,7 +67,7 @@
 #endif
 
 #include "Inkplate.h"          // Include Inkplate library to the sketch
-#include "Fonts\Inter16pt7b.h" // Include the font used for this sketch
+#include "Fonts/Inter16pt7b.h" // Include the font used for this sketch
 #include "animationFrames.h"   // Include the animation frames for the walking animation
 
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1-bit mode (BW)

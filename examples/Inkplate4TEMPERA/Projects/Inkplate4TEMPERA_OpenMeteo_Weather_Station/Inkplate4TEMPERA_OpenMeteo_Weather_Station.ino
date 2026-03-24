@@ -107,6 +107,7 @@ void setup()
     Serial.begin(115200);    // Initialize serial monitor for debugging
     inkplate.begin();        // Start the Inkplate display
     inkplate.clearDisplay(); // Clear the screen
+    inkplate.battery.begin();
 
     // Attempt to connect to WiFi
     const unsigned long timeout = 30000;
@@ -127,7 +128,7 @@ void setup()
     {
         configTime(timeZone * 3600, 0, ntpServer); // Set local time via NTP server
         // Gather battery and city info
-        gui.voltage = inkplate.readBattery();
+        gui.voltage = inkplate.battery.voltage();
         userInfo.city = myCity;
         userInfo.username = myUsername;
         userInfo.useMetric = metricUnits;

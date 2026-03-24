@@ -282,8 +282,8 @@ void deepSleep()
     display.sdCardSleep();
 
     // First, configure the interrupt from APDS to the GPIO expander
-    display.pinModeIO(9, INPUT_PULLUP, IO_INT_ADDR);
-    display.setIntPin(9, IO_INT_ADDR);
+    display.internalIO.pinMode(9, INPUT_PULLUP);
+    display.internalIO.setIntPin(9);
 
     // Now, the internal GPIO expander will fire an interrupt on it's INT pin
     // On pin change of pin 9
@@ -295,7 +295,7 @@ void deepSleep()
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_34, LOW);
 
     // Just in case, wait until the APDS interrupt clears
-    while (!display.digitalReadIO(9, IO_INT_ADDR))
+    while (!display.internalIO.digitalRead(9))
     {
         delay(10);
     }
