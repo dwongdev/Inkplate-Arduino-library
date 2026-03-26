@@ -28,7 +28,7 @@
  */
 void RTC::setTime(uint8_t rtcHour, uint8_t rtcMinute, uint8_t rtcSecond, bool isPM)
 {
-    if (_12hMode && rtcHour > 12)  // user passed 24h value
+    if (_12hMode && rtcHour > 12) // user passed 24h value
     {
         _isPM = true;
         rtcHour = rtcHour - 12;
@@ -46,7 +46,7 @@ void RTC::setTime(uint8_t rtcHour, uint8_t rtcMinute, uint8_t rtcSecond, bool is
     uint8_t hourBcd = decToBcd(rtcHour);
     if (_12hMode && isPM)
         hourBcd |= (1 << 5);
-    
+
     Wire.beginTransmission(I2C_ADDR);
     Wire.write(RTC_RAM_by);
     Wire.write(RTC_SET); // Write in RAM to know that RTC is set
@@ -116,14 +116,14 @@ uint32_t RTC::getEpoch()
     updateTime();
     struct tm _t;
 
-    _t.tm_sec  = Second;
-    _t.tm_min  = Minute;
+    _t.tm_sec = Second;
+    _t.tm_min = Minute;
     _t.tm_hour = _12hMode ? (Hour % 12) + (_isPM ? 12 : 0) : Hour; // convert to 0-23
     _t.tm_mday = Day;
     _t.tm_wday = Weekday;
-    _t.tm_mon  = Month - 1;
+    _t.tm_mon = Month - 1;
     _t.tm_year = Year - 1900;
-    
+
     return (uint32_t)(mktime(&_t));
 }
 
@@ -650,7 +650,7 @@ bool RTC::changeTimeFormat()
     _12hMode = !_12hMode;
 
     if (_12hMode)
-        reg |=  (1 << 3); // set 12_24 bit
+        reg |= (1 << 3); // set 12_24 bit
     else
         reg &= ~(1 << 3); // clear 12_24 bit
 
@@ -775,7 +775,7 @@ void RTC::setClockOffset(bool mode, int offsetValue)
 
 /**
  * @brief  Reads raw time/date registers from RTC via I2C into member variables
-  */
+ */
 void RTC::updateTime()
 {
     Wire.beginTransmission(I2C_ADDR);
@@ -783,14 +783,14 @@ void RTC::updateTime()
     Wire.endTransmission();
     Wire.requestFrom(I2C_ADDR, 7);
 
-    Second  = bcdToDec(Wire.read() & 0x7F);
-    Minute  = bcdToDec(Wire.read() & 0x7F);
+    Second = bcdToDec(Wire.read() & 0x7F);
+    Minute = bcdToDec(Wire.read() & 0x7F);
 
     uint8_t hourReg = Wire.read();
     if (_12hMode)
     {
         // bit 5 defines the time format
-        _isPM = (hourReg >> 5) & 0x01; 
+        _isPM = (hourReg >> 5) & 0x01;
         Hour = bcdToDec(hourReg & 0x1F);
     }
     else
@@ -798,10 +798,10 @@ void RTC::updateTime()
         Hour = bcdToDec(hourReg & 0x3F);
     }
 
-    Day     = bcdToDec(Wire.read() & 0x3F);
+    Day = bcdToDec(Wire.read() & 0x3F);
     Weekday = bcdToDec(Wire.read() & 0x07);
-    Month   = bcdToDec(Wire.read() & 0x1F);
-    Year    = bcdToDec(Wire.read()) + 2000;
+    Month = bcdToDec(Wire.read() & 0x1F);
+    Year = bcdToDec(Wire.read()) + 2000;
 }
 
 /**

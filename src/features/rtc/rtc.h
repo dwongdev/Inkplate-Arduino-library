@@ -23,13 +23,13 @@
 #define I2C_ADDR 0x51
 
 // registar overview - crtl & status reg
-#define RTC_CTRL_1 0x00
+#define RTC_CTRL_1         0x00
 #define RTC_CTRL_1_DEFAULT 0x58
-#define RTC_CTRL_2 0x01
-#define RTC_OFFSET 0x02
-#define RTC_RAM_by 0x03
+#define RTC_CTRL_2         0x01
+#define RTC_OFFSET         0x02
+#define RTC_RAM_by         0x03
 
-#define RTC_SET    0xAA
+#define RTC_SET 0xAA
 // registar overview - time & data reg
 #define RTC_SECOND_ADDR 0x04
 #define RTC_MINUTE_ADDR 0x05
