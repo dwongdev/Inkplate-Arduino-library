@@ -1,7 +1,7 @@
 /**
  **************************************************
- * @file        Esp.cpp
- * @brief       File for ESP, currently empty
+ * @file        UtilI2S.cpp
+ * @brief       File for utilizing the I2S peripheral to send data to the panel.
  *
  *              https://github.com/e-radionicacom/Inkplate-Arduino-library
  *              For support, please reach over forums: forum.e-radionica.com/en
@@ -16,7 +16,7 @@
  * @authors     Soldered
  ***************************************************/
 
-#include "Esp.h"
+#include "UtilI2S.h"
 #include "../../boardSelect.h"
 #ifdef USES_I2S
 /**
@@ -25,9 +25,9 @@
  * @param       i2s_dev_t *_i2sDev
  *              Pointer of the selected I2S driver
  *
- * @note        Function must be declared static to fit into Instruction RAM of the ESP32.
+ * @note        Function must be declared IRAM_ATTR to fit into Instruction RAM of the ESP32.
  */
-void IRAM_ATTR I2SInit(i2s_dev_t *_i2sDev, uint8_t _clockDivider)
+void IRAM_ATTR UtilI2S::I2SInit(i2s_dev_t *_i2sDev, uint8_t _clockDivider)
 {
     // Enable I2S peripheral and reset it.
     periph_module_enable(PERIPH_I2S1_MODULE);
@@ -104,10 +104,10 @@ void IRAM_ATTR I2SInit(i2s_dev_t *_i2sDev, uint8_t _clockDivider)
  *              lldesc_s *_dmaDecs
  *              Pointer to the DMA descriptor.
  *
- * @note        Function must be declared static to fit into Instruction RAM of the ESP32. Also, DMA descriptor must be
+ * @note        Function must be declared IRAM_ATTR to fit into Instruction RAM of the ESP32. Also, DMA descriptor must be
  * already configured!
  */
-void IRAM_ATTR sendDataI2S(i2s_dev_t *_i2sDev, volatile lldesc_s *_dmaDecs)
+void IRAM_ATTR UtilI2S::sendDataI2S(i2s_dev_t *_i2sDev, volatile lldesc_s *_dmaDecs)
 {
     // Stop any on-going transmission (just in case).
     _i2sDev->out_link.stop = 1;
@@ -153,7 +153,7 @@ void IRAM_ATTR sendDataI2S(i2s_dev_t *_i2sDev, volatile lldesc_s *_dmaDecs)
     _i2sDev->out_link.start = 0;
 }
 
-void IRAM_ATTR setI2S1pin(uint32_t _pin, uint32_t _function, uint32_t _inv)
+void IRAM_ATTR UtilI2S::setI2S1pin(uint32_t _pin, uint32_t _function, uint32_t _inv)
 {
     // Check if valid pin is selected
     if (_pin > 39)

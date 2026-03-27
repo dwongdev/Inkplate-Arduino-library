@@ -30,13 +30,13 @@
 
 #include "../../system/defines.h"
 
-#include "../../system/esp32/Esp.h"
+#include "../../system/UtilI2S/UtilI2S.h"
 
 
 class Inkplate;
 
 
-class EPDDriver : public Esp
+class EPDDriver : public UtilI2S
 {
   public:
     void writePixelInternal(int16_t x, int16_t y, uint16_t color);
