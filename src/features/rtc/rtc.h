@@ -23,10 +23,13 @@
 #define I2C_ADDR 0x51
 
 // registar overview - crtl & status reg
-#define RTC_CTRL_1 0x0
-#define RTC_CTRL_2 0x01
-#define RTC_OFFSET 0x02
-#define RTC_RAM_by 0x03
+#define RTC_CTRL_1         0x00
+#define RTC_CTRL_1_DEFAULT 0x58
+#define RTC_CTRL_2         0x01
+#define RTC_OFFSET         0x02
+#define RTC_RAM_by         0x03
+
+#define RTC_SET 0xAA
 // registar overview - time & data reg
 #define RTC_SECOND_ADDR 0x04
 #define RTC_MINUTE_ADDR 0x05
@@ -80,7 +83,7 @@ class RTC
         TIMER_CLOCK_1PER60HZ = 3
     };
 
-    void setTime(uint8_t hour, uint8_t minute, uint8_t sec);
+    void setTime(uint8_t hour, uint8_t minute, uint8_t sec, bool isPM = false);
     void setDate(uint8_t weekday, uint8_t day, uint8_t month, uint16_t yr);
     void setEpoch(uint32_t _epoch);
     uint32_t getEpoch();
@@ -99,7 +102,7 @@ class RTC
     void disableTimer();
     bool isSet();
     void reset();
-    void setInternalCapacitor(bool);
+    void setInternalCapacitor(bool val);
     void setClockOffset(bool mode, int offsetValue);
     /* read RTC times */
     uint8_t getSecond();
@@ -109,6 +112,7 @@ class RTC
     uint8_t getWeekday();
     uint8_t getMonth();
     uint16_t getYear();
+    bool isPM();
     /* read alarm times */ // if return = 99, no alarm
     uint8_t getAlarmSecond();
     uint8_t getAlarmMinute();
@@ -118,8 +122,11 @@ class RTC
 
 
   private:
+    void updateTime();
     uint8_t decToBcd(uint8_t val);
     uint8_t bcdToDec(uint8_t val);
+    bool _12hMode = false;
+    bool _isPM = false;
     /* alarm */
     uint8_t AlarmSecond;
     uint8_t AlarmMinute;
