@@ -874,11 +874,11 @@ void EPDDriver::gpioInit()
 
     // Battery voltage Switch MOSFET
     expander1.pinMode(9, OUTPUT);
-    expander1.digitalWrite(9, LOW);.
+    expander1.digitalWrite(9, LOW);
+    .
 
-    for (uint32_t i = 0; i < 256; ++i)
-        pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |
-                    (((i & B11100000) >> 5) << 25);
+        for (uint32_t i = 0; i < 256; ++i) pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) |
+                                                       (((i & B00010000) >> 4) << 23) | (((i & B11100000) >> 5) << 25);
 }
 
 /**
