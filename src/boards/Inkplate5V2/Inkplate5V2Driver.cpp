@@ -834,9 +834,6 @@ void EPDDriver::gpioInit()
 
     expander1.digitalWrite(9, LOW);
 
-    // Set all IO expander registers to 0
-    memset(expander1._ioExpanderRegs, 0, 22);
-
     expander1.pinMode(VCOM, OUTPUT, true);
     expander1.pinMode(PWRUP, OUTPUT, true);
     expander1.pinMode(WAKEUP, OUTPUT, true);
@@ -877,11 +874,7 @@ void EPDDriver::gpioInit()
 
     // Battery voltage Switch MOSFET
     expander1.pinMode(9, OUTPUT);
-    expander1.digitalWrite(9, LOW);
-
-    // Set all pins of seconds I/O expander to outputs, low.
-    // For some reason, it draw more current in deep sleep when pins are set as
-    // inputs...
+    expander1.digitalWrite(9, LOW);.
 
     for (uint32_t i = 0; i < 256; ++i)
         pinLUT[i] = ((i & B00000011) << 4) | (((i & B00001100) >> 2) << 18) | (((i & B00010000) >> 4) << 23) |

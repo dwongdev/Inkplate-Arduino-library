@@ -878,9 +878,6 @@ void EPDDriver::gpioInit()
 
     expander1.digitalWrite(9, LOW);
 
-    // Set all IO expander registers to 0
-    memset(expander1._ioExpanderRegs, 0, 22);
-
     expander1.pinMode(VCOM, OUTPUT, true);
     expander1.pinMode(PWRUP, OUTPUT, true);
     expander1.pinMode(WAKEUP, OUTPUT, true);
