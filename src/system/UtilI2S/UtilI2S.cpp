@@ -104,8 +104,8 @@ void IRAM_ATTR UtilI2S::I2SInit(i2s_dev_t *_i2sDev, uint8_t _clockDivider)
  *              lldesc_s *_dmaDecs
  *              Pointer to the DMA descriptor.
  *
- * @note        Function must be declared IRAM_ATTR to fit into Instruction RAM of the ESP32. Also, DMA descriptor must be
- * already configured!
+ * @note        Function must be declared IRAM_ATTR to fit into Instruction RAM of the ESP32. Also, DMA descriptor must
+ * be already configured!
  */
 void IRAM_ATTR UtilI2S::sendDataI2S(i2s_dev_t *_i2sDev, volatile lldesc_s *_dmaDecs)
 {
