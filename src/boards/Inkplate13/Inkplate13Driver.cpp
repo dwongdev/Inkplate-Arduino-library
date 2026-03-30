@@ -183,6 +183,220 @@ void EPDDriver::display(bool _leaveOn)
 }
 
 /**
+ * @brief       displayPartial refreshes only the specified rectangular region of the screen
+ *              using the PTLW (Partial Load Window) register of the GDEP133C02 controller.
+ *              Only the pixels inside the window are transferred to the panel; the rest of the
+ *              display is unaffected.
+ *
+ * @param       int16_t x        Left edge of the update window (user space)
+ * @param       int16_t y        Top edge of the update window (user space)
+ * @param       int16_t w        Width of the update window in pixels
+ * @param       int16_t h        Height of the update window in pixels
+ * @param       bool _leaveOn    If true, panel power is left on after the update
+ */
+void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool _leaveOn)
+{
+    // Clip to the screen bounds for the current rotation.
+    if (x < 0) { w += x; x = 0; }
+    if (y < 0) { h += y; y = 0; }
+    if (x + w > _inkplate->width())  w = _inkplate->width()  - x;
+    if (y + h > _inkplate->height()) h = _inkplate->height() - y;
+    if (w <= 0 || h <= 0) return;
+
+    // Map user rectangle to panel-native rectangle.
+    // Panel native: col = 0..E_INK_WIDTH-1 (1199), row = 0..E_INK_HEIGHT-1 (1599).
+    // Each case mirrors the per-pixel transform in writePixelInternal.
+    int16_t colStart, colEnd, rowStart, rowEnd;
+    switch (_inkplate->getRotation())
+    {
+    case 0:
+        // User space: E_INK_WIDTH × E_INK_HEIGHT.
+        // panel_col = (E_INK_WIDTH-1) - x,  panel_row = (E_INK_HEIGHT-1) - y.
+        colStart = (int16_t)E_INK_WIDTH  - x - w;
+        colEnd   = (int16_t)E_INK_WIDTH  - 1 - x;
+        rowStart = (int16_t)E_INK_HEIGHT - y - h;
+        rowEnd   = (int16_t)E_INK_HEIGHT - 1 - y;
+        break;
+    case 2:
+        // User space: E_INK_WIDTH × E_INK_HEIGHT.
+        // panel_col = x,  panel_row = y  (identity — no transform applied in writePixelInternal).
+        colStart = x;
+        colEnd   = x + w - 1;
+        rowStart = y;
+        rowEnd   = y + h - 1;
+        break;
+    case 3:
+        // User space: E_INK_HEIGHT × E_INK_WIDTH.
+        // panel_col = (E_INK_WIDTH-1) - y,  panel_row = x.
+        colStart = (int16_t)E_INK_WIDTH - y - h;
+        colEnd   = (int16_t)E_INK_WIDTH - 1 - y;
+        rowStart = x;
+        rowEnd   = x + w - 1;
+        break;
+    default:
+    case 1:
+        // User space: E_INK_HEIGHT × E_INK_WIDTH.
+        // panel_col = y,  panel_row = (E_INK_HEIGHT-1) - x.
+        colStart = y;
+        colEnd   = y + h - 1;
+        rowStart = (int16_t)E_INK_HEIGHT - x - w;
+        rowEnd   = (int16_t)E_INK_HEIGHT - 1 - x;
+        break;
+    }
+
+    // PTLW alignment requirements (GDEP133C02):
+    //   H: colStart and (colEnd+1) must both be multiples of 4.
+    //   V: rowStart must be even; (rowEnd+1) must be even.
+    colStart = (colStart / 4) * 4;
+    colEnd   = (((colEnd + 4) / 4) * 4) - 1;
+    if (colEnd  >= (int16_t)E_INK_WIDTH)  colEnd  = (int16_t)E_INK_WIDTH  - 1;
+    if (rowStart % 2 != 0) rowStart--;
+    if (rowStart < 0) rowStart = 0;
+    if ((rowEnd + 1) % 2 != 0) rowEnd++;
+    if (rowEnd  >= (int16_t)E_INK_HEIGHT) rowEnd  = (int16_t)E_INK_HEIGHT - 1;
+
+    setPanelState(true);
+
+    const int16_t HALF_WIDTH = (int16_t)(E_INK_WIDTH / 2); // 600 pixels per chip
+    const int16_t HALF_BYTES = HALF_WIDTH / 2;              // 300 bytes per row per chip
+
+    bool masterNeeded = (colStart < HALF_WIDTH);
+    bool slaveNeeded  = (colEnd   >= HALF_WIDTH);
+
+    // Both chips must receive a full PTLW+DTM cycle before DRF, otherwise the
+    // uninvolved chip falls back to a full-panel refresh when DRF fires.
+    // For the uninvolved chip, a minimal 4×4 null window is used: it reads the
+    // existing framebuffer data (same as what is already on screen) so the
+    // refresh produces no visible change on that side.
+    static const uint8_t ptlwNull[9] = {
+        0x00, 0x00,  // HRST = 0
+        0x00, 0x07,  // HRED = 7
+        0x00, 0x00,  // VRST = 0
+        0x00, 0x01,  // VRED = 1
+        0x01         // PT   = 1 (enable)
+    };
+
+    // Master chip
+    {
+        uint8_t  ptlwData[9];
+        int16_t  bytesPerRow, memColOff, rStart, rEnd;
+
+        if (masterNeeded)
+        {
+            int16_t lcs     = colStart;
+            int16_t lce     = (colEnd < HALF_WIDTH) ? colEnd : (HALF_WIDTH - 1);
+            uint16_t HRST   = (uint16_t)lcs * 2;
+            uint16_t HRED   = (uint16_t)(lce + 1) * 2 - 1;
+            uint16_t VRST   = (uint16_t)rowStart / 2;
+            uint16_t VRED   = (uint16_t)(rowEnd + 1) / 2 - 1;
+            ptlwData[0] = HRST >> 8; ptlwData[1] = HRST & 0xFF;
+            ptlwData[2] = HRED >> 8; ptlwData[3] = HRED & 0xFF;
+            ptlwData[4] = VRST >> 8; ptlwData[5] = VRST & 0xFF;
+            ptlwData[6] = VRED >> 8; ptlwData[7] = VRED & 0xFF;
+            ptlwData[8] = 0x01;
+            bytesPerRow = (lce - lcs + 1) / 2;
+            memColOff   = lcs / 2;
+            rStart      = rowStart;
+            rEnd        = rowEnd;
+        }
+        else
+        {
+            memcpy(ptlwData, ptlwNull, 9);
+            bytesPerRow = 2;          // 4 px / 2 px-per-byte
+            memColOff   = 0;          // top-left corner of master's region
+            rStart      = 0;
+            rEnd        = 3;
+        }
+
+        SPI.beginTransaction(epdSpiSettings);
+        digitalWrite(SPECTRA133_CS_M_PIN, LOW);
+        SPI.write(SPECTRA133_REGISTER_CMD66);
+        SPI.writeBytes(SPECTRA133_REGISTER_CMD66_V, sizeof(SPECTRA133_REGISTER_CMD66_V));
+        digitalWrite(SPECTRA133_CS_M_PIN, HIGH);
+        SPI.endTransaction();
+
+        SPI.beginTransaction(epdSpiSettings);
+        digitalWrite(SPECTRA133_CS_M_PIN, LOW);
+        SPI.write(SPECTRA133_REGISTER_PTLW);
+        SPI.writeBytes(ptlwData, 9);
+        digitalWrite(SPECTRA133_CS_M_PIN, HIGH);
+        SPI.endTransaction();
+
+        SPI.beginTransaction(epdSpiSettings);
+        digitalWrite(SPECTRA133_CS_M_PIN, LOW);
+        SPI.write(SPECTRA133_REGISTER_DTM);
+        for (int16_t row = rStart; row <= rEnd; row++)
+            SPI.writeBytes(DMemory4Bit + row * (E_INK_WIDTH / 2) + memColOff, bytesPerRow);
+        digitalWrite(SPECTRA133_CS_M_PIN, HIGH);
+        SPI.endTransaction();
+    }
+
+    // Slave chip
+    waitForBusy();
+    {
+        uint8_t  ptlwData[9];
+        int16_t  bytesPerRow, memColOff, rStart, rEnd;
+
+        if (slaveNeeded)
+        {
+            int16_t lcs     = (colStart >= HALF_WIDTH) ? (colStart - HALF_WIDTH) : 0;
+            int16_t lce     = colEnd - HALF_WIDTH;
+            uint16_t HRST   = (uint16_t)lcs * 2;
+            uint16_t HRED   = (uint16_t)(lce + 1) * 2 - 1;
+            uint16_t VRST   = (uint16_t)rowStart / 2;
+            uint16_t VRED   = (uint16_t)(rowEnd + 1) / 2 - 1;
+            ptlwData[0] = HRST >> 8; ptlwData[1] = HRST & 0xFF;
+            ptlwData[2] = HRED >> 8; ptlwData[3] = HRED & 0xFF;
+            ptlwData[4] = VRST >> 8; ptlwData[5] = VRST & 0xFF;
+            ptlwData[6] = VRED >> 8; ptlwData[7] = VRED & 0xFF;
+            ptlwData[8] = 0x01;
+            bytesPerRow = (lce - lcs + 1) / 2;
+            memColOff   = HALF_BYTES + lcs / 2;
+            rStart      = rowStart;
+            rEnd        = rowEnd;
+        }
+        else
+        {
+            memcpy(ptlwData, ptlwNull, 9);
+            bytesPerRow = 2;          // 4 px / 2 px-per-byte
+            memColOff   = HALF_BYTES; // top-left corner of slave's region
+            rStart      = 0;
+            rEnd        = 3;
+        }
+
+        SPI.beginTransaction(epdSpiSettings);
+        digitalWrite(SPECTRA133_CS_S_PIN, LOW);
+        SPI.write(SPECTRA133_REGISTER_CMD66);
+        SPI.writeBytes(SPECTRA133_REGISTER_CMD66_V, sizeof(SPECTRA133_REGISTER_CMD66_V));
+        digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
+        SPI.endTransaction();
+
+        SPI.beginTransaction(epdSpiSettings);
+        digitalWrite(SPECTRA133_CS_S_PIN, LOW);
+        SPI.write(SPECTRA133_REGISTER_PTLW);
+        SPI.writeBytes(ptlwData, 9);
+        digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
+        SPI.endTransaction();
+
+        SPI.beginTransaction(epdSpiSettings);
+        digitalWrite(SPECTRA133_CS_S_PIN, LOW);
+        SPI.write(SPECTRA133_REGISTER_DTM);
+        for (int16_t row = rStart; row <= rEnd; row++)
+            SPI.writeBytes(DMemory4Bit + row * (E_INK_WIDTH / 2) + memColOff, bytesPerRow);
+        digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
+        SPI.endTransaction();
+    }
+
+    // Both chips have received PTLW+DTM; trigger a coordinated refresh.
+    waitForBusy();
+    sendCommand(SPECTRA133_REGISTER_DRF, SPECTRA133_REGISTER_DRF_V, sizeof(SPECTRA133_REGISTER_DRF_V), eChipIdBoth);
+    waitForBusy();
+
+    if (!_leaveOn)
+        setPanelState(false);
+}
+
+/**
  * @brief       returns the current panel state, 0 for off, 1 for on
  *
  */
@@ -334,6 +548,9 @@ void EPDDriver::sendCommand(uint8_t _cmd, const uint8_t *_parameters, uint32_t _
 }
 
 
+/**
+ * @brief       screenInit sends init commands to the panel.
+ */
 void EPDDriver::screenInit()
 {
     // Send magic values to the registers. These values are provided from the manufacturer.
@@ -484,7 +701,9 @@ double EPDDriver::readBattery()
     return (double(adc) * 2.0 / 1000);
 }
 
-// Method waits until the screen is ready to accept new commands.
+/**
+ * @brief       Method waits until the screen is ready to accept new commands.
+ */
 void EPDDriver::waitForBusy()
 {
     // Wait until the screen is ready to accept new commads.
@@ -496,7 +715,9 @@ void EPDDriver::waitForBusy()
     }
 }
 
-// Function helps empty capacitors, without this sometimes the panel refuses to refresh...
+/**
+ * @brief       Function helps empty capacitors, without this sometimes the panel refuses to refresh...
+ */
 void EPDDriver::setPanelPinsToLow()
 {
     pinMode(SPECTRA133_DC_PIN, OUTPUT);
