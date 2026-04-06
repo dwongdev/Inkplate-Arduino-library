@@ -25,10 +25,7 @@
 Image *_imagePtrJpeg = nullptr;
 Image *_imagePtrPng = nullptr;
 
-// uint8_t (*Image::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
-__attribute__((section(".ext_ram.bss"))) uint8_t Image::ditherBuffer[2][E_INK_WIDTH + 20];
-__attribute__((section(".ext_ram.bss"))) uint8_t Image::jpegDitherBuffer[18][18];
-// uint8_t (*Image::jpegDitherBuffer)[18] = nullptr;
+int16_t (*Image::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
 uint8_t *Image::pixelBuffer = nullptr;
 uint32_t *Image::ditherPalette = nullptr;
 uint8_t *Image::palette = nullptr;
@@ -40,11 +37,8 @@ void Image::begin(Inkplate *inkplateptr)
     _imagePtrPng = this;
 
 
-    // jpegDitherBuffer = (uint8_t (*)[18])heap_caps_calloc(18, 18, MALLOC_CAP_SPIRAM);
-
-
-    // ditherBuffer = (uint8_t (*)[E_INK_WIDTH + 20])heap_caps_calloc(2, (E_INK_WIDTH + 20), MALLOC_CAP_SPIRAM);
-
+    ditherBuffer = (int16_t (*)[E_INK_WIDTH + 20])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
+    setDitherKernel(ReducedDiffusion);
 
     pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
 
@@ -55,10 +49,18 @@ void Image::begin(Inkplate *inkplateptr)
     palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
 
 
-    if (!jpegDitherBuffer || !ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
+    if (!ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
     {
         Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
     }
+}
+
+void Image::setDitherKernel(const DitherKernel kernel)
+{
+    const uint8_t kernelIndex = static_cast<uint8_t>(kernel);
+    if (kernelIndex >= DITHER_KERNEL_COUNT)
+        return;
+    currentKernel = &DITHER_KERNELS[kernelIndex];
 }
 
 /**

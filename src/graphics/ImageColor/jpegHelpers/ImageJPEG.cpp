@@ -66,16 +66,6 @@ bool ImageColor::drawJpegFromSd(const char *fileName, int x, int y, bool dither,
  */
 bool ImageColor::drawJpegFromSd(SdFile *p, int x, int y, bool dither, bool invert)
 {
-    uint8_t ret = 0;
-
-    blockW = -1;
-    blockH = -1;
-    lastY = -1;
-    memset(ditherBuffer, 0, ditherBufferSizeBytes);
-
-    TJpgDec.setJpgScale(1);
-    TJpgDec.setCallback(drawJpegChunk);
-
     uint32_t pnt = 0;
     uint32_t total = p->fileSize();
     uint8_t *buff = (uint8_t *)ps_malloc(total);
@@ -95,11 +85,8 @@ bool ImageColor::drawJpegFromSd(SdFile *p, int x, int y, bool dither, bool inver
     }
     p->close();
 
-    if (TJpgDec.drawJpg(x, y, buff, total, dither, invert) == 0)
-        ret = 1;
-
+    bool ret = drawJpegFromBuffer(buff, total, x, y, dither, invert);
     free(buff);
-
     return ret;
 }
 
@@ -222,19 +209,9 @@ bool ImageColor::drawJpegFromWebAtPosition(const char *url, const Position &posi
 bool ImageColor::drawJpegFromSdAtPosition(const char *fileName, const Position &position, const bool dither,
                                           const bool invert)
 {
-    uint8_t ret = 0;
-
     SdFile dat;
     if (!dat.open(fileName, O_RDONLY))
         return 0;
-
-    blockW = -1;
-    blockH = -1;
-    lastY = -1;
-    memset(ditherBuffer, 0, ditherBufferSizeBytes);
-
-    TJpgDec.setJpgScale(1);
-    TJpgDec.setCallback(drawJpegChunk);
 
     uint32_t pnt = 0;
     uint32_t total = dat.fileSize();
@@ -255,10 +232,9 @@ bool ImageColor::drawJpegFromSdAtPosition(const char *fileName, const Position &
     }
     dat.close();
 
-    uint16_t posX, posY;
-
     uint16_t w = 0;
     uint16_t h = 0;
+    TJpgDec.setJpgScale(1);
     JRESULT r = TJpgDec.getJpgSize(&w, &h, buff, total);
     if (r != JDR_OK)
     {
@@ -266,11 +242,10 @@ bool ImageColor::drawJpegFromSdAtPosition(const char *fileName, const Position &
         return 0;
     }
 
+    uint16_t posX, posY;
     getPointsForPosition(position, w, h, E_INK_WIDTH, E_INK_HEIGHT, &posX, &posY);
 
-    if (TJpgDec.drawJpg(posX, posY, buff, total, dither, invert) == 0)
-        ret = 1;
-
+    bool ret = drawJpegFromBuffer(buff, total, posX, posY, dither, invert);
     free(buff);
     return ret;
 }
@@ -332,90 +307,116 @@ bool ImageColor::drawJpegFromWeb(WiFiClient *s, int x, int y, int32_t len, bool 
  */
 bool ImageColor::drawJpegFromBuffer(uint8_t *buff, int32_t len, int x, int y, bool dither, bool invert)
 {
-    bool ret = 0;
-
     blockW = -1;
     blockH = -1;
     lastY = -1;
+    jpegMcuH = 0;
+    jpegDrawX = x;
+    jpegDrawY = y;
+    jpegDither = dither;
+    jpegInvert = invert;
 
     memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     TJpgDec.setJpgScale(1);
     TJpgDec.setCallback(drawJpegChunk);
 
+    uint16_t imgW = 0, imgH = 0;
+    if (TJpgDec.getJpgSize(&imgW, &imgH, buff, len) != JDR_OK)
+        return false;
+    jpegImageWidth = imgW;
+
+    // Allocate row buffer: one MCU row wide (max 16 rows tall) at full image width
+    jpegRowBuffer = (uint16_t *)ps_malloc(jpegImageWidth * 16 * sizeof(uint16_t));
+    if (!jpegRowBuffer)
+        return false;
+
     int err = TJpgDec.drawJpg(x, y, buff, len, dither, invert);
 
-    if (err == 0)
-    {
-        ret = 1;
-    }
+    // Flush the final MCU row which never triggered a y-change flush
+    if (jpegMcuH > 0 && lastY != -1)
+        flushJpegRow(lastY);
 
-    return ret;
-};
+    free(jpegRowBuffer);
+    jpegRowBuffer = nullptr;
+
+    return err == 0;
+}
 
 /**
- * @brief       drawJpegChunk draws one chunk of image
+ * @brief       drawJpegChunk stores one MCU block into the row buffer.
+ *              When the y coordinate changes, the completed row is flushed
+ *              (dithered and drawn) before accepting the new block.
  *
- * @param       int16_t x
- *              x plane starting point
- * @param       int16_t y
- *              y plane starting point
- * @param       int16_t w
- *              image width
- * @param       int16_t h
- *              image height
- * @param       int16_t *bitmap
- *              pointer to bitmap image
- * @param       int16_t dither
- *              1 if using dither, 0 if not
- * @param       int16_t invert
- *              1 if using invert, 0 if not
+ * @param       int16_t x         screen x of this block
+ * @param       int16_t y         screen y of this block
+ * @param       uint16_t w        block width
+ * @param       uint16_t h        block height
+ * @param       uint16_t *bitmap  RGB565 pixels
+ * @param       bool dither
+ * @param       bool invert
  */
 bool ImageColor::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap, bool dither, bool invert)
 {
-    if (!_imagePtrJpeg)
+    if (!_imagePtrJpeg || !_imagePtrJpeg->jpegRowBuffer)
         return false;
 
-    // Carry global error from previous scanline
-    if (dither && y != _imagePtrJpeg->lastY)
-    {
+    // Record MCU height on the first block
+    if (_imagePtrJpeg->jpegMcuH == 0)
+        _imagePtrJpeg->jpegMcuH = h;
 
+    // New row of MCU blocks — flush what we have before accepting new data
+    if (_imagePtrJpeg->lastY == -1)
+    {
+        _imagePtrJpeg->lastY = y;
+    }
+    else if (y != _imagePtrJpeg->lastY)
+    {
+        _imagePtrJpeg->flushJpegRow(_imagePtrJpeg->lastY);
         _imagePtrJpeg->lastY = y;
     }
 
-    unsigned int width = _imagePtrJpeg->width;
-
-
-    // --- Draw the JPEG MCU block ---
+    // Copy pixels into the row buffer at the correct column offset
+    int colOffset = x - _imagePtrJpeg->jpegDrawX;
     for (int j = 0; j < h; ++j)
-    {
         for (int i = 0; i < w; ++i)
+            _imagePtrJpeg->jpegRowBuffer[j * _imagePtrJpeg->jpegImageWidth + colOffset + i] = bitmap[j * w + i];
+
+    return true;
+}
+
+/**
+ * @brief       flushJpegRow dithers and draws one buffered MCU row.
+ *              Called once per row of MCU blocks so dithering sees the full
+ *              image width before advancing to the next row.
+ *
+ * @param       rowY  absolute screen y of the top of this MCU row
+ */
+void ImageColor::flushJpegRow(int rowY)
+{
+    for (int j = 0; j < jpegMcuH; ++j)
+    {
+        for (int col = 0; col < jpegImageWidth; ++col)
         {
-            uint32_t rgb = bitmap[j * w + i];
+            uint32_t rgb = jpegRowBuffer[j * jpegImageWidth + col];
             uint8_t r = _RED(rgb), g = _GREEN(rgb), b = _BLUE(rgb);
-            if (invert)
+
+            if (jpegInvert)
             {
                 r = 255 - r;
                 g = 255 - g;
                 b = 255 - b;
             }
+
             uint32_t val;
-
-            if (dither)
-            {
-                val = _imagePtrJpeg->ditherGetPixelBmp(((uint32_t)r << 16) | ((uint32_t)g << 8) | ((uint32_t)b), i + x,
-                                                       j + y, width, 0);
-            }
+            if (jpegDither)
+                val = ditherGetPixelBmp(((uint32_t)r << 16) | ((uint32_t)g << 8) | b,
+                                        col + jpegDrawX, rowY + j, width, 0);
             else
-            {
-                val = _imagePtrJpeg->findClosestPalette(r, g, b);
-            }
+                val = findClosestPalette(r, g, b);
 
-            _imagePtrJpeg->_inkplate->drawPixel(x + i, y + j, val);
+            _inkplate->drawPixel(jpegDrawX + col, rowY + j, val);
         }
     }
-
-
-    return true;
 }
 #endif
