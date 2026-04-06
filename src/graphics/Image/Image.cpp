@@ -37,7 +37,7 @@ void Image::begin(Inkplate *inkplateptr)
     _imagePtrPng = this;
 
 
-    ditherBuffer = (int16_t (*)[E_INK_WIDTH + 20])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
+    ditherBuffer = (int16_t(*)[E_INK_WIDTH + 20]) heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
     setDitherKernel(ReducedDiffusion);
 
     pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);

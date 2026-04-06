@@ -410,8 +410,8 @@ void ImageColor::flushJpegRow(int rowY)
 
             uint32_t val;
             if (jpegDither)
-                val = ditherGetPixelBmp(((uint32_t)r << 16) | ((uint32_t)g << 8) | b,
-                                        col + jpegDrawX, rowY + j, width, 0);
+                val = ditherGetPixelBmp(((uint32_t)r << 16) | ((uint32_t)g << 8) | b, col + jpegDrawX, rowY + j, width,
+                                        0);
             else
                 val = findClosestPalette(r, g, b);
 
