@@ -57,18 +57,19 @@ void ImageColor::begin(Inkplate *inkplateptr)
     // via Serial and the caller should not attempt to draw images.
 
     // ditherBuffer size is board-independent (same formula for all color boards).
-    ditherBuffer = (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
+    ditherBuffer =
+        (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
 
     // pixelBuffer holds one decoded image row. Inkplate2 and Inkplate13SPECTRA
     // scan along the longer (height) axis; Inkplate6COLOR scans along the width.
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
     pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_HEIGHT * 4 + 5), MALLOC_CAP_SPIRAM);
 #else
-    pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH  * 4 + 5), MALLOC_CAP_SPIRAM);
+    pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
 #endif
 
     ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
-    palette       = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t),   MALLOC_CAP_SPIRAM);
+    palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
 
     if (!ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
     {
