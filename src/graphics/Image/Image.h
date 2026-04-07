@@ -117,15 +117,12 @@ class Image
     bool drawPngFromWeb(const char *url, int x, int y, bool dither = 0, bool invert = 0);
     bool drawPngFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither = 0, bool invert = 0);
 
-    // Should be private, but needed in a png callback :(
-    void ditherSwap(int w);
     uint8_t ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool paletted);
 
     void setDitherKernel(const DitherKernel kernel);
 
     void getPointsForPosition(const Position &position, const uint16_t imageWidth, const uint16_t imageHeight,
                               const uint16_t screenWidth, const uint16_t screenHeight, uint16_t *posX, uint16_t *posY);
-    uint8_t findClosestPalette(int16_t r, int16_t g, int16_t b);
 
 
   private:

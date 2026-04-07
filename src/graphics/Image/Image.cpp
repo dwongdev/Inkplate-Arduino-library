@@ -30,29 +30,38 @@ uint8_t *Image::pixelBuffer = nullptr;
 uint32_t *Image::ditherPalette = nullptr;
 uint8_t *Image::palette = nullptr;
 
+/**
+ * @brief       begin initialises the Image subsystem.
+ *              Must be called once before any draw functions are used.
+ *
+ *              Stores the Inkplate pointer, registers the JPEG/PNG callback
+ *              pointers, allocates all PSRAM buffers needed for dithering and
+ *              pixel staging, and sets the default dither kernel.
+ *
+ * @param       Inkplate *inkplateptr
+ *              Pointer to the parent Inkplate instance.
+ */
 void Image::begin(Inkplate *inkplateptr)
 {
     _inkplate = inkplateptr;
+
+    // Register this instance as the target for JPEG and PNG decode callbacks.
     _imagePtrJpeg = this;
     _imagePtrPng = this;
 
-
-    ditherBuffer = (int16_t(*)[E_INK_WIDTH + 20]) heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
-    setDitherKernel(ReducedDiffusion);
-
-    pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
-
-
+    // Allocate PSRAM buffers. All four are required; a NULL result is reported
+    // via Serial and the caller should not attempt to draw images.
+    ditherBuffer  = (int16_t(*)[E_INK_WIDTH + 20])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
+    pixelBuffer   = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
     ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
-
-
-    palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
-
+    palette       = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
 
     if (!ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
     {
         Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
     }
+
+    setDitherKernel(FloydSteinberg);
 }
 
 void Image::setDitherKernel(const DitherKernel kernel)

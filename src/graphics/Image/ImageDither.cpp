@@ -44,9 +44,6 @@ uint8_t Image::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool paletted
     if (paletted)
         px = ditherPalette[px];
 
-    if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
-        px = (uint16_t)px >> 1;
-
     const int rowIdx = j & ditherRowMask;
     int16_t *row = ditherBuffer[rowIdx];
 
@@ -55,42 +52,29 @@ uint8_t Image::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool paletted
 
     oldPixel = max((int16_t)0, min((int16_t)255, oldPixel));
 
-    uint8_t newPixel = (uint8_t)oldPixel & (_inkplate->getDisplayMode() == INKPLATE_1BIT ? B10000000 : B11100000);
+    // 1-bit: snap to 0x00 or 0xFF so that >>5 produces 0 or 7 (full display range).
+    // 3-bit: quantise to the top 3 bits; >>5 produces 0-7.
+    uint8_t newPixel = (_inkplate->getDisplayMode() == INKPLATE_1BIT)
+                           ? ((oldPixel >= 128) ? 0xFF : 0x00)
+                           : ((uint8_t)oldPixel & B11100000);
     int16_t quantError = oldPixel - newPixel;
 
-    const DitherKernelDef *kernelDef = currentKernel;
-    const int kernelWidth = kernelDef->width;
-    const int kernelHeight = kernelDef->height;
-    const int kernelX = kernelDef->x;
-    const int coef = kernelDef->coef;
-    const unsigned char *kernelData = kernelDef->data;
+    const int minOffset = max(-currentKernel->x, -i);
+    const int maxOffset = min(currentKernel->width - currentKernel->x - 1, w - 1 - i);
 
-    const int minOffset = max(-kernelX, -i);
-    const int maxOffset = min(kernelWidth - kernelX - 1, w - 1 - i);
-
-    for (int k = 0; k < kernelHeight; ++k)
+    for (int k = 0; k < currentKernel->height; ++k)
     {
-        const int nextRowIdx = (rowIdx + k) & ditherRowMask;
-        int16_t *nextRow = ditherBuffer[nextRowIdx];
+        int16_t *nextRow = ditherBuffer[(rowIdx + k) & ditherRowMask];
         for (int l = minOffset; l <= maxOffset; ++l)
         {
-            const int weight = kernelData[k * kernelWidth + (l + kernelX)];
+            const int weight = currentKernel->data[k * currentKernel->width + (l + currentKernel->x)];
             if (!weight)
                 continue;
-            nextRow[i + l] += (weight * quantError) / coef;
+            nextRow[i + l] += (weight * quantError) / currentKernel->coef;
         }
     }
 
     return newPixel >> 5;
 }
 
-/**
- * @brief       ditherSwap is retained for API compatibility but is now a no-op.
- *              The circular dither buffer advances automatically via j & ditherRowMask
- *              in ditherGetPixelBmp, so no manual swap is needed.
- */
-void Image::ditherSwap(int w)
-{
-    (void)w;
-}
 #endif
