@@ -21,127 +21,59 @@
 
 
 /**
- * @brief       ditherGetPixelBmp calculates dither for given pixel in bmp
- * images
+ * @brief       ditherGetPixelBmp calculates dither for given pixel using the
+ *              currently selected kernel. The dither buffer is a circular
+ *              buffer indexed by j & ditherRowMask so error propagates
+ *              naturally across row and block boundaries without any swap step.
  *
  * @param       uint32_t px
- *              pixel value with color information
+ *              pixel value (8-bit grayscale or palette index)
  * @param       int i
- *              ditherBuffer width plane position
+ *              absolute column position
+ * @param       int j
+ *              absolute row position
  * @param       int w
- *              image width
+ *              image width (used for error-diffusion boundary clamping)
  * @param       bool paletted
- *              1 if paletted image, 0 if not
+ *              true if px is a palette index that should be looked up first
  *
- * @return      new pixel value (dithered pixel)
+ * @return      new dithered pixel value (3-bit grayscale, 0-7)
  */
 uint8_t Image::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool paletted)
 {
     if (paletted)
         px = ditherPalette[px];
 
-    if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
-        px = (uint16_t)px >> 1;
+    const int rowIdx = j & ditherRowMask;
+    int16_t *row = ditherBuffer[rowIdx];
 
-    uint8_t oldPixel = min((uint16_t)0xFF, (uint16_t)((uint16_t)ditherBuffer[0][i] + px));
+    int16_t oldPixel = (int16_t)px + row[i];
+    row[i] = 0; // clear after reading
 
-    uint8_t newPixel = oldPixel & (_inkplate->getDisplayMode() == INKPLATE_1BIT ? B10000000 : B11100000);
-    uint8_t quantError = oldPixel - newPixel;
+    oldPixel = max((int16_t)0, min((int16_t)255, oldPixel));
 
-    ditherBuffer[1][i + 0] += (quantError * 5) >> 4;
-    if (i != w - 1)
+    // 1-bit: snap to 0x00 or 0xFF so that >>5 produces 0 or 7 (full display range).
+    // 3-bit: quantise to the top 3 bits; >>5 produces 0-7.
+    uint8_t newPixel = (_inkplate->getDisplayMode() == INKPLATE_1BIT) ? ((oldPixel >= 128) ? 0xFF : 0x00)
+                                                                      : ((uint8_t)oldPixel & B11100000);
+    int16_t quantError = oldPixel - newPixel;
+
+    const int minOffset = max(-currentKernel->x, -i);
+    const int maxOffset = min(currentKernel->width - currentKernel->x - 1, w - 1 - i);
+
+    for (int k = 0; k < currentKernel->height; ++k)
     {
-        ditherBuffer[0][i + 1] += (quantError * 7) >> 4;
-        ditherBuffer[1][i + 1] += (quantError * 1) >> 4;
+        int16_t *nextRow = ditherBuffer[(rowIdx + k) & ditherRowMask];
+        for (int l = minOffset; l <= maxOffset; ++l)
+        {
+            const int weight = currentKernel->data[k * currentKernel->width + (l + currentKernel->x)];
+            if (!weight)
+                continue;
+            nextRow[i + l] += (weight * quantError) / currentKernel->coef;
+        }
     }
-    if (i != 0)
-        ditherBuffer[1][i - 1] += (quantError * 3) >> 4;
 
     return newPixel >> 5;
 }
 
-/**
- * @brief       ditherGetPixelJpeg calculates dither for given pixel in jpeg
- * images
- *
- * @param       uint8_t px
- *              pixel value with color information
- * @param       int i
- *              ditherBuffer width plane position
- * @param       int j
- *              ditherBuffer height plane position
- * @param       int x
- *              x image starting position
- * @param       int y
- *              y image starting position
- * @param       int w
- *              image width
- * @param       int h
- *              image height
- *
- * @return      new pixel value (dithered pixel)
- */
-uint8_t Image::ditherGetPixelJpeg(uint8_t px, int i, int j, int x, int y, int w, int h)
-{
-    if (blockW == -1)
-    {
-        blockW = w;
-        blockH = h;
-    }
-
-    if (_inkplate->getDisplayMode() == INKPLATE_1BIT)
-        px = (uint16_t)px >> 1;
-
-    uint16_t oldPixel = min((uint16_t)0xFF, (uint16_t)((uint16_t)px + (uint16_t)jpegDitherBuffer[j + 1][i + 1] +
-                                                       (j ? (uint16_t)0 : (uint16_t)ditherBuffer[0][x + i])));
-
-    uint8_t newPixel = oldPixel & (_inkplate->getDisplayMode() == INKPLATE_1BIT ? B10000000 : B11100000);
-    uint8_t quantError = oldPixel - newPixel;
-
-    jpegDitherBuffer[j + 1 + 1][i + 0 + 1] += (quantError * 5) >> 4;
-
-    jpegDitherBuffer[j + 0 + 1][i + 1 + 1] += (quantError * 7) >> 4;
-    jpegDitherBuffer[j + 1 + 1][i + 1 + 1] += (quantError * 1) >> 4;
-
-    jpegDitherBuffer[j + 1 + 1][i - 1 + 1] += (quantError * 3) >> 4;
-
-    return newPixel >> 5;
-}
-
-/**
- * @brief       ditherSwap swaps ditherBuffer values
- *
- * @param       int w
- *              screen width
- */
-void Image::ditherSwap(int w)
-{
-    for (int i = 0; i < w; ++i)
-    {
-        ditherBuffer[0][i] = ditherBuffer[1][i];
-        ditherBuffer[1][i] = 0;
-    }
-}
-
-/**
- * @brief       ditherSwapBlockJpeg swaps ditherBuffer values
- *
- * @param       int x
- *              x plane image starting point
- */
-void Image::ditherSwapBlockJpeg(int x)
-{
-    for (int i = 0; i < 18; ++i)
-    {
-        if (x + i)
-            ditherBuffer[1][x + i - 1] += jpegDitherBuffer[blockH - 1 + 2][i];
-        jpegDitherBuffer[i][0 + 1] = jpegDitherBuffer[i][blockW - 1 + 2];
-    }
-    for (int j = 0; j < 18; ++j)
-        for (int i = 0; i < 18; ++i)
-            if (i != 1)
-                jpegDitherBuffer[j][i] = 0;
-
-    jpegDitherBuffer[17][1] = 0;
-}
 #endif

@@ -176,7 +176,7 @@ bool Image::drawBitmapFromSd(SdFile *p, int x, int y, bool dither, bool invert)
 
     p->seekSet(bmpHeader.startRAW);
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
     for (int i = 0; i < h; ++i)
     {
         int16_t n = ROWSIZE(w, c);
@@ -289,7 +289,7 @@ bool Image::drawBitmapFromBuffer(uint8_t *buf, int x, int y, bool dither, bool i
         return 0;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     uint8_t *bufferPtr = buf + bmpHeader.startRAW;
     for (int i = 0; i < bmpHeader.height; ++i)
@@ -439,7 +439,6 @@ void Image::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, bool d
         }
         }
     }
-    ditherSwap(w);
 }
 
 
@@ -515,7 +514,7 @@ bool Image::drawBmpFromSdAtPosition(const char *fileName, const Position &positi
 
     dat.seekSet(bmpHeader.startRAW);
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     uint16_t posX, posY;
     getPointsForPosition(position, bmpHeader.width, bmpHeader.height, E_INK_WIDTH, E_INK_HEIGHT, &posX, &posY);

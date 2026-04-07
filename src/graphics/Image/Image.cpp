@@ -25,40 +25,51 @@
 Image *_imagePtrJpeg = nullptr;
 Image *_imagePtrPng = nullptr;
 
-// uint8_t (*Image::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
-__attribute__((section(".ext_ram.bss"))) uint8_t Image::ditherBuffer[2][E_INK_WIDTH + 20];
-__attribute__((section(".ext_ram.bss"))) uint8_t Image::jpegDitherBuffer[18][18];
-// uint8_t (*Image::jpegDitherBuffer)[18] = nullptr;
+int16_t (*Image::ditherBuffer)[E_INK_WIDTH + 20] = nullptr;
 uint8_t *Image::pixelBuffer = nullptr;
 uint32_t *Image::ditherPalette = nullptr;
 uint8_t *Image::palette = nullptr;
 
+/**
+ * @brief       begin initialises the Image subsystem.
+ *              Must be called once before any draw functions are used.
+ *
+ *              Stores the Inkplate pointer, registers the JPEG/PNG callback
+ *              pointers, allocates all PSRAM buffers needed for dithering and
+ *              pixel staging, and sets the default dither kernel.
+ *
+ * @param       Inkplate *inkplateptr
+ *              Pointer to the parent Inkplate instance.
+ */
 void Image::begin(Inkplate *inkplateptr)
 {
     _inkplate = inkplateptr;
+
+    // Register this instance as the target for JPEG and PNG decode callbacks.
     _imagePtrJpeg = this;
     _imagePtrPng = this;
 
-
-    // jpegDitherBuffer = (uint8_t (*)[18])heap_caps_calloc(18, 18, MALLOC_CAP_SPIRAM);
-
-
-    // ditherBuffer = (uint8_t (*)[E_INK_WIDTH + 20])heap_caps_calloc(2, (E_INK_WIDTH + 20), MALLOC_CAP_SPIRAM);
-
-
+    // Allocate PSRAM buffers. All four are required; a NULL result is reported
+    // via Serial and the caller should not attempt to draw images.
+    ditherBuffer = (int16_t(*)[E_INK_WIDTH + 20]) heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
     pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
-
-
     ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
-
-
     palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
 
-
-    if (!jpegDitherBuffer || !ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
+    if (!ditherBuffer || !pixelBuffer || !ditherPalette || !palette)
     {
         Serial.println(" Failed to allocate one or more buffers (SRAM/PSRAM)");
     }
+
+    setDitherKernel(FloydSteinberg);
+}
+
+void Image::setDitherKernel(const DitherKernel kernel)
+{
+    const uint8_t kernelIndex = static_cast<uint8_t>(kernel);
+    if (kernelIndex >= DITHER_KERNEL_COUNT)
+        return;
+    currentKernel = &DITHER_KERNELS[kernelIndex];
 }
 
 /**

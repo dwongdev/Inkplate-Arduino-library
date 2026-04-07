@@ -463,7 +463,6 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
         }
         }
     }
-    // ditherSwap(w);
 }
 
 /**

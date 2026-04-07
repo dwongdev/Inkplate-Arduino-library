@@ -46,12 +46,7 @@ uint8_t ImageColor::findClosestPalette(int16_t r, int16_t g, int16_t b)
         int32_t dg = g - pg;
         int32_t db = b - pb;
 
-        // Perceptual weighted RGB distance.
-        // Rec.601 weights (30,59,11) give green a dominant 59% share, which causes
-        // yellow (high R+G, zero B) to win far too often on limited e-ink palettes.
-        // Using (30,40,30) reduces green dominance and raises the blue penalty,
-        // so yellow only wins when a pixel genuinely has negligible blue content.
-        int32_t currentDistance = 30 * dr * dr + 40 * dg * dg + 30 * db * db;
+        int32_t currentDistance = dr * dr + dg * dg + db * db;
 
         if (currentDistance < minDistance)
         {
@@ -115,16 +110,9 @@ uint8_t ImageColor::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool pal
     int32_t bErr = b - (int32_t)((pallete[closest] >> 0) & 0xFF);
 
 
-    const DitherKernelDef *kernelDef = currentKernel;
-    const int kernelWidth = kernelDef->width;
-    const int kernelHeight = kernelDef->height;
-    const int kernelX = kernelDef->x;
-    const int coef = kernelDef->coef;
-    const unsigned char *kernelData = kernelDef->data;
-
-    const int minOffset = max(-kernelX, -i);
-    const int maxOffset = min(kernelWidth - kernelX - 1, w - 1 - i);
-    for (int k = 0; k < kernelHeight; ++k)
+    const int minOffset = max(-currentKernel->x, -i);
+    const int maxOffset = min(currentKernel->width - currentKernel->x - 1, w - 1 - i);
+    for (int k = 0; k < currentKernel->height; ++k)
     {
         const int nextRowIdx = (rowIdx + k) & ditherRowMask;
         int16_t *nextRowR = ditherBuffer[0][nextRowIdx];
@@ -132,13 +120,13 @@ uint8_t ImageColor::ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool pal
         int16_t *nextRowB = ditherBuffer[2][nextRowIdx];
         for (int l = minOffset; l <= maxOffset; ++l)
         {
-            const int weight = kernelData[k * kernelWidth + (l + kernelX)];
+            const int weight = currentKernel->data[k * currentKernel->width + (l + currentKernel->x)];
             if (!weight)
                 continue;
             const int idx = i + l;
-            nextRowR[idx] += (weight * rErr) / coef;
-            nextRowG[idx] += (weight * gErr) / coef;
-            nextRowB[idx] += (weight * bErr) / coef;
+            nextRowR[idx] += (weight * rErr) / currentKernel->coef;
+            nextRowG[idx] += (weight * gErr) / currentKernel->coef;
+            nextRowB[idx] += (weight * bErr) / currentKernel->coef;
         }
     }
 

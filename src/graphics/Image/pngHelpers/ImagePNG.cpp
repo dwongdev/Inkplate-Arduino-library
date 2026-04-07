@@ -86,7 +86,6 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
     if (lastY != y)
     {
         lastY = y;
-        _imagePtrPng->ditherSwap(_imagePtrPng->_inkplate->width());
     }
 }
 
@@ -142,7 +141,7 @@ bool Image::drawPngFromSd(SdFile *p, int x, int y, bool dither, bool invert)
     uint32_t remain = 0;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
     _pngX = x;
@@ -199,7 +198,7 @@ bool Image::drawPngFromWeb(const char *url, int x, int y, bool dither, bool inve
     bool ret = 1;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
     _pngX = x;
@@ -258,7 +257,7 @@ bool Image::drawPngFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither
     bool ret = 1;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
     _pngX = x;
@@ -304,7 +303,7 @@ bool Image::drawPngFromWebAtPosition(const char *url, const Position &position, 
     bool ret = 1;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
 
@@ -361,7 +360,7 @@ bool Image::drawPngFromSdAtPosition(const char *fileName, const Position &positi
     uint32_t remain = 0;
 
     if (dither)
-        memset(ditherBuffer, 0, sizeof ditherBuffer);
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
 
     pngle_t *pngle = pngle_new();
 

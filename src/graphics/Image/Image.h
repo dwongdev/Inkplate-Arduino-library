@@ -20,6 +20,7 @@
 #define __IMAGE_H__
 #if !defined(ARDUINO_INKPLATECOLOR) && !defined(ARDUINO_INKPLATE2) && !defined(ARDUINO_INKPLATE13SPECTRA)
 #include "../../features/SdFat/SdFat.h"
+#include "ImageDitherKernels.h"
 #include "WiFi.h"
 
 class Inkplate;
@@ -64,6 +65,17 @@ class Image
         _npos
     } Position;
 
+    typedef enum
+    {
+        FloydSteinberg = 0,
+        JarvisJudiceNinke,
+        Atkinson,
+        Burkes,
+        Stucki,
+        SierraLite,
+        ReducedDiffusion
+    } DitherKernel;
+
 
     Inkplate *_inkplate = NULL;
 
@@ -105,21 +117,24 @@ class Image
     bool drawPngFromWeb(const char *url, int x, int y, bool dither = 0, bool invert = 0);
     bool drawPngFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither = 0, bool invert = 0);
 
-    // Should be private, but needed in a png callback :(
-    void ditherSwap(int w);
     uint8_t ditherGetPixelBmp(uint32_t px, int i, int j, int w, bool paletted);
+
+    void setDitherKernel(const DitherKernel kernel);
 
     void getPointsForPosition(const Position &position, const uint16_t imageWidth, const uint16_t imageHeight,
                               const uint16_t screenWidth, const uint16_t screenHeight, uint16_t *posX, uint16_t *posY);
-    uint8_t findClosestPalette(int16_t r, int16_t g, int16_t b);
 
 
   private:
     static uint8_t *pixelBuffer;
-    static uint8_t jpegDitherBuffer[18][18];
-    static uint8_t ditherBuffer[2][E_INK_WIDTH + 20];
+    static const uint8_t ditherRowCount = 4;
+    static const uint8_t ditherRowMask = ditherRowCount - 1;
+    static int16_t (*ditherBuffer)[E_INK_WIDTH + 20];
+    static constexpr size_t ditherBufferSizeBytes = ditherRowCount * (E_INK_WIDTH + 20) * sizeof(int16_t);
     static uint32_t *ditherPalette; // 8 bit colors, in color, 3x8 bit colors
     static uint8_t *palette;        // 2 3 bit colors per byte, _###_###
+
+    const DitherKernelDef *currentKernel = &DITHER_KERNELS[0];
 
     uint16_t _lastTileRowY = -1;
 
@@ -128,10 +143,15 @@ class Image
     int16_t blockW = 0, blockH = 0;
     int16_t lastY = -1;
 
+    uint16_t *jpegRowBuffer = nullptr;
+    uint16_t jpegImageWidth = 0;
+    uint8_t jpegMcuH = 0;
+    int jpegDrawX = 0, jpegDrawY = 0;
+    bool jpegDither = false, jpegInvert = false;
+
     bool legalBmp(bitmapHeader *bmpHeader);
 
-    uint8_t ditherGetPixelJpeg(uint8_t px, int i, int j, int x, int y, int w, int h);
-    void ditherSwapBlockJpeg(int x);
+    void flushJpegRow(int rowY);
 
     void readBmpHeader(uint8_t *buf, bitmapHeader *_h);
     void readBmpHeaderSd(SdFile *_f, bitmapHeader *_h);

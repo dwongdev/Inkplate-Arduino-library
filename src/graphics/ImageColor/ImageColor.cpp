@@ -32,25 +32,42 @@ uint32_t *ImageColor::ditherPalette = nullptr;
 uint8_t *ImageColor::palette = nullptr;
 
 
+/**
+ * @brief       begin initialises the ImageColor subsystem.
+ *              Must be called once before any draw functions are used.
+ *
+ *              Stores the Inkplate pointer, registers the JPEG/PNG callback
+ *              pointers, allocates all PSRAM buffers needed for dithering and
+ *              pixel staging, and sets the default dither kernel.
+ *
+ * @param       Inkplate *inkplateptr
+ *              Pointer to the parent Inkplate instance.
+ */
 void ImageColor::begin(Inkplate *inkplateptr)
 {
     _inkplate = inkplateptr;
+
+    // Register this instance as the target for JPEG and PNG decode callbacks.
     _imagePtrJpeg = this;
     _imagePtrPng = this;
+
     setDitherKernel(ReducedDiffusion);
 
-#if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
+    // Allocate PSRAM buffers. All four are required; a NULL result is reported
+    // via Serial and the caller should not attempt to draw images.
+
+    // ditherBuffer size is board-independent (same formula for all color boards).
     ditherBuffer =
         (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
-#else
-    ditherBuffer =
-        (int16_t(*)[ditherRowCount][ditherBufferWidth])heap_caps_calloc(1, ditherBufferSizeBytes, MALLOC_CAP_SPIRAM);
-#endif
+
+    // pixelBuffer holds one decoded image row. Inkplate2 and Inkplate13SPECTRA
+    // scan along the longer (height) axis; Inkplate6COLOR scans along the width.
 #if defined(ARDUINO_INKPLATE2) || defined(ARDUINO_INKPLATE13SPECTRA)
     pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_HEIGHT * 4 + 5), MALLOC_CAP_SPIRAM);
 #else
     pixelBuffer = (uint8_t *)heap_caps_calloc(1, (E_INK_WIDTH * 4 + 5), MALLOC_CAP_SPIRAM);
 #endif
+
     ditherPalette = (uint32_t *)heap_caps_calloc(256, sizeof(uint32_t), MALLOC_CAP_SPIRAM);
     palette = (uint8_t *)heap_caps_calloc(128, sizeof(uint8_t), MALLOC_CAP_SPIRAM);
 

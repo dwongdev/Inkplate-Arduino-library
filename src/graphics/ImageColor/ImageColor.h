@@ -158,7 +158,15 @@ class ImageColor
     int16_t blockW = 0, blockH = 0;
     int16_t lastY = -1;
 
+    uint16_t *jpegRowBuffer = nullptr;
+    uint16_t jpegImageWidth = 0;
+    uint8_t jpegMcuH = 0;
+    int jpegDrawX = 0, jpegDrawY = 0;
+    bool jpegDither = false, jpegInvert = false;
+
     bool legalBmp(bitmapHeader *bmpHeader);
+
+    void flushJpegRow(int rowY);
 
     void readBmpHeader(uint8_t *buf, bitmapHeader *_h);
     void readBmpHeaderSd(SdFile *_f, bitmapHeader *_h);
