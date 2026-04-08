@@ -30,15 +30,15 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
     {
     case 1:
         _swap_int16_t(x0, y0);
-        x0 = E_INK_HEIGHT - x0 - 1;
+        x0 = _inkplate->height() - x0 - 1;
         break;
     case 2:
-        x0 = E_INK_WIDTH - x0 - 1;
-        y0 = E_INK_HEIGHT - y0 - 1;
+        x0 = _inkplate->width() - x0 - 1;
+        y0 = _inkplate->height() - y0 - 1;
         break;
     case 3:
         _swap_int16_t(x0, y0);
-        y0 = E_INK_WIDTH - y0 - 1;
+        y0 = _inkplate->width() - y0 - 1;
         break;
     }
 

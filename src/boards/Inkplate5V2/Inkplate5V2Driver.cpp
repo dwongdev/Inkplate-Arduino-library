@@ -32,15 +32,15 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
     {
     case 1: // 90 degree left
         _swap_int16_t(x0, y0);
-        x0 = E_INK_HEIGHT - x0 - 1;
+        x0 = _inkplate->height() - x0 - 1;
         break;
     case 2: // 180 degree, or upside down
-        x0 = E_INK_WIDTH - x0 - 1;
-        y0 = E_INK_HEIGHT - y0 - 1;
+        x0 = _inkplate->width() - x0 - 1;
+        y0 = _inkplate->height() - y0 - 1;
         break;
     case 3: // 90 degree right
         _swap_int16_t(x0, y0);
-        y0 = E_INK_WIDTH - y0 - 1;
+        y0 = _inkplate->width() - y0 - 1;
         break;
     }
 
@@ -599,8 +599,8 @@ int EPDDriver::einkOn()
     do
     {
         delay(1);
-    } while ((readPowerGood() != PWR_GOOD_OK) && (millis() - timer) < 250);
-    if ((millis() - timer) >= 250)
+    } while ((readPowerGood() != PWR_GOOD_OK) && (millis() - timer) < 500);
+    if ((millis() - timer) >= 500)
     {
         einkOff();
         return 0;
