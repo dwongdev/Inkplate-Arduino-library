@@ -420,11 +420,14 @@ bool Image::drawJpegChunk(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t
                 val = RGB3BIT(r, g, b);
             }
 
-            if (_imagePtrJpeg->getDisplayMode() == INKPLATE_1BIT) {
+            if (_imagePtrJpeg->getDisplayMode() == INKPLATE_1BIT)
+            {
                 val = (~val >> 2) & 1;
                 if (invert)
                     val = 1 - val;
-            } else {
+            }
+            else
+            {
                 if (invert)
                     val = 7 - val;
             }
