@@ -123,6 +123,7 @@ uint32_t RTC::getEpoch()
     _t.tm_wday = Weekday;
     _t.tm_mon = Month - 1;
     _t.tm_year = Year - 1900;
+    _t.tm_isdst = -1;
 
     return (uint32_t)(mktime(&_t));
 }
