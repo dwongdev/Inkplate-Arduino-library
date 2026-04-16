@@ -14,7 +14,7 @@
  *licensing, please contact techsupport@e-radionica.com Distributed as-is; no
  *warranty is given.
  *
- * @authors     @ Soldered
+ * @authors     Josip Šimun Kuči @ Soldered
  ***************************************************/
 
 #include "Inkplate.h"
@@ -24,6 +24,14 @@
 Inkplate::Inkplate(uint8_t mode) : Adafruit_GFX(E_INK_WIDTH, E_INK_HEIGHT), Graphics(E_INK_WIDTH, E_INK_HEIGHT)
 {
     _mode = mode;
+}
+
+/**
+ * @brief       preloadScreen function copies data from partial to data buffer
+ */
+void Inkplate::preloadScreen()
+{
+    memcpy(DMemoryNew, _partial, E_INK_WIDTH * E_INK_HEIGHT / 8);
 }
 #else
 Inkplate::Inkplate() : Adafruit_GFX(E_INK_WIDTH, E_INK_HEIGHT), Graphics(E_INK_WIDTH, E_INK_HEIGHT)
