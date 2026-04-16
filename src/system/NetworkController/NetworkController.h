@@ -55,8 +55,14 @@ class NetworkController
 
     void setFollowRedirects(followRedirects_t f);
 
+    void setHTTPSPort(uint16_t port);
+
+    uint16_t getHTTPSPort();
+
+
   private:
     WiFiClientSecure *client;
+    uint16_t _httpsPort=443;
     followRedirects_t followRedirects;
     char *getHostFromURL(const char *urlToGetHostFrom);
     char *getPathToResourceFromURL(const char *urlToGetPathToResourceFrom);

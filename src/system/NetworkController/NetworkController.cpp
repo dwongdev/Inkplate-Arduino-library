@@ -410,7 +410,7 @@ uint8_t *NetworkController::downloadFileHTTPS(const char *url, int32_t *defaultL
     client->setTimeout(1500);
 
     // Connect
-    client->connect(host, 443);
+    client->connect(host, _httpsPort);
 
     // Remember sleep state and then wake up
     bool sleep = WiFi.getSleep();
@@ -426,7 +426,7 @@ uint8_t *NetworkController::downloadFileHTTPS(const char *url, int32_t *defaultL
     http.setFollowRedirects(followRedirects);
 
     // Connect with HTTPS
-    http.begin(*client, host, 443, pathToResource, true);
+    http.begin(*client, host, _httpsPort, pathToResource, true);
 
     // Make GET request
     int httpCode = http.GET();
@@ -626,4 +626,28 @@ void NetworkController::setFollowRedirects(followRedirects_t f)
 void NetworkController::applyHttpsCertificate(const char *certificate)
 {
     this->certificate = strdup(certificate);
+}
+
+/**
+ * @brief       Sets a custom HTTPS port to connect to
+ *
+ * @param       uint16_t port, the port number which will be used
+ *
+ * @returns     None
+ *
+ */
+void NetworkController::setHTTPSPort(uint16_t port)
+{
+    _httpsPort = port;
+}
+
+/**
+ * @brief       Returns the port to which HTTPS will connect to
+ *
+ * @returns     port number
+ *
+ */
+uint16_t NetworkController::getHTTPSPort()
+{
+    return _httpsPort;
 }
