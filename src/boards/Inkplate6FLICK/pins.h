@@ -7,7 +7,7 @@
 #define IO_EXT_ADDR 0x21
 
 // Pin on the internal io expander which controls MOSFET for turning on and off the SD card
-#define SD_PMOS_PIN IO_PIN_B2 // 10
+#define SD_PMOS_PIN IO_PIN_B5 // 10
 
 // Touchscreen defines
 #define TOUCHSCREEN_EN          IO_PIN_B4
