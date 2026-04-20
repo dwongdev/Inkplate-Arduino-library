@@ -1,6 +1,6 @@
 # Soldered Inkplate Arduino library
 
-[![Compile Sketches](https://github.com/e-radionicacom/Inkplate-Arduino-library/actions/workflows/compile.yml/badge.svg?branch=master)](https://github.com/e-radionicacom/Inkplate-Arduino-library/actions/workflows/compile.yml)
+[![Compile Sketches](https://github.com/SolderedElectronics/Inkplate-Arduino-library/actions/workflows/compile.yml/badge.svg?branch=master)](https://github.com/SolderedElectronics/Inkplate-Arduino-library/actions/workflows/compile.yml)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/master/extras/InkplateImage.jpg">
@@ -28,14 +28,13 @@ Find Inkplate documentation [here](https://soldered.com/documentation/inkplate).
 
 ### Soldered Image Converter
 
-In order to display an Image on Inkplate, you can use the Soldered Image Converter to convert from .png, .jpg, .bmp to .h files which can be easily added to your project. See the latest version [here](http://soldered.com/image-converter).
+In order to display an Image on Inkplate, you can use the Soldered Image Converter to convert from .png, .jpg, .bmp to .h files which can be easily added to your project. See the latest version [here](https://tools.soldered.com/tools/image-converter/).
 
 ### Using Inkplate with another microcontroller - Peripheral mode
 
 Inkplate screen contents can be updated using 3rd controller (such as Raspberry Pi or another microcontroller). The Peripheral mode enables this. All brand new Inkplates come pre-programmed with slave mode and can be used right away.
 
-It is based on UART (serial) communication - connect the Inkplate to "Controller" ("Master", if using old terminology) board either via USB cable or directly via ESP32 RX and TX pins. Using standard UART at 115200 baud, you can send commands to change screen contents. For example, send \*#H(000,000,"/img.bmp")\*\* to show image img.bmp from SD card on the screen. Find very documentation for using it [here](https://inkplate.readthedocs.io/en/latest/peripheral-mode.html).
-
+It is based on UART (serial) communication - connect the Inkplate to "Controller" ("Master", if using old terminology) board either via USB cable or directly via ESP32 RX and TX pins. Using standard UART at 115200 baud, you can send commands to change screen contents. For example, send \*#H(000,000,"/img.bmp")\*\* to show image img.bmp from SD card on the screen.
 ### Battery power
 
 Inkplate boards has two options for powering it. First one is obvious - USB port at side of the board. Just plug any micro USB cable and you are good to go. Second option is battery. Supported batteries are standard Li-Ion/Li-Poly batteries with 3.7V nominal voltage. Connector for the battery is standard 2.00mm pitch JST connector (except on Inkplate 2, it uses SMD solder pads for battery terminals). The onboard charger will charge the battery with 500mA when USB is plugged at the same time. You can use battery of any size or capacity if you don't have a enclosure. If you are using our enclosure, battery size shouldn't exceed 90mm x 40mm (3.5 x 1.57 inch) and 5mm (0.19 inch) in height (excluding Inkplate 2, it uses [this battery](https://soldered.com/product/li-ion-baterija-600mah-3-7v/). [This battery](https://soldered.com/product/li-ion-battery-1200mah-3-7v/) is good fit for the Inkplate. Also, Inkplate's hardware is specially optimized for low power consumption in deep sleep mode, making it extremely suitable for battery applications.

@@ -99,7 +99,7 @@ char pass[] = "dasduino";
 #define DELAY_WIFI_RETRY_SECONDS 10
 //----------------------------------
 
-// Bitmaps for 7 segment display. Converted using Inkplate Image Converter http://soldered.com/image-converter
+// Bitmaps for 7 segment display. Converted using Inkplate Image Converter https://tools.soldered.com/tools/image-converter/
 #include "includes/eight.h"
 #include "includes/five.h"
 #include "includes/four.h"

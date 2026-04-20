@@ -7,7 +7,7 @@
 
     This example shows how you can set inkplate to show random pictures from web.
 
-    Want to learn more about Inkplate? Visit www.inkplate.io
+    Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
     Looking to get support? Write on our forums: https://forum.soldered.com/
     26 January 2026 by Soldered
 */

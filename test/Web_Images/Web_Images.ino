@@ -11,8 +11,7 @@
    This example will show you how you can download a .bmp file (picture) from the web and
    display that image on e-paper display.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: http://forum.e-radionica.com/en/
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    23 July 2020 by Soldered
 */
 

@@ -201,7 +201,6 @@ void setup()
 void loop()
 {
     // Peripheral mode 
-    // More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
     
     if (Serial.available())
     {

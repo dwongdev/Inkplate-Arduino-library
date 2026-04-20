@@ -8,7 +8,7 @@
   This example will try to remove heavy burn-in visible on the panel.
   Increase the number of refresh / clear cycles if the default 20 isn't enough and upload the sketch.
 
-  Want to learn more about Inkplate? Visit www.inkplate.io
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   Looking to get support? Write on our forums: https://forum.soldered.com/
   19 February 2026 by Soldered
 */

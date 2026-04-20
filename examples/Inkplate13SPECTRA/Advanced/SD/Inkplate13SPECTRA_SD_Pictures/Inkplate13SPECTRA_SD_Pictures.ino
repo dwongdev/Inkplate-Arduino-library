@@ -13,7 +13,7 @@
    This example will show you how you can read .bmp and .jpeg files (pictures) from SD card and
    display that image on e-paper display.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    22 January 2026 by Soldered
 */

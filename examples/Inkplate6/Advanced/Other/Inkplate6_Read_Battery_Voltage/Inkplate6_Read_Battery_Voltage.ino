@@ -35,7 +35,7 @@
  *
  * Docs:         https://docs.soldered.com/inkplate
  * Support:      https://forum.soldered.com/
- * Image tool:   http://soldered.com/image-converter
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
  *
  * @author      Soldered
  * @date        2023-01-23

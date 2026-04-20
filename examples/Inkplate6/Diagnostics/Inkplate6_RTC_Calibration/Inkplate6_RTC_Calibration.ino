@@ -9,7 +9,7 @@
    If you have any issues with the time precision, in this way you can change the internal capacitor value, 
    and set the clock offset. Please follow the instructions below carefully.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    27 April 2023 by Soldered
 */

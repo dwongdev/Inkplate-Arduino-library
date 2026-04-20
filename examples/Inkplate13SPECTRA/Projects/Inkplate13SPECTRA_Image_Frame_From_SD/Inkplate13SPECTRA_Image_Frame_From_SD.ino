@@ -15,7 +15,7 @@
    you can press the wake button and the next image will be loaded on the screen. It will take some time until
    the image will be loaded.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    23 January 2026 by Soldered
 */

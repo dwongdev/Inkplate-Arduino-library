@@ -6,8 +6,7 @@
  *              Available only for older Inkplate 6, 6COLOR and 10 devices
  *
  *              https://github.com/SolderedElectronics/Inkplate-Arduino-library
- *              For support, please reach over forums: forum.e-radionica.com/en
- *              For more info about the product, please check: www.inkplate.io
+ *              For more info about the product, please check: https://docs.soldered.com/inkplate/
  *
  *              This code is released under the GNU Lesser General Public
  *              License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html Please review the

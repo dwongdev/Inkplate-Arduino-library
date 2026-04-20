@@ -32,7 +32,7 @@
  * licensing, please visit https://soldered.com/contact/ Distributed as-is; no
  * warranty is given.
  *
- * Want to learn more about Inkplate? Visit www.inkplate.io
+ * Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
  * Looking to get support? Write on our forums: https://forum.soldered.com/
  * 15 April 2024 by Soldered
  *
@@ -145,7 +145,6 @@ void setup()
 void loop()
 {
     // Peripheral mode 
-    // More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
     
     if (Serial.available())
     {

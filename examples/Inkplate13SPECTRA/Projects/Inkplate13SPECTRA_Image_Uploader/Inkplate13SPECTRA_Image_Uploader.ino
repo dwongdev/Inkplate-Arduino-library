@@ -2,9 +2,6 @@
   Inkplate13SPECTRA Image Uploader Example
   Compatible with Soldered Inkplate 13SPECTRA
 
-  Getting Started:
-  For setup and documentation, visit: https://inkplate.readthedocs.io/en/latest/
-
   Overview:
   This example demonstrates how to upload an image to a webapp hosted by Inkplate 13SPECTRA
   and display it on the e‐ink display. Image will be automatically resized.

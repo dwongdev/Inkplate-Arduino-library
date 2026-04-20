@@ -10,7 +10,7 @@
    displayPartial(x, y, w, h) accepts coordinates in the same user space as all
    drawing functions (rotation=1: 1600 px wide, 1200 px tall).
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    24 March 2026 by Soldered
 */
