@@ -1,5 +1,4 @@
 /*
-   More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
 */
 
 char strTemp[2001];

@@ -1,9 +1,6 @@
 /*
 Inkplate6COLOR_Google_Calendar for Soldered Inkplate 6 Color
 
-Getting Started:
-For setup and documentation, visit: https://inkplate.readthedocs.io/en/latest/
-
 Before You Start:
 
   - Enter your WiFi credentials carefully (they are case-sensitive).

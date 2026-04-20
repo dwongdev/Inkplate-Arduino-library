@@ -13,9 +13,6 @@
   If we missed some function, you can modify this and make yor own.
   Also, every Inkplate comes with this peripheral mode right from the factory.
 
-  Learn more about Peripheral Mode:
-  https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
-
   UART settings are: 115200 baud, standard parity, ending with "\n\r" (both)
   You can send commands via USB port or by directly connecting to ESP32 TX and RX pins.
   Don't forget you need to send #L(1)* after each command to show it on the display

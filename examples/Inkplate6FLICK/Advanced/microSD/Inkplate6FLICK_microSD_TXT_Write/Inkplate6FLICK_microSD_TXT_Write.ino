@@ -7,7 +7,7 @@
 
    This example will show you how to write in .txt file.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    15 March 2024 by Soldered
 */

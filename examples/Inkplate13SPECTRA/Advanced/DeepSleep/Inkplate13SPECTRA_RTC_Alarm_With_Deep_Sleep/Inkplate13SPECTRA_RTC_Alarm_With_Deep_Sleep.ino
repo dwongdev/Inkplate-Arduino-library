@@ -9,7 +9,7 @@
   Inkplate features RTC chip with interrupt for alarm connected to GPIO18
   Inkplate board will wake up every 60 seconds, refresh screen and go back to sleep.
 
-  Want to learn more about Inkplate? Visit www.inkplate.io
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   Looking to get support? Write on our forums: https://forum.soldered.com/
   21 January 2025 by Soldered
 */

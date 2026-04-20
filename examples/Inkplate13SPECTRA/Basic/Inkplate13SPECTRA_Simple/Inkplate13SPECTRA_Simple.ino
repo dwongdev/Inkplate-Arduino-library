@@ -6,7 +6,7 @@
 
    Simple Inkplate example showing drawing functionalities of the Inkplate 13SPECTRA library.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    23 January 2026 by Soldered
 */

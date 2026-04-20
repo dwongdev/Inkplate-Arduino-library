@@ -10,7 +10,7 @@
    You can use EEPROM to store any data you don't want to lose during restarting or powering down the device.
    It shows how to use basic operations with EEPROM like clearing, writing, and reading.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    22 January 2026
 */

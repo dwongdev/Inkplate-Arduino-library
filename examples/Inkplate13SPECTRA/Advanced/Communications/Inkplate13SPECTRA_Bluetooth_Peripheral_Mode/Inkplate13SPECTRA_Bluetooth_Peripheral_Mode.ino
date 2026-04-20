@@ -4,7 +4,6 @@
    Select "Soldered Inkplate 13 SPECTRA" from Tools -> Board menu.
 
    This example shows how to use Inkplate as a peripheral device over Bluetooth.
-   More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
 
    Upload this example to the Inkplate and connect your phone to it via Bluetooth.
    First, you have to pair the Inkplate with your phone in Bluetooth settings in your phone, then go to the

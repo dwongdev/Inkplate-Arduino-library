@@ -68,7 +68,7 @@
 
 #include "Inkplate.h"      //Include Inkplate library to the sketch
 #include "driver/rtc_io.h" //ESP32 library used for deep sleep and RTC wake up pins
-#include "picture1.h" //Include .h files of 3 pictures. All three pictures were converted using Inkplate Image Converter (http://soldered.com/image-converter)
+#include "picture1.h" //Include .h files of 3 pictures. All three pictures were converted using Inkplate Image Converter (https://tools.soldered.com/tools/image-converter/)
 #include "picture2.h"
 #include "picture3.h"
 

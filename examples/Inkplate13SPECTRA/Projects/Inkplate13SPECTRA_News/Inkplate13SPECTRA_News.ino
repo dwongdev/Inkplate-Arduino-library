@@ -9,7 +9,7 @@
     - Adjust the timezone as needed.
 
     For more information, visit:
-    - Inkplate documentation: https://www.inkplate.io
+    - Inkplate documentation: https://https://docs.soldered.com/inkplate/
     - Support forums: https://forum.soldered.com/
 
     Created by Soldered, 02.02.2026

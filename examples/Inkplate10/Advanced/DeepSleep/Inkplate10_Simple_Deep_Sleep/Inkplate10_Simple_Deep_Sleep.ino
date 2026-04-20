@@ -37,7 +37,7 @@
  * - This example uses 3-bit (grayscale) mode, which requires full refresh updates.
  *
  * Docs:         https://docs.soldered.com/inkplate
- * Image tool:   http://soldered.com/image-converter
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
  * Support:      https://forum.soldered.com/
  *
  * @author      Soldered

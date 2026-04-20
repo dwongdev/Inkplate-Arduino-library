@@ -40,7 +40,7 @@
  * Docs:         https://docs.soldered.com/inkplate
  * Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library
  * Support:      https://forum.soldered.com/
- * Image tool:   http://soldered.com/image-converter
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
  *
  * @author      Soldered
  * @date        2022-12-01

@@ -7,7 +7,7 @@
 
    This example demonstrates the most basic usage: displaying "Hello World!" on the screen using the Inkplate 13SPECTRA library.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Need support? Visit our forums: https://forum.soldered.com/
    22 January 2026 by Soldered
 */

@@ -7,7 +7,7 @@
 
    This example will show you how to read voltage of the battery.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    23 January 2023 by Soldered
 

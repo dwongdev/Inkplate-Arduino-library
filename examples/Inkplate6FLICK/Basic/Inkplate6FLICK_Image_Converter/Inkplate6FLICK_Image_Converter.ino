@@ -11,7 +11,7 @@
  *              Arduino sketch.
  *
  *              Tool workflow:
- *              1. Open the Image Converter at https://tools.soldered.com
+ *              1. Open the Image Converter at https://tools.soldered.com/tools/image-converter/
  *              2. Upload your image and select "Inkplate 6FLICK" as the target board.
  *              3. Choose the display mode:
  *                 - 1-bit (Black & White) — fastest refresh, highest contrast
@@ -32,7 +32,7 @@
  * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
  *
  * How to use:
- * 1) Generate image.h using the Image Converter at https://tools.soldered.com
+ * 1) Generate image.h using the Image Converter at https://tools.soldered.com/tools/image-converter/
  * 2) Place image.h in the same folder as this sketch.
  * 3) Select "Soldered Inkplate6FLICK" from Tools → Board.
  * 4) Upload the sketch to Inkplate 6FLICK.
@@ -49,7 +49,7 @@
  *
  * Docs:         https://docs.soldered.com/inkplate
  * Support:      https://soldered.com/pages/contact
- * Image tool:   https://tools.soldered.com
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
  *
  * @author      Soldered
  * @date        April 2026

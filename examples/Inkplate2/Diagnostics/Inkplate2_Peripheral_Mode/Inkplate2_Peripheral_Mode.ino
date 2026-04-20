@@ -59,7 +59,6 @@
  *   processing serial commands inside the main loop.
  *
  * Docs:         https://docs.soldered.com/inkplate
- *               https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
  * Support:      https://forum.soldered.com/
  *
  * @author      Soldered

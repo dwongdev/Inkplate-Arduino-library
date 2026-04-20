@@ -8,7 +8,7 @@
    This example will show you how to write in .txt files.
    NOTE: Open the Serial monitor at 115200 baud to see what happens.
 
-   Want to learn more about Inkplate? Visit www.inkplate.io
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    Looking to get support? Write on our forums: https://forum.soldered.com/
    22 January 2026 by Soldered
 */
