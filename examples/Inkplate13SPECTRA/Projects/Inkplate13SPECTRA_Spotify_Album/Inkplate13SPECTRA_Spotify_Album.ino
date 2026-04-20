@@ -44,9 +44,9 @@
 static const char* WIFI_SSID     = "Soldered Electronics";
 static const char* WIFI_PASSWORD = "dasduino";
 
-static const char* SPOTIFY_CLIENT_ID     = "396d5f95bfb741219a5404a16b4c421e";
-static const char* SPOTIFY_CLIENT_SECRET = "9e80e6ba89ab42a68779e79952dd192d";
-static const char* SPOTIFY_REFRESH_TOKEN = "AQBZi4q5pL-lG4OuqfnQIHxpCqlFx-BVZTrYALcef8R46R8SjXXglmqYh9Y3fOU1T3ZQkRgIQbsikR8nUVyztVb1K8r_EnvLLHe-AlfYS6J4tl2sJwLJNJZ2xdy-5lCk2CA";
+static const char* SPOTIFY_CLIENT_ID     = "your_spotify_client_id";
+static const char* SPOTIFY_CLIENT_SECRET = "your_spotify_client_secret";
+static const char* SPOTIFY_REFRESH_TOKEN = "your_spotify_refresh_token";
 
 
 Inkplate display; 
