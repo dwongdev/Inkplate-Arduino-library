@@ -16,7 +16,7 @@
 #include <Arduino.h>
 #if defined(ARDUINO_INKPLATE13SPECTRA)
 #define USE_COLOR_IMAGE
-#include "boards/Inkplate13/Inkplate13BoardFile.h"
+#include "boards/Inkplate13SPECTRA/Inkplate13SPECTRABoardFile.h"
 #elif defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 #define MULTIPLE_DISPLAY_MODES
 #include "boards/Inkplate10/Inkplate10BoardFile.h"
