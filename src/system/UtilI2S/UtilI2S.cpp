@@ -17,7 +17,7 @@
  ***************************************************/
 
 #include "UtilI2S.h"
-#include "../../boardSelect.h"
+#include "../../boards/driverSelect.h"
 #ifdef USES_I2S
 /**
  * @brief       Function Intializes I2S driver of the ESP32

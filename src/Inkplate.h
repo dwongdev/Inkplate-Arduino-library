@@ -23,7 +23,7 @@
 #include "Arduino.h"
 #include "SPI.h"
 #include "Wire.h"
-#include "boardSelect.h"
+#include "boards/InkplateBoardFile.h"
 #include "graphics/Graphics.h"
 #include "system/InkplateBoards.h"
 #include "system/NetworkController/NetworkController.h"

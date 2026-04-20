@@ -1,7 +1,7 @@
 /**
  **************************************************
  *
- * @file        Inkplate6PLUSBoardFile.h
+ * @file        InkplateBoardFile.h
  * @brief       Wrrapper for the different Inkplate boards and
  *              it's classes.
  *
@@ -11,14 +11,11 @@
  ***************************************************/
 
 // Header guard.
-#ifndef __INKPLATE6PLUS_BOARD_SELECT_H__
-#define __INKPLATE6PLUS_BOARD_SELECT_H__
+#ifndef __INKPLATE_BOARD_SELECT_H__
+#define __INKPLATE_BOARD_SELECT_H__
 
-// Board select check.
-#if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATE6PLUSV2)
-
-// Include Inkplate6PLUS board header file.
-#include "Inkplate6PLUSDriver.h"
+// Include Inkplate10 board header file.
+#include "driverSelect.h"
 
 // Wrapper for different Inkplate boards.
 class InkplateBoardClass : public EPDDriver
@@ -27,5 +24,4 @@ class InkplateBoardClass : public EPDDriver
     InkplateBoardClass(){};
 };
 
-#endif
 #endif
