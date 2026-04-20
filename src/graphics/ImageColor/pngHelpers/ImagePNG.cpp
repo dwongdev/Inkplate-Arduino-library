@@ -115,6 +115,29 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
  *
  * @return      1 if drawn successfully, 0 if not
  */
+bool ImageColor::drawPngFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool dither, bool invert)
+{
+    _pngDither = dither;
+    _pngInvert = invert;
+    lastY = y;
+
+    bool ret = 1;
+
+    if (dither)
+        memset(ditherBuffer, 0, ditherBufferSizeBytes);
+
+    pngle_t *pngle = pngle_new();
+    _pngX = x;
+    _pngY = y;
+    pngle_set_draw_callback(pngle, pngle_on_draw);
+
+    if (pngle_feed(pngle, buf, len) < 0)
+        ret = 0;
+
+    pngle_destroy(pngle);
+    return ret;
+}
+
 bool ImageColor::drawPngFromSd(const char *fileName, int x, int y, bool dither, bool invert)
 {
     SdFile dat;

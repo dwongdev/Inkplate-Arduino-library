@@ -110,6 +110,8 @@ class ImageColor
     bool drawJpegFromWeb(const char *url, int x, int y, bool dither = 0, bool invert = 0);
     bool drawJpegFromWeb(WiFiClient *s, int x, int y, int32_t len, bool dither = 0, bool invert = 0);
 
+    bool drawPngFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool dither = 0, bool invert = 0);
+
     bool drawPngFromSd(const char *fileName, int x, int y, bool dither = 0, bool invert = 0);
     bool drawPngFromSd(SdFile *p, int x, int y, bool dither = 0, bool invert = 0);
 
