@@ -353,7 +353,7 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
                 val = ditherGetPixelBmp(px, j, y, w, 1);
             else
             {
-                val = palette[px >> 1] & (px & 1 ? 0x0F : 0xF0) >> (px & 1 ? 0 : 4);
+                val = (palette[px >> 1] & (px & 1 ? 0x0F : 0xF0)) >> (px & 1 ? 0 : 4);
             }
 #if defined(ARDUINO_INKPLATECOLOR)
             if (invert)
@@ -375,7 +375,7 @@ void ImageColor::displayBmpLine(int16_t x, int16_t y, bitmapHeader *bmpHeader, b
                 val = ditherGetPixelBmp(px, j, y, w, 1);
             else
             {
-                val = palette[px >> 1] & (px & 1 ? 0x0F : 0xF0) >> (px & 1 ? 0 : 4);
+                val = (palette[px >> 1] & (px & 1 ? 0x0F : 0xF0)) >> (px & 1 ? 0 : 4);
             }
 #if defined(ARDUINO_INKPLATECOLOR)
             if (invert)
