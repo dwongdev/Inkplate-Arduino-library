@@ -94,8 +94,8 @@ All of Inkplate-related development is open-sourced:
 
 Inkplate boards are available for purchase via:
 
-- [soldered.com](https://soldered.com/categories/inkplate/)
+- [soldered.com](https://soldered.com/collections/inkplate-e-paper-displays)
 - [Crowd Supply](https://www.crowdsupply.com/soldered)
-- [Mouser](https://hr.mouser.com/Search/Refine?Keyword=inkplate)
+- [Mouser](https://eu.mouser.com/c/?q=inkplate)
 
 For all questions and issues please reach us via [e-mail](mailto:hello@soldered.com) or our [contact form](https://soldered.com/contact/).
