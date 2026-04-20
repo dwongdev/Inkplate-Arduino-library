@@ -27,6 +27,7 @@
 #include "../../graphics/GraphicsDefs.h"
 
 #include "../../features/featureSelect.h"
+#include "../../features/TPS65186/TPS65186.h"
 
 #include "../../system/defines.h"
 
@@ -72,6 +73,8 @@ class EPDDriver : public UtilI2S
     double getVCOMValue();
     IOExpander expander1;
     IOExpander expander2;
+
+    TPS65186 pmic;
 
     RTC rtc;
 

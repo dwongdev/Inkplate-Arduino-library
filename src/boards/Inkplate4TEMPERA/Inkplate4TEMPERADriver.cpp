@@ -531,27 +531,6 @@ int EPDDriver::einkOn()
 {
     if (getPanelState() == 1)
         return 1;
-    WAKEUP_SET;
-    delay(5);
-    // Enable all rails
-    Wire.beginTransmission(0x48);
-    Wire.write(0x01);
-    Wire.write(B00100000);
-    Wire.endTransmission();
-
-
-    // Modify power up sequence.
-    Wire.beginTransmission(0x48);
-    Wire.write(0x09);
-    Wire.write(B11100100);
-    Wire.endTransmission();
-
-    // Modify power down sequence  (VEE and VNEG are swapped)
-    Wire.beginTransmission(0x48);
-    Wire.write(0x0b);
-    Wire.write(B00011011);
-    Wire.endTransmission();
-
 
     pinsAsOutputs();
     LE_CLEAR;
@@ -561,23 +540,15 @@ int EPDDriver::einkOn()
     SPV_SET;
     CKV_CLEAR;
     OE_CLEAR;
-    PWRUP_SET;
     setPanelState(1);
 
-    unsigned long timer = millis();
-    do
-    {
-        delay(1);
-    } while ((readPowerGood() != PWR_GOOD_OK) && (millis() - timer) < 250);
-    if ((millis() - timer) >= 250)
+    if (!pmic.powerUp())
     {
         einkOff();
         return 0;
     }
 
-    VCOM_SET;
     OE_SET;
-
     return 1;
 }
 
@@ -589,43 +560,20 @@ void EPDDriver::einkOff()
 {
     if (getPanelState() == 0)
         return;
-    VCOM_CLEAR;
     OE_CLEAR;
     GMOD_CLEAR;
     GPIO.out &= ~(DATA | LE | CL);
     CKV_CLEAR;
     SPH_CLEAR;
     SPV_CLEAR;
-    PWRUP_CLEAR;
-
-    unsigned long timer = millis();
-    do
-    {
-        delay(1);
-    } while ((readPowerGood() != 0) && (millis() - timer) < 250);
-
-    WAKEUP_CLEAR; // Disable 3V3 Switch for ePaper.
-    Wire.beginTransmission(0x48);
-    Wire.write(0x01);
-    Wire.write(B00000000);
-    Wire.endTransmission();
+    pmic.powerDown();
     pinsZstate();
     setPanelState(0);
 }
 
 void EPDDriver::pmicBegin()
 {
-    WAKEUP_SET;
-    delay(1);
-    Wire.beginTransmission(0x48);
-    Wire.write(0x09);
-    Wire.write(B00011011); // Power up seq.
-    Wire.write(B00000000); // Power up delay (3mS per rail)
-    Wire.write(B00011011); // Power down seq.
-    Wire.write(B00000000); // Power down delay (6mS per rail)
-    Wire.endTransmission();
-    delay(1);
-    WAKEUP_CLEAR;
+    pmic.begin(&expander1, WAKEUP, PWRUP, VCOM);
 }
 
 
@@ -667,11 +615,7 @@ void EPDDriver::setPanelState(uint8_t state)
  */
 uint8_t EPDDriver::readPowerGood()
 {
-    Wire.beginTransmission(0x48);
-    Wire.write(0x0F);
-    Wire.endTransmission();
-    Wire.requestFrom(0x48, 1);
-    return Wire.read();
+    return pmic.readPowerGood();
 }
 
 /**
@@ -681,7 +625,7 @@ uint8_t EPDDriver::readPowerGood()
  */
 bool EPDDriver::isPowerGood()
 {
-    return readPowerGood() == PWR_GOOD_OK;
+    return pmic.isPowerGood();
 }
 
 /**
@@ -994,32 +938,7 @@ int16_t EPDDriver::getSdCardOk()
  */
 int8_t EPDDriver::readTemperature()
 {
-    int8_t temp;
-    if (getPanelState() == 0)
-    {
-        WAKEUP_SET;
-        PWRUP_SET;
-        delay(5);
-    }
-    Wire.beginTransmission(0x48);
-    Wire.write(0x0D);
-    Wire.write(B10000000);
-    Wire.endTransmission();
-    delay(5);
-
-    Wire.beginTransmission(0x48);
-    Wire.write(0x00);
-    Wire.endTransmission();
-
-    Wire.requestFrom(0x48, 1);
-    temp = Wire.read();
-    if (getPanelState() == 0)
-    {
-        PWRUP_CLEAR;
-        WAKEUP_CLEAR;
-        delay(5);
-    }
-    return temp;
+    return pmic.readTemperature();
 }
 
 /**
@@ -1149,12 +1068,7 @@ double EPDDriver::getVCOMValue()
  */
 void EPDDriver::writeReg(uint8_t _reg, float _data)
 {
-    Serial.printf("value that will be stored: %d", _data);
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    Wire.write((uint8_t)_data);
-    uint8_t err = Wire.endTransmission();
-    Serial.printf("W reg 0x%02X = 0x%02X, endTx=%u\n", _reg, _data, err);
+    pmic.writeReg(_reg, (uint8_t)_data);
 }
 
 /**
@@ -1165,15 +1079,7 @@ void EPDDriver::writeReg(uint8_t _reg, float _data)
  */
 uint8_t EPDDriver::readReg(uint8_t _reg)
 {
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    uint8_t err = Wire.endTransmission(false);
-    Wire.endTransmission(false);
-    uint8_t got = Wire.requestFrom(0x48, (uint8_t)1);
-    uint8_t v = got ? Wire.read() : 0xFF;
-
-    Serial.printf("R reg 0x%02X, endTx=%u, got=%u, val=0x%02X\n", _reg, err, got, v);
-    return v;
+    return pmic.readReg(_reg);
 }
 
 /**

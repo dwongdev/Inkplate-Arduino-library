@@ -27,6 +27,7 @@
 #include "../../graphics/GraphicsDefs.h"
 
 #include "../../features/featureSelect.h"
+#include "../../features/TPS65186/TPS65186.h"
 
 #include "../../system/defines.h"
 
@@ -71,6 +72,8 @@ class EPDDriver
 
 
     IOExpander expander1;
+
+    TPS65186 pmic;
 
     RTC rtc;
 

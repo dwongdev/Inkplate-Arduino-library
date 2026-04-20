@@ -523,34 +523,13 @@ int EPDDriver::einkOn()
     delay(5);
 #ifdef ARDUINO_INKPLATE6PLUSV2
     if (pwrMode != INKPLATE_USB_PWR_ONLY)
-    {
-        // Enable all rails
-        Wire.beginTransmission(0x48);
-        Wire.write(0x01);
-        Wire.write(B00100000);
-        Wire.endTransmission();
-    }
+        pmic.enableRails(true);
 #else
-    // Enable all rails
-    Wire.beginTransmission(0x48);
-    Wire.write(0x01);
-    Wire.write(B00100000);
-    Wire.endTransmission();
+    pmic.enableRails(true);
 #endif
 
-
-    // Modify power up sequence.
-    Wire.beginTransmission(0x48);
-    Wire.write(0x09);
-    Wire.write(B11100100);
-    Wire.endTransmission();
-
-    // Modify power down sequence  (VEE and VNEG are swapped)
-    Wire.beginTransmission(0x48);
-    Wire.write(0x0b);
-    Wire.write(B00011011);
-    Wire.endTransmission();
-
+    pmic.writeReg(TPS65186_REG_UPSEQ0, 0xE4);
+    pmic.writeReg(TPS65186_REG_DWNSEQ0, 0x1B);
 
     pinsAsOutputs();
     LE_CLEAR;
@@ -567,7 +546,7 @@ int EPDDriver::einkOn()
     do
     {
         delay(1);
-    } while ((readPowerGood() != PWR_GOOD_OK) && (millis() - timer) < 250);
+    } while ((pmic.readPowerGood() != PWR_GOOD_OK) && (millis() - timer) < 250);
     if ((millis() - timer) >= 250)
     {
         einkOff();
@@ -601,7 +580,7 @@ void EPDDriver::einkOff()
     do
     {
         delay(1);
-    } while ((readPowerGood() != 0) && (millis() - timer) < 250);
+    } while ((pmic.readPowerGood() != 0) && (millis() - timer) < 250);
 
 #ifdef ARDUINO_INKPLATE6PLUSV2
     if (pwrMode != INKPLATE_USB_PWR_ONLY)
@@ -614,27 +593,11 @@ void EPDDriver::einkOff()
 
 void EPDDriver::pmicBegin()
 {
-    WAKEUP_SET;
-    delay(1);
-    Wire.beginTransmission(0x48);
-    Wire.write(0x09);
-    Wire.write(0B00011011); // Power up seq.
-    Wire.write(0B00000000); // Power up delay (3mS per rail)
-    Wire.write(0B00011011); // Power down seq.
-    Wire.write(0B00000000); // Power down delay (6mS per rail)
-    Wire.endTransmission();
-    delay(1);
+    pmic.begin(&expander1, WAKEUP, PWRUP, VCOM);
     if (pwrMode == INKPLATE_USB_PWR_ONLY)
     {
-        // Enable all rails
-        Wire.beginTransmission(0x48);
-        Wire.write(0x01);
-        Wire.write(B00111111);
-        Wire.endTransmission();
-    }
-    else
-    {
-        WAKEUP_CLEAR;
+        expander1.digitalWrite(WAKEUP, HIGH, true);
+        pmic.writeReg(TPS65186_REG_ENABLE, 0x3F);
     }
 }
 
@@ -678,11 +641,7 @@ void EPDDriver::setPanelState(uint8_t state)
  */
 uint8_t EPDDriver::readPowerGood()
 {
-    Wire.beginTransmission(0x48);
-    Wire.write(0x0F);
-    Wire.endTransmission();
-    Wire.requestFrom(0x48, 1);
-    return Wire.read();
+    return pmic.readPowerGood();
 }
 
 /**
@@ -692,7 +651,7 @@ uint8_t EPDDriver::readPowerGood()
  */
 bool EPDDriver::isPowerGood()
 {
-    return readPowerGood() == PWR_GOOD_OK;
+    return pmic.isPowerGood();
 }
 
 /**
@@ -1178,12 +1137,7 @@ double EPDDriver::getVCOMValue()
  */
 void EPDDriver::writeReg(uint8_t _reg, float _data)
 {
-    Serial.printf("value that will be stored: %d", _data);
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    Wire.write((uint8_t)_data);
-    uint8_t err = Wire.endTransmission();
-    Serial.printf("W reg 0x%02X = 0x%02X, endTx=%u\n", _reg, _data, err);
+    pmic.writeReg(_reg, (uint8_t)_data);
 }
 
 /**
@@ -1194,15 +1148,7 @@ void EPDDriver::writeReg(uint8_t _reg, float _data)
  */
 uint8_t EPDDriver::readReg(uint8_t _reg)
 {
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    uint8_t err = Wire.endTransmission(false);
-    Wire.endTransmission(false);
-    uint8_t got = Wire.requestFrom(0x48, (uint8_t)1);
-    uint8_t v = got ? Wire.read() : 0xFF;
-
-    Serial.printf("R reg 0x%02X, endTx=%u, got=%u, val=0x%02X\n", _reg, err, got, v);
-    return v;
+    return pmic.readReg(_reg);
 }
 
 /**
@@ -1228,32 +1174,7 @@ double EPDDriver::getStoredVCOM()
  */
 int8_t EPDDriver::readTemperature()
 {
-    int8_t temp;
-    if (getPanelState() == 0)
-    {
-        WAKEUP_SET;
-        PWRUP_SET;
-        delay(5);
-    }
-    Wire.beginTransmission(0x48);
-    Wire.write(0x0D);
-    Wire.write(B10000000);
-    Wire.endTransmission();
-    delay(5);
-
-    Wire.beginTransmission(0x48);
-    Wire.write(0x00);
-    Wire.endTransmission();
-
-    Wire.requestFrom(0x48, 1);
-    temp = Wire.read();
-    if (getPanelState() == 0)
-    {
-        PWRUP_CLEAR;
-        WAKEUP_CLEAR;
-        delay(5);
-    }
-    return temp;
+    return pmic.readTemperature();
 }
 
 /**
