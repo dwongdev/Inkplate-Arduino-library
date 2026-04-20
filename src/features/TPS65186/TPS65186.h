@@ -6,7 +6,7 @@
 #include "../../system/ExpanderSelect.h"
 #include "../../system/defines.h"
 
-#define TPS65186_I2C_ADDR   0x48
+#define TPS65186_I2C_ADDR 0x48
 
 #define TPS65186_REG_TEMP    0x00
 #define TPS65186_REG_ENABLE  0x01
