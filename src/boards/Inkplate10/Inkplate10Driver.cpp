@@ -537,6 +537,9 @@ void EPDDriver::einkOff()
     setPanelState(0);
 }
 
+/**
+ * @brief       Initializes the PMIC with the board-specific IO expander and pin assignments.
+ */
 void EPDDriver::pmicBegin()
 {
     pmic.begin(&expander1, WAKEUP, PWRUP, VCOM);
@@ -565,10 +568,21 @@ void EPDDriver::pinsAsOutputs()
     pinMode(27, OUTPUT);
 }
 
+/**
+ * @brief       Returns the current power state of the EPD panel.
+ *
+ * @return      1 if the panel is powered on, 0 if powered off.
+ */
 uint8_t EPDDriver::getPanelState()
 {
     return _panelState;
 }
+/**
+ * @brief       Sets the internal panel power state flag.
+ *
+ * @param       uint8_t state
+ *              1 to mark the panel as powered on, 0 as powered off.
+ */
 void EPDDriver::setPanelState(uint8_t state)
 {
     _panelState = state;
@@ -687,6 +701,11 @@ void EPDDriver::hscan_start(uint32_t _d)
     CKV_SET;
 }
 
+/**
+ * @brief       Returns the current display mode.
+ *
+ * @return      0 for 1-bit (black and white), 1 for 3-bit (grayscale).
+ */
 uint8_t EPDDriver::getDisplayMode()
 {
     return _displayMode;
@@ -964,6 +983,14 @@ void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
     }
 }
 
+/**
+ * @brief       Sets the VCOM voltage of the panel and saves it to EEPROM.
+ *
+ * @param       double vcom
+ *              VCOM voltage to set; must be in the range [-5.0, 0.0].
+ *
+ * @return      true if the voltage was successfully set and saved, false otherwise.
+ */
 bool EPDDriver::setVCOM(double vcom)
 {
     EEPROM.begin(512);
@@ -984,6 +1011,14 @@ bool EPDDriver::setVCOM(double vcom)
 }
 
 
+/**
+ * @brief       Programs the VCOM voltage into the TPS65186 internal EEPROM.
+ *
+ * @param       double v
+ *              VCOM voltage value to program; must be in the range [-5.0, 0.0].
+ *
+ * @return      true if the readback value matches what was written, false otherwise.
+ */
 bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 {
     expander1.pinMode(6, INPUT_PULLUP);
@@ -1042,6 +1077,11 @@ bool EPDDriver::writeVCOMToPanelEEPROM(double v)
     return (check == raw);
 }
 
+/**
+ * @brief       Reads the VCOM voltage stored in the ESP32 EEPROM.
+ *
+ * @return      VCOM voltage as a double (negative value, e.g. -1.5).
+ */
 double EPDDriver::getVCOMValue()
 {
     EEPROM.begin(512);
@@ -1206,6 +1246,17 @@ const uint8_t EPDDriver::waveform5[8][9] = {
 const uint8_t *const EPDDriver::waveformList[5] = {&waveform1[0][0], &waveform2[0][0], &waveform3[0][0],
                                                    &waveform4[0][0], &waveform5[0][0]};
 
+/**
+ * @brief       Selects and applies an EPD waveform preset by number.
+ *
+ * @param       uint8_t waveformNumber
+ *              Waveform index (1–5). Values outside this range return false.
+ * @param       bool burnToEEPROM
+ *              If true, permanently stores the waveform selection in EEPROM so
+ *              it survives power cycles.
+ *
+ * @return      true if the waveform was applied successfully, false if out of range.
+ */
 bool EPDDriver::setWaveform(uint8_t waveformNumber, bool burnToEEPROM)
 {
     if (waveformNumber < 1 || waveformNumber > 5)

@@ -181,10 +181,22 @@ void EPDDriver::display(bool _leaveOn)
 }
 
 
+/**
+ * @brief       Returns the current panel power state.
+ *
+ * @return      1 if the panel is powered on, 0 if powered off.
+ */
 uint8_t EPDDriver::getPanelState()
 {
     return _panelState;
 }
+
+/**
+ * @brief       Sets the panel power state variable.
+ *
+ * @param       uint8_t state
+ *              1 to mark the panel as powered on, 0 for powered off.
+ */
 void EPDDriver::setPanelState(uint8_t state)
 {
     _panelState = state;

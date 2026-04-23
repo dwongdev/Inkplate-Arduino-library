@@ -63,6 +63,13 @@ void Image::begin(Inkplate *inkplateptr)
     setDitherKernel(FloydSteinberg);
 }
 
+/**
+ * @brief       Sets the active error-diffusion dither kernel.
+ *
+ * @param       DitherKernel kernel
+ *              Enum value selecting the kernel (e.g. FloydSteinberg, Atkinson).
+ *              Out-of-range values are silently ignored.
+ */
 void Image::setDitherKernel(const DitherKernel kernel)
 {
     const uint8_t kernelIndex = static_cast<uint8_t>(kernel);

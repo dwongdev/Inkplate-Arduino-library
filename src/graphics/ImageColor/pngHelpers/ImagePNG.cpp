@@ -100,10 +100,12 @@ void pngle_on_draw(pngle_t *pngle, uint32_t x, uint32_t y, uint32_t w, uint32_t 
 }
 
 /**
- * @brief       drawPngFromSd function draws png image from sd file
+ * @brief       drawPngFromBuffer draws a PNG image from a buffer already in RAM
  *
- * @param       char *fileName
- *              pointer to png file
+ * @param       uint8_t *buf
+ *              pointer to buffer containing the PNG file data
+ * @param       int32_t len
+ *              length of the buffer in bytes
  * @param       int x
  *              x position for top left image corner
  * @param       int y
@@ -138,6 +140,22 @@ bool ImageColor::drawPngFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool
     return ret;
 }
 
+/**
+ * @brief       drawPngFromSd function draws png image from sd file
+ *
+ * @param       char *fileName
+ *              pointer to png file name
+ * @param       int x
+ *              x position for top left image corner
+ * @param       int y
+ *              y position for top left image corner
+ * @param       bool dither
+ *              1 if using dither, 0 if not
+ * @param       bool invert
+ *              1 if using invert, 0 if not
+ *
+ * @return      1 if drawn successfully, 0 if not
+ */
 bool ImageColor::drawPngFromSd(const char *fileName, int x, int y, bool dither, bool invert)
 {
     SdFile dat;

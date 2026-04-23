@@ -66,6 +66,9 @@ void Graphics::drawPixel(int16_t x0, int16_t y0, uint16_t color)
     writePixel(x0, y0, color); // Specified in boards folder
 }
 
+/**
+ * @brief       startWrite is a no-op stub required by Adafruit_GFX transaction API.
+ */
 void Graphics::startWrite()
 {
 }
@@ -186,6 +189,9 @@ void Graphics::writeLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_
     }
 }
 
+/**
+ * @brief       endWrite is a no-op stub required by Adafruit_GFX transaction API.
+ */
 void Graphics::endWrite()
 {
 }

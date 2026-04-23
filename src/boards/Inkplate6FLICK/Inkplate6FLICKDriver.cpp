@@ -585,6 +585,9 @@ void EPDDriver::einkOff()
     setPanelState(0);
 }
 
+/**
+ * @brief       Initializes the PMIC with the board-specific IO expander and pin assignments.
+ */
 void EPDDriver::pmicBegin()
 {
     pmic.begin(&expander1, WAKEUP, PWRUP, VCOM);
@@ -618,10 +621,21 @@ void EPDDriver::pinsAsOutputs()
     myI2S->conf1.tx_stop_en = 1;
 }
 
+/**
+ * @brief       Returns the current power state of the EPD panel.
+ *
+ * @return      1 if the panel is powered on, 0 if powered off.
+ */
 uint8_t EPDDriver::getPanelState()
 {
     return _panelState;
 }
+/**
+ * @brief       Sets the internal panel power state flag.
+ *
+ * @param       uint8_t state
+ *              1 to mark the panel as powered on, 0 as powered off.
+ */
 void EPDDriver::setPanelState(uint8_t state)
 {
     _panelState = state;
@@ -795,6 +809,14 @@ bool EPDDriver::setVCOM(double vcom)
 }
 
 
+/**
+ * @brief       Programs the VCOM voltage into the TPS65186 internal EEPROM.
+ *
+ * @param       double v
+ *              VCOM voltage value to program; must be in the range [-5.0, 0.0].
+ *
+ * @return      true if the readback value matches what was written, false otherwise.
+ */
 bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 {
     expander1.pinMode(6, INPUT_PULLUP);
@@ -853,6 +875,11 @@ bool EPDDriver::writeVCOMToPanelEEPROM(double v)
     return (check == raw);
 }
 
+/**
+ * @brief       Reads the VCOM voltage stored in the ESP32 EEPROM.
+ *
+ * @return      VCOM voltage as a double (negative value, e.g. -1.5).
+ */
 double EPDDriver::getVCOMValue()
 {
     EEPROM.begin(512);

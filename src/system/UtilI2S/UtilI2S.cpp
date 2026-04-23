@@ -152,6 +152,18 @@ void IRAM_ATTR UtilI2S::sendDataI2S(i2s_dev_t *_i2sDev, volatile lldesc_s *_dmaD
     _i2sDev->out_link.start = 0;
 }
 
+/**
+ * @brief       Assigns an I2S1 signal to a GPIO pin via the GPIO Matrix.
+ *
+ * @param       uint32_t _pin
+ *              GPIO pin number (0–39).
+ * @param       uint32_t _function
+ *              I2S1 signal index from the ESP32 GPIO Matrix (e.g. I2S1O_DATA_OUT0_IDX).
+ * @param       uint32_t _inv
+ *              Set to 1 to invert the output logic level, 0 for normal.
+ *
+ * @note        Function must be declared IRAM_ATTR to fit into Instruction RAM of the ESP32.
+ */
 void IRAM_ATTR UtilI2S::setI2S1pin(uint32_t _pin, uint32_t _function, uint32_t _inv)
 {
     // Check if valid pin is selected

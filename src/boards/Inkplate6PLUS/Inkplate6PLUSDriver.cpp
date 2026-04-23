@@ -591,6 +591,9 @@ void EPDDriver::einkOff()
     setPanelState(0);
 }
 
+/**
+ * @brief       Initializes the PMIC with the board-specific IO expander and pin assignments.
+ */
 void EPDDriver::pmicBegin()
 {
     pmic.begin(&expander1, WAKEUP, PWRUP, VCOM);
@@ -625,10 +628,21 @@ void EPDDriver::pinsAsOutputs()
     pinMode(27, OUTPUT);
 }
 
+/**
+ * @brief       Returns the current power state of the EPD panel.
+ *
+ * @return      1 if the panel is powered on, 0 if powered off.
+ */
 uint8_t EPDDriver::getPanelState()
 {
     return _panelState;
 }
+/**
+ * @brief       Sets the internal panel power state flag.
+ *
+ * @param       uint8_t state
+ *              1 to mark the panel as powered on, 0 as powered off.
+ */
 void EPDDriver::setPanelState(uint8_t state)
 {
     _panelState = state;
@@ -761,6 +775,11 @@ void EPDDriver::hscan_start(uint32_t _d)
     CKV_SET;
 }
 
+/**
+ * @brief       Returns the current display mode.
+ *
+ * @return      0 for 1-bit (black and white), 1 for 3-bit (grayscale).
+ */
 uint8_t EPDDriver::getDisplayMode()
 {
     return _displayMode;
@@ -887,6 +906,13 @@ uint8_t EPDDriver::initializeFramebuffers()
     return 1;
 }
 
+/**
+ * @brief       Sets the Inkplate power mode.
+ *
+ * @param       uint8_t _mode
+ *              Power mode: INKPLATE_NORMAL_PWR_MODE for full power, INKPLATE_USB_PWR_ONLY
+ *              to restrict rails when running on USB power only.
+ */
 void EPDDriver::setInkplatePowerMode(uint8_t _mode)
 {
     pwrMode = _mode;
@@ -1044,6 +1070,14 @@ void EPDDriver::burnInClean(uint8_t clear_cycles, uint16_t cycles_delay)
     }
 }
 
+/**
+ * @brief       Sets the VCOM voltage of the panel and saves it to EEPROM.
+ *
+ * @param       double vcom
+ *              VCOM voltage to set; must be in the range [-5.0, 0.0].
+ *
+ * @return      true if the voltage was successfully set and saved, false otherwise.
+ */
 bool EPDDriver::setVCOM(double vcom)
 {
     EEPROM.begin(512);
@@ -1064,6 +1098,14 @@ bool EPDDriver::setVCOM(double vcom)
 }
 
 
+/**
+ * @brief       Programs the VCOM voltage into the TPS65186 internal EEPROM.
+ *
+ * @param       double v
+ *              VCOM voltage value to program; must be in the range [-5.0, 0.0].
+ *
+ * @return      true if the readback value matches what was written, false otherwise.
+ */
 bool EPDDriver::writeVCOMToPanelEEPROM(double v)
 {
     expander1.pinMode(6, INPUT_PULLUP);
@@ -1122,6 +1164,11 @@ bool EPDDriver::writeVCOMToPanelEEPROM(double v)
     return (check == raw);
 }
 
+/**
+ * @brief       Reads the VCOM voltage stored in the ESP32 EEPROM.
+ *
+ * @return      VCOM voltage as a double (negative value, e.g. -1.5).
+ */
 double EPDDriver::getVCOMValue()
 {
     EEPROM.begin(512);
