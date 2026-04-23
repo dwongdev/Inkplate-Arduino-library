@@ -1,19 +1,73 @@
-/*
-   Inkplate2_Clock example for Soldered Inkplate 2
-   For this example you will need only USB cable, Inkplate 2 and a WiFi with stable Internet connection.
-   Select "Soldered Inkplate2" from Tools -> Board menu.
-   Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example contains three types of clocks. First type is digital clock
-   with 4 digits which displays hours and minutes. Second type is binary clock,
-   which also have digits but displayed in binary numbers. Third type is analog
-   clock with hands.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   30 March 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Clock.ino
+ * @brief       Multi-style clock demo (digital, binary, or analog) using NTP
+ *              time sync, then deep sleep between updates.
+ *
+ * @details     This example demonstrates three different clock renderings on
+ *              Inkplate 2:
+ *              - Digital clock: 4 large 7-segment digits (HH:MM) drawn from
+ *                bitmap assets.
+ *              - Binary clock: hours, minutes, day, and month shown as binary
+ *                bits using filled/outlined circles.
+ *              - Analog clock: clock face with hour and minute hands.
+ *
+ *              On boot, the sketch connects to WiFi and fetches the current time
+ *              from an NTP server (epoch/time structure). The selected clock
+ *              mode is chosen by the MODE variable. After drawing the clock
+ *              into the framebuffer, the sketch performs a full refresh and
+ *              then enters deep sleep for TIME_TO_SLEEP seconds (default: 5
+ *              minutes) to save power. Because deep sleep resets the ESP32,
+ *              the program restarts from setup() on every wake cycle.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access (NTP)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud (recommended for debugging)
+ * - WiFi:           set ssid/pass
+ * - Timezone:       set timeZone (UTC offset)
+ * - Clock mode:     set MODE (0=digital, 1=binary, 2=analog)
+ * - Update period:  set TIME_TO_SLEEP (seconds)
+ * - WiFi retry:     set DELAY_WIFI_RETRY_SECONDS for quick retry on failure
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID/password and set your local timeZone.
+ * 2) Choose the clock style by setting MODE (0/1/2).
+ * 3) Upload the sketch to Inkplate 2 and open Serial Monitor at 115200 baud.
+ * 4) The clock is drawn and the device enters deep sleep.
+ * 5) The device wakes every TIME_TO_SLEEP seconds, updates the time, redraws,
+ *    and goes back to sleep.
+ *
+ * Expected output:
+ * - MODE 0 (digital): large HH:MM digits in red with a black colon separator.
+ * - MODE 1 (binary): four columns showing HH, MM, DD, MM (month) as binary
+ *   circles with labels and bit value markers.
+ * - MODE 2 (analog): a clock face with black hour hand and red minute hand.
+ * - On WiFi failure: an error message on the display, then short sleep and retry.
+ *
+ * Notes:
+ * - Display mode is 1-bit with Inkplate 2 tri-color palette (BLACK/WHITE/RED).
+ *   This sketch uses a full refresh (display()) for each update cycle.
+ * - Deep sleep restarts the ESP32; keep logic in setup() and leave loop() empty.
+ * - Bitmap digits for the digital clock must be present and generated in an
+ *   Inkplate-compatible format (typically via Soldered Image Converter).
+ * - Time is obtained from NTP on each wake; if WiFi is unavailable the clock
+ *   cannot update (add fallback/RTC handling for production use).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-03-30
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
@@ -22,9 +76,9 @@
 
 #include "Inkplate.h" // Include Inkplate library to the sketch
 
-#include "Network.h" // Our networking functions, declared in Network.cpp
+#include "NetworkFunctions.h" // Our networking functions, declared in Network.cpp
 
-Network network; // Create network object for WiFi and HTTP functions
+NetworkFunctions network; // Create network object for WiFi and HTTP functions
 
 Inkplate display; // Create Inkplate library object
 
@@ -40,12 +94,12 @@ uint8_t MODE = 1;
 int timeZone = 2;
 
 // Put in your ssid and password
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 #define DELAY_WIFI_RETRY_SECONDS 10
 //----------------------------------
 
-// Bitmaps for 7 segment display. Converted using Inkplate Image Converter http://soldered.com/image-converter
+// Bitmaps for 7 segment display. Converted using Inkplate Image Converter https://tools.soldered.com/tools/image-converter/
 #include "includes/eight.h"
 #include "includes/five.h"
 #include "includes/four.h"

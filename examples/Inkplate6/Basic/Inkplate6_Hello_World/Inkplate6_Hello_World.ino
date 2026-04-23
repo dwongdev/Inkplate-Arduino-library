@@ -1,18 +1,45 @@
-/*
-   Inkplate6_Hello_World example for Soldered Inkplate 6
-
-   For this example, you only need a USB cable and your Inkplate 6.
-   Select "e-radionica Inkplate6" or "Soldered Inkplate6" from the Tools -> Board menu in Arduino IDE.
-   Don't see the "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow this tutorial to add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example demonstrates the most basic usage: displaying "Hello World!" on the screen.
-   It uses the Inkplate library's built-in text drawing functions, fully compatible with Adafruit GFX.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Need support? Visit our forums: https://forum.soldered.com/
-   24 April 2025 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_Hello_World.ino
+ * @brief       Basic "Hello World" example for Soldered Inkplate 6.
+ *
+ * @details     Demonstrates the most basic usage of the Inkplate 6 by
+ *              initializing the display and printing "Hello World!" on the
+ *              e-paper screen. The example uses built-in text rendering
+ *              functions fully compatible with the Adafruit GFX library.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select "Soldered Inkplate6" from Tools → Board.
+ * 2) Upload the sketch to Inkplate 6.
+ * 3) After initialization, "Hello World!" appears on the display.
+ *
+ * Expected output:
+ * - The text "Hello World!" displayed on the Inkplate screen.
+ *
+ * Notes:
+ * - display.clearDisplay() clears only the internal framebuffer.
+ * - display.display() must be called to update the physical e-paper panel.
+ * - This example uses 1-bit (black & white) display mode.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
+ *
+ * @author      Soldered
+ * @date        2025-04-24
+ * @license     GNU GPL V3
+ **************************************************/
 
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them

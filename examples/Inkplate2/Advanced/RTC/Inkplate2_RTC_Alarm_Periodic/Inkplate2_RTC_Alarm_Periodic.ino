@@ -1,18 +1,72 @@
-/*
-    Inkplate2_RTC_Alarm_Periodic for soldered.com Inkplate 2
-    For this example you will need USB cable and the Inkplate 2.
-
-    Select "Soldered Inkplate 2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate 2" option? Follow our tutorial and add it:
-    https://e-radionica.com/en/blog/add-inkplate-6-to-arduino-ide/
-
-    This example will show you how to set an alarm time and periodically check if it's been reached by getting the
-    current time from a NTP server
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: http://forum.e-radionica.com/en/
-    28 Nov 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_RTC_Alarm_Periodic.ino
+ * @brief       Periodic RTC alarm check: fetch time via NTP, determine time
+ *              until a target date/time, and deep sleep between checks.
+ *
+ * @details     This example demonstrates an RTC-based alarm workflow implemented
+ *              as a periodic check. On each boot, the sketch connects to WiFi,
+ *              fetches the current time from an NTP server, and calculates the
+ *              remaining time until a configured alarm moment (day/month and
+ *              hour/minute/second).
+ *
+ *              If the alarm time has been reached (or is in the past), an
+ *              "ALARM!" message is shown on the display and the sketch stops.
+ *              Otherwise, the sketch displays a "Waiting for" screen and sets
+ *              a wakeup timer to re-check later, then enters ESP32 deep sleep.
+ *
+ *              This is not a hardware RTC interrupt alarm. The alarm is reached
+ *              only when the device wakes and performs the comparison, so the
+ *              effective trigger resolution depends on the chosen wake period.
+ *              Because deep sleep resets the ESP32, execution always starts
+ *              from setup() on every wake.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access (NTP)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: (optional) 115200 baud
+ * - WiFi:           set ssid/pass
+ * - Timezone:       set timeZone (hours offset from UTC)
+ * - Alarm time:     set alarmHour/alarmMins/alarmSecs and alarmDay/alarmMon
+ * - Wake period:    set wakeHours/wakeMinutes (how often to re-check)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID/password and set the correct timeZone.
+ * 2) Set the desired alarm date/time and the periodic wake interval.
+ * 3) Upload the sketch to Inkplate 2.
+ * 4) The device shows a waiting screen, then sleeps.
+ * 5) It wakes periodically, fetches the current time again, and triggers the
+ *    alarm screen once the target time has been reached.
+ *
+ * Expected output:
+ * - Before alarm: display shows "Waiting for" with the configured alarm time
+ *   and date, then the device enters deep sleep.
+ * - At/after alarm: display shows "ALARM!" and the device remains awake in an
+ *   infinite loop.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses full refresh (display()).
+ * - Deep sleep restarts the ESP32 each wake. Keep the logic in setup() and
+ *   leave loop() empty.
+ * - Alarm resolution is limited by the wake interval: the alarm will trigger
+ *   on the first wake that occurs after the target time.
+ * - This example depends on WiFi/NTP at each wake. If WiFi is unavailable, the
+ *   alarm check cannot be performed (add retries/error handling as needed).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-11-28
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
@@ -21,19 +75,19 @@
 
 #include "Inkplate.h" // Include Inkplate library
 
-#include "Network.h" // Our networking functions, declared in Network.cpp
+#include "NetworkFunctions.h" // Our networking functions, declared in Network.cpp
 
 #include "RTC.h" // Our RTC functions, declared in RTC.cpp
 
 Inkplate display; // Initialize Inkplate object
 
-Network network; // Create network object for WiFi and HTTP functions
+NetworkFunctions network; // Create network object for WiFi and HTTP functions
 
 RTC rtc; // Create RTC object for RTC functions
 
 // Write your SSID and password (needed to get the correct time from the Internet)
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 // Adjust your time zone, 1 means UTC+1
 int timeZone = 1;

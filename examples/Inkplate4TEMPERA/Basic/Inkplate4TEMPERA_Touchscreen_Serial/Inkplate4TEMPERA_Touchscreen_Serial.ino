@@ -1,18 +1,58 @@
-/*
-    Inkplate4TEMPERA_Touchscreen_Serial.ino example for Soldered Inkplate 4 TEMPERA
-    For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-    Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-    Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example shows you how to use Inkplate 4TEMPERA touchscreen.
-    Once the code is uploaded, open the serial monitor at 115200 baud in Arduino IDE.
-    You'll see touchscreen events there!
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    12 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Touchscreen_Serial.ino
+ * @brief       Demonstrates basic touchscreen input on Inkplate 4 TEMPERA by
+ *              reporting touch events over the Serial Monitor.
+ *
+ * @details     This example shows how to initialize and use the capacitive
+ *              touchscreen on Inkplate 4 TEMPERA and read touch events in
+ *              real time. After uploading the sketch, the touchscreen is
+ *              powered and configured, and all detected touch interactions
+ *              (press, release, coordinates, and gestures if supported by the
+ *              controller configuration) are printed to the Serial Monitor.
+ *
+ *              The example is intended as a debugging and learning tool for
+ *              understanding raw touchscreen behavior before integrating touch
+ *              input into a graphical user interface. No drawing or visual
+ *              feedback is shown on the e-paper display itself.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Open the Serial Monitor and set the baud rate to 115200.
+ * 3) Touch the screen with a finger or stylus.
+ * 4) Observe touch event data printed in the Serial Monitor.
+ *
+ * Expected output:
+ * - Serial Monitor messages indicating touchscreen events, including touch
+ *   detection and coordinate information.
+ *
+ * Notes:
+ * - Display mode: not relevant; the e-paper display is not actively used.
+ * - This example does not use deep sleep; the MCU runs continuously.
+ * - Touchscreen must be successfully initialized; if initialization fails,
+ *   no touch events will be reported.
+ * - For low-power designs, combine touchscreen interrupts with deep sleep
+ *   wake-up examples instead of continuous polling.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-07-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -35,7 +75,7 @@ void setup()
     display.display();      // Show the cleared screen
 
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init OK!");
     }
@@ -57,14 +97,14 @@ void setup()
 void loop()
 {
     // Periodically check if there is any touch detected
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
         // Variables for storing the touchscreen data
         uint8_t n;
         uint16_t x[2], y[2];
 
         // See how many fingers are detected (max 2) and copy x and y position of each finger on touchscreen
-        n = display.tsGetData(x, y);
+        n = display.touchscreen.getData(x, y);
         if (n != 0)
         {
             // Print number of fingers to serial monitor, along with their coordinates

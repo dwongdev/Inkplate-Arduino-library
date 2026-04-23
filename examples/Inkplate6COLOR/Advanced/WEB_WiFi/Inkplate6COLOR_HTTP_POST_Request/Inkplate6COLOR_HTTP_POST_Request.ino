@@ -1,26 +1,52 @@
-/*
-   Inkplate6COLOR_HTTP_POST_Request example for Soldered Inkplate 6COLOR
-   For this example you will need USB cable, Inkplate 6COLOR and stable WiFi Internet connection.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to a WiFi network and send a POST request via HTTP.
-   We will use ThingSpeak API to see post requests. It's a free API that allows you to store and retrieve data using
-   HTTP.
-   1. Go to the ThingSpeak.com and create a free account
-   2. Open the Channels tab
-   3. Create a new channel
-   4. Create fields you want to use (this example uses 1 field called field1 and this name must be used when sending data)
-   5. Open the channel, go to the API Keys tab and copy your Write API Key
-   6. Enter your API key in the code below
-
-   When you send a POST request, open your channel and you will see the graph where is your sent data.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   26 January 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_HTTP_POST_Request.ino
+ * @brief       WiFi HTTP POST request example using webhook.site (Inkplate 6COLOR).
+ *
+ * @details     Demonstrates how to connect Inkplate 6COLOR to a WiFi network and
+ *              send periodic HTTP POST requests to webhook.site. This free
+ *              online service allows real-time inspection of HTTP requests,
+ *              making it useful for testing IoT data transmission.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      Stable WiFi connection, webhook.site URL
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6COLOR
+ * - Serial settings: 115200 baud
+ * - Enter your WiFi credentials (ssid, pass) in the code
+ * - Set WEBHOOK_PATH to your unique webhook.site path
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6COLOR/quick-start-guide/
+ *
+ * How to use:
+ * 1) Visit https://webhook.site and copy your unique webhook URL.
+ * 2) Paste only the path part (e.g. "/abcd-1234-efgh") into WEBHOOK_PATH.
+ * 3) Enter your WiFi credentials in the sketch.
+ * 4) Upload the sketch to Inkplate 6COLOR.
+ * 5) Open Serial Monitor (115200 baud) to observe connection status.
+ * 6) Watch incoming POST requests live on webhook.site.
+ *
+ * Expected output:
+ * - Inkplate display shows example information.
+ * - Serial Monitor logs WiFi connection and POST status.
+ * - webhook.site displays incoming POST requests every 20 seconds.
+ *
+ * Notes:
+ * - Example uses HTTP (port 80) for simplicity.
+ * - Data is sent in URL-encoded format (application/x-www-form-urlencoded).
+ * - Replace example data with real sensor readings if needed.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2026-01-01
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
@@ -35,101 +61,88 @@
 Inkplate display;
 WiFiClient client;
 
-// Here you can change the interval of sending POST requests (minimum 15 seconds with a free license)
-#define POSTING_INTERVAL_IN_SESCS 20
+// Interval between POST requests (seconds)
+#define POSTING_INTERVAL_IN_SECS 20
 
-// Enter your WiFi credentials
-const char *ssid = "";
-const char *pass = "";
+// WiFi credentials
+const char *ssid = "Soldered Electronics";
+const char *pass = "dasduino";
 
-// ThingSpeak settings
-char *server = "api.thingspeak.com";
-String writeAPIKey = ""; // Enter your Write API Key
+// Webhook.site settings
+const char *server = "webhook.site";
+const char *WEBHOOK_PATH = "/YOUR-UNIQUE-WEBHOOK-ID"; // e.g. "/abcd-1234-efgh"
 
-// Variable that holds last connection time
+// Last connection time
 unsigned long lastConnectionTime = 0;
-
 
 void setup()
 {
-    // Init serial communication
     Serial.begin(115200);
 
-    // Init Inkplate library (you should call this function ONLY ONCE)
+    // Init Inkplate
     display.begin();
-
-    // Clear frame buffer of display
     display.clearDisplay();
+    display.setTextColor(BLACK, WHITE);
+    display.setTextSize(6);
 
-    // Set text color and size
-    display.setTextColor(INKPLATE_BLACK);
-    display.setTextSize(4);
-
-    // Display a message
-    display.printf("HTTP POST request example\n\n");
-    display.printf("Open Serial Monitor at \n115200 baud rate to see \nwhat's happening");
+    display.printf("HTTP POST example\n\n");
+    display.printf("Using webhook.site\n\n");
+    display.printf("Open Serial Monitor\nat 115200 baud");
     display.display();
 
-    // Connect to the WiFi network
+    // Connect to WiFi
     WiFi.mode(WIFI_MODE_STA);
     WiFi.begin(ssid, pass);
-    Serial.print("Connecting to Wifi ");
+
+    Serial.print("Connecting to WiFi");
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
         Serial.print(".");
     }
+
     Serial.println();
-    Serial.print("Connected to WiFi network with IP Address: ");
+    Serial.print("Connected, IP address: ");
     Serial.println(WiFi.localIP());
 }
 
-
 void loop()
 {
-    // Every POSTING_INTERVAL_IN_SESCS seconds make the POST request
-    if ((unsigned long)(millis() - lastConnectionTime) > POSTING_INTERVAL_IN_SESCS * 1000LL)
+    if ((unsigned long)(millis() - lastConnectionTime) > POSTING_INTERVAL_IN_SECS * 1000UL)
     {
-        // Clear frame buffer of display
         display.clearDisplay();
 
-        // Connect the WiFi client to the server via port 80
         if (!client.connect(server, 80))
         {
-            // If it fails, print a message, remember time, stop the client and reset the loop
             Serial.println("Connection failed");
             lastConnectionTime = millis();
             client.stop();
             return;
         }
-        else
-        {
-            // If you have any sensor or something else, here you have to put data to send instead of a random number
-            int field1Data = random(40);
 
-            // Create data string to send to ThingSpeak
-            String data = "field1=" + String(field1Data); // shows how to include additional field data in http post
+        // Example data (replace with sensor readings if needed)
+        int value = random(40);
 
-            // POST data to ThingSpeak
-            if (client.connect(server, 80))
-            {
-                client.println("POST /update HTTP/1.1");
-                client.println("Host: api.thingspeak.com");
-                client.println("Connection: close");
-                client.println("User-Agent: ESP32WiFi/1.1");
-                client.println("X-THINGSPEAKAPIKEY: " + writeAPIKey);
-                client.println("Content-Type: application/x-www-form-urlencoded");
-                client.print("Content-Length: ");
-                client.print(data.length());
-                client.print("\n\n");
-                client.print(data);
+        // URL-encoded POST body
+        String data = "value=" + String(value);
 
-                Serial.print("The POST request is done: ");
-                Serial.println(data);
-                lastConnectionTime = millis();
-                delay(250);
-            }
-        }
+        // Send HTTP POST request
+        client.print(String("POST ") + WEBHOOK_PATH + " HTTP/1.1\r\n");
+        client.print(String("Host: ") + server + "\r\n");
+        client.println("Connection: close");
+        client.println("User-Agent: Inkplate-ESP32");
+        client.println("Content-Type: application/x-www-form-urlencoded");
+        client.print("Content-Length: ");
+        client.println(data.length());
+        client.println();
+        client.print(data);
+
+        Serial.print("POST sent: ");
+        Serial.println(data);
+
+        lastConnectionTime = millis();
+        delay(250);
+
         client.stop();
     }
 }

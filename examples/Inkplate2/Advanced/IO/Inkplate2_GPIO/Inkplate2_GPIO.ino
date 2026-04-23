@@ -1,19 +1,56 @@
-/*
-    Inkplate2_GPIO example for Soldered Inkplate 2
-    For this example you will need USB cable, Inkplate 2, 330Ohm resistor
-    and one LED (and some wires and breadboard to connect it).
-    Select "Soldered Inkplate2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example will show you how you can control I/O pins.
-    You should consider that only pins that are on header available
-    for use with external devices.
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    10 May 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_GPIO.ino
+ * @brief       Basic GPIO control example: blink an external LED using
+ *              ESP32 GPIO on Inkplate 2.
+ *
+ * @details     This example demonstrates how to use general-purpose I/O (GPIO)
+ *              pins available on the Inkplate 2 header. An external LED is
+ *              connected to ESP32 GPIO14 through a current-limiting resistor.
+ *              The sketch configures the selected pin as an OUTPUT and toggles
+ *              it every second, creating a visible blink.
+ *
+ *              The e-paper display is used only to show instructions and runs
+ *              in 1-bit (black/white) mode with a single full refresh during
+ *              setup.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      LED, ~330 Ω resistor, jumper wires, breadboard
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Connect LED anode to GPIO14 through a 330 Ω resistor
+ * - Connect LED cathode to GND
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Wire the LED to GPIO14 with a current-limiting resistor.
+ * 2) Select Inkplate 2 in Tools and upload the sketch.
+ * 3) After reset, read instructions on the display.
+ * 4) Observe the LED blinking once per second (1 s ON, 1 s OFF).
+ *
+ * Expected output:
+ * - Display: "Blink example" and wiring instructions.
+ * - Hardware: LED connected to GPIO14 blinks continuously.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Only a full refresh (display()) is used.
+ * - Use only GPIO pins that are exposed on the Inkplate 2 header and not
+ *   reserved for internal hardware.
+ * - Ensure correct polarity of the LED and always use a resistor to avoid
+ *   damaging the GPIO pin.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-05-10
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2

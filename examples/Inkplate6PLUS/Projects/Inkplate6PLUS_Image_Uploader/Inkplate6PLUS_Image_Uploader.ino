@@ -1,14 +1,70 @@
-/*
-  Inkplate 6PLUS Image Uploader Example
-  Compatible with Soldered Inkplate 6PLUS -> https://soldered.com/documentation/inkplate/projects/image-uploader
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Image_Uploader.ino
+ * @brief       Host a local web page on Inkplate 6PLUS to upload a JPEG and
+ *              display it on the e-paper screen.
+ *
+ * @details     This example starts a small HTTP server on Inkplate 6PLUS and
+ *              creates a Wi-Fi Access Point (AP). When you connect to the AP
+ *              with a phone/PC and open the device IP address in a browser, you
+ *              get a simple web UI for uploading an image.
+ *
+ *              The uploaded file is received via HTTP POST and stored in a RAM
+ *              buffer (imageBuf). After the upload completes, the sketch decodes
+ *              the JPEG from memory and renders it on the e-paper display using
+ *              3-bit grayscale mode (INKPLATE_3BIT). A preview endpoint is also
+ *              provided, serving the last uploaded JPEG directly from RAM.
+ *
+ *              This is a network + image-decoding example, so available RAM and
+ *              upload size matter. Large images may fail to upload or decode.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      Phone/PC with WiFi + web browser
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional; used for debug logs)
+ * - WiFi AP credentials: set ap_ssid / ap_password (password must be >= 8 chars)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) On the display, read the AP SSID/password and the shown IP address.
+ * 3) Connect your phone/PC to the Wi-Fi network (AP) created by Inkplate.
+ * 4) Open a browser and navigate to the displayed IP address.
+ * 5) Use the web page to upload a JPEG image. After upload, the image is
+ *    rendered on the e-paper display. Optionally open /preview to view the last
+ *    uploaded image in the browser.
+ *
+ * Expected output:
+ * - Display: Instructions screen (SSID/password/IP), then the last uploaded image
+ *   rendered in 3-bit grayscale.
+ * - Browser: Upload page at "/" and image preview at "/preview".
+ * - Serial Monitor: AP IP, upload progress (bytes received), and image serving
+ *   logs.
+ *
+ * Notes:
+ * - Display mode is 3-bit grayscale (INKPLATE_3BIT). Grayscale refresh is slower
+ *   and uses more energy than 1-bit BW.
+ * - RAM usage: the uploaded JPEG is stored fully in RAM before decoding. Keep
+ *   uploads reasonably sized to avoid allocation failures or decode errors.
+ * - Security: this example uses an open local HTTP server (no authentication,
+ *   no HTTPS). Use only on trusted networks / for demos.
+ * - Power: this example runs continuously (no deep sleep) to keep the web server
+ *   available.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to upload an image to a webapp hosted by Inkplate 6PLUS
-  and display it on the e‐ink display. Image will be automatically resized.
-*/
 
 // Ensure correct board is selected
 #if !defined(ARDUINO_INKPLATE6FLICK) && !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
@@ -119,9 +175,9 @@ void showImageBuffer() {
   if (!imageBuf || imageLen == 0) return;
 
   display.clearDisplay();                     // clear existing content
-  display.setDisplayMode(INKPLATE_3BIT);      // ensure correct mode
+  display.selectDisplayMode(INKPLATE_3BIT);      // ensure correct mode
   // Draw JPEG from RAM: full-screen, no dithering
-  display.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
+  display.image.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
   display.display();                          // push to panel
 }
 

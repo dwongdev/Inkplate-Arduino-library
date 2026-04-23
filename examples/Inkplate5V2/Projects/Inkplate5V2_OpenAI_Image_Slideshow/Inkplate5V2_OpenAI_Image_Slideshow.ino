@@ -1,19 +1,79 @@
-/*
-  Inkplate5V2 OpenAI Image slideshow
-  Compatible with Soldered Inkplate 5V2 -> https://soldered.com/documentation/inkplate/projects/openai-image-slideshow
-
-  For this example you will need only USB cable and Inkplate 5V2.
-  Select "e-radionica Inkplate5V2" or "Soldered Inkplate5V2" from Tools -> Board menu.
-  Don't have "e-radionica Inkplate5V2" or "Soldered Inkplate5V2" option? Follow our tutorial and add it:https://soldered.com/documentation/inkplate/5v2/quick-start-guide/
-
-  Overview:
-  This example demonstrates how to send a prompt to the GPT DALL-E API in order to generate an image which will be displayed on the Inkplate
-  It generates an image every 30mins, after which it goes to deep sleep.
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - After creating an OpenAI API key, enter it in the openai_key variable
-*/
+/**
+ **************************************************
+ * @file        Inkplate5v2_OpenAI_Image_Slideshow.ino
+ * @brief       Generates an image from an OpenAI prompt (DALL·E), downloads it,
+ *              shows it on Inkplate 5v2, then deep-sleeps between updates.
+ *
+ * @details     This example demonstrates an Internet-connected image slideshow
+ *              powered by OpenAI image generation. On boot, Inkplate 5v2 connects
+ *              to WiFi, sends a JSON request to the OpenAI Images API using a
+ *              text prompt, parses the returned JSON to extract the generated
+ *              image URL, and then downloads and renders that image on the
+ *              e-paper display.
+ *
+ *              Status messages ("Connecting...", "Generating prompt...", etc.)
+ *              are shown using partial updates in 1-bit mode for speed. After
+ *              an image URL is obtained, the sketch switches the display to
+ *              3-bit grayscale (INKPLATE_3BIT) for better image quality and
+ *              performs a full refresh after drawing the downloaded image.
+ *
+ *              The sketch schedules the next wake-up using the on-board RTC
+ *              (PCF85063(A)) by setting an alarm epoch time, then enters deep
+ *              sleep. Deep sleep resets the ESP32, so the workflow repeats from
+ *              setup() every time the device wakes.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5v2
+ * - Hardware:   Inkplate 5v2, USB cable (battery optional)
+ * - Extra:      WiFi Internet connection, OpenAI API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5v2
+ * - Serial Monitor: 115200 baud
+ * - Install library: ArduinoJson (Arduino Library Manager)
+ * - Set WiFi credentials (ssid, password)
+ * - Set your OpenAI API key (openai_key) and prompt (imagePrompt)
+ * - Adjust sleep interval (SLEEP_DURATION_IN_MINS) if desired
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5v2/quick-start-guide/
+ *
+ * How to use:
+ * 1) Create an OpenAI API key and paste it into openai_key.
+ * 2) Enter your WiFi SSID and password.
+ * 3) Optionally change imagePrompt and the image size/model settings in the
+ *    request JSON.
+ * 4) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 5) The device connects, requests an image, downloads it, renders it, then
+ *    deep-sleeps and wakes periodically to generate the next image.
+ *
+ * Expected output:
+ * - During startup: short status messages on the display via partial updates.
+ * - After generation: the downloaded image rendered on the e-paper display in
+ *   3-bit grayscale.
+ * - Serial output includes the OpenAI response body and the resolved image URL.
+ *
+ * Notes:
+ * - Display mode: status is shown in 1-bit BW; image is rendered in 3-bit
+ *   grayscale (INKPLATE_3BIT). Partial updates are not supported in grayscale,
+ *   so the image update is a full refresh.
+ * - Deep sleep restarts the ESP32 on every wake-up; no state is preserved.
+ * - HTTPS security: this sketch uses client.setInsecure(), which disables TLS
+ *   certificate validation. This is for demonstration only; for production use,
+ *   validate certificates or pin the correct certificate chain/host.
+ * - RAM and bandwidth: downloading/decoding large PNGs can be slow and memory
+ *   intensive. If decoding fails, reduce image size or use a simpler format.
+ * - RTC alarm vs. wake source: wake-up is configured via RTC alarm epoch and an
+ *   external wake on GPIO 39 (typically tied to the RTC interrupt line). Ensure
+ *   your hardware revision/wiring matches the expected wake behavior.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 #include <WiFiClientSecure.h>     // Enables secure (HTTPS) communication over WiFi
 #include <ArduinoJson.h>          // Library for JSON parsing and creation
@@ -26,11 +86,12 @@
 Image::Format imageFormat = Image::PNG;
 
 // WiFi credentials (replace with your own SSID and password)
-const char* ssid = "YOUR_SSID_HERE";
-const char* password = "YOUR_PASSWORD_HERE";
+const char* ssid = "Stefan";
+const char* password = "granatir";
 
 // OpenAI API key (replace with your OpenAI API key)
-const char* openai_key = "YOUR_API_KEY_HERE"; 
+const char* openai_key = ""; 
+
 
 // Create a secure WiFi client to communicate with OpenAI over HTTPS
 WiFiClientSecure client;
@@ -39,7 +100,7 @@ WiFiClientSecure client;
 Inkplate display(INKPLATE_1BIT);
 
 // Set the image prompt to send to OpenAI
-String imagePrompt = "Generate an image of a croatian seaside town in PS2 graphics.";
+String imagePrompt = "Generate a cyberpunk city with a lot of vertical layers";
 
 void setup() {
   display.begin(); // Initialize the Inkplate hardware and begin communication
@@ -74,7 +135,7 @@ void setup() {
 
   // Switch display to 3-bit grayscale mode for higher image quality
   // WARNING: Partial updates are not supported in this mode!
-  display.setDisplayMode(INKPLATE_3BIT);
+  display.selectDisplayMode(INKPLATE_3BIT);
   display.setTextColor(BLACK);
   display.println("Downloading and displaying image (May take a while...)");
   display.display();          // Show status
@@ -85,7 +146,7 @@ void setup() {
     
     // Draw the image centered on the screen
     // Image assumed to be 1024x1024; offset to center it
-    bool result = display.drawImage(imageUrl, imageFormat, display.width()/2 - 512, display.height()/2 - 512, true, false);
+    bool result = display.image.draw(imageUrl, imageFormat, display.width()/2 - 512, display.height()/2 - 512, true, false);
     
     if(result == 0) {
       // Show an error if image decoding fails
@@ -101,7 +162,7 @@ void setup() {
   }
 
   // Schedule the next wakeup time using the real-time clock
-  display.rtcSetAlarmEpoch(display.rtcGetEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
+  display.rtc.setAlarmEpoch(display.rtc.getEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
 
   // Enable external wakeup on GPIO 39 (typically tied to RTC alarm)
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);

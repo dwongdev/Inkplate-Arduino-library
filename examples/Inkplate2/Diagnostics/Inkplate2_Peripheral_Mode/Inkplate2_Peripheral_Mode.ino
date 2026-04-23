@@ -1,30 +1,70 @@
-/*
-   Inkplate2_Peripheral_Mode sketch for Soldered Inkplate 2 (IP2).
-   For this example you will need only a USB-C cable and Inkplate 2.
-   Select "Soldered Inkplate 2" from Tools -> Board menu.
-   Don’t have "Soldered Inkplate 2" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-2-board-definition-to-arduino-ide/
-
-   Using this sketch, you don’t have to program and control the e-paper display using Arduino code.
-   Instead, you can send UART commands. This gives you the flexibility to use Inkplate 2 on any platform!
-
-   Because it uses UART, it’s a bit slower and not recommended to send a large number of
-   drawPixel commands to render images. Instead, store bitmaps or pictures on an SD card
-   and load them directly from there.
-   If any functionality is missing, you can modify this code and make your own version.
-   Every Inkplate 2 comes with this Peripheral Mode preloaded from the factory.
-
-   Learn more about Peripheral Mode:
-   https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
-
-   UART settings are: 115200 baud, standard parity, ending with "\n\r" (Both NL & CR)
-   You can send commands via the USB port or by directly connecting to the ESP32 TX and RX pins.
-
-   Want to learn more about Inkplate? Visit:
-   https://soldered.com/documentation/inkplate/
-
-   23 October 2025 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Peripheral_Mode.ino
+ * @brief       Enables UART-based Peripheral Mode control for Inkplate 2.
+ *
+ * @details     This example enables Peripheral Mode on the Inkplate 2,
+ *              allowing external devices to control the e-paper display
+ *              through a UART command interface instead of Arduino code.
+ *
+ *              In this mode, drawing commands, display updates, and other
+ *              operations are sent as text commands over the serial
+ *              connection. This allows Inkplate 2 to function as a
+ *              display peripheral for systems such as PCs, Raspberry Pi,
+ *              microcontrollers, or embedded Linux devices.
+ *
+ *              The sketch initializes the Inkplate display and a
+ *              PeripheralMode command parser which listens for incoming
+ *              UART commands and executes them in real time.
+ *
+ *              This firmware is typically preloaded on Inkplate 2 devices
+ *              from the factory and provides a flexible way to control the
+ *              display without compiling Arduino sketches.
+ *
+ *              Because UART communication is relatively slow, sending large
+ *              numbers of pixel-level commands (such as drawPixel loops) is
+ *              inefficient. For displaying images, it is recommended to
+ *              store bitmap files on the SD card and load them directly.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB-C cable
+ * - Extra:      External controller device (optional)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 2
+ * - UART settings: 115200 baud, standard parity
+ * - Line ending: "\n\r" (newline + carriage return)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to the Inkplate 2.
+ * 2) Connect to the board using a serial terminal or external device.
+ * 3) Configure UART to 115200 baud with line ending "\n\r".
+ * 4) Send supported Peripheral Mode commands to control the display.
+ * 5) The device responds with "READY" when initialization completes.
+ *
+ * Expected output:
+ * - Serial: "READY" message when Peripheral Mode is initialized.
+ * - Display: Updates according to received UART drawing commands.
+ *
+ * Notes:
+ * - Peripheral Mode allows Inkplate to be controlled from any system
+ *   capable of UART communication.
+ * - Sending large pixel-by-pixel commands is slow; prefer loading
+ *   images from SD storage when possible.
+ * - This firmware acts as a command interpreter and runs continuously,
+ *   processing serial commands inside the main loop.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-10-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Include Inkplate library
 #include "Inkplate.h"

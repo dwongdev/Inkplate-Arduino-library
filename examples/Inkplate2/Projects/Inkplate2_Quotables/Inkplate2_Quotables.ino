@@ -1,26 +1,67 @@
-/*
-    Inkplate2_Quotables example for Soldered Inkplate 2
-    For this example you will need only USB cable, Inkplate 2 and a WiFi with stable Internet connection.
-    Select "Soldered Inkplate2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example shows you how to use simple API call without API key. Response
-    from server is in JSON format, so that will be shown too how it is used. What happens
-    here is basically ESP32 connects to WiFi and sends API call and server returns HTML
-    document containing one quote and some information about it, then using library ArduinoJSON
-    we extract only quote from JSON data and show it on Inkplate 2. After displaying quote
-    ESP32 goes to sleep and wakes up every 300 seconds to show new quote(you can change time interval).
-
-    IMPORTANT:
-    Make sure to change wifi credentials below
-    Also have ArduinoJSON installed in your Arduino libraries, download here: https://arduinojson.org/
-    You can deserialize JSON data easily using JSON assistant https://arduinojson.org/v6/assistant/
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    7 April 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Quotables.ino
+ * @brief       Fetch a random quote from a public API (no API key), render it
+ *              on Inkplate 2, then deep sleep and refresh periodically.
+ *
+ * @details     This example demonstrates calling a simple public REST API that
+ *              returns JSON (no authentication required), extracting the quote
+ *              text and author using ArduinoJson via a NetworkFunctions helper,
+ *              and displaying the result on Inkplate 2.
+ *
+ *              The quote is rendered inside a text box using drawTextBox() and
+ *              the author is printed in the lower-right corner. After updating
+ *              the display, the ESP32 enters deep sleep and wakes every
+ *              DELAY_S microseconds (default: 5 minutes) to fetch and show a
+ *              new quote.
+ *
+ *              If WiFi connection fails, an error message is shown and the
+ *              device sleeps briefly before retrying. Because deep sleep resets
+ *              the ESP32, execution always starts from setup() on each wake.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access, ArduinoJson library
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud (recommended for debugging)
+ * - WiFi:           set ssid/pass
+ * - Update period:  set DELAY_S (microseconds; 300 * 1,000,000 = 5 minutes)
+ * - WiFi retry:     set DELAY_WIFI_RETRY_SECONDS (seconds)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Install ArduinoJson (required by the NetworkFunctions helper).
+ * 2) Enter your WiFi SSID/password.
+ * 3) Upload the sketch to Inkplate 2.
+ * 4) On each wake, the device fetches a quote and updates the display, then
+ *    sleeps for the configured interval.
+ *
+ * Expected output:
+ * - Display: the fetched quote centered in a text box; author printed at the
+ *   bottom-right, prefixed with "-".
+ * - Serial Monitor: fetch retry dots and basic status messages (if opened).
+ * - On WiFi failure: "Unable to connect..." message, then a short sleep and
+ *   automatic retry.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses a full refresh (display()).
+ * - Deep sleep restarts the ESP32; keep logic in setup() and leave loop() empty.
+ * - API behavior/format may change over time; if parsing fails, update the
+ *   NetworkFunctions implementation accordingly.
+ * - drawTextBox() truncates with "..." if the quote exceeds the box height.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-04-07
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
@@ -30,8 +71,8 @@
 //---------- CHANGE HERE  -------------:
 
 // Put in your ssid and password
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 //----------------------------------
 
@@ -39,12 +80,12 @@ char pass[] = "";
 #include "Inkplate.h"
 
 // Our networking functions, declared in Network.cpp
-#include "Network.h"
+#include "NetworkFunctions.h"
 #include "driver/rtc_io.h" // Include ESP32 library for RTC pin I/O (needed for rtc_gpio_isolate() function)
 #include <rom/rtc.h>       // Include ESP32 library for RTC (needed for rtc_get_reset_reason() function)
 
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // create display object
 Inkplate display;
@@ -65,7 +106,7 @@ void setup()
 
     // Initial display settings
     display.begin();
-    display.setTextColor(BLACK);
+    display.setTextColor(INKPLATE2_BLACK);
     display.setTextWrap(false);
     display.clearDisplay();
     display.display();

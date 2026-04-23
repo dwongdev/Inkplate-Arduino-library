@@ -1,18 +1,68 @@
-/*
-   Inkplate6PLUS_TicTacToe example for Soldered Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use some higher level touchscreen functions to easily create
-   interactable touchscreen user interfaces.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   17 February 2021 by Soldered
-*/
-
-// Next 3 lines are a precaution, you can ignore those, and the example would also work without them
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_TicTacToe.ino
+ * @brief       Touchscreen Tic-Tac-Toe with optional AI opponent using partial
+ *              updates on Inkplate 4 TEMPERA.
+ *
+ * @details     This example demonstrates building an interactive touchscreen UI
+ *              using higher-level touch helpers (touchInArea()) and rendering
+ *              updates efficiently on e-paper. The sketch provides a menu to
+ *              select game mode (human vs AI with multiple difficulty levels,
+ *              or 2-player), choose who plays first, and choose whether X or O
+ *              starts.
+ *
+ *              During gameplay, taps on the 3x3 grid place X or O. In single-
+ *              player mode, the AI computes its move using a minimax search
+ *              (depth controlled by difficultyDepth[]). The UI is redrawn after
+ *              each action and updated primarily via partialUpdate() to reduce
+ *              flashing. A "Go Back" touch area returns to the menu and resets
+ *              the board.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (optional; for debugging)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Use the touchscreen menu to choose difficulty (or 2-player), who starts,
+ *    and whether X or O goes first.
+ * 3) Tap "Start game" to begin.
+ * 4) Tap a board cell to place your mark. In AI mode, the device responds with
+ *    its move automatically.
+ * 5) Tap "Go Back" to return to the menu and reset the board.
+ *
+ * Expected output:
+ * - E-paper: Menu screen with selectable options, followed by a Tic-Tac-Toe
+ *   board. The top status line shows whose turn it is and the game result
+ *   (ongoing / X won / O won / tie).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - Partial updates are used for most UI interactions; perform occasional full
+ *   refreshes in long sessions if you notice ghosting.
+ * - AI difficulty is controlled by minimax depth; higher depths increase CPU
+ *   time per move.
+ * - This example depends on additional project files:
+ *   - ai.h (minimax implementation)
+ *   - generatedUIMenu.h (UI geometry/constants and text variables)
+ * - Touchscreen must be initialized; if init fails, touch input will not work
+ *   reliably.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-17
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -51,7 +101,7 @@ void setup()
     display.begin(); // Initialize Inkplate object
 
     // Initialize touchscreen
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(true))
         Serial.println("Touchscreen init failed!");
 
     // Call main draw function defined below
@@ -73,7 +123,7 @@ void loop()
 // All touchscreen events happening while in menu
 void menuEvents()
 {
-    if (display.touchInArea(89, 124, 78, 31)) // Easy difficulty
+    if (display.touchscreen.touchInArea(89, 124, 78, 31)) // Easy difficulty
     {
         difficulty = 0;
         display.clearDisplay();
@@ -82,7 +132,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(89, 204, 112, 31)) // Medium difficulty
+    if (display.touchscreen.touchInArea(89, 204, 112, 31)) // Medium difficulty
     {
         difficulty = 1;
         display.clearDisplay();
@@ -91,7 +141,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(89, 284, 112, 31)) // Hard difficulty
+    if (display.touchscreen.touchInArea(89, 284, 112, 31)) // Hard difficulty
     {
         difficulty = 2;
         display.clearDisplay();
@@ -100,7 +150,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(89, 363, 112, 31)) // 2 player game
+    if (display.touchscreen.touchInArea(89, 363, 112, 31)) // 2 player game
     {
         difficulty = 3;
         display.clearDisplay();
@@ -109,7 +159,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(363, 286, 158, 40) && difficulty != 3) // Computer plays first
+    if (display.touchscreen.touchInArea(363, 286, 158, 40) && difficulty != 3) // Computer plays first
     {
         firstHuman = 0;
         display.clearDisplay();
@@ -118,7 +168,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(363, 358, 158, 40) && difficulty != 3) // Human plays first
+    if (display.touchscreen.touchInArea(363, 358, 158, 40) && difficulty != 3) // Human plays first
     {
         firstHuman = 1;
         display.clearDisplay();
@@ -127,7 +177,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(364, 125, 155, 40)) // First player is X
+    if (display.touchscreen.touchInArea(364, 125, 155, 40)) // First player is X
     {
         firstXO = 0;
         display.clearDisplay();
@@ -136,7 +186,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(364, 201, 155, 40)) // First player is O
+    if (display.touchscreen.touchInArea(364, 201, 155, 40)) // First player is O
     {
         firstXO = 1;
         display.clearDisplay();
@@ -145,7 +195,7 @@ void menuEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(230, 442, 140, 84)) // Start gane
+    if (display.touchscreen.touchInArea(230, 442, 140, 84)) // Start gane
     {
         // Check if all settings are legal, and if so, start the game
         if (difficulty == 3 && (firstXO == 0 || firstXO == 1))
@@ -246,7 +296,7 @@ void crossOutHumanFirst()
 // All touchscreen events during normal game
 void gameEvents()
 {
-    if (display.touchInArea(510, 0, 40, 100)) // Go back
+    if (display.touchscreen.touchInArea(510, 0, 40, 100)) // Go back
     {
         memset(board, '_', sizeof board);
         menu = 1;
@@ -260,7 +310,7 @@ void gameEvents()
     // Check if any board field pressed
     for (int i = 0; i < 3; ++i)
         for (int j = 0; j < 3; ++j)
-            if (display.touchInArea(61 + 155 * j, 51 + 155 * i, 155, 155))
+            if (display.touchscreen.touchInArea(61 + 155 * j, 51 + 155 * i, 155, 155))
             {
                 // If field already pressed, skip
                 if (board[i][j] != '_' || result(board) != 0)

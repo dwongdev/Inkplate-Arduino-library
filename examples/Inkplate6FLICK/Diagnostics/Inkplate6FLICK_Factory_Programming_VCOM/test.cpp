@@ -3,11 +3,11 @@
 const char sdCardTestStringLength = 100;
 const char *testString = {"This is some test string..."};
 
-const char *WSSID = {"Soldered-testingPurposes"};
-const char *WPASS = {"Testing443"};
+const char *WSSID = {"Soldered Electronics"};
+const char *WPASS = {"dasduino"};
 
 // Change this to your used slave device
-const uint8_t easyCDeviceAddress = 0x30;
+const uint8_t easyCDeviceAddress = 0x76;
 
 const int TOUCHSCREEN_TIMEOUT = 30;
 
@@ -24,8 +24,7 @@ void testPeripheral()
 
     // Check if epaper PSU (TPS65186 EPD PMIC) is ok.
     Wire.beginTransmission(0x48); // Send address 0x48 on I2C
-    if (!(Wire.endTransmission() == 0) ||
-        (display.readPowerGood() != PWR_GOOD_OK)) // Check if there was an error in communication
+    if (!(Wire.endTransmission() == 0) || !display.isPowerGood()) // Check if there was an error in communication
     {
         Serial.println("- TPS Fail!");
         failHandler();
@@ -71,8 +70,8 @@ void testPeripheral()
 
     // Check touch screen and frontlight
     // Check frontlight (just a visual check). Set frontlight to max.
-    display.frontlight(true);  // Enable frontlight circuit
-    display.setFrontlight(63); // Set frontlight intensity to the max.
+    display.frontlight.setState(true);  // Enable frontlight circuit
+    display.frontlight.setBrightness(63); // Set frontlight intensity to the max.
     display.println("- Frontlight test (visual check)");
     display.partialUpdate(0, 1);
     delay(1000);
@@ -175,7 +174,7 @@ void testPeripheral()
     // Text wake up button
     // Disable touchscreen to avoid accidental TS INT trigger that would trigger WAKE button.
     // (since Touch INT and WAKE BTN share same line).
-    display.tsInit(true);
+    display.touchscreen.init(1);
     // Wait a little bit.
     delay(100);
     
@@ -346,18 +345,18 @@ int rtcCheck()
     if (_res != 0)
         return 0;
 
-    // Reset and re-init RTC.
-    display.rtcReset();
+    // reset and re-init RTC.
+    display.rtc.reset();
 
     // Set some time in epoch in RTC.
     uint32_t _epoch = 1640995200ULL;
-    display.rtcSetEpoch(_epoch);
+    display.rtc.setEpoch(_epoch);
 
     // Wait at least one and a half second
     delay(1500);
 
     // Read the epoch (if everything is ok, epoch from RTC should not be the same)
-    if (display.rtcGetEpoch() != _epoch)
+    if (display.rtc.getEpoch() != _epoch)
     {
         return 1;
     }
@@ -374,7 +373,7 @@ int checkTouch(uint8_t _tsTimeout)
     unsigned long _timeout;
 
     // First try to init touchscreen controller.
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(1))
     {
         return 0;
     }
@@ -388,12 +387,12 @@ int checkTouch(uint8_t _tsTimeout)
     // Wait 10 seconds to detect touch in specified area, otherwise return 0 (error).
     while (((unsigned long)(millis() - _timeout)) < (_tsTimeout * 1000UL))
     {
-        if (display.tsAvailable())
+        if (display.touchscreen.available())
         {
             uint8_t n;
             uint16_t x[2], y[2];
             // See how many fingers are detected (max 2) and copy x and y position of each finger on touchscreen
-            n = display.tsGetData(x, y);
+            n = display.touchscreen.getData(x, y);
 
             if ((x[0] > 900) && (x[0] < 1024) && (y[0] > 0) && (y[0] < 124))
                 return 1;

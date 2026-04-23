@@ -1,34 +1,81 @@
-/*
-    Inkplate Lan Gallery Example
-    Compatible with Soldered Inkplate 10
-
-    Getting started:
-    For this project you will need: Inkplate 10, microSD card (formatted to FAT32!) 
-    and WiFi connection.
-
-    Step 1: Place the formatted microSD card in onboard slot on Inkplate 10
-    
-    Step 2: Install `AsyncTCP` and `ESPAsyncWebServer` libraries, they are available directly from 
-            Arduino Library Manager.
-
-    Step 3: Modify the ssid, password and IMAGE_CHANGE_INTERVAL variables. SSID and password
-            need to be the same as the network you are trying to connect, and INTERVAL_CHANGE_TIMER
-            changes the duration between image changes (in miliseconds, default is 30000ms or 30s)
-    
-    Step 4: Upload the code as usual
-
-    Step 5: Using another device connected to the same network open a browser and 
-            go to langallery.local
-
-    Step 6: Press the 'Choose File' button and select a picture that you want to upload, and 
-            after that press the 'Upload' button
-            
-    Overview:
-    This example demonstartes how to run a webapp, handle multiple users at once, upload files 
-    to onboard SD card and display uploaded images in random order on the e-ink display. Images 
-    will be automatically resized.
-
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_LAN_Gallery.ino
+ * @brief       Hosts a LAN web page to upload images to SD, then displays the
+ *              uploaded images randomly on Inkplate 10 in 3-bit grayscale.
+ *
+ * @details     This example turns Inkplate 10 into a local network (LAN) image
+ *              gallery. The ESP32 connects to your WiFi and runs an async web
+ *              server that allows multiple clients to upload image files from a
+ *              browser. Uploaded files are written to the on-board microSD card
+ *              and the sketch periodically selects a random image from the SD
+ *              root directory and renders it on the e-paper display.
+ *
+ *              Supported formats are BMP and JPEG (JPG/JPEG). The sketch scans
+ *              the SD card for matching file extensions, builds a circular
+ *              linked list of filenames, and randomly selects an entry for
+ *              display. Basic image dimension detection is implemented for BMP
+ *              and JPEG to help with centering; if size detection fails, a
+ *              fallback size is used. Images are drawn using Inkplate's
+ *              image.draw() helper and a full refresh is performed.
+ *
+ *              The display runs in 3-bit grayscale mode (INKPLATE_3BIT), which
+ *              is suitable for photos but does not support partial updates.
+ *              This sketch is intended for continuous operation (no deep
+ *              sleep); images rotate based on a configurable interval, and the
+ *              image list is rebuilt after each upload.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable, microSD card (FAT32 formatted)
+ * - Extra:      WiFi network + a phone/PC with a web browser on the same LAN
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial Monitor: 115200 baud
+ * - Install libraries: AsyncTCP, ESPAsyncWebServer (Arduino Library Manager)
+ * - Set WiFi credentials (ssid, password) in the sketch
+ * - Set IMAGE_CHANGE_INTERVAL (milliseconds) to control rotation timing
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Format a microSD card as FAT32 and insert it into Inkplate 10.
+ * 2) Install AsyncTCP and ESPAsyncWebServer from Arduino Library Manager.
+ * 3) Edit ssid/password and (optionally) IMAGE_CHANGE_INTERVAL.
+ * 4) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 5) From a device on the same network, open the gallery page (mDNS hostname
+ *    such as "langallery.local" if available, otherwise use the printed IP).
+ * 6) Upload BMP/JPG images; after each upload the list is rebuilt and a random
+ *    image is shown. Images will also rotate automatically over time.
+ *
+ * Expected output:
+ * - E-paper display shows a randomly chosen image from the SD card, centered,
+ *   with a small footer label rendered on top.
+ * - Serial Monitor prints WiFi connection progress, SD scan results, detected
+ *   image dimensions, and upload/write diagnostics.
+ * - After an upload completes, the new images become eligible for rotation.
+ *
+ * Notes:
+ * - Display mode: 3-bit grayscale (INKPLATE_3BIT); partial updates are not
+ *   available in grayscale mode, so each change is a full refresh.
+ * - SD card access is shared between the web server upload handler and the
+ *   display loop; this example uses a mutex to serialize SD reads/writes.
+ * - Only files in the SD root directory are scanned in this sketch; large SD
+ *   card directories may slow down rebuildImageList() because it re-scans.
+ * - JPEG/BMP decoding and buffering consume RAM; very large images may fail to
+ *   decode or draw.
+ * - If mDNS ".local" addressing does not work on your network/device, use the
+ *   Inkplate's IP address shown in Serial Monitor.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2020
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure corect board is selected
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
@@ -276,7 +323,7 @@ void showImage(const char* path) {
   Serial.printf("Draw at x=%d, y=%d (disp=%dx%d)\n", x, y, dispW, dispH);
 
   // Draw image fron SD card
-  if (!display.drawImage(path, x, y, 3)) {
+  if (!display.image.draw(path, x, y, 3)) {
     display.setTextSize(2);
     display.setCursor(100, 300);
     display.println("Image load failed!");

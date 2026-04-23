@@ -1,17 +1,71 @@
-/*
-   Inkplate4TEMPERA_Accelerometer_Gyroscope_Read example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read from the built-in LSM6DS3 gyroscope/accelerometer.
-   The rotation of the 3D Cube is modified by the accelerometer values.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   10 Aug 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Accelerometer_Gyroscope_Read.ino
+ * @brief       Reads the on-board LSM6DS3 accelerometer/gyroscope and visualizes
+ *              motion by rotating a wireframe 3D cube on the e-paper display.
+ *
+ * @details     This example demonstrates how to use the built-in LSM6DS3 IMU
+ *              (inertial measurement unit) on Inkplate 4 TEMPERA. After waking
+ *              the accelerometer peripheral and initializing the sensor, the
+ *              sketch continuously reads raw accelerometer axes (X/Y/Z) and
+ *              gyroscope axes (X/Y/Z). The numeric readings are printed on the
+ *              display for reference.
+ *
+ *              In parallel, the sketch renders a rotating wireframe cube. The
+ *              cube’s rotation angles are derived from the accelerometer values
+ *              (scaled by ANGLE_MODIFIER) and smoothed by averaging with the
+ *              previous frame’s angles. Each cube edge is projected from 3D to
+ *              2D using basic rotation matrices and a simple perspective
+ *              projection, then drawn as lines.
+ *
+ *              The display runs in 1-bit black/white mode (INKPLATE_1BIT) to
+ *              enable fast partial updates. The cube animation uses frequent
+ *              partial updates for smoother motion and forces a full refresh
+ *              periodically to reduce ghosting.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial settings (if relevant): none
+ * - Adjust ANGLE_MODIFIER to change how strongly motion affects cube rotation
+ * - Adjust NUM_PARTIAL_UPDATES_BEFORE_FULL_REFRESH to tune refresh cadence
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Tilt and rotate the device; the cube rotation changes with acceleration.
+ * 3) Watch live accelerometer and gyroscope readings printed below the cube.
+ *
+ * Expected output:
+ * - A wireframe cube rendered near the center of the display, rotating as the
+ *   device is moved.
+ * - Text readouts for ACC X/Y/Z and GYRO X/Y/Z updated continuously.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT).
+ * - Partial update: partial updates are used to achieve higher apparent frame
+ *   rate; a full refresh is forced after
+ *   NUM_PARTIAL_UPDATES_BEFORE_FULL_REFRESH updates to reduce ghosting. Panel
+ *   power is kept enabled during partial updates for stability and speed
+ *   (higher power usage).
+ * - Sensor power: the IMU is enabled via wakePeripheral(INKPLATE_ACCELEROMETER).
+ * - This is a visualization example, not a calibrated orientation filter. For
+ *   stable orientation/attitude estimation, use a sensor fusion algorithm
+ *   (e.g., complementary filter, Madgwick, Mahony) and calibrated units.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-08-10
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -160,7 +214,7 @@ void loop()
     {
         // Time for a full refresh? Do it
         display.display();
-        numRefreshes = 0; // Reset the counter
+        numRefreshes = 0; // reset the counter
     }
     else
     {

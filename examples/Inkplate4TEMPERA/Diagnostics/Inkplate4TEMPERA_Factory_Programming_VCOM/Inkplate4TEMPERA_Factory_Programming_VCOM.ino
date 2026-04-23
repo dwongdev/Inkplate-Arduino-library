@@ -1,36 +1,100 @@
 /**
  **************************************************
  * @file        Inkplate4TEMPERA_Factory_Programming_VCOM.ino
+ * @brief       Factory utility for Inkplate 4TEMPERA: program panel VCOM, run hardware
+ *              self-tests, select and store a display waveform, then play the
+ *              onboarding slide sequence.
  *
- * @brief       File for programming the Inkplate's VCOM
+ * @details     This sketch is intended for factory/production use on Inkplate 4TEMPERA.
+ *              It performs a first-boot provisioning
+ *              flow and a subsequent onboarding/demo flow.
  *
- * @note        !WARNING! VCOM can only be set 100 times, so keep usage to a minimum.
- *              !WARNING! Use at your own risk.
+ *              First boot flow:
+ *              - Performs I2C sanity checks and peripheral tests (see test.h /
+ *                test.cpp).
+ *              - Prompts the operator over Serial (115200 baud) to enter the
+ *                panel VCOM voltage (typically negative, range 0.0 to -5.0 V),
+ *                then programs it into EEPROM using setVcom().
+ *              - Prompts the operator to select one of several pre-defined
+ *                waveform tables and previews a grayscale gradient to help
+ *                choose the best match for the panel.
+ *              - Displays a splash screen showing the programmed VCOM and the
+ *                selected waveform ID.
  *
- *              Inkplate 4TEMPERA does not support auto VCOM, it has to be set manually.
- *              The user will be prompted to enter VCOM via serial (baud 115200).
- *              VCOM ranges from 0 to -5.0.
+ *              Normal boot flow:
+ *              - Reads the stored VCOM, enables the panel (einkOn()), allocates
+ *                PSRAM for slide decompression, and runs the onboarding sequence
+ *                consisting of a sidebar UI and multiple slides. Some slides are
+ *                stored in RLE-compressed form and are decompressed at runtime
+ *                into a large buffer to save flash space.
  *
- *              Tests will also be done, to pass all tests:
- *              - Edit the WiFi information in test.cpp.
- *              - Connect a slave device via EasyC on address 0x30 (you may change this in test.cpp also).
- *                In the InkplateEasyCTester folder, you can find the code for uploading to Dasduino Core
- *                or Dasduino ConnectPlus to convert Dasduino to an I2C slave device for testing an easyC connector
- *                if you don't have a device with address 0x30.
- *              - If a battery's connected, edit the mAh capacity in test.cpp
- *              - Insert a formatted microSD card (doesn't have to be empty)
- *              - When prompted:
- *                  - Touch the corner
- *                  - Wave in front of the gesture sensor
- *                  - Press wake button to finish testing
+ *              Display modes:
+ *              - Uses 1-bit (BW) mode for partial-update demonstrations and fast
+ *                UI elements.
+ *              - Switches to 3-bit grayscale for most onboarding slides.
  *
- *License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html Please review the
- *LICENSE file included with this example. If you have any questions about
- *licensing, please visit https://soldered.com/contact/ Distributed as-is; no
- *warranty is given.
+ * Requirements:
+ * - Board:      Soldered Inkplate 4TEMPERA
+ * - Hardware:   Inkplate 4TEMPERA, USB cable
+ * - Extra:      microSD card (formatted, any content), EasyC I2C slave device
+ *              for factory tests (see Notes)
  *
- * @authors     Soldered
- ***************************************************/
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
+ * - Serial Monitor: 115200 baud
+ * - Factory tests (in test.cpp):
+ *   - Set WiFi credentials (if tests require network)
+ *   - Ensure an EasyC/I2C slave responds at the configured address (0x30 by
+ *     default; configurable in test.cpp)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
+ *
+ * How to use:
+ * 1) (Factory) Connect required test hardware:
+ *    - Insert a formatted microSD card.
+ *    - Connect an EasyC I2C slave device at the address expected by test.cpp
+ *      (0x30 by default). If you don't have one, flash the helper firmware from
+ *      the InkplateEasyCTester folder onto a compatible Dasduino board and use
+ *      it as the I2C slave.
+ * 2) Open Serial Monitor at 115200 baud.
+ * 3) Upload the sketch. On first startup it will:
+ *    - Run peripheral tests and print results to Serial.
+ *    - Prompt for VCOM voltage; enter the value (include the '-' sign when
+ *      required) and confirm until programming succeeds.
+ *    - Prompt to select a waveform (send '1'..'5' and then 'OK' to confirm).
+ * 4) After successful setup, the device shows a splash screen and then remains
+ *    idle. Power-cycle or reset to start the onboarding slideshow.
+ * 5) During onboarding, press the wake button to advance through slides.
+ *
+ * Expected output:
+ * - Serial Monitor: Test status messages, prompts for VCOM and waveform
+ *   selection, and programming success/failure messages.
+ * - E-paper: Splash screen showing VCOM and waveform ID, then a multi-slide
+ *   onboarding sequence with a sidebar and BW/grayscale slides (including a
+ *   partial-update animation demo).
+ *
+ * Notes:
+ * - Display mode switches between 1-bit (BW) and 3-bit grayscale depending on
+ *   slide content. Partial updates are used only in BW mode.
+ * - VCOM programming is limited: the panel VCOM can be programmed a finite
+ *   number of times (typically ~100 writes). Avoid repeated programming and use
+ *   only when necessary.
+ * - This sketch allocates a large PSRAM buffer for decompression
+ *   (ps_malloc(393938)). It requires sufficient PSRAM and will halt with an
+ *   on-screen error if allocation fails.
+ * - RLE decompression expands compressed slide data into a raw 3-bit bitmap
+ *   buffer; avoid modifying buffer sizes unless you also update assets.
+ * - Factory test requirements depend on test.cpp; missing WiFi credentials,
+ *   I2C slave, or microSD may cause tests to fail and stop the process.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2026
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -38,7 +102,6 @@
 #endif
 
 // Include needed libraries in the sketch
-#include "EEPROM.h"
 #include "Inkplate.h"
 #include "Wire.h"
 
@@ -94,31 +157,27 @@ void setup()
         // Test all the peripherals
         testPeripheral();
 
-        do
+        while (true)
         {
-            // Get VCOM voltage from serial from user
-            uint8_t flag = getVCOMFromSerial(&vcomVoltage);
+          // Get VCOM voltage from serial from user
+          uint8_t flag = getVCOMFromSerial(&vcomVoltage);
 
-            // Show the user the entered VCOM voltage
-            Serial.print("Entered VCOM: ");
-            Serial.println(vcomVoltage);
-            display.print(vcomVoltage);
-            display.partialUpdate();
+          // Show the user the entered VCOM voltage
+          Serial.print("Entered VCOM: ");
+          Serial.println(vcomVoltage);
+          display.print(vcomVoltage);
+          display.partialUpdate();
 
-            if (vcomVoltage < -5.0 || vcomVoltage > 0.0)
-            {
-                Serial.println("VCOM out of range!");
-                display.print(" VCOM out of range!");
-                display.partialUpdate();
-            }
-
-        } while (vcomVoltage < -5.0 || vcomVoltage > 0.0);
-
-        // Write VCOM to EEPROM
-        display.pinModeInternal(IO_INT_ADDR, display.ioRegsInt, 6, INPUT_PULLUP);
-        writeVCOMToEEPROM(vcomVoltage);
-        EEPROM.write(EEPROMaddress, 170);
-        EEPROM.commit();
+          if (display.setVCOM(vcomVoltage))
+          {
+            Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
+            break;
+          }
+          else
+          {
+            Serial.println("ERROR");
+          }
+        }
 
         display.selectDisplayMode(INKPLATE_3BIT);
     }
@@ -126,7 +185,6 @@ void setup()
     {
         Serial.println("VCOM already set!");
         display.einkOn();
-        vcomVoltage = (double)(readReg(0x03) | ((uint16_t)((readReg(0x04) & 1) << 8))) / (-100);
     }
 
     memset(commandBuffer, 0, BUFFER_SIZE);
@@ -137,7 +195,6 @@ void setup()
 void loop()
 {
     // Peripheral mode
-    // More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
 
     if (Serial.available())
     {
@@ -177,10 +234,9 @@ uint8_t readReg(uint8_t _reg)
 // Print the initial image that remains on the screen
 void showSplashScreen(float vComVoltage)
 {
-    display.clean(0, 1);
     display.display();
     display.selectDisplayMode(INKPLATE_3BIT);
-    display.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
+    display.image.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
 
     // Also, print VCOM in small font
     display.setTextColor(0, 7);
@@ -199,7 +255,7 @@ uint8_t writeVCOMToEEPROM(double v)
     int vcomL = vcom & 0xFF;
 
     // Set PCAL pin where TPS65186 INT pin is connectet to input pull up
-    display.pinModeInternal(IO_INT_ADDR, display.ioRegsInt, 6, INPUT_PULLUP);
+    display.expander1.pinMode(6, INPUT_PULLUP);
 
     // First power up TPS65186 so we can communicate with it
     display.einkOn();
@@ -222,7 +278,7 @@ uint8_t writeVCOMToEEPROM(double v)
     do
     {
         delay(1);
-    } while (display.digitalReadInternal(IO_INT_ADDR, display.ioRegsInt, 6));
+    } while (display.expander1.digitalRead(6));
 
     // Clear Interrupt flag by reading INT1 register
     readReg(0x07);

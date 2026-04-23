@@ -1,25 +1,58 @@
-/*
-   Inkplate5_Black_And_White example for Soldered Inkplate 5
-   For this example you will need only a USB-C cable and Inkplate 5.
-   Select "Soldered Inkplate5" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can draw some simple graphics using
-   Adafruit GFX functions. Yes, Inkplate library is 100% compatible with GFX lib!
-   Learn more about Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library )
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   28 March 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_Black_And_White.ino
+ * @brief       Black & white drawing demo using Adafruit GFX on Soldered Inkplate 5.
+ *
+ * @details     Demonstrates basic drawing and text rendering on the Inkplate 5
+ *              in 1-bit (black & white) mode using Adafruit GFX-compatible
+ *              functions. The example draws pixels, lines, shapes, polygons,
+ *              and text in multiple sizes, and also shows how to render a
+ *              monochrome bitmap (e.g. Soldered logo) using the Inkplate image
+ *              helpers.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
+ * - Extra:      Optional bitmap header file (e.g. logo.h)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 5.
+ * 2) The example cycles through multiple drawing demonstrations.
+ * 3) Each demo renders to the framebuffer and then updates the e-paper display.
+ *
+ * Expected output:
+ * - A sequence of graphics demos: pixels, lines, rectangles, circles, triangles,
+ *   rounded rectangles, ellipses, polygons, bitmap drawing, and text rendering.
+ * - Final part continuously rotates and displays text.
+ *
+ * Notes:
+ * - Inkplate library is compatible with Adafruit GFX drawing functions.
+ * - 1-bit mode supports only BLACK and WHITE colors.
+ * - Avoid refreshing the full display too often; long delays are used for demo clarity.
+ * - For faster updates, use partial update (see partial update examples).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library
+ * Support:      https://forum.soldered.com/
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
+ *
+ * @author      Soldered
+ * @date        2022-12-01
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
-/**
+
 #ifndef ARDUINO_INKPLATE5
 #error "Wrong board selection for this example, please select Soldered Inkplate5 in the boards menu."
 #endif
-*/
+
 #include "Inkplate.h"            // Include Inkplate library to the sketch
 #include "logo.h"                // Include header file for Soldered logo. You can see it in next tab inside Arduino IDE
 Inkplate display(INKPLATE_1BIT); // Create object on Inkplate library and set library to work in monochorme mode
@@ -251,7 +284,7 @@ void loop()
     // Display some bitmap on screen. We are going to display Soldered logo on display at location X = 75, Y = 200
     // Image is 800x160 pixels and we want to every pixel of this bitmap to be black.
     display.clearDisplay();
-    display.drawImage(logo, 75, 200, logo_w, logo_h,
+    display.image.draw(logo, 75, 200, logo_w, logo_h,
                       BLACK); // Arguments are: array variable name, start X, start Y, size X, size Y, color
     displayCurrentAction("Drawing Soldered logo");
     display.display();
@@ -354,7 +387,7 @@ void loop()
     }
 
     // Did you know that you can change between BW and greyscale mode anytime?
-    // Just call display.setDisplayMode(mode)
+    // Just call display.selectDisplayMode(mode)
 }
 
 // Small function that will write on the screen what function is currently in demonstration.

@@ -1,20 +1,53 @@
-/*
-   Inkplate6FLICK_Show_Pictures_From_Web example for Soldered Inkplate 6FLICK
-   For this example you will need a micro USB cable, Inkplate 6FLICK, and an available WiFi connection.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   You can open .bmp files that have color depth of 1 bit (BW bitmap), 4 bit, 8 bit and
-   24 bit AND have resoluton smaller than 800x600 or otherwise it won't fit on screen.
-
-   This example will show you how you can download a .bmp file (picture) from the web and
-   display that image on e-paper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Show_Pictures_From_Web.ino
+ * @brief       Download and display images from the web demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to connect Inkplate 6FLICK to Wi-Fi and
+ *              download images from the internet for display on the e-paper
+ *              screen. The example shows multiple approaches:
+ *              - Drawing an image directly from a URL
+ *              - Downloading an image via HTTPClient and rendering it from the stream
+ *              - Loading and displaying a JPEG image from a URL
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Network:    Available Wi-Fi connection (2.4 GHz)
+ * - Libraries:  Inkplate library, WiFi (ESP32), HTTPClient
+ *
+ * Configuration:
+ * - Set ssid/password to your Wi-Fi credentials
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi SSID and password in the sketch.
+ * 2) Upload the sketch to Inkplate 6FLICK.
+ * 3) After connecting to Wi-Fi, the device downloads and displays images
+ *    from the specified URLs one after another.
+ *
+ * Expected output:
+ * - Status messages shown while connecting and downloading.
+ * - A monochrome BMP image displayed first.
+ * - A larger BMP image downloaded via HTTPClient and displayed (may take longer).
+ * - A JPEG image loaded from the web and displayed.
+ * - Error messages shown on-screen if a download/format fails.
+ *
+ * Notes:
+ * - BMP files must be uncompressed Windows BMP (typical supported depths: 1/4/8/24-bit).
+ * - Very large or high color-depth images can take a long time to download and render.
+ * - The draw functions may provide optional invert/dither parameters depending on format.
+ * - After finishing, Wi-Fi is turned off to reduce power consumption.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -55,7 +88,7 @@ void setup()
     // NOTE: Both drawImage methods allow for an optional fifth "invert" parameter. Setting this parameter to true
     // will flip all colors on the image, making black white and white black. This may be necessary when exporting
     // bitmaps from certain softwares. Forth parameter will dither the image. Photo taken by: Roberto Fernandez
-    if (!display.drawImage("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
+    if (!display.image.draw("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
     {
         // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
         // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no compression!
@@ -82,7 +115,7 @@ void setup()
         int32_t len = http.getSize();
         if (len > 0)
         {
-            if (!display.drawBitmapFromWeb(http.getStreamPtr(), 0, 0, len))
+            if (!display.image.drawBitmapFromWeb(http.getStreamPtr(), 0, 0, len))
             {
                 // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
                 // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no
@@ -111,7 +144,7 @@ void setup()
     // NOTE: Both drawJpegFromWeb methods allow for an optional fifth "invert" parameter. Setting this parameter to
     // true will flip all colors on the image, making black white and white black. forth parameter will dither the
     // image.
-    if (!display.drawImage("https://varipass.org/destination.jpg", 0, 100, true, false))
+    if (!display.image.draw("https://varipass.org/destination.jpg", 0, 100, true, false))
     {
         // If is something failed (wrong filename or format), write error message on the screen.
         display.println("Image open error");

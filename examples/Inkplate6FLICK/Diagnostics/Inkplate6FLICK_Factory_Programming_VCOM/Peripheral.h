@@ -1,5 +1,4 @@
 /*
-   More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
 */
 
 char strTemp[2001];
@@ -188,7 +187,7 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 r = display->sdCardInit();
                 if (r)
                 {
-                    r = display->drawBitmapFromSd(strTemp, x, y);
+                    r = display->image.drawBitmapFromSd(strTemp, x, y);
                     Serial.print("#H(");
                     Serial.print(r, DEC);
                     Serial.println(")*");
@@ -272,18 +271,6 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                 }
                 break;
 
-            case 'O':
-                sscanf(s + 3, "%d", &c);
-                if (c >= 0 && c <= 2)
-                {
-                    Serial.print("#O(");
-                    Serial.print(display->readTouchpad(c), DEC);
-                    // Serial.print(0, DEC);
-                    Serial.println(")*");
-                    Serial.flush();
-                }
-                break;
-
             case 'P':
                 sscanf(s + 3, "%c", &b);
                 if (b == '?')
@@ -291,29 +278,6 @@ void run(char commandBuffer[], size_t n, Inkplate *display)
                     Serial.print("#P(");
                     Serial.print(display->readBattery(), 2);
                     // Serial.print(3.54, 2);
-                    Serial.println(")*");
-                    Serial.flush();
-                }
-                break;
-
-            case 'Q':
-                sscanf(s + 3, "%d", &c);
-                c &= 1;
-                // if (c == 0) Serial.print("display->einkOff();\n");
-                // if (c == 1) Serial.print("display->einkOn();\n");
-                if (c == 0)
-                    display->einkOff();
-                if (c == 1)
-                    display->einkOn();
-                break;
-
-            case 'R':
-                sscanf(s + 3, "%c", &b);
-                if (b == '?')
-                {
-                    Serial.print("#R(");
-                    Serial.print(display->getPanelState(), DEC);
-                    // Serial.print(1, DEC);
                     Serial.println(")*");
                     Serial.flush();
                 }

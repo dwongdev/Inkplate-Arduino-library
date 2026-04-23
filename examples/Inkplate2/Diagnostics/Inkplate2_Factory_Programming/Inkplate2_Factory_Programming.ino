@@ -106,7 +106,7 @@ void setup()
     display.clearDisplay();
 
     // Draw the image on the screen
-    display.drawImage(pictures[i], 0, 0, 212, 104);
+    display.image.draw(pictures[i], 0, 0, 212, 104);
     display.display();
 
     // Go to sleep

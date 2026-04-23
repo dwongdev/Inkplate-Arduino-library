@@ -80,7 +80,7 @@ bool PeripheralMode::getDataFromSerial(unsigned long _timeout)
                 // If is a valid command, try to parse it.
                 parseCommand(_command, _repeatable, _payloadSize, _payload);
 
-                // Reset the counter.
+                // reset the counter.
                 _serialBufferIndex = 0;
 
                 // Go to the next command by advancing to the next index.
@@ -95,7 +95,7 @@ bool PeripheralMode::getDataFromSerial(unsigned long _timeout)
         // Clear the buffer.
         memset(_serialBuffer, 0, _bufferSize);
         
-        // Reset the index variable.
+        // reset the index variable.
         _serialBufferIndex = 0;
 
         Serial.println("Cleaned");
@@ -355,7 +355,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
         }
         case CMD_DRAW_FASTVLINE:
         {
-            // Check the number of the arguments and check it's payload repeatable.
+             // Check the number of the arguments and check it's payload repeatable.
             checkArguments(&_numberOfArgs, 4, _repeat);
 
             // Arguments can be repeated for faster transfer, so multiple lines can be written at once.
@@ -947,7 +947,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
                 _path[_argSize / 2] = '\0';
 
                 // Try to open an image from microSD card. Send reponse back if the opening was successful or not.
-                if (_display->drawImage((const char*)_path, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
+                if (_display->image.draw((const char*)_path, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
                 {
                     sendResponse(CMD_DRAW_IMAGE, strlen((char*)_okResponseString), (char*)_okResponseString);
                 }
@@ -963,7 +963,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
                 strncpy(_pathNew, _path, _argSize);
                 _pathNew[_argSize]='\0';
                 // Try to open an image from microSD card. Send reponse back if the opening was successful or not.
-                if (_display->drawImage((const char*)_pathNew, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
+                if (_display->image.draw((const char*)_pathNew, atol(_xPos), atol(_yPos), atol(_dither) & 1, atol(_invert)  &1))
                 {
                     sendResponse(CMD_DRAW_IMAGE, strlen((char*)_okResponseString), (char*)_okResponseString);
                 }
@@ -1004,7 +1004,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             hexAsciiToAscii(_hexData, _argSize);
 
             // Display the image from the buffer.
-            _display->drawImage((const uint8_t*)_hexData, atol(_xPos), atol(_yPos), atol(_w), atol(_h)); 
+            _display->image.draw((const uint8_t*)_hexData, atol(_xPos), atol(_yPos), atol(_w), atol(_h)); 
             break;
         }
         case CMD_SET_MODE:
@@ -1016,7 +1016,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             char *_arg1;
             _arg1 = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
 
-            _display->setDisplayMode(atol(_arg1));
+            _display->selectDisplayMode(atol(_arg1));
             break;
         }
         case CMD_GET_MODE:
@@ -1074,55 +1074,13 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             sendResponse(CMD_READ_TEMP, strlen(response), response);
             break;
         }
-        case CMD_READ_TOUCHPAD:
-        {
-            // Check the number of arguments.
-            if (_numberOfArgs != 1) return;
-
-            // Get the argument.
-            char *_arg1; // H
-
-            _arg1 = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-
-            // Check if they are valid.
-            if (_arg1 == NULL) return;
-
-            char response[1];
-            itoa(_display->readTouchpad(atoi(_arg1)), response, 10);
-            sendResponse(CMD_READ_TOUCHPAD, strlen(response), response);
-
-            break;
-        }
+        
         case CMD_READ_BATTERY:
         {
             Serial.println(_display->readBattery());
             char response[50];
             sprintf(response,"%lf", _display->readBattery());
             sendResponse(CMD_READ_BATTERY, strlen(response), response);
-            break;
-        }
-        case CMD_EINK_PMIC:
-        {
-            // Check the number of arguments.
-            if (_numberOfArgs != 1) return;
-
-            // Get the argument.
-            char *_arg1; // H
-
-            _arg1 = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-
-            // Check if they are valid.
-            if (_arg1 == NULL) return;
-
-            if(atoi(_arg1) == 0)
-            {
-                _display->einkOff();
-            }
-            else
-            {
-                _display->einkOn();
-            }
-
             break;
         }
         case CMD_RTC_SET_TIME:
@@ -1145,7 +1103,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
 
 
 
-            _display->rtcSetTime(atoi(_arg1), atoi(_arg2), atoi(_arg3));
+            _display->rtc.setTime(atoi(_arg1), atoi(_arg2), atoi(_arg3));
 
             break;
         }
@@ -1170,7 +1128,7 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             if (_arg1 == NULL || _arg2 == NULL || _arg3 == NULL || _arg4== NULL) return;
 
 
-            _display->rtcSetDate(atoi(_arg1), atoi(_arg2), atoi(_arg3), atoi(_arg4));
+            _display->rtc.setDate(atoi(_arg1), atoi(_arg2), atoi(_arg3), atoi(_arg4));
             break;
         }
         case CMD_RTC_SET_EPOCH:
@@ -1187,19 +1145,19 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             // Check if they are valid.
             if (_arg1 == NULL) return;
 
-            _display->rtcSetEpoch(atoll(_arg1));
+            _display->rtc.setEpoch(atoll(_arg1));
             break;
         }
         case CMD_RTC_UPDATE:
         {
-            _display->rtcGetRtcData();
+            _display->rtc.getRtcData();
             break;
         }
         case CMD_RTC_GET_DATA_ALL:
         {
             char response[100];
-            sprintf(response,"%d:%d:%d %d %d/%d/%d", _display->rtcGetHour(),_display->rtcGetMinute(), _display->rtcGetSecond(), 
-            _display->rtcGetWeekday(), _display->rtcGetDay(), _display->rtcGetMonth(), _display->rtcGetYear());
+            sprintf(response,"%d:%d:%d %d %d/%d/%d", _display->rtc.getHour(),_display->rtc.getMinute(), _display->rtc.getSecond(), 
+            _display->rtc.getWeekday(), _display->rtc.getDay(), _display->rtc.getMonth(), _display->rtc.getYear());
             sendResponse(CMD_RTC_GET_ALARM_ALL, strlen(response), response);
             break;
         }
@@ -1226,9 +1184,9 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             // Check if they are valid.
             if (_arg1 == NULL || _arg2 == NULL || _arg3 == NULL || _arg4== NULL || _arg5== NULL) return;
 
-            _display->rtcEnableAlarm();
+            _display->rtc.enableAlarm();
 
-            _display->rtcSetAlarm(atoi(_arg1),atoi(_arg2),atoi(_arg3),atoi(_arg4),atoi(_arg5));
+            _display->rtc.setAlarm(atoi(_arg1),atoi(_arg2),atoi(_arg3),atoi(_arg4),atoi(_arg5));
 
             break;
         }
@@ -1247,19 +1205,19 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             // Check if they are valid.
             if (_arg1 == NULL || _arg2 == NULL) return;
 
-            _display->rtcSetAlarmEpoch(atoll(_arg1),atoi(_arg2));
+            _display->rtc.setAlarmEpoch(atoll(_arg1),atoi(_arg2));
 
             break;
         }
         case CMD_RTC_CLEAR_AL_FLAG:
         {
-            _display->rtcClearAlarmFlag();
+            _display->rtc.clearAlarmFlag();
             break;
         }
         case CMD_RTC_GET_ALARM_ALL:
         {
             char response[100];
-            sprintf(response,"%d:%d:%d %d-%d", _display->rtcGetAlarmHour(),_display->rtcGetAlarmMinute(), _display->rtcGetAlarmSecond(), _display->rtcGetAlarmDay(), _display->rtcGetAlarmWeekday());
+            sprintf(response,"%d:%d:%d %d-%d", _display->rtc.getAlarmHour(),_display->rtc.getAlarmMinute(), _display->rtc.getAlarmSecond(), _display->rtc.getAlarmDay(), _display->rtc.getAlarmWeekday());
             sendResponse(CMD_RTC_GET_ALARM_ALL, strlen(response), response);
             break;
         }
@@ -1283,59 +1241,59 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             // Check if they are valid.
             if (_arg1 == NULL || _arg2 == NULL || _arg3 == NULL || _arg4== NULL) return;
 
-            Inkplate::rtcCountdownSrcClock clock;
+            RTC::rtcCountdownSrcClock clock;
 
             switch(atoi(_arg1))
             {
                 case 0:
-                    clock=Inkplate::TIMER_CLOCK_4096HZ;
+                    clock=RTC::TIMER_CLOCK_4096HZ;
                     break;
                 case 1:
-                    clock=Inkplate::TIMER_CLOCK_64HZ;
+                    clock=RTC::TIMER_CLOCK_64HZ;
                     break;
                 case 2:
-                    clock=Inkplate::TIMER_CLOCK_1HZ;
+                    clock=RTC::TIMER_CLOCK_1HZ;
                     break;
                 case 3:
-                    clock=Inkplate::TIMER_CLOCK_1PER60HZ;
+                    clock=RTC::TIMER_CLOCK_1PER60HZ;
                     break;
                 default:
                     return;
 
             }
 
-            _display->rtcTimerSet(clock, atoi(_arg2), atoi(_arg3), atoi(_arg4));
+            _display->rtc.timerSet(clock, atoi(_arg2), atoi(_arg3), atoi(_arg4));
 
             break;
         }
         case CMD_RTC_GET_TIMER_FLAG:
         {
             char response[1];
-            itoa(_display->rtcCheckTimerFlag(), response, 10);
+            itoa(_display->rtc.checkTimerFlag(), response, 10);
             sendResponse(CMD_RTC_GET_TIMER_FLAG, strlen(response), response);
 
             break;
         }
         case CMD_RTC_CLEAR_TIMER_FLAG:
         {
-            _display->rtcClearTimerFlag();
+            _display->rtc.clearTimerFlag();
             break;
         }
         case CMD_RTC_DISABLE_TIMER:
         {
-            _display->rtcDisableTimer();
+            _display->rtc.disableTimer();
             break;
         }
         case CMD_RTC_IS_SET:
         {
             char response[1];
-            itoa(_display->rtcIsSet(), response, 10);
+            itoa(_display->rtc.isSet(), response, 10);
             sendResponse(CMD_RTC_IS_SET, strlen(response), response);
             break;
         }
         case CMD_RTC_RESET:
         {
-            _display->rtcReset();
+            _display->rtc.reset();
             break;
         }
         case CMD_ESP32_DEEPSLEEP:
@@ -1404,60 +1362,17 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
         }
         case CMD_TOUCH_INIT:
         {
-            if (_numberOfArgs != 1) return;
-            char* _isInitialized;
-            _isInitialized = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-
-            if (_isInitialized == NULL) return;
-
-            if (*_isInitialized == '1')
-            {
-                _display->tsInit(1);
-            }
-            else
-            {
-                _display->tsInit(0);
-            }
+            // Not initialized as Inkplate 5V2 doesnt have a touchscreen
             break;
         }
         case CMD_TOUCH_AVAILABLE:
         {
-            if (_numberOfArgs != 1) return;
-            char* touchAvailable;
-            touchAvailable = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-
-            if (touchAvailable == NULL) return;
-
-            if (*touchAvailable == '?')
-            {
-                Serial.print("#touch_available(");
-                Serial.print(_display->tsAvailable());
-                Serial.println(")*");
-                Serial.flush();
-            }
-
+            // Not initialized as Inkplate 5V2 doesnt have a touchscreen
             break;
         }
         case CMD_TOUCH_GET_DATA:
         {
-            if (_numberOfArgs != 1) return;
-            char* getData;
-            getData = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-            
-            if (getData == NULL) return;
-
-            if (*getData == '?')
-            {
-                if (_display->tsGetData(tx1, ty1) != 0)
-                {
-                    Serial.print("#touch(");
-                    Serial.print(tx1[0]);
-                    Serial.print(", ");
-                    Serial.print(ty1[0]);
-                    Serial.println(")*");
-                    Serial.flush();
-                }
-            }
+            // Not initialized as Inkplate 5V2 doesnt have a touchscreen
             break;
         }
         case CMD_CONNECT_WIFI:
@@ -1610,77 +1525,6 @@ void PeripheralMode::parseCommand(int _command, int _repeat, int _payloadSize, c
             }
             break;
         } 
-
-        case CMD_FRONTLIGHT:
-        {
-            if (_numberOfArgs != 1) return;
-            char* _isEnabled;
-            _isEnabled = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-
-            if (_isEnabled == NULL) return;
-
-            if (*_isEnabled == '1') 
-            {
-                _display->frontlight(true);
-            }
-            else 
-            {
-                _display->frontlight(false);
-            }
-            break;
-        }
-
-        case CMD_FRONTLIGHT_SET:
-        {
-            if (_numberOfArgs != 1) return;
-            char* _value;
-            _value = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-
-            if (_value == NULL) return;
-
-            _display->setFrontlight(atol(_value));
-            break;
-        }
-
-        case CMD_TOUCH_RAW:
-        {
-            if (_numberOfArgs != 1) return;
-            char* _getRaw;
-            _getRaw = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-
-            if (_getRaw == NULL) return;
-
-            if (*_getRaw == '?')
-            {
-                _display->tsGetRawData(rt);
-                for (int i = 0; i < 8; i++)
-                {
-                    Serial.print("Reg ");
-                    Serial.println(rt[i], BIN);
-                }
-                Serial.flush();
-            }
-            break;
-        }
-
-        case CMD_TOUCHIN_AREA:
-        {
-            checkArguments(&_numberOfArgs, 4, _repeat);
-            
-            char* tx2 = getArgument(_payload, _payloadSize, _numberOfArgs, 0, NULL);
-            char* ty2 = getArgument(_payload, _payloadSize, _numberOfArgs, 1, NULL);
-            char* tw = getArgument(_payload, _payloadSize, _numberOfArgs, 2, NULL);
-            char* th = getArgument(_payload, _payloadSize, _numberOfArgs, 3, NULL);
-
-            if (tx2 == NULL || ty2 == NULL || tw == NULL || th == NULL) return;
-
-            Serial.print("#touch_area(");
-            Serial.print(_display->touchInArea(atol(tx2), atol(tx2), atol(tw), atol(th)));
-            Serial.println(")*");
-            Serial.flush();
-
-            break;
-        }
     }
 }
 
@@ -1698,6 +1542,7 @@ int PeripheralMode::charToInt(char a)
       return a - '0';
     if (a >= 'A' && a <= 'F')
       return ((a - 'A') + 10);
+    return -1;
 }
 
 void PeripheralMode::checkArguments(int *_noOfArgs, int _maxArg, int _repeat)

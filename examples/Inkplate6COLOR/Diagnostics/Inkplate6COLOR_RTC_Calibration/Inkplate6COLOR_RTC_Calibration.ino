@@ -1,18 +1,67 @@
-/*
-   Inkplate6COLOR_RTC_Calibration example for Soldered Inkplate 6COLOR
-   For this example you will need USB cable and Inkplate 6COLOR.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to Calibrate RTC to be more precise and accurate.
-   If you have any issues with the time precision, in this way you can change the internal capacitor value, 
-   and set the clock offset. Please follow the instructions below carefully.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   27 April 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_Read_Touchpads.ino
+ * @brief       Uses the built-in capacitive touchpads on Inkplate 6 to control
+ *              a counter displayed on the screen.
+ *
+ * @details     This example demonstrates how to use the three capacitive
+ *              touchpads integrated on the Inkplate 6 PCB. These pads are
+ *              labeled 1, 2, and 3 and function as simple touch-sensitive
+ *              switches that can be used for user input.
+ *
+ *              The sketch continuously reads the state of the touchpads using
+ *              display.touchpad.read(). Each pad performs a specific action on
+ *              a counter displayed on the screen:
+ *
+ *              - Pad 1 decreases the number
+ *              - Pad 2 resets the number to zero
+ *              - Pad 3 increases the number
+ *
+ *              The example uses 1-bit display mode and partial updates to keep
+ *              screen refreshes fast. After several partial updates, a full
+ *              refresh is automatically performed to maintain display quality.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate6 in Arduino IDE and upload the sketch.
+ * 2) After startup, a number appears in the center of the display.
+ * 3) Touch the pads on the bottom of the PCB:
+ *    - Touch pad 1 to decrease the number.
+ *    - Touch pad 2 to reset the number to zero.
+ *    - Touch pad 3 to increase the number.
+ * 4) The display updates each time a pad is touched.
+ *
+ * Expected output:
+ * - Display: A large number that changes according to touchpad input.
+ * - Display: Symbols "-", "0", and "+" printed above the touchpads as visual
+ *   indicators of their functions.
+ *
+ * Notes:
+ * - Display mode: 1-bit black-and-white (INKPLATE_1BIT).
+ * - Partial updates are used for faster refresh. After ~20 partial updates,
+ *   a full refresh is performed automatically.
+ * - Capacitive touchpads are sensitive to environment and grounding and may
+ *   behave differently depending on humidity, grounding, or enclosures.
+ * - touchpad.read() returns 1 when the pad is touched and 0 when it is not.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2020-07-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
@@ -45,9 +94,9 @@ void setup()
     //  - If you use an internal capacitor, you have to remove the external ones. 
     //  - If you use an external one, you don't have the next line of code. 
     // Here we setting internal capacitor value (7 pF):
-    // display.rtcSetInternalCapacitor(RTC_7PF); 
+    // display.rtc.setInternalCapacitor(RTC_7PF); 
     // Another option is 12.5 pF:
-    display.rtcSetInternalCapacitor(RTC_12_5PF);
+    display.rtc.setInternalCapacitor(RTC_12_5PF);
 
     // Set offset for RTC crystal
     // The first argument is a mode (0 or 1):
@@ -58,7 +107,7 @@ void setup()
     // decimal. For example: mode 0 (4.34 ppm), offset value 15 = + 65.1 ppm every 2 hours
     // See 8.2.3 in the datasheet for more details
     
-    display.rtcSetClockOffset(1, -63); 
+    display.rtc.setClockOffset(1, -63); 
 
     // How to calculate this offset?
     // 1. Measure the frequency on the clock pin of the RTC (let's call it fMeasured)
@@ -73,9 +122,9 @@ void setup()
     // If you don't have an oscilloscope or something to measure the frequency, here is a procedure for you. 
     // NOTE: This is a longer, but more precise method to calibrate RTC.
     // When you run for the first time to see how much rtc misses, 
-    // you MUST comment the display.rtcSetClockOffset() function above.
+    // you MUST comment the display.rtc.setClockOffset() function above.
     // Once again, if you are using external capacitor, you don't need neither 
-    // display.rtcSetInternalCapacitor(); so also comment this line.
+    // display.rtc.setInternalCapacitor(); so also comment this line.
 
     // First, upload the code to the Inkplate.
     // It would be best if you had a clock on the side (on a phone or computer).
@@ -107,7 +156,7 @@ void setup()
     }
 
     // Set the RTC to begin
-    display.rtcSetTime(hours, minutes, seconds);    // Send time to RTC
+    display.rtc.setTime(hours, minutes, seconds);    // Send time to RTC
 }
 
 void loop()
@@ -115,10 +164,10 @@ void loop()
     // Print new time every second
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtcGetRtcData();           // Get the time and date from RTC
-        seconds = display.rtcGetSecond();  // Store senconds in a variable
-        minutes = display.rtcGetMinute();  // Store minutes in a variable
-        hours = display.rtcGetHour();      // Store hours in a variable
+        display.rtc.getRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.getSecond();  // Store senconds in a variable
+        minutes = display.rtc.getMinute();  // Store minutes in a variable
+        hours = display.rtc.getHour();      // Store hours in a variable
 
         // Print the time on Serial Monitor
         Serial.printf("%02d:%02d:%02d\n", hours, minutes, seconds);

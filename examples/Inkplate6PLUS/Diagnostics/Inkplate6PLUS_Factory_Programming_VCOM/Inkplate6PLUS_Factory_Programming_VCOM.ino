@@ -5,7 +5,15 @@
  * @brief       File for programming the Inkplate's VCOM
  *
  * @note        !WARNING! VCOM can only be set 100 times, so keep usage to a minimum.
- *              !WARNING! Use at your own risk.
+ *
+ *              !WARNING! This example uses einkOn() and einkOff() methods that turn 
+ *                        on power supply for epaper display. They should only be used
+ *                        in these examples, otherwise you risk damaging
+ *                        your epaper display permanently!
+ *
+ *              !WARNING! Use at your own risk!!
+ * 
+ * 
  *              !WARNING! If it's a USB Power only Inkplate 6PLUS, set the #define in test.cpp
  *
  *              Inkplate 6PLUS does not support auto VCOM, it has to be set manually.
@@ -31,12 +39,11 @@
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
-#error                                                                                                                 \
+#error                                                                                                                 
     "Wrong board selection for this example, please select e-radionica Inkplate 6Plus or Soldered Inkplate 6Plus in the boards menu."
 #endif
 
 // Include needed libraries in the sketch
-#include "EEPROM.h"
 #include "Inkplate.h"
 #include "Wire.h"
 
@@ -96,39 +103,39 @@ void setup()
         // Test all the peripherals
         testPeripheral();
 
-        do
+        while (true)
         {
-            // Get VCOM voltage from serial from user
-            uint8_t flag = getVCOMFromSerial(&vcomVoltage);
+          // Get VCOM voltage from serial from user
+          uint8_t flag = getVCOMFromSerial(&vcomVoltage);
 
-            // Show the user the entered VCOM voltage
-            Serial.print("Entered VCOM: ");
-            Serial.println(vcomVoltage);
-            display.print(vcomVoltage);
-            display.partialUpdate();
+          // Show the user the entered VCOM voltage
+          Serial.print("Entered VCOM: ");
+          Serial.println(vcomVoltage);
+          display.print(vcomVoltage);
+          display.partialUpdate();
 
-            if (vcomVoltage < -5.0 || vcomVoltage > 0.0)
-            {
-                Serial.println("VCOM out of range!");
-                display.print(" VCOM out of range!");
-                display.partialUpdate();
-            }
-
-        } while (vcomVoltage < -5.0 || vcomVoltage > 0.0);
-
-        // Write VCOM to EEPROM
-        display.pinModeInternal(IO_INT_ADDR, display.ioRegsInt, 6, INPUT_PULLUP);
-        writeVCOMToEEPROM(vcomVoltage);
-        EEPROM.write(EEPROMaddress, 170);
-        EEPROM.commit();
+          if (display.setVCOM(vcomVoltage))
+          {
+            Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
+            break;
+          }
+          else
+          {
+            Serial.println("ERROR");
+          }
+        }
 
         display.selectDisplayMode(INKPLATE_3BIT);
     }
     else
     {
         Serial.println("VCOM already set!");
+        // *****************************************************
+        // Turn on power supply for epaper display. 
+        // WARNING: Do not call this method repeatedly as it 
+        //          can damage your display if used incorrectly!
+        // *****************************************************
         display.einkOn();
-        vcomVoltage = (double)(readReg(0x03) | ((uint16_t)((readReg(0x04) & 1) << 8))) / (-100);
     }
 
     memset(commandBuffer, 0, BUFFER_SIZE);
@@ -139,7 +146,6 @@ void setup()
 void loop()
 {
     // Peripheral mode
-    // More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
 
     if (Serial.available())
     {
@@ -147,7 +153,7 @@ void loop()
         {
             for (int i = 0; i < (BUFFER_SIZE - 1); i++)
             {
-                commandBuffer[i] = commandBuffer[i + 1];
+              commandBuffer[i] = commandBuffer[i + 1];
             }
             commandBuffer[BUFFER_SIZE - 1] = Serial.read();
         }
@@ -157,106 +163,20 @@ void loop()
     run(commandBuffer, BUFFER_SIZE, &display);
 }
 
-// Functions that writes data in register over I2C communication
-void writeReg(uint8_t _reg, uint8_t _data)
-{
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    Wire.write(_data);
-    Wire.endTransmission();
-}
 
-// Functions that reads data from register over I2C communication
-uint8_t readReg(uint8_t _reg)
-{
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    Wire.endTransmission(false);
-    Wire.requestFrom(0x48, 1);
-    return Wire.read();
-}
 
 // Print the initial image that remains on the screen
 void showSplashScreen(float vComVoltage)
 {
-    display.clean(0, 1);
     display.display();
     display.selectDisplayMode(INKPLATE_3BIT);
-    display.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
+    display.image.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
     display.setTextColor(0, 7);
     display.setTextSize(1);
     display.setCursor(5, 734);
     display.print(vComVoltage, 2);
     display.print("V");
     display.display();
-}
-
-// This function is corrected
-uint8_t writeVCOMToEEPROM(double v)
-{
-    int vcom = int(abs(v) * 100);
-    int vcomH = (vcom >> 8) & 1;
-    int vcomL = vcom & 0xFF;
-
-    // Set PCAL pin where TPS65186 INT pin is connectet to input pull up
-    display.pinModeInternal(IO_INT_ADDR, display.ioRegsInt, 6, INPUT_PULLUP);
-
-    // First power up TPS65186 so we can communicate with it
-    display.einkOn();
-
-    // Wait a little bit
-    delay(250);
-
-    // Send to TPS65186 first 8 bits of VCOM
-    writeReg(0x03, vcomL);
-
-    // Send new value of register to TPS
-    writeReg(0x04, vcomH);
-    delay(1);
-
-    // Program VCOM value to EEPROM
-    writeReg(0x04, vcomH | (1 << 6));
-
-    // Wait until EEPROM has been programmed
-    delay(100);
-    do
-    {
-        delay(1);
-    } while (display.digitalReadInternal(IO_INT_ADDR, display.ioRegsInt, 6));
-
-    // Clear Interrupt flag by reading INT1 register
-    readReg(0x07);
-
-    // Now, power off whole TPS
-    display.einkOff();
-
-    // Wait a little bit...
-    delay(1000);
-
-    // Power up TPS again
-    display.einkOn();
-
-    delay(10);
-
-    // Read VCOM valuse from registers
-    vcomL = readReg(0x03);
-    vcomH = readReg(0x04);
-
-    // Trun off the TPS65186 and wait a little bit
-    display.einkOff();
-    delay(100);
-
-    if (vcom != (vcomL | (vcomH << 8)))
-    {
-        Serial.println("\nVCOM EEPROM PROGRAMMING FAILED!\n");
-        return 0;
-    }
-    else
-    {
-        Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
-        return 1;
-    }
-    return 0;
 }
 
 // Prompt user to enter VCOM
@@ -295,6 +215,5 @@ double getVCOMFromSerial(double *_vcom)
             return 1;
         }
     }
-
     return 0;
 }

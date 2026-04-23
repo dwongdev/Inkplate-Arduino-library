@@ -22,7 +22,7 @@
  * licensing, please visit https://soldered.com/contact/ Distributed as-is; no
  * warranty is given.
  *
- * Want to learn more about Inkplate? Visit www.inkplate.io
+ * Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
  * Looking to get support? Write on our forums: https://forum.soldered.com/
  * 25 April 2023 by Soldered
  *

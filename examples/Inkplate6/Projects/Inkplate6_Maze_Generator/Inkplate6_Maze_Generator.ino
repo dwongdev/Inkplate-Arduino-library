@@ -1,17 +1,66 @@
-/*
-   Inkplate6_Maze_Generator example for Soldered Inkplate 6
-   Select "e-radionica Inkplate6" or "Soldered Inkplate6" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate6" or "Soldered Inkplate6" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example renders a random maze every time!
-   You can write on it with a whiteboard marker or a graphite pen to solve it.
-   Just be sure not to use pernament markers!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 July 2020 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6_Maze_Generator.ino
+ * @brief       Generates a random maze and draws it on Inkplate 6 in 1-bit
+ *              black/white mode.
+ *
+ * @details     This example demonstrates simple procedural content generation
+ *              on Inkplate 6 by creating a new random maze at startup and
+ *              rendering it to the e-paper display. The maze is generated on a
+ *              grid of cells (cellSize pixels per cell) using a carving
+ *              algorithm: the grid starts filled, then corridors are carved by
+ *              stepping in random directions and clearing cells when a valid
+ *              two-step move is possible.
+ *
+ *              After generation, the sketch renders the maze by drawing short
+ *              line segments between adjacent open cells, forming connected
+ *              passages. An entry and exit are opened at the top and bottom of
+ *              the maze. The result is displayed using a full refresh.
+ *
+ *              The maze is intended to be solved manually on the physical
+ *              screen (e.g., with a whiteboard marker or soft pencil). Avoid
+ *              permanent markers to prevent staining the panel surface.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial Monitor: 115200 baud (optional; no mandatory output)
+ * - Adjust cellSize to change maze density and rendering speed (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6.
+ * 2) On boot, a new random maze is generated and shown on the display.
+ * 3) Solve the maze directly on the screen using an erasable whiteboard marker
+ *    or a non-permanent pencil/graphite tool, then wipe clean when finished.
+ * 4) reset the board to generate a new maze.
+ *
+ * Expected output:
+ * - A randomly generated maze drawn in black on a white background, with an
+ *   entry at the top edge and an exit near the bottom edge.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). Partial updates are possible in BW
+ *   mode in general, but this example performs a full draw followed by a full
+ *   refresh.
+ * - Maze randomness is seeded at startup; each reset produces a different
+ *   result (depending on available time source/seed behavior).
+ * - Larger cellSize values render faster but produce a less detailed maze;
+ *   smaller values increase detail at the cost of more drawing operations.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)

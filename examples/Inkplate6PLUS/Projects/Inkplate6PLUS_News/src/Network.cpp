@@ -5,12 +5,11 @@
     May 5, 2025
     https://github.com/SolderedElectronics/Inkplate-Arduino-library/tree/master/examples/Inkplate6PLUS
 
-    For support, please reach over forums: forum.e-radionica.com/en
-    For more info about the product, please check: www.inkplate.io
+    For more info about the product, please check: https://docs.soldered.com/inkplate/
 
     This code is released under the GNU Lesser General Public License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html
     Please review the LICENSE file included with this example.
-    If you have any questions about licensing, please contact techsupport@e-radionica.com
+    If you have any questions about licensing, please contact assistance@soldered.com
     Distributed as-is; no warranty is given.
 */
 
@@ -23,19 +22,19 @@
 // Static Json from ArduinoJson library
 StaticJsonDocument<35000> doc;
 
-void Network::setCredentials(const char *wifiSSID, const char *wifiPass, const char *apiKey)
+void NetworkFunctions::setCredentials(const char *wifiSSID, const char *wifiPass, const char *apiKey)
 {
     strncpy(ssid, wifiSSID, sizeof(ssid) - 1);
     strncpy(pass, wifiPass, sizeof(pass) - 1);
     strncpy(api_key_news, apiKey, sizeof(api_key_news) - 1);
 }
 
-void Network::setTimeZone(int tz)
+void NetworkFunctions::setTimeZone(int tz)
 {
     timeZone = tz;
 }
 
-void Network::begin()
+void NetworkFunctions::begin()
 {
     WiFi.begin(ssid, pass);
     Serial.println(F("Connecting to WiFi..."));
@@ -49,7 +48,7 @@ void Network::begin()
     Serial.println(F("\nWiFi connected."));
 }
 
-struct news* Network::getData(Inkplate &inkplate)
+struct news* NetworkFunctions::getData(Inkplate &inkplate)
 {
     struct news *ent = nullptr;
 

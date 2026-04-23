@@ -1,17 +1,57 @@
-/*
-   Inkplate6FLICK_Calculator example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and Inkplate 6FLICK (and a calculator, if you don't trust Inkplate :) ).
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how simple GUI can be created on Inkplate 6FLICK with this simple calculator example.
-   You can do simple math calculations on this calculator (like addition, subtraction, multiplication, division).
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Calculator.ino
+ * @brief       Touchscreen calculator GUI for Inkplate 6FLICK with partial
+ *              e-paper updates.
+ *
+ * @details     This example implements a simple on-screen calculator using the
+ *              Inkplate 6FLICK touchscreen. It draws a calculator-style GUI and
+ *              handles touch events for number entry, decimal point input, basic
+ *              operators (+, -, x, /), calculation, and clearing the current
+ *              entry or the on-screen history.
+ *
+ *              The display runs in 1-bit (BW) mode and uses partialUpdate() for
+ *              responsive UI redraws after each touch. A full refresh is
+ *              recommended periodically (every 5–10 partial updates) to reduce
+ *              ghosting; the example provides a dedicated Refresh button for a
+ *              full redraw.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6FLICK
+ * - Serial settings: 115200 baud (optional; used for init status messages)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the correct board (Soldered Inkplate 6FLICK) and upload the sketch.
+ * 2) After boot, the calculator UI appears on the e-paper display.
+ * 3) Tap digits and operators to build an expression, then tap "=" to calculate.
+ * 4) Use "Clear" to reset the current entry or "Clear history" to erase history.
+ * 5) Use "Refresh" to perform a full redraw and reduce partial-update ghosting.
+ *
+ * Expected output:
+ * - Display: Calculator GUI with current expression/result and a running history.
+ * - Serial Monitor: Touchscreen init status (e.g., failure message if init fails).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are used heavily for snappy UI.
+ * - E-paper partial updates accumulate ghosting; perform a full refresh regularly
+ *   (about every 5–10 partial updates) for best image quality.
+ * - This example is interactive and does not use deep sleep.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2024-03-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -45,7 +85,7 @@ void setup()
     display.clearDisplay();
 
     // Initialize touchscreen
-    if (!display.tsInit(true))
+    if (!display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init failed!");
     }
@@ -65,7 +105,7 @@ void loop()
 // Eg. writing numbers, selecting the mathematical operations, calculating and clearing the display
 void keysEvents()
 {
-    if (display.touchInArea(800, 20, 200, 80)) // Refresh
+    if (display.touchscreen.touchInArea(800, 20, 200, 80)) // Refresh
     {
         // Clear screen
         display.clearDisplay();
@@ -73,9 +113,9 @@ void keysEvents()
         display.display();
     }
 
-    if (display.touchInArea(600, 20, 200, 80)) // Clear
+    if (display.touchscreen.touchInArea(600, 20, 200, 80)) // Clear
     {
-        // Reset the state of the calculator
+        // reset the state of the calculator
         text18_cursor_x = 800;
         text18_cursor_y = 260;
         text18_content = "";
@@ -91,7 +131,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(50, 50, 100, 50)) // Clear history
+    if (display.touchscreen.touchInArea(50, 50, 100, 50)) // Clear history
     {
         text19_content = "";
         text19_cursor_x = 50;
@@ -103,7 +143,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(800, 650, 100, 100) && (op != ' ') && atof(&text18_content[rightNumPos+3]) != 0) // Calculate
+    if (display.touchscreen.touchInArea(800, 650, 100, 100) && (op != ' ') && atof(&text18_content[rightNumPos+3]) != 0) // Calculate
     {
         // Do calculation
         result = calculate();
@@ -125,7 +165,7 @@ void keysEvents()
         mainDraw();
         display.partialUpdate();
 
-        // Reset the state of the calculator
+        // reset the state of the calculator
         text18_content = "";
         text18_cursor_x = 800;
         text18_cursor_y = 260;
@@ -136,7 +176,7 @@ void keysEvents()
         numOfDecimalDigitsOnCurrentNumber = 0;
     }
 
-    if (display.touchInArea(900, 650, 100, 100) && (op == ' ') && (rightNumPos > 0)) // Sum
+    if (display.touchscreen.touchInArea(900, 650, 100, 100) && (op == ' ') && (rightNumPos > 0)) // Sum
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " + ";
@@ -150,7 +190,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(700, 650, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 0
+    if (display.touchscreen.touchInArea(700, 650, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 0
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "0";
@@ -171,7 +211,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(600, 650, 100, 100) && !decimalPointOnCurrentNumber && numOfDigitsEntered < 6) // Decimal point
+    if (display.touchscreen.touchInArea(600, 650, 100, 100) && !decimalPointOnCurrentNumber && numOfDigitsEntered < 6) // Decimal point
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + ".";
@@ -190,7 +230,7 @@ void keysEvents()
         decimalPointOnCurrentNumber = true;
     }
 
-    if (display.touchInArea(900, 550, 100, 100) && (op == ' ') && (rightNumPos > 0)) // Subtraction
+    if (display.touchscreen.touchInArea(900, 550, 100, 100) && (op == ' ') && (rightNumPos > 0)) // Subtraction
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " - ";
@@ -204,7 +244,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(800, 550, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 3
+    if (display.touchscreen.touchInArea(800, 550, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 3
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "3";
@@ -225,7 +265,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(700, 550, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 2
+    if (display.touchscreen.touchInArea(700, 550, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 2
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "2";
@@ -246,7 +286,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(600, 550, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 1
+    if (display.touchscreen.touchInArea(600, 550, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 1
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "1";
@@ -267,7 +307,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(900, 450, 100, 100) && (op == ' ') && (rightNumPos > 0)) // X
+    if (display.touchscreen.touchInArea(900, 450, 100, 100) && (op == ' ') && (rightNumPos > 0)) // X
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " x ";
@@ -281,7 +321,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(800, 450, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 6
+    if (display.touchscreen.touchInArea(800, 450, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 6
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "6";
@@ -302,7 +342,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(700, 450, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 5
+    if (display.touchscreen.touchInArea(700, 450, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 5
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "5";
@@ -323,7 +363,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(600, 450, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 4
+    if (display.touchscreen.touchInArea(600, 450, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 4
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "4";
@@ -344,7 +384,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(900, 350, 100, 100) && (op == ' ') && (rightNumPos > 0)) // Division
+    if (display.touchscreen.touchInArea(900, 350, 100, 100) && (op == ' ') && (rightNumPos > 0)) // Division
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + " / ";
@@ -358,7 +398,7 @@ void keysEvents()
         display.partialUpdate();
     }
 
-    if (display.touchInArea(800, 350, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 9
+    if (display.touchscreen.touchInArea(800, 350, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 9
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "9";
@@ -379,7 +419,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(700, 350, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 8
+    if (display.touchscreen.touchInArea(700, 350, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 8
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "8";
@@ -400,7 +440,7 @@ void keysEvents()
         }
     }
 
-    if (display.touchInArea(600, 350, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 7
+    if (display.touchscreen.touchInArea(600, 350, 100, 100) && numOfDigitsEntered < 6 && numOfDecimalDigitsOnCurrentNumber < 2) // 7
     {
         text18_cursor_x -= X_REZ_OFFSET;
         text18_content = text18_content + "7";

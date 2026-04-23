@@ -1,22 +1,94 @@
-/*
-   Inkplate6FLICK_RTC_Calibration example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to Calibrate RTC to be more precise and accurate.
-   If you have any issues with the time precision, in this way you can change the internal capacitor value, 
-   and set the clock offset. Please follow the instructions below carefully.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_RTC_Calibration.ino
+ * @brief       Demonstrates RTC calibration on Inkplate 6FLICK by adjusting the
+ *              RTC crystal load capacitor and clock offset registers, then
+ *              showing a running clock using partial updates.
+ *
+ * @details     This example is intended to improve real-time clock accuracy on
+ *              Inkplate 6FLICK by configuring the on-board RTC (PCF85063(A)). It
+ *              demonstrates two calibration mechanisms:
+ *
+ *              1) Crystal load capacitance selection:
+ *                 Some boards use external load capacitors for the 32.768 kHz
+ *                 crystal. This sketch shows how to enable an internal load
+ *                 capacitor (e.g., 7 pF or 12.5 pF). If you switch to the
+ *                 internal capacitor, external capacitors must be removed for
+ *                 correct operation.
+ *
+ *              2) Clock offset correction:
+ *                 The RTC provides an offset register that periodically applies
+ *                 small timing corrections. You can choose the correction mode
+ *                 (applied every ~2 hours or every ~4 minutes) and a signed
+ *                 offset value. The comments include a procedure to calculate
+ *                 the required offset either from an oscilloscope frequency
+ *                 measurement or from a multi-day drift comparison against a
+ *                 reference clock.
+ *
+ *              After configuration, the sketch waits for a button press and
+ *              starts the RTC at 00:00:00. It then reads the RTC once per
+ *              second and updates the displayed time. To reduce flicker and
+ *              speed up updates, it uses partial updates in 1-bit BW mode and
+ *              performs a full refresh after a limited number of partial
+ *              refreshes.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Extra:      none (optional: reference clock / oscilloscope for calibration)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6FLICK
+ * - Serial settings (if relevant): none
+ * - Select RTC capacitor option:
+ *   - display.rtc.setInternalCapacitor(RTC_7PF) or RTC_12_5PF
+ *   - If using external capacitors, do not enable the internal capacitor
+ * - Set RTC offset:
+ *   - display.rtc.setClockOffset(mode, value)
+ *   - Follow the included procedure to compute mode/value from measured drift
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6FLICK/quick-start-guide/
+ *
+ * How to use:
+ * 1) Decide whether you are using external crystal capacitors or internal RTC
+ *    capacitance (hardware-dependent). Configure setInternalCapacitor() only
+ *    if appropriate.
+ * 2) For drift measurement runs, comment out setClockOffset() (and optionally
+ *    setInternalCapacitor()) to measure baseline RTC error.
+ * 3) Upload the sketch. On the display, press the wake button to start the RTC.
+ * 4) Let the clock run and compare against a trusted reference over many hours
+ *    or days to compute ppm error and required offset.
+ * 5) Apply the calculated setClockOffset() value, re-upload, and verify.
+ *
+ * Expected output:
+ * - A prompt: "Press the wake button to start RTC!"
+ * - After pressing the button: a large HH:MM:SS clock updated roughly once per
+ *   second.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT).
+ * - Partial update behavior: partial updates are used for the clock and a full
+ *   refresh is forced after MAX_PARTIAL_UPDATES to reduce ghosting. Partial
+ *   updates are performed with panel power kept enabled (e.g., via the
+ *   partialUpdate(..., true) setting), which can increase power usage but makes
+ *   repeated updates faster and more stable.
+ * - Refresh timing: e-paper refresh latency can make the shown time appear to
+ *   “jump” occasionally; the RTC time itself remains continuous and accurate.
+ * - RTC concepts: the RTC alarm/timer/interrupt features are separate from this
+ *   calibration example; this sketch focuses on crystal load and offset trim.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-04-27
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
-#error "Wrong board selection for this example, please select Soldered Inkplate 6 FLICK"
+#error "Wrong board selection for this example, please select Soldered Inkplate 6FLICK"
 #endif
 
 #include "Inkplate.h"            // Include Inkplate library to the sketch
@@ -40,7 +112,7 @@ void setup()
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
     display.clearDisplay(); // Clear frame buffer of display
     display.display();      // Put clear image on display
-    display.setTextSize(4); // Set text to be 4 times bigger than classic 5x7 px text
+    display.setTextSize(5); // Set text to be 5 times bigger than classic 5x7 px text
 
     pinMode(GPIO_NUM_36, INPUT); // Set wake-up button as input
 
@@ -49,9 +121,9 @@ void setup()
     //  - If you use an internal capacitor, you have to remove the external ones. 
     //  - If you use an external one, you don't have the next line of code. 
     // Here we setting internal capacitor value (7 pF):
-    // display.rtcSetInternalCapacitor(RTC_7PF); 
+    // display.rtc.setInternalCapacitor(RTC_7PF); 
     // Another option is 12.5 pF:
-    display.rtcSetInternalCapacitor(RTC_12_5PF);
+    display.rtc.setInternalCapacitor(RTC_12_5PF);
 
     // Set offset for RTC crystal
     // The first argument is a mode (0 or 1):
@@ -61,8 +133,7 @@ void setup()
     // The real offset depends on the mode and it is equal to the: offset in ppm for specific mode * offset value in
     // decimal. For example: mode 0 (4.34 ppm), offset value 15 = + 65.1 ppm every 2 hours
     // See 8.2.3 in the datasheet for more details
-    
-    display.rtcSetClockOffset(1, -63); 
+    display.rtc.setClockOffset(1, -63); 
 
     // How to calculate this offset?
     // 1. Measure the frequency on the clock pin of the RTC (let's call it fMeasured)
@@ -77,9 +148,9 @@ void setup()
     // If you don't have an oscilloscope or something to measure the frequency, here is a procedure for you. 
     // NOTE: This is a longer, but more precise method to calibrate RTC.
     // When you run for the first time to see how much rtc misses, 
-    // you MUST comment the display.rtcSetClockOffset() function above.
+    // you MUST comment the display.rtc.setClockOffset() function above.
     // Once again, if you are using external capacitor, you don't need neither 
-    // display.rtcSetInternalCapacitor(); so also comment this line.
+    // display.rtc.setInternalCapacitor(); so also comment this line.
 
     // First, upload the code to the Inkplate.
     // It would be best if you had a clock on the side (on a phone or computer).
@@ -97,7 +168,7 @@ void setup()
     // Pass the resulting number as the second argument of the function.
     
     // Print a message for waiting
-    display.setCursor(90, 360);
+    display.setCursor(75, 380);
     display.println("Press the wake button to start RTC!");
     display.partialUpdate();
 
@@ -108,7 +179,7 @@ void setup()
     }
 
     // Set the RTC to begin
-    display.rtcSetTime(hours, minutes, seconds);    // Send time to RTC
+    display.rtc.setTime(hours, minutes, seconds);    // Send time to RTC
 }
 
 void loop()
@@ -118,14 +189,13 @@ void loop()
     // sometimes seem wrong but that actual RTC time will be precise
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtcGetRtcData();           // Get the time and date from RTC
-        seconds = display.rtcGetSecond();  // Store senconds in a variable
-        minutes = display.rtcGetMinute();  // Store minutes in a variable
-        hours = display.rtcGetHour();      // Store hours in a variable
+        display.rtc.getRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.getSecond();  // Store senconds in a variable
+        minutes = display.rtc.getMinute();  // Store minutes in a variable
+        hours = display.rtc.getHour();      // Store hours in a variable
 
         display.clearDisplay();             // Clear content in frame buffer
-        display.setTextSize(5);             // Set text to be 5 times bigger than classic 5x7 px text
-        display.setCursor(380, 360);        // Set position of the text
+        display.setCursor(480, 380);        // Set position of the text
         printTime(hours, minutes, seconds); // Print the time on screen
 
         if (n > MAX_PARTIAL_UPDATES) // Check if you need to do full refresh or you can do partial update

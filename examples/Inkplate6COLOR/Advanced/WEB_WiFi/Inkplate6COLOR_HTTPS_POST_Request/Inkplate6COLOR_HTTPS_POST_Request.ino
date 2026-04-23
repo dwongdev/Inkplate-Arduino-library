@@ -1,23 +1,76 @@
-/*
-   Inkplate6COLOR_HTTPS_POST_Request example for Soldered Inkplate 6COLOR
-   For this example you will need USB cable, Inkplate 6COLOR and stable WiFi Internet connection.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to a WiFi network and send a POST request via HTTPS.
-   We will use JSONPlaceholder fake API for testing to see responses when sending post requests.
-   For real API, you must specify the API key and maybe some more parameters to work correctly.
-   When you send a POST request, on the Serial Monitor you will see a response like on the real
-   API but data won't be written on the API.
-
-   NOTE: Open the Serial Monitor at 115200 baud rate to see what's happening!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   2 February 2023 by Soldered
-*/
-
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_HTTPS_POST_Request.ino
+ * @brief       Connects Inkplate 6COLOR to Wi-Fi and sends periodic HTTPS POST
+ *              requests with a JSON payload.
+ *
+ * @details     This example demonstrates how to use Inkplate 6COLOR for secure
+ *              web API communication over HTTPS. The sketch connects to a Wi-Fi
+ *              network, builds a small JSON document with ArduinoJson, and
+ *              sends that JSON payload to a remote HTTPS endpoint using
+ *              HTTPClient with a WiFiClientSecure transport.
+ *
+ *              The example uses the JSONPlaceholder test API, which is useful
+ *              for learning and debugging POST request workflows because it
+ *              returns realistic API-style responses without storing real data.
+ *              This makes it a safe demo target for testing request formatting,
+ *              headers, and response handling.
+ *
+ *              In this version, the TLS client uses client.setInsecure(), which
+ *              disables certificate validation. That is convenient for demos,
+ *              but it should not be used in production or security-sensitive
+ *              deployments. For real services, use proper certificate validation
+ *              or certificate pinning that matches the target host.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      Wi-Fi connection
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial Monitor: 115200 baud
+ * - Enter your Wi-Fi SSID and password in the sketch
+ * - Update the HTTPS API URL if you want to test against a different endpoint
+ * - Add API keys, authentication headers, or extra JSON fields if required by
+ *   your real service
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi credentials in the sketch.
+ * 2) Upload the example to Inkplate 6COLOR.
+ * 3) Open Serial Monitor at 115200 baud.
+ * 4) The board connects to Wi-Fi and initializes a secure HTTP client.
+ * 5) In loop(), the sketch builds a JSON payload and sends an HTTPS POST
+ *    request to the configured API endpoint.
+ * 6) The HTTP status code and returned response body are printed to Serial.
+ * 7) The process repeats after the configured delay.
+ *
+ * Expected output:
+ * - Serial: Wi-Fi connection progress, assigned IP address, HTTP status code,
+ *   and the JSON response returned by the test API.
+ * - Display: Not used in this example.
+ *
+ * Notes:
+ * - Display mode: not used in this example (no screen updates occur).
+ * - HTTPS transport is used, but client.setInsecure() disables certificate
+ *   validation. Demo only; not recommended for production.
+ * - For production APIs, use proper CA certificates or certificate pinning,
+ *   and ensure the certificate matches the target host.
+ * - JSON payload size affects RAM usage, so larger requests may require more
+ *   careful buffer sizing on embedded targets.
+ * - Repeated POST intervals should respect the target API's rate limits and
+ *   service policies.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-02
+ * @license     GNU GPL V3
+ **************************************************/
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
 #error "Wrong board selection for this example, please select Soldered Inkplate 6COLOR in the boards menu."
@@ -31,8 +84,8 @@
 #include <WiFiClientSecure.h>
 
 // Enter your WiFi credentials
-const char *ssid = "";
-const char *pass = "";
+const char *ssid = "Soldered Electronics";
+const char *pass = "dasduino";
 
 // Specify the API URL to send a POST request
 const char *apiUrl = "https://jsonplaceholder.typicode.com/posts";

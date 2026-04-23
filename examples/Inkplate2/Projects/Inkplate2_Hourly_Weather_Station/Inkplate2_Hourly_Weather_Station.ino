@@ -1,26 +1,79 @@
-/*
-   Inkplate2_Hourly_Weather_Station example for Soldered Inkplate 2
-   For this example you will need only USB cable, Inkplate 2 and a WiFi with stable Internet connection.
-   Select "Soldered Inkplate2" from Tools -> Board menu.
-   Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-   
-   This example will show you how you can use Inkplate 2 to display API data,
-   e.g. OpenWeatherMap API, and weatherstack for real time data
-   
-   IMPORTANT:
-   Make sure to change your desired city, timezone and wifi credentials below
-   Also have ArduinoJSON installed in your Arduino libraries
-   
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   5 April 2022 by e-radionica.com
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
-
+/**
+ **************************************************
+ * @file        Inkplate2_Hourly_Weather_Station.ino
+ * @brief       Hourly weather snapshot: fetch forecast data from OpenWeatherMap,
+ *              render three time slots with icons and temperatures, then deep
+ *              sleep between updates.
+ *
+ * @details     This example demonstrates how Inkplate 2 can fetch weather data
+ *              from an online API (OpenWeatherMap) and display it as a simple
+ *              dashboard. After connecting to WiFi, the sketch synchronizes the
+ *              current time via NTP, requests weather/forecast data for the
+ *              configured latitude/longitude, and renders three temperature
+ *              values (now + two upcoming hours) together with condition icons.
+ *
+ *              The UI is drawn using Adafruit GFX-compatible calls, a custom
+ *              font (SourceSansPro), and 48x48 bitmap icons included from
+ *              icons.h. If WiFi connection fails, an error message is shown and
+ *              the device sleeps briefly before retrying.
+ *
+ *              After drawing the screen, the ESP32 enters deep sleep and wakes
+ *              after a fixed interval (DELAY_MS). Because deep sleep resets the
+ *              ESP32, the program restarts from setup() on every wake cycle.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access, OpenWeatherMap API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud (recommended for debugging)
+ * - WiFi:           set ssid/pass
+ * - API key:        set apiKey (OpenWeatherMap)
+ * - Location:       set lat/lon strings for your area
+ * - Units:          optional AMERICAN define for °F/MPH (requires matching
+ *                  change in Network.cpp as noted in the sketch)
+ * - Update period:  set DELAY_MS (seconds between wakeups; multiplied by 1000)
+ * - WiFi retry:     set DELAY_WIFI_RETRY_SECONDS for quick retry on failure
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Install ArduinoJson (required by the Network helper).
+ * 2) Enter your WiFi SSID/password.
+ * 3) Create an OpenWeatherMap API key and paste it into apiKey.
+ * 4) Set lat/lon for your location.
+ * 5) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 6) The device fetches data, renders the dashboard, then sleeps and repeats.
+ *
+ * Expected output:
+ * - Display: three framed panels showing:
+ *   - "Now" and the next two hour labels
+ *   - temperature values (°C by default)
+ *   - a 48x48 weather icon per panel
+ * - On WiFi failure: an error screen prompting to check SSID/PASS, then a short
+ *   deep sleep before retrying.
+ * - Serial Monitor: NTP time printout and API fetch retries (if needed).
+ *
+ * Notes:
+ * - Display mode is 1-bit with Inkplate 2 tri-color palette (BLACK/WHITE/RED).
+ *   This example draws primarily in black/red on white background and uses a
+ *   full refresh (display()) each cycle.
+ * - Deep sleep restarts the ESP32; keep logic in setup() and leave loop() empty.
+ * - API rate limits apply. The chosen update interval is intended to stay under
+ *   typical free-tier limits, but you should verify current API quotas.
+ * - Icons are selected by matching OpenWeatherMap condition abbreviations
+ *   (e.g. "01d", "10n") against the built-in icon table.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      e-radionica.com (community example), adapted for Soldered
+ * @date        2022-04-05
+ * @license     GNU GPL V3
+ **************************************************/
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
 #error "Wrong board selection for this example, please select Soldered Inkplate 2 in the boards menu."
@@ -28,7 +81,7 @@
 
 #include "Inkplate.h" // Include Inkplate library to the sketch
 
-#include "Network.h" // Header file for easier code readability
+#include "NetworkFunctions.h" // Header file for easier code readability
 
 // Including fonts used
 #include "Fonts/SourceSansPro_Regular8pt7b.h"
@@ -44,15 +97,15 @@
 Inkplate display;
 
 // All our network functions are in this object, see Network.h
-Network network;
+NetworkFunctions network;
 
 // Change to your wifi ssid and password
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 // Change to your api key, if you don't have one, head over to:
 // https://openweathermap.org/guide , register and copy the key provided
-char apiKey[] = "";
+char apiKey[] = "786f669a68d3a3d215e4b660fc27de77";
 
 // Coordinates of your city sent to the api
 char lon[] = "18.5947808";

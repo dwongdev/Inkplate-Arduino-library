@@ -1,22 +1,51 @@
-/*
-   Inkplate10_Black_And_White example for Soldered Inkplate 10
-   For this example you will need only USB cable and Inkplate 10.
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can draw some simple graphics using
-   Adafruit GFX functions. Yes, Inkplate library is 100% compatible with GFX lib!
-   Learn more about Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library )
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   1 December 2022 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_Black_And_White.ino
+ * @brief       Black & white drawing demo using Adafruit GFX on Soldered Inkplate 10.
+ *
+ * @details     Demonstrates basic drawing and text rendering on the Inkplate 10
+ *              in 1-bit (black & white) mode using Adafruit GFX-compatible
+ *              functions. The example draws pixels, lines, shapes, polygons,
+ *              and text in multiple sizes, and also shows how to render a
+ *              monochrome bitmap (e.g. Soldered logo) using the Inkplate image
+ *              helpers.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      Optional bitmap header file (e.g. logo.h)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 10.
+ * 2) The example cycles through multiple drawing demonstrations.
+ * 3) Each demo renders to the framebuffer and then updates the e-paper display.
+ *
+ * Expected output:
+ * - A sequence of graphics demos: pixels, lines, rectangles, circles, triangles,
+ *   rounded rectangles, ellipses, polygons, bitmap drawing, and text rendering.
+ * - Final part continuously rotates and displays text.
+ *
+ * Notes:
+ * - Inkplate library is compatible with Adafruit GFX drawing functions.
+ * - 1-bit mode supports only BLACK and WHITE colors.
+ * - Avoid refreshing the full display too often; long delays are used for demo clarity.
+ * - For faster updates, use partial update (see partial update examples).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library
+ * Support:      https://forum.soldered.com/
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
+ *
+ * @author      Soldered
+ * @date        2022-12-01
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
@@ -257,7 +286,7 @@ void loop()
     // Display some bitmap on screen. We are going to display Solderedlogo on display at location X = 50, Y = 301
     // Image is 1100x221 pixels and we want to every pixel of this bitmap to be black.
     display.clearDisplay();
-    display.drawImage(logo, 50, 301, logo_w, logo_h,
+    display.image.draw(logo, 50, 301, logo_w, logo_h,
                       BLACK); // Arguments are: array variable name, start X, start Y, size X, size Y, color
     displayCurrentAction("Drawing Soldered logo");
     display.display();

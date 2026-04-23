@@ -1,20 +1,47 @@
-/*
-   Inkplate5V2_RTC_Simple example for Soldered Inkplate 5 V2
-   For this example you will need a USB-C cable and Inkplate 5 V2.
-   Select "Soldered Inkplate5 V2" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5 V2" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Example shows how to use basic clock functions of PCF85063A RTC on Inkplate board.
-   This example will show how to set time and date, how to read time and how to print time on Inkplate using partial
-   updates. NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first
-   refresh after power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture
-   quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 April 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5v2_RTC_Simple.ino
+ * @brief       Basic RTC time and date example for Soldered Inkplate 5v2.
+ *
+ * @details     Demonstrates basic usage of the PCF85063A real-time clock (RTC)
+ *              integrated on the Inkplate 5v2 board. The example shows how to
+ *              set the current time and date, read the RTC values, and display
+ *              the time on the e-paper screen using partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5v2
+ * - Hardware:   Inkplate 5v2, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5v2
+ * - Serial settings: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5v2/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 5v2.
+ * 2) Set the initial RTC time and date in the code if not already configured.
+ * 3) The current time is periodically read from the RTC.
+ * 4) Time and date are displayed on the Inkplate screen.
+ *
+ * Expected output:
+ * - Inkplate display shows the current date and time.
+ *
+ * Notes:
+ * - Inkplate 5v2 uses the PCF85063A RTC chip.
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - It is not recommended to use partial update on the first refresh after power-up.
+ * - Perform a full refresh every 5–10 partial updates to maintain display quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-11-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5V2
@@ -45,8 +72,8 @@ void setup()
     display.display();      // Put clear image on display
     display.setTextSize(4); // Set text to be 4 times bigger than classic 5x7 px text
 
-    display.rtcSetTime(hours, minutes, seconds);   // Send time to RTC
-    display.rtcSetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.setTime(hours, minutes, seconds);   // Send time to RTC
+    display.rtc.setDate(weekday, day, month, year); // Send date to RTC
 }
 
 // Variable that keeps count on how much screen has been partially updated
@@ -56,14 +83,14 @@ void loop()
 {
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtcGetRtcData();           // Get the time and date from RTC
-        seconds = display.rtcGetSecond();  // Store senconds in a variable
-        minutes = display.rtcGetMinute();  // Store minutes in a variable
-        hours = display.rtcGetHour();      // Store hours in a variable
-        weekday = display.rtcGetWeekday(); // Store day of week in a variable
-        day = display.rtcGetDay();         // Store day of month in a variable
-        month = display.rtcGetMonth();     // Store month in a variable
-        year = display.rtcGetYear();       // Store year in a variable
+        display.rtc.getRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.getSecond();  // Store senconds in a variable
+        minutes = display.rtc.getMinute();  // Store minutes in a variable
+        hours = display.rtc.getHour();      // Store hours in a variable
+        weekday = display.rtc.getWeekday(); // Store day of week in a variable
+        day = display.rtc.getDay();         // Store day of month in a variable
+        month = display.rtc.getMonth();     // Store month in a variable
+        year = display.rtc.getYear();       // Store year in a variable
 
         display.clearDisplay();                                        // Clear content in frame buffer
         display.setCursor(300, 332);                                   // Set position of the text

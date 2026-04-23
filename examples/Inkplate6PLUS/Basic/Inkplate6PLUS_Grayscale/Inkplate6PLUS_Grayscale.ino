@@ -1,21 +1,55 @@
-/*
-   Inkplate6PLUS_Grayscale example for Soldered Inkplate 6Plus
-   For this example you will need only USB cable and Inkplate 6PLUS
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can draw some simple graphics using
-   Adafruit GFX functions. Yes, Inkplate library is 100% compatible with GFX lib!
-   Learn more about Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library
-   Inkplate will be used in gray mode which is 3 bit, so you can have up to 8 different colors (black, 6 gray
-   colors and white) Color is represented by number, where number 0 means black and number 7 means white, while
-   everything in between are shades of gray.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Grayscale.ino
+ * @brief       Grayscale graphics demo for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates drawing graphics primitives on the Inkplate 6PLUS
+ *              e-paper display using Adafruit GFX-compatible functions in
+ *              3-bit (grayscale) mode. In 3-bit mode, Inkplate supports 8
+ *              shades (0–7), where 0 is black, 7 is white, and values in
+ *              between are shades of gray. The example showcases pixels,
+ *              lines (including thick and gradient lines), rectangles (outlined
+ *              and filled), circles (outlined and filled), rounded rectangles,
+ *              triangles, ellipses, polygons, bitmap rendering, text in
+ *              multiple sizes and shades, inverted text colors, and display
+ *              rotation.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) The display will cycle through multiple drawing demonstrations.
+ * 3) Each scene is drawn into the framebuffer and shown using display.display().
+ * 4) At the end, the example continuously rotates and redraws text.
+ *
+ * Expected output:
+ * - A sequence of grayscale graphics demos displayed one by one.
+ * - A grayscale bitmap image rendered on the display.
+ * - Text shown in multiple sizes and shades, including inverted text.
+ * - Continuous rotated “INKPLATE 6PLUS” text at the end.
+ *
+ * Notes:
+ * - Refreshing e-paper too frequently is not recommended; this example uses a
+ *   5 s delay between full refreshes (DELAY_MS).
+ * - Partial update is not used in this example; see partial update demos for BW mode.
+ * - The helper displayCurrentAction() writes a label at the bottom indicating
+ *   the currently demonstrated feature.
+ * - You can switch display modes at runtime using selectDisplayMode(mode).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * GFX:          https://learn.adafruit.com/adafruit-gfx-graphics-library
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
@@ -264,7 +298,7 @@ void loop()
     // Display some grayscale image on screen. We are going to display Soldered logo on display at location X = 100,
     // Y = 100 Image size is 500x332 pixels.
     display.clearDisplay();
-    display.drawImage(picture1, 100, 100, 500,
+    display.image.draw(picture1, 100, 100, 500,
                       332); // Arguments are: array variable name, start X, start Y,  size X, size Y
     displayCurrentAction("Drawing a bitmap image");
     display.display();
@@ -367,7 +401,7 @@ void loop()
     }
 
     // Did you know that you can change between BW and greyscale mode anytime?
-    // Just call display.setDisplayMode(mode)
+    // Just call display.selectDisplayMode(mode)
 }
 
 // Small function that will write on the screen what function is currently in demonstration.

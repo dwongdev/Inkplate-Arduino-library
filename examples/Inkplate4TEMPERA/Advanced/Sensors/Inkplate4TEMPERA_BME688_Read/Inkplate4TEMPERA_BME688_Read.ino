@@ -1,17 +1,68 @@
-/*
-   Inkplate4TEMPERA_BME688_Read example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read temperature, pressure and humidity data
-   from the built-in BME688 sensor and show the data on the display as well.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   9 Aug 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_BME688_Read.ino
+ * @brief       Reads environmental data from the on-board BME688 sensor and
+ *              displays the values with simple icons in 1-bit BW mode.
+ *
+ * @details     This example demonstrates how to use the built-in Bosch BME688
+ *              sensor on Inkplate 4 TEMPERA. After enabling the peripheral
+ *              power domain and initializing the sensor, the sketch repeatedly
+ *              reads:
+ *              - Temperature (with a user-defined offset calibration)
+ *              - Relative humidity
+ *              - Barometric pressure
+ *              - Gas resistance
+ *              - Estimated altitude (derived from pressure)
+ *
+ *              The values are rendered to the e-paper display alongside small
+ *              bitmap icons for temperature, humidity, and pressure. The screen
+ *              is updated once per second. To reduce flicker and improve update
+ *              speed, the sketch performs partial updates most of the time and
+ *              forces a full refresh periodically to limit ghosting.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial settings (if relevant): none
+ * - Set the temperature calibration offset (offset, in °C) if needed
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) The device powers the BME688, reads sensor values, and updates the display
+ *    continuously once per second.
+ * 3) If temperature reads consistently high/low, adjust the offset constant.
+ *
+ * Expected output:
+ * - Temperature (°C), humidity (%), and pressure (hPa) shown with icons.
+ * - Gas resistance and altitude values printed as text on the lower half of the
+ *   screen.
+ * - Values refresh every ~1 second.
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT).
+ * - Partial update: partial updates are used for faster refreshes; a full
+ *   refresh is forced after ~10 partial updates to reduce ghosting. Panel power
+ *   is kept enabled during partial updates for stability and speed (higher
+ *   power usage).
+ * - Sensor power: the BME688 is enabled via wakePeripheral(INKPLATE_BME688);
+ *   disable or deep-sleep peripherals when optimizing for low power.
+ * - Altitude is an estimate derived from pressure and depends on reference sea
+ *   level assumptions; it is not a precision altitude measurement.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-08-09
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -55,7 +106,7 @@ void loop()
     display.clearDisplay(); // Clear what was previously written;
 
     // Print temperature
-    display.drawImage(temperature_icon, 93, 100, temperature_icon_w, temperature_icon_h, BLACK); // Draw the icon
+    display.image.draw(temperature_icon, 93, 100, temperature_icon_w, temperature_icon_h, BLACK); // Draw the icon
     display.setCursor(68, 69);                                                                   // Set position of text
     display.print("Temperature: ");
     display.setCursor(100, 241);   // Set position of text
@@ -63,7 +114,7 @@ void loop()
     display.print("C");
 
     // Print humidity
-    display.drawImage(humidity_icon, 378, 100, humidity_icon_w, humidity_icon_h, BLACK); // Draw the icon
+    display.image.draw(humidity_icon, 378, 100, humidity_icon_w, humidity_icon_h, BLACK); // Draw the icon
     display.setCursor(378, 69);                                                          // Set position of text
     display.print("Humidity: ");
     display.setCursor(386, 241); // Set position of text
@@ -71,7 +122,7 @@ void loop()
     display.print("%");
 
     // Print pressure
-    display.drawImage(pressure_icon, 93, 368, pressure_icon_w, pressure_icon_h, BLACK); // Draw the icon
+    display.image.draw(pressure_icon, 93, 368, pressure_icon_w, pressure_icon_h, BLACK); // Draw the icon
     display.setCursor(89, 337);                                                         // Set position of text
     display.print("Pressure: ");
     display.setCursor(85, 509); // Set position of text

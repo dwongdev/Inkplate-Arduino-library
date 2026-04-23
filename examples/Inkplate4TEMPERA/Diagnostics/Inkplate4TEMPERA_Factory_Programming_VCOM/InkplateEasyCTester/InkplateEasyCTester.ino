@@ -22,7 +22,7 @@
  * licensing, please visit https://soldered.com/contact/ Distributed as-is; no
  * warranty is given.
  *
- * Want to learn more about Inkplate? Visit www.inkplate.io
+ * Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
  * Looking to get support? Write on our forums: https://forum.soldered.com/
  * 25 April 2023 by Soldered
  *
@@ -30,7 +30,7 @@
  ***************************************************/
 
 // Block usage of this code on Inkplate boards.
-#if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
+#if !defined(ARDUINO_INKPLATE4TEMPERA)
 
 // Include a Wire library (for I2C communication)
 #include "Wire.h"

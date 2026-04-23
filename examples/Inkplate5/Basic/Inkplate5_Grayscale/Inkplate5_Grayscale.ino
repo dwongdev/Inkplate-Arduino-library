@@ -1,21 +1,50 @@
-/*
-   Inkplate5_Grayscale example for Soldered Inkplate 5
-   For this example you will need only a USB-C cable and Inkplate 5
-   Select "Soldered Inkplate5" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can draw some simple graphics using
-   Adafruit GFX functions. Yes, Inkplate library is 100% compatible with GFX lib!
-   Learn more about Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library
-   Inkplate will be used in gray mode which is 3 bit, so you can have up to 8 different colors (black, 6 gray
-   colors and white). Color is represented by number, where number 0 means black and number 7 means white, while
-   everything in between are shades of gray.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   28 March 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_Grayscale.ino
+ * @brief       Grayscale (3-bit) drawing demo using Adafruit GFX on Soldered Inkplate 5.
+ *
+ * @details     Demonstrates drawing and text rendering on the Inkplate 5 in
+ *              3-bit grayscale mode using Adafruit GFX-compatible functions.
+ *              In 3-bit mode the display supports 8 shades (0–7), where 0 is
+ *              black, 7 is white, and values in between are gray levels.
+ *              The example cycles through drawing primitives (pixels, lines,
+ *              shapes, polygons), renders a grayscale bitmap, and shows text in
+ *              different sizes and shades.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
+ * - Extra:      Optional grayscale bitmap header file (e.g. image.h)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 5.
+ * 2) The example cycles through multiple grayscale drawing demonstrations.
+ * 3) Each demo renders to the framebuffer and then updates the e-paper display.
+ *
+ * Expected output:
+ * - A sequence of grayscale graphics demos (0–7 shades) and text rendering.
+ * - Final part continuously rotates and displays text.
+ *
+ * Notes:
+ * - Inkplate library is compatible with Adafruit GFX drawing functions.
+ * - Grayscale (3-bit) mode supports 8 shades: 0 (black) to 7 (white).
+ * - Avoid refreshing the full display too often; long delays are used for demo clarity.
+ * - Partial update is primarily intended for 1-bit mode; see partial update examples.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-12-02
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5
@@ -264,7 +293,7 @@ void loop()
     // Display some grayscale image on screen. We are going to display Soldered logo on display at location X = 100,
     // Y = 100 Image size is 500x332 pixels.
     display.clearDisplay();
-    display.drawImage(picture1, 100, 100, 500,
+    display.image.draw(picture1, 100, 100, 500,
                       332); // Arguments are: array variable name, start X, start Y,  size X, size Y
     displayCurrentAction("Drawing a bitmap image");
     display.display();
@@ -366,7 +395,7 @@ void loop()
     }
 
     // Did you know that you can change between BW and greyscale mode anytime?
-    // Just call display.setDisplayMode(mode)
+    // Just call display.selectDisplayMode(mode)
 }
 
 // Small function that will write on the screen what function is currently in demonstration.

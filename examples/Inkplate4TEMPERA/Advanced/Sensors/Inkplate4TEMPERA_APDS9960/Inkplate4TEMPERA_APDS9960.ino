@@ -1,17 +1,78 @@
-/*
-   Inkplate4TEMPERA_APDS9960 example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read gestures, proximity, color and
-   ambient light from the built-in APDS9960 sensor.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   20 Nov 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_APDS9960.ino
+ * @brief       Reads gesture, proximity, RGB color, and ambient light data from
+ *              the on-board APDS9960 and updates the display only when values
+ *              change.
+ *
+ * @details     This example demonstrates how to use the built-in APDS9960
+ *              sensor on Inkplate 4 TEMPERA. After waking the peripheral power
+ *              domain and initializing the sensor, the sketch enables and
+ *              configures the individual sensing blocks:
+ *              - Proximity sensing (with reduced gain)
+ *              - Gesture sensing (with reduced gain)
+ *              - Color / RGB sensing
+ *              - Ambient light sensing
+ *
+ *              The sketch continuously polls the sensor. It maintains the last
+ *              measured values for proximity, RGB channels, and ambient light,
+ *              and updates the e-paper framebuffer only when a value actually
+ *              changes. Gesture events are shown when detected (Up/Down/Left/
+ *              Right). A background grid image is drawn once at startup, and
+ *              subsequent updates overwrite only the value areas.
+ *
+ *              The display operates in 1-bit black/white mode (INKPLATE_1BIT)
+ *              and uses partial updates for fast, low-flicker refreshes. A full
+ *              refresh is performed periodically to reduce ghosting.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial settings (if relevant): none
+ * - Adjust NUM_UPDATES_BEFORE_FULL_REFRESH to tune partial/full refresh cadence
+ * - Adjust proximity/gesture gain if higher sensitivity is required
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Present a hand/object near the sensor to change proximity and trigger
+ *    swipe gestures (Up/Down/Left/Right).
+ * 3) Shine colored/bright light toward the sensor to change RGB and ambient
+ *    light readings.
+ * 4) The display updates only when readings change; occasional full refreshes
+ *    occur automatically.
+ *
+ * Expected output:
+ * - A grid background with live fields:
+ *   - Proximity value (0–255) updated as objects move closer/farther
+ *   - Last detected gesture (Up/Down/Left/Right) when a swipe is recognized
+ *   - Red/Green/Blue channel readings (16-bit values)
+ *   - Ambient light reading (16-bit value)
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT).
+ * - Partial update: frequent updates are performed via partialUpdate(); a full
+ *   refresh is forced after NUM_UPDATES_BEFORE_FULL_REFRESH to reduce ghosting.
+ *   Panel power is kept enabled during partial updates for stability and speed
+ *   (higher power usage).
+ * - Sensor enablement: APDS9960 sub-features must be explicitly enabled (gesture,
+ *   proximity, light) before readings are valid.
+ * - This example uses polling (not interrupts). For ultra-low power designs,
+ *   consider using interrupts and deep sleep wake-up workflows.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-11-20
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -47,7 +108,7 @@ void setup()
     display.setTextColor(BLACK);
 
     // Draw the background grid from buffer
-    display.drawImage(background, 0, 0, 600, 600, WHITE, BLACK);
+    display.image.draw(background, 0, 0, 600, 600, WHITE, BLACK);
 
     // Let's confiugure the APDS!
     display.wakePeripheral(INKPLATE_APDS9960); // First, wake it from sleep

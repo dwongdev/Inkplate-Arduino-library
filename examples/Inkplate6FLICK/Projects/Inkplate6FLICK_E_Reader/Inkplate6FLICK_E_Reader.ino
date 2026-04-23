@@ -1,37 +1,72 @@
-/*
-    Inkplate6FLICK_E_Reader example for Soldered Inkplate 6FLICK.
-    Select "Soldered Inkplate 6FLICK" from the Tools → Board menu.
-    Don’t see the "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example uses a preprocessed .epub file and displays it on the screen as images,
-    effectively acting as an Open Source eBook reader.
-
-    Required components: Inkplate 6FLICK, SD card, USB-C cable.
-
-    Link to project documentation: https://soldered.com/documentation/inkplate/projects/e-reader
-
-    **HOW TO USE THE PYTHON SCRIPT FOR PREPROCESSING**
-    Open terminal inside script folder and install dependencies using: pip install -r requirements.txt
-    In this example, a Python script named "epubToImg.py" is provided.
-    It can be called from the command line with the following arguments:
-      [path to epub file] [destination path + book name] --width [number] --height [number] --text-size [size]
-
-    **Some rules to follow:**
-      - The book destination must be on the SD card inside the \books\ folder  
-        (e.g., D:\books\test-book).
-      - When calling the script, use a width of 758 and a height of 930.  
-        The UI is designed for these dimensions.
-      - If the text size isn’t to your liking, when calling the script, include the OPTIONAL text-size parameter,
-        it takes any css compatible size value for example: "14px", "1.5em"... Or you can open the script and directly
-        change the DEFAULT_TEXT_SIZE variable. 
-
-    A concrete example for Inkplate 6FLICK with the designed dimensions, with a terminal oppened inside epubToImg folder:
-    python .\epubToImg.py "C:\Users\SOLDERED-4\Downloads\pg2000.epub" \
-    "D:\books\Don-Quioxte\" --width 758 --height 930 --text-size "14px"
-
-    6 August 2025 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_E_Reader.ino
+ * @brief       SD-card e-reader UI for Inkplate 6FLICK that displays a
+ *              preprocessed EPUB as a sequence of images.
+ *
+ * @details     This example implements a simple, open-source eBook reader for
+ *              Inkplate 6FLICK. Instead of parsing EPUB on-device, a companion
+ *              Python script converts an .epub into page images sized for the
+ *              UI, which are then stored on the SD card under /books/<book>/.
+ *
+ *              On boot, the sketch scans /books/ for subfolders (books), shows a
+ *              touchscreen list, and lets you select a book. Pages are loaded
+ *              from the SD card and rendered using the Inkplate image drawer.
+ *              Navigation includes PREV/NEXT, HOME, and a GOTO overlay with an
+ *              on-screen keypad for jumping to a specific page number.
+ *
+ *              The display runs in 1-bit (BW) mode and uses partial updates for
+ *              responsive UI interactions. SetFullUpdateThreshold() is used to
+ *              trigger a full refresh after a configured number of partial
+ *              updates to help reduce ghosting.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, SD card, USB cable
+ * - Extra:      PC with Python (for EPUB preprocessing)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6FLICK
+ * - Serial settings: 115200 baud (optional; used for status/error messages)
+ * - SD card content:
+ *   - /books/<book_name>/ must contain page images (BMP/JPG/JPEG/PNG)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Prepare the SD card with a /books/ folder.
+ * 2) On your PC, preprocess an EPUB into images using the provided Python tool:
+ *    - Install dependencies: pip install -r requirements.txt
+ *    - Run epubToImg.py and output into the SD card /books/<book_name>/ folder.
+ *    - Use width=758 and height=930 (UI is designed for these dimensions).
+ * 3) Insert the SD card into Inkplate 6FLICK and upload this sketch.
+ * 4) Tap PREV/NEXT to choose a book, then tap SELECT to open it.
+ * 5) In page view, use PREV/NEXT to navigate, HOME to return, or GOTO to open
+ *    the keypad and jump to a page number.
+ *
+ * Expected output:
+ * - Display: Book list UI (from /books/), then full-page images with navigation
+ *   buttons and a page counter (current / total).
+ * - Serial Monitor: SD/touch init errors and "No books found" messages if the
+ *   SD structure is missing/empty.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates improve responsiveness but can
+ *   cause ghosting; full refreshes will occur based on the configured threshold.
+ * - Page images are loaded from the SD card; large images and some formats may
+ *   be slower to decode. Prefer consistent, correctly sized pages (758x930).
+ * - Ensure filenames are ordered numerically; this example performs a simple
+ *   "natural" numeric sort so pages like 2.* come before 10.*.
+ * - This example is interactive and does not use deep sleep.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-08-06
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -39,7 +74,6 @@
 #endif
 
 #include "Inkplate.h" //Inkplate display library
-#include "SdFat.h"
 #include <cstring>   // For strlen, strcmp, strdup
 #include <cctype>    // For tolower
 #include <cstdlib>   // For malloc, realloc, free, strtol
@@ -120,7 +154,7 @@ void setup() {
     Serial.println("SD init failed");
     while (1);
   }
-  if (!display.tsInit(true)) {
+  if (!display.touchscreen.init(true)) {
     Serial.println("Touch init failed");
     while (1);
   }
@@ -143,7 +177,7 @@ void setup() {
 void loop() {
   if (!inPictureView) {
     // LEFT = SELECT → open pictures
-    if (display.touchInArea(LEFT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    if (display.touchscreen.touchInArea(LEFT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(LEFT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "SELECT");
       freePictures();
       char folder[128];
@@ -160,7 +194,7 @@ void loop() {
       delay(200);
     }
     // PREV book (cyclic if >1)
-    else if (display.touchInArea(MIDDLE_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(MIDDLE_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(MIDDLE_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "PREV");
       if (totalBooks > 1) {
         if (currentBook->previous) currentBook = currentBook->previous;
@@ -175,7 +209,7 @@ void loop() {
       delay(200);
     }
     // NEXT book (cyclic if >1)
-    else if (display.touchInArea(RIGHT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(RIGHT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(RIGHT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "NEXT");
       if (totalBooks > 1) {
         if (currentBook->next) currentBook = currentBook->next;
@@ -211,7 +245,7 @@ void loop() {
         for (int c = 0; c < 3; c++) {
           int x = ovX + c*(btnW + spacing);
           int y = startY + r*(btnH + spacing);
-          if (display.touchInArea(x, y, btnW, btnH)) {
+          if (display.touchscreen.touchInArea(x, y, btnW, btnH)) {
             invertButton(x, y, btnW, btnH, keys[r][c]);
             if (strcmp(keys[r][c], "CLR") == 0) {
               pageInput = "";
@@ -238,7 +272,7 @@ void loop() {
     }
 
     // HOME/BACK button: cancel goto or go home
-    if (display.touchInArea(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    if (display.touchscreen.touchInArea(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       // invert with appropriate label
       if (inGotoUI) invertButton(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "BACK");
       else          invertButton(HOME_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "HOME");
@@ -254,7 +288,7 @@ void loop() {
       delay(200);
     }
     // GOTO button → enter numpad
-    else if (display.touchInArea(GOTO_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(GOTO_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(GOTO_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "GOTO");
       inGotoUI   = true;
       pageInput  = "";  // start empty
@@ -262,7 +296,7 @@ void loop() {
       delay(200);
     }
     // PREV picture
-    else if (display.touchInArea(PREV_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(PREV_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(PREV_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "PREV");
       if (!inGotoUI && currentPic->previous) {
         currentPic = currentPic->previous;
@@ -271,7 +305,7 @@ void loop() {
       delay(200);
     }
     // NEXT picture
-    else if (display.touchInArea(NEXT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
+    else if (display.touchscreen.touchInArea(NEXT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H)) {
       invertButton(NEXT_BTN_X, BUTTON_Y, BUTTON_W, BUTTON_H, "NEXT");
       if (!inGotoUI && currentPic->next) {
         currentPic = currentPic->next;
@@ -450,7 +484,7 @@ void displayPicture() {
   snprintf(fullPath, sizeof(fullPath),
            "/books/%s/%s",
            currentBook->name, currentPic->name);
-  display.drawImage(fullPath, 0, 11, 1);  // moved down by 10px
+  display.image.draw(fullPath, 0, 11, 1);  // moved down by 10px
   displayPictureButtons();
   displayPageCounter();
   display.partialUpdate(false, true);

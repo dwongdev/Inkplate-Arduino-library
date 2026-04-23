@@ -1,19 +1,66 @@
-/*
-    Inkplate2_Image_Frame_From_Web example for Soldered Inkplate 2
-    For this example you will need only a USB-C cable and Inkplate 2.
-    Select "Soldered Inkplate2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example shows how you can set Inkplate to show random pictures from web.
-    What happens here is basically ESP32 connects to the WiFi and sends GET request
-    to the random image on the server and the server returns a link to the image.
-    Then Inkplate draws that image to the screen.
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    23 May 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Image_Frame_From_Web.ino
+ * @brief       Random web image frame: fetch a random image URL online, draw it
+ *              on Inkplate 2, then deep sleep and repeat periodically.
+ *
+ * @details     This example demonstrates a simple "image frame" workflow on
+ *              Inkplate 2. On each boot, the ESP32 connects to WiFi, performs a
+ *              GET request to a random image endpoint (Unsplash), parses the
+ *              returned HTML to extract the actual image URL, then requests and
+ *              renders the image to the e-paper display.
+ *
+ *              The requested image is constrained to Inkplate 2 resolution
+ *              (212x104) and is drawn as a PNG. After the image is shown with a
+ *              full refresh, the device enters deep sleep for
+ *              SECS_BETWEEN_IMAGES seconds and then wakes to fetch a new random
+ *              image. Because deep sleep resets the ESP32, the program always
+ *              restarts from setup() on every wake cycle.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud (recommended for debugging)
+ * - WiFi:           set ssid/pass
+ * - Refresh period: set SECS_BETWEEN_IMAGES (seconds)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/2/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password.
+ * 2) Upload the sketch to Inkplate 2.
+ * 3) On boot, the device downloads a random 212x104 image and displays it.
+ * 4) The device enters deep sleep and repeats after SECS_BETWEEN_IMAGES seconds.
+ *
+ * Expected output:
+ * - Display: a randomly selected image rendered full-screen (212x104).
+ * - Serial Monitor: the resolved image URL and drawImage() result code.
+ * - On error: "HTTP error" printed on the display.
+ *
+ * Notes:
+ * - Display mode is 1-bit with Inkplate 2 tri-color palette available.
+ *   This example renders the image in monochrome using the library's image
+ *   drawing pipeline and a full refresh (display()).
+ * - Deep sleep restarts the ESP32; keep all logic in setup() and leave loop()
+ *   empty.
+ * - Web/API behavior can change: this example parses an HTML response to find
+ *   an href link. If the provider changes response format, URL extraction may
+ *   fail and require updating the parser.
+ * - Network image decoding and RAM usage depend on image format and size.
+ *   Stick to 212x104 sources to reduce memory pressure and improve speed.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-05-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
@@ -29,8 +76,8 @@ Inkplate display;
 // ---------------- CHANGE HERE ---------------------:
 
 // WiFi credentials
-const char *ssid = ""; // Your WiFi SSID
-const char *pass = ""; // Your WiFi password
+const char *ssid = "Soldered Electronics"; // Your WiFi SSID
+const char *password = "dasduino"; // Your WiFi password
 
 // Define delay between 2 images in seconds
 #define SECS_BETWEEN_IMAGES 30
@@ -39,62 +86,95 @@ const char *pass = ""; // Your WiFi password
 
 void setup()
 {
-    // Init serial communication
     Serial.begin(115200);
-
-    // Init Inkplate library (you should call this function ONLY ONCE)
     display.begin();
+    display.setTextColor(0);
 
     // Join wifi
-    display.connectWiFi(ssid, pass);
-    Serial.println("Connected");
+    display.connectWiFi(ssid, password);
+    Serial.println("joined wifi");
+    char url[256];  // Buffer that will hold the final resolved image url
 
-    // Get the URL of the next image
-    char url[256];
+    // Get the final image URL (resolve HTTP redirect) 
     imageUrl(url);
+    Serial.println(url);
 
-    // Draw an image on the screen
-    Serial.println(display.drawImage(url, display.PNG, 0, 0));
+    // Download and draw the JPEG image directly from the web
+    // Function returns 1 on success and 0 on failure
+    Serial.println(display.image.drawJpegFromWeb(url, 0, 0, true, false));
     display.display();
 
-    // Go to deep sleep
-    Serial.println("Going to sleep, bye");
-    esp_sleep_enable_timer_wakeup(SECS_BETWEEN_IMAGES * 1000 * 1000LL); // Activate wakeup timer
-    esp_deep_sleep_start(); // Start deep sleep (this function does not return). Program stops here.
+    Serial.println("Going to sleep");
+
+    // Activate wakeup timer
+    esp_sleep_enable_timer_wakeup(15ll * 60 * 1000 * 1000);
+
+    // Start deep sleep (this function does not return). Program stops here.
+    esp_deep_sleep_start();
 }
 
 void loop()
 {
-    // Never here! If you are using deep sleep, the whole program should be in setup() because the board restarts each
-    // time. loop() must be empty!
+    // Never here, as deepsleep restarts esp32
 }
 
-// Get random image from web
-void imageUrl(char *a)
+void imageUrl(char *out)
 {
-    String url;
+    const char *startUrl = "http://loremflickr.com/212/104";
+
+    // For HTTPS targets (redirect), we’ll use a secure client.
+    WiFiClientSecure secure;
+    secure.setInsecure();           // quick test; later replace with proper CA
+
     HTTPClient http;
 
-    // Do GET request
-    if (http.begin("https://source.unsplash.com/random/212x104?crop=entropy&fit=crop&fm=png&h=104&w=212") && http.GET() > 0)
-    {
-        url = http.getString();
+    const char* keys[] = {"Location"};
+    http.collectHeaders(keys, 1);
+    http.setFollowRedirects(HTTPC_DISABLE_FOLLOW_REDIRECTS);
+    http.setTimeout(15000);
+    http.setUserAgent("Mozilla/5.0");   // some CDNs are picky
 
-        int urlStart = url.indexOf("href=\"") + 6;
-        int urlEnd = url.indexOf("\">", urlStart);
-
-        url = url.substring(urlStart, urlEnd);
-        url = url.substring(0, url.indexOf("?")) + "?crop=entropy&fit=crop&fm=png&h=104&w=212";
-
-        // Print url to the Serial Monitor and copy to the buffer
-        Serial.println(url);
-        strcpy(a, url.c_str());
+    // Use plain begin for the initial http:// request
+    if (!http.begin(startUrl)) {
+        strcpy(out, startUrl);
+        return;
     }
-    else
-    {
-        // Something went wrong, print an error message
-        display.println("HTTP error");
-        display.display();
+
+    int code = http.GET();
+    Serial.printf("HTTP code: %d\n", code);
+    if (code < 0) {
+        Serial.printf("HTTP error: %s\n", http.errorToString(code).c_str());
+        strcpy(out, startUrl);
+        http.end();
+        return;
     }
+
+    String loc = http.header("Location");
+    if (loc.length() == 0) loc = http.getLocation();
     http.end();
+
+    if (loc.length() == 0) {
+        strcpy(out, startUrl);
+        return;
+    }
+
+    if (loc.startsWith("/"))  loc = String("http://loremflickr.com") + loc;
+    if (loc.startsWith("//")) loc = String("http:") + loc;
+
+    // If redirected URL is https://, sanity check we can connect to it
+    if (loc.startsWith("https://")) {
+        HTTPClient https;
+        https.setTimeout(15000);
+        https.setUserAgent("Mozilla/5.0");
+        if (!https.begin(secure, loc)) {
+            Serial.println("https begin failed");
+        } else {
+            int c2 = https.GET();
+            Serial.printf("Redirect HTTPS test code: %d (%s)\n", c2, https.errorToString(c2).c_str());
+            https.end();
+        }
+    }
+
+    strncpy(out, loc.c_str(), 255);
+    out[255] = 0;
 }

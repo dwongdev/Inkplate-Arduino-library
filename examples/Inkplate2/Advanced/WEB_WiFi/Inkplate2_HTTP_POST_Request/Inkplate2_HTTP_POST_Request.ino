@@ -1,26 +1,65 @@
-/*
-   Inkplate2_HTTP_POST_Request example for Soldered Inkplate2
-   For this example you will need USB cable, Inkplate2 and stable WiFi Internet connection.
-   Select "Soldered Inkplate2" from Tools -> Board menu.
-   Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to a WiFi network and send a POST request via HTTP.
-   We will use ThingSpeak API to see post requests. It's a free API that allows you to store and retrieve data using
-   HTTP.
-   1. Go to the ThingSpeak.com and create a free account
-   2. Open the Channels tab
-   3. Create a new channel
-   4. Create fields you want to use
-   5. Open the channel, go to the API Keys tab and copy your Write API Key
-   6. Enter your API key in the code below
-
-   When you send a POST request, open your channel and you will see the graph where is your sent data.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   26 January 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_HTTP_POST_Request.ino
+ * @brief       Send periodic HTTP POST requests over WiFi to ThingSpeak and
+ *              monitor activity via Serial Monitor.
+ *
+ * @details     This example demonstrates how to connect Inkplate 2 to a WiFi
+ *              network and send HTTP POST requests using a raw WiFiClient TCP
+ *              connection. The sketch posts data to the ThingSpeak API
+ *              (api.thingspeak.com) at a fixed interval. A sample value is
+ *              generated with random() and sent as field1 in an
+ *              application/x-www-form-urlencoded payload.
+ *
+ *              The e-paper display is used only for a short startup message.
+ *              All request status and troubleshooting output is sent to the
+ *              Serial Monitor. The display runs in 1-bit (black/white) mode.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + ThingSpeak account/channel + Write API Key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Serial Monitor: 115200 baud
+ * - WiFi:           set ssid/pass
+ * - ThingSpeak:     set writeAPIKey (Write API Key from your channel)
+ * - Interval:       set POSTING_INTERVAL_IN_SESCS (seconds)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Create a ThingSpeak account and a channel with at least one field.
+ * 2) Copy the channel Write API Key and paste it into writeAPIKey.
+ * 3) Enter your WiFi SSID and password.
+ * 4) Upload the sketch and open Serial Monitor at 115200 baud.
+ * 5) Every POSTING_INTERVAL_IN_SESCS seconds, the device sends a POST request.
+ * 6) Open your ThingSpeak channel to see the incoming data plotted over time.
+ *
+ * Expected output:
+ * - Display: "HTTP POST request example" and a reminder to open Serial Monitor.
+ * - Serial Monitor: WiFi connection logs and "The POST request is done."
+ *   messages after each successful POST.
+ * - ThingSpeak: field1 graph updates with the posted values.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Only a full refresh (display()) is used.
+ * - This example uses plain HTTP on port 80 (no TLS). For secure transport,
+ *   use an HTTPS example with WiFiClientSecure and certificate validation.
+ * - The payload uses form encoding. If you post multiple fields, append them
+ *   as additional key=value pairs (e.g., field1=...&field2=...).
+ * - ThingSpeak rate limits apply; choose an interval that complies with your
+ *   account/channel limits to avoid rejected updates.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-01-26
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2

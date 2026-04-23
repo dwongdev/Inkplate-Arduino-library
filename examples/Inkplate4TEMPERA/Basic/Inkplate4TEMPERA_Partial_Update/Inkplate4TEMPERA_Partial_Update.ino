@@ -1,19 +1,56 @@
-/*
-   Inkplate4TEMPERA_Partial_Upodate.ino example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show  how to use partial update functionality of Inkplate 4TEMPERA e-paper display.
-   It will scroll text that is saved in char array
-   NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after
-   power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   12 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Partial_Upodate.ino
+ * @brief       Demonstrates 1-bit partial updates by scrolling text across the
+ *              Inkplate 4 TEMPERA e-paper display.
+ *
+ * @details     This example runs the Inkplate 4 TEMPERA in 1-bit (BW) mode and
+ *              scrolls a text string horizontally by repeatedly redrawing it at
+ *              a new X position and calling partialUpdate().
+ *
+ *              Partial updates refresh only the changed areas of the screen,
+ *              reducing flashing and improving perceived speed compared to full
+ *              refreshes. To keep image quality stable, the sketch configures a
+ *              full refresh threshold so that after a defined number of partial
+ *              updates, the next update is forced to be a full refresh.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the Inkplate 4 TEMPERA board and upload the sketch.
+ * 2) The text will continuously scroll across the display.
+ * 3) Adjust the scroll speed by changing the delay or offset step.
+ *
+ * Expected output:
+ * - E-paper: A single line of text moving horizontally, updated with minimal
+ *   flashing compared to full refresh updates.
+ *
+ * Notes:
+ * - Partial update is supported only in 1-bit (BW) mode.
+ * - Do not rely on partial update as the first refresh after power-up; perform
+ *   a full refresh first (this sketch does an initial clear + display()).
+ * - For best quality, do a full refresh every 5–10 partial updates. This
+ *   example uses setFullUpdateThreshold() to force a full refresh cycle.
+ * - partialUpdate(false, true) keeps the e-paper power enabled after the update
+ *   (leaveOn=true) for faster subsequent partial updates, but increases power
+ *   usage. Use leaveOn=false when optimizing for energy.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-07-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -67,4 +104,4 @@ void loop()
     if (offset < 0)
         offset = 800; // Text is scrolled till the end of the screen? Get it back on the start!
     delay(500);       // Delay between refreshes.
-
+}

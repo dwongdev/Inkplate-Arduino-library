@@ -1,17 +1,49 @@
-/*
-   Inkplate6FLICK_Touchscreen_Serial example for Soldered Inkplate 6FLICK
-   For this example you will need only USB cable and Inkplate 6FLICK
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use Inkplate 6FLICK touchscreen.
-   Once the code is uploaded, open the serial monitor in Arduino IDE and you'll see touchscreen events there.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   18 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Touchscreen_Serial.ino
+ * @brief       Touchscreen event monitoring via Serial for Inkplate 6FLICK.
+ *
+ * @details     This example demonstrates how to read touch events from the
+ *              Inkplate 6FLICK touchscreen and print the detected touch
+ *              coordinates to the Serial Monitor.
+ *
+ *              The touchscreen supports multi-touch (up to two simultaneous
+ *              fingers). When a touch occurs, the number of detected fingers
+ *              and their coordinates are printed to the serial output.
+ *              When all fingers are released, a "Release" message is printed.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) Open Serial Monitor at 115200 baud.
+ * 3) Touch the display with one or two fingers.
+ * 4) The number of detected fingers and their coordinates will appear in the
+ *    Serial Monitor.
+ *
+ * Expected behavior:
+ * - When a finger touches the screen, coordinates (X,Y) are printed.
+ * - If two fingers touch simultaneously, both coordinates are printed.
+ * - When all fingers are lifted, "Release" is printed.
+ *
+ * Notes:
+ * - The touchscreen supports up to two touch points.
+ * - Coordinates are automatically adjusted if the display rotation is changed.
+ * - This example sets display rotation to orientation "2".
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -29,7 +61,7 @@ void setup()
     display.clearDisplay();
     display.display();
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -53,13 +85,13 @@ void setup()
 void loop()
 {
     // Check if there is any touch detected
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
         uint8_t n;
         uint16_t x[2], y[2];
 
         // See how many fingers are detected (max 2) and copy x and y position of each finger on touchscreen
-        n = display.tsGetData(x, y);
+        n = display.touchscreen.getData(x, y);
         if (n != 0)
         {
             // Print number of fingers to serial monitor, along with their coordinates

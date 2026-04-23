@@ -1,18 +1,61 @@
-/*
-   Inkplate6PLUS_Game_Of_Life example for Soldered Inkplate 6Plus
-   For this example you will need only USB cable and Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Game_Of_Life.ino
+ * @brief       Conway’s Game of Life animation on Inkplate 6PLUS using fast
+ *              partial e-paper updates.
+ *
+ * @details     This community example runs Conway’s Game of Life on the Inkplate
+ *              6PLUS e-paper display. The simulation is rendered as a grid of
+ *              square cells whose size is randomized on reset to vary the look
+ *              and performance. Cells “age” visually: newly born cells are drawn
+ *              solid black, while older living cells get a white interior that
+ *              expands with age, creating a distinctive fade/outline effect.
+ *
+ *              The sketch uses double-buffered grids (current/next) and toroidal
+ *              wraparound at the edges (neighbors beyond an edge wrap to the
+ *              opposite side). The display runs in 1-bit (BW) mode and uses
+ *              partialUpdate() for most frames. A full refresh (display()) is
+ *              forced periodically to reduce ghosting.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional; not required for operation)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the board "Soldered Inkplate 6PLUS" and upload the sketch.
+ * 2) The Game of Life starts automatically after boot.
+ * 3) The simulation occasionally re-randomizes the grid (and cell size) when
+ *    activity drops below a threshold to keep the animation interesting.
+ *
+ * Expected output:
+ * - Display: Continuous Game of Life animation with cell aging visuals.
+ * - Refresh behavior: Mostly partial updates, with a full refresh every
+ *   FULLREFRESH frames.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are used heavily for speed.
+ * - E-paper partial updates accumulate ghosting; periodic full refresh
+ *   (display()) is required. This example performs a full refresh every
+ *   FULLREFRESH frames (default: 40).
+ * - This example does not use the touchscreen and does not use deep sleep.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      claud9999 (community example), adapted for Soldered Inkplate 6PLUS
+ * @date        2020-09-24
+ * @license     GNU GPL V3
+ **************************************************/
 
-   Our first community created example, made by: https://github.com/claud9999
-   To run it, jut upload the code and watch Conways game of life animation!
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   24 September 2020 by claud9999
-*/
-
+// Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
 #error "Wrong board selection for this example, please select e-radionica Inkplate 6Plus or Soldered Inkplate 6Plus in the boards menu."

@@ -1,14 +1,71 @@
-/*
-  Inkplate10 Image Uploader Example
-  Compatible with Soldered Inkplate 10
-
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to upload an image to a webapp hosted by Inkplate 2
-  and display it on the e‐ink display. Image will be automatically resized.
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Image_Uploader.ino
+ * @brief       WiFi image uploader: host a web page in AP mode, accept a JPEG
+ *              upload, serve a preview, and render the uploaded image on the
+ *              Inkplate display.
+ *
+ * @details     This example turns Inkplate 2 into a simple standalone web app
+ *              for uploading an image from a phone/PC. The ESP32 starts a WiFi
+ *              Access Point (AP) and an HTTP server on port 80. A web page
+ *              (served from src/html.h) lets the user upload a JPEG file to the
+ *              device. The uploaded JPEG is stored in a RAM buffer and can be
+ *              previewed from the browser via /preview and /image.jpg.
+ *
+ *              After a successful upload, the sketch draws the JPEG directly
+ *              from the RAM buffer onto the e-paper display using
+ *              drawJpegFromBuffer(), then performs a full refresh.
+ *
+ *              The sketch initializes the Inkplate display in its default mode
+ *              (as configured by the library for Inkplate 2). No partial
+ *              updates are used; image rendering is shown via full refresh.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      Phone/PC with WiFi + web browser
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - AP settings:    set ap_ssid / ap_password (min 8 chars for WPA2)
+ * - Serial Monitor: 115200 baud (optional, for upload logs)
+ * - Web UI:         src/html.h must provide INDEX_HTML (upload page)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 2.
+ * 2) On your phone/PC, connect to the WiFi AP shown on the display
+ *    (SSID/password from ap_ssid/ap_password).
+ * 3) Open a browser and navigate to the AP IP address shown on the display.
+ * 4) Use the page to upload a JPEG image.
+ * 5) The device stores the upload in RAM, serves a preview, and renders the
+ *    image on the e-paper display after upload completes.
+ *
+ * Expected output:
+ * - Display: startup instructions (AP SSID/password + IP address).
+ * - Browser: upload page at "/", preview page at "/preview".
+ * - Serial Monitor: upload progress and transmitted byte counts (if opened).
+ * - After upload: the uploaded image is drawn on the e-paper display.
+ *
+ * Notes:
+ * - RAM usage: the uploaded JPEG is stored fully in RAM. Large files may fail
+ *   to allocate or may be truncated if Content-Length is missing/incorrect.
+ * - The upload handler allocates a buffer based on the HTTP Content-Length
+ *   header; if the header is absent it falls back to a small default capacity.
+ * - JPEG decoding and drawing can be slow for large images. Prefer reasonably
+ *   sized uploads to reduce memory pressure and processing time.
+ * - This is a demo web server without authentication beyond the AP password;
+ *   avoid using it in untrusted environments.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2026
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure correct board is selected
 #if !defined(ARDUINO_INKPLATE2)
@@ -120,7 +177,7 @@ void showImageBuffer() {
 
   display.clearDisplay();                     // clear existing content
   // Draw JPEG from RAM: full-screen, no dithering
-  display.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
+  display.image.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
   display.display();                          // push to panel
 }
 

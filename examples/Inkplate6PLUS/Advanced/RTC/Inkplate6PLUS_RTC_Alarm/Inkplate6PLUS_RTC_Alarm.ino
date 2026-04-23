@@ -1,20 +1,49 @@
-/*
-   Inkplate6PLUS_RTC_Alarm example for Soldered Inkplate 6Plus
-   For this example you will need USB cable and Inkplate 6Plus.
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use basic alarm and clock functions of PCF85063 RTC on Inkplate board.
-   This example will show how to set time and date, how to set alarm, how to read time and how to print time on Inkplate
-   using partial updates. NOTE: Partial update is only available on 1 Bit mode (BW) and it is not recommended to use it
-   on first refresh after power up. It is recommended to do a full refresh every 5-10 partial refresh to maintain good
-   picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   20 February 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_RTC_Alarm.ino
+ * @brief       RTC time and alarm example for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates how to use the PCF85063 real-time clock (RTC)
+ *              integrated on the Inkplate 6PLUS board. The example shows how
+ *              to set time and date, configure an alarm, read current time,
+ *              and display it on the e-paper screen using partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) If RTC is not set, initialize time and date in the code.
+ * 3) The program configures an RTC alarm.
+ * 4) Current time is periodically read and displayed on the screen.
+ *
+ * Expected output:
+ * - Inkplate display shows current date and time.
+ * - Alarm event can be detected and handled in the sketch.
+ *
+ * Notes:
+ * - Inkplate 6PLUS uses the PCF85063 RTC chip.
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - It is not recommended to use partial update on the first refresh after power-up.
+ * - Perform a full refresh every 5–10 partial updates to maintain display quality.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-20
+ * @license     GNU GPL V3
+ * 
+ * **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
@@ -55,9 +84,9 @@ void setup()
     display.display();      // Put clear image on display
     display.setTextSize(5); // Set text to be 5 times bigger than classic 5x7 px text
 
-    display.rtcSetTime(hour, minutes, seconds);                                         // Send time to RTC
-    display.rtcSetDate(weekday, day, month, year);                                      // Send date to RTC
-    display.rtcSetAlarm(alarmSeconds, alarmMinutes, alarmHour, alarmDay, alarmWeekday); // Set alarm
+    display.rtc.setTime(hour, minutes, seconds);                                         // Send time to RTC
+    display.rtc.setDate(weekday, day, month, year);                                      // Send date to RTC
+    display.rtc.setAlarm(alarmSeconds, alarmMinutes, alarmHour, alarmDay, alarmWeekday); // Set alarm
 }
 
 // Variable that keeps count on how much screen has been partially updated
@@ -66,22 +95,22 @@ void loop()
 {
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtcGetRtcData();           // Get the time and date from RTC
-        seconds = display.rtcGetSecond();  // Store senconds in a variable
-        minutes = display.rtcGetMinute();  // Store minutes in a variable
-        hour = display.rtcGetHour();       // Store hours in a variable
-        day = display.rtcGetDay();         // Store day of month in a variable
-        weekday = display.rtcGetWeekday(); // Store day of week in a variable
-        month = display.rtcGetMonth();     // Store month in a variable
-        year = display.rtcGetYear();       // Store year in a variable
+        display.rtc.getRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.getSecond();  // Store senconds in a variable
+        minutes = display.rtc.getMinute();  // Store minutes in a variable
+        hour = display.rtc.getHour();       // Store hours in a variable
+        day = display.rtc.getDay();         // Store day of month in a variable
+        weekday = display.rtc.getWeekday(); // Store day of week in a variable
+        month = display.rtc.getMonth();     // Store month in a variable
+        year = display.rtc.getYear();       // Store year in a variable
 
         display.clearDisplay();                                       // Clear content in frame buffer
         display.setCursor(100, 300);                                  // Set position of the text
         printTime(hour, minutes, seconds, day, weekday, month, year); // Print the time on screen
 
-        if (display.rtcCheckAlarmFlag()) // Check if alarm has occurred
+        if (display.rtc.checkAlarmFlag()) // Check if alarm has occurred
         {
-            display.rtcClearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
+            display.rtc.clearAlarmFlag(); // It's recommended to clear alarm flag after alarm has occurred
             display.setCursor(400, 400); // Set new position for cursor
             display.print("ALARM!");
         }

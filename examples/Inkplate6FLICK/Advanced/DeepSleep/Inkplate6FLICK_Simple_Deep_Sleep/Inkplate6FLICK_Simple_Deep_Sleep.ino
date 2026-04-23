@@ -1,24 +1,45 @@
-/*
-   Inkplate6FLICK_Simple_Deep_Sleep example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable and Soldered Inkplate 6FLICK.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use low power functionality of Inkplate board.
-   Inkplate will wake every 20 seconds change content on screen.
-
-   NOTE: Because we are using deep sleep, everytime the board wakes up, it starts program from begining.
-   Also, whole content from RAM gets erased, so you CAN NOT use partial updates.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Simple_Deep_Sleep.ino
+ * @brief       Simple deep sleep slideshow demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates low-power operation using ESP32 deep sleep on
+ *              Inkplate 6FLICK. The device wakes up at a fixed interval
+ *              (20 seconds by default), updates the e-paper screen by drawing
+ *              the next image in a small slideshow, then returns to deep sleep.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Extra:      Converted image headers (picture1.h / picture2.h / picture3.h)
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Convert 3 images to Inkplate-compatible .h files (picture1/2/3.h).
+ * 2) Upload the sketch to Inkplate 6FLICK.
+ * 3) Inkplate will wake periodically, display the next image, and sleep again.
+ *
+ * Expected output:
+ * - A repeating 3-image slideshow on the e-paper display.
+ * - Screen updates every 20 seconds (TIME_TO_SLEEP).
+ * - Low power consumption between updates due to deep sleep.
+ *
+ * Notes:
+ * - With deep sleep, the program restarts from setup() after each wake-up.
+ * - RAM contents are erased during deep sleep, so partial updates cannot be used.
+ * - This example uses 3-bit (grayscale) mode for image rendering.
+ * - If using older Inkplate hardware, you may need to isolate GPIO12 to reduce sleep current.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -44,7 +65,7 @@ void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
     display.clearDisplay(); // Clear frame buffer of display
-    display.drawImage(pictures[slide], 0, 0, 1100, 825); // Display selected picture at location X=0, Y=0. All three pictures have resolution of 1100x825 pixels
+    display.image.draw(pictures[slide], 0, 0, 1100, 825); // Display selected picture at location X=0, Y=0. All three pictures have resolution of 1100x825 pixels
     display.display(); // Refresh the screen with new picture
     slide++; // Update counter for pictures. With this variable, we choose what picture is going to be displayed on
              // screen

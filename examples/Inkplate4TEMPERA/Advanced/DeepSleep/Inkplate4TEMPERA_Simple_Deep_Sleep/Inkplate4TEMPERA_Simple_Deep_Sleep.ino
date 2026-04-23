@@ -1,25 +1,49 @@
-/*
-   Inkplate4TEMPERA_Simple_Deep_Sleep example for Soldered Inkplate 4 TEMPERA
-   For this example you will need USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how you can use low power functionality of Inkplate board.
-   In deep sleep, whole board will consume about 25uA from battery.
-   Inkplate will wake every 20 seconds change content on screen.
-
-   NOTE: Because we are using deep sleep, everytime the board wakes up, it starts program from begining.
-   Also, whole content from RAM gets erased, so you CAN NOT use partial updates.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   16 July 2023 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Simple_Deep_Sleep.ino
+ * @brief       Simple deep sleep slideshow example for Soldered Inkplate 4TEMPERA.
+ *
+ * @details     Demonstrates low-power operation on Inkplate 4TEMPERA using ESP32 deep
+ *              sleep. On each wake-up (timer-based), the board redraws the screen
+ *              with the next image in a small slideshow, performs a full display
+ *              refresh, and then returns to deep sleep.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4TEMPERA
+ * - Hardware:   Inkplate 4TEMPERA, USB cable (or battery for low-power testing)
+ * - Extra:      Converted image header files (picture1.h, picture2.h, picture3.h)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
+ * - Serial settings: Not required
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
+ *
+ * How to use:
+ * 1) Convert 3 images using the Soldered Image Converter and include them as
+ *    picture1.h, picture2.h, and picture3.h.
+ * 2) Upload the sketch to Inkplate 4TEMPERA.
+ * 3) The board will show an image, go to deep sleep, and wake up every 20 seconds.
+ * 4) After each wake-up, the next image is shown (loops through 3 images).
+ *
+ * Expected output:
+ * - Inkplate display shows a new image every 20 seconds.
+ * - The slideshow loops through all provided images.
+ *
+ * Notes:
+ * - Deep sleep restarts the program from the beginning on every wake-up.
+ * - RAM contents are lost during deep sleep, so standard partial updates cannot be used.
+ * - This example uses 3-bit (grayscale) mode, which requires full refresh updates.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Image tool:   https://tools.soldered.com/tools/image-converter/
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -46,11 +70,11 @@ void setup()
     display.begin(); // Init Inkplate library (you should call this function ONLY ONCE)
 
     // Turn frontlight on
-    display.frontlight(1);
-    display.setFrontlight(50);
+    display.frontlight.setState(1);
+    display.frontlight.setBrightness(50);
 
     display.clearDisplay(); // Clear frame buffer of display
-    display.drawImage(
+    display.image.draw(
         pictures[slide], 0, 0, 600, 600); // Display selected picture at location X=0, Y=0. All three pictures have resolution of 600x600 pixels
     display.display(); // Refresh the screen with new picture
     slide++; // Update counter for pictures. With this variable, we choose what picture is going to be displayed on
@@ -59,8 +83,8 @@ void setup()
         slide = 0; // We do not have more than 3 images, so roll back to zero
 
     // Turn off touchscreen and frontlight to save energy duiring deep sleep
-    display.tsShutdown();  // Turn off the display touchscreen
-    display.frontlight(0); // Turn off the frontlight
+    display.touchscreen.shutdown();  // Turn off the display touchscreen
+    display.frontlight.setState(0); // Turn off the frontlight
 
     rtc_gpio_isolate(GPIO_NUM_12); // Isolate/disable GPIO12 on ESP32 (only to reduce power consumption in sleep)
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // Activate wake-up timer -- wake up after 20s here

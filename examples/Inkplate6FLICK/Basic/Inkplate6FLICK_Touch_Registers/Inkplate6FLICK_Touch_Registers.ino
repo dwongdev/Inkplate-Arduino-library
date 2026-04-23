@@ -1,17 +1,49 @@
-/*
-   Inkplate6FLICK_Touch_Registers example for Soldered Inkplate 6FLICK
-   For this example you will need only USB cable and Inkplate 6FLICK
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use Inkplate 6FLICK touchscreen.
-   Once the code is uploaded, open the serial monitor in Arduino IDE and you'll see touchscreen events there.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Touch_Registers.ino
+ * @brief       Touchscreen register debug example for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to read raw touchscreen controller register
+ *              data from the Inkplate 6FLICK. When a touch event occurs, the
+ *              sketch reads the raw register values from the touchscreen
+ *              controller and prints them to the Serial Monitor for debugging
+ *              or development purposes.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) Open the Serial Monitor at 115200 baud.
+ * 3) Touch the screen to generate touchscreen events.
+ * 4) Raw touchscreen register values will be printed in the Serial Monitor.
+ *
+ * Expected output:
+ * - Serial Monitor displays raw touchscreen register values when the screen
+ *   is touched.
+ * - A small marker and label indicating the (0,0) screen position appear
+ *   on the display.
+ *
+ * Notes:
+ * - touchscreen.available() checks if a touch event occurred.
+ * - touchscreen.getRawData() reads raw controller register data.
+ * - Touchscreen coordinates are automatically adjusted when the display
+ *   rotation changes.
+ * - This example is mainly intended for debugging and low-level touchscreen
+ *   development.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -32,7 +64,7 @@ void setup()
     display.clearDisplay();
     display.display();
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -55,9 +87,9 @@ void setup()
 void loop()
 {
     // Check if there is any touch detected
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
-        display.tsGetRawData(touchRegs);
+        display.touchscreen.getRawData(touchRegs);
         for(int i = 0; i < 16; ++i)
         {
             Serial.print("Reg ");

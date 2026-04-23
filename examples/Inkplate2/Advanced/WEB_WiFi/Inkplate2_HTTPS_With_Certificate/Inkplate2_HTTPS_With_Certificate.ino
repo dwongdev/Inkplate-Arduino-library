@@ -1,19 +1,68 @@
-/*
-   Inkplate2_HTTPS_With_Certificate example for Soldered Inkplate 2
-   For this example you will need a micro USB cable, Inkplate 2, and an available WiFi connection.
-   Select "Soldered Inkplate 2" from Tools -> Board menu.
-
-   You can open .bmp files that have color depth of 1 bit (BW bitmap), 4 bit, 8 bit and
-   24 bit 
-
-   This example will show you how you can download a .bmp file (picture) from the web securely by providing a 
-   certificate for the website that will be validated upon conncection and
-   display that image on e-paper display.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_HTTPS_With_Certificate.ino
+ * @brief       HTTPS image download with certificate validation: securely fetch
+ *              a BMP over WiFi and display it on Inkplate 2.
+ *
+ * @details     This example demonstrates secure HTTP (HTTPS/TLS) downloads on
+ *              Inkplate 2 by applying a trusted X.509 certificate before
+ *              connecting to a host. After connecting to WiFi, the sketch
+ *              installs a PEM certificate using applyHttpsCertificate(), then
+ *              downloads and draws a BMP image from an HTTPS URL.
+ *
+ *              To demonstrate host validation, the sketch then attempts to load
+ *              an image from a different domain. That request fails because the
+ *              configured certificate does not match the second host.
+ *
+ *              The display runs in 1-bit (black/white) mode. The drawn image is
+ *              a Windows BMP and must use a supported bit depth and no
+ *              compression.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      WiFi connection + Internet access
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - WiFi:           set ssid/password
+ * - Certificate:    set the PEM certificate string for the target host
+ * - URLs:           update the HTTPS image URL(s) as needed
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password.
+ * 2) Provide the correct PEM certificate for the HTTPS host you want to access.
+ * 3) Upload the sketch.
+ * 4) The display shows WiFi connection progress, then downloads and renders the
+ *    first BMP image over HTTPS.
+ * 5) The second download attempt from a different host is expected to fail due
+ *    to certificate mismatch.
+ *
+ * Expected output:
+ * - Display: connection status messages, then the downloaded BMP image.
+ * - Display: after clearing, a message indicating the second image will not
+ *   load due to an invalid/mismatched certificate.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses full refresh (display()).
+ * - BMP requirements: Windows BMP, 1/4/8/24-bit, uncompressed (no RLE).
+ * - TLS certificates are host-specific. The certificate you apply must match
+ *   the domain you connect to; otherwise the connection or download will fail.
+ * - Certificates can expire or change; if downloads stop working, refresh the
+ *   certificate for the target host.
+ * - For demos only: using setInsecure() would bypass validation, but this
+ *   example intentionally validates the host via certificate configuration.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2024-03-15
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2
@@ -82,7 +131,7 @@ void setup()
     //Apply the certificate previously defined
     display.applyHttpsCertificate(certificate);
     //Here we will draw the image using a valid certificate. Photo taken by: Roberto Fernandez
-    if (!display.drawImage("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
+    if (!display.image.draw("https://varipass.org/neowise_mono.bmp", 0, 0, false, true))
     {
         // If is something failed (wrong filename or wrong bitmap format), write error message on the screen.
         // REMEMBER! You can only use Windows Bitmap file with color depth of 1, 4, 8 or 24 bits with no compression!
@@ -94,7 +143,7 @@ void setup()
     display.clearDisplay();
     //Next we will try to load an image from a different website, which will not work as the certificate is 
     //not valid for this page
-    if (!display.drawImage("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/master/examples/Inkplate5V2/Advanced/WEB_WiFi/Inkplate5V2_Show_JPG_With_HTTPClient/image.jpg", 0, 100, true, false))
+    if (!display.image.draw("https://raw.githubusercontent.com/SolderedElectronics/Inkplate-Arduino-library/master/examples/Inkplate5V2/Advanced/WEB_WiFi/Inkplate5V2_Show_JPG_With_HTTPClient/image.jpg", 0, 100, true, false))
     {
         display.println("This image wont load as the certificate is invalid");
         display.display();

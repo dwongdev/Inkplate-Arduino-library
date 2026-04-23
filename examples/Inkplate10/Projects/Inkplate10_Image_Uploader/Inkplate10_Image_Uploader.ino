@@ -1,14 +1,57 @@
-/*
-  Inkplate10 Image Uploader Example
-  Compatible with Soldered Inkplate 10 -> https://soldered.com/documentation/inkplate/projects/image-uploader
-
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to upload an image to a webapp hosted by Inkplate 10
-  and display it on the e‐ink display. Image will be automatically resized.
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_Image_Uploader.ino
+ * @brief       Local web image uploader and display example for Soldered Inkplate 10.
+ *
+ * @details     Demonstrates how to host a small web app directly on Inkplate 10
+ *              (ESP32) that lets the user upload an image via a browser and then
+ *              display it on the e-paper screen. The Inkplate starts a WiFi Access
+ *              Point (AP), serves an HTML upload page, accepts an uploaded JPEG
+ *              into a RAM buffer, provides a preview endpoint, and renders the
+ *              uploaded image to the display in 3-bit (grayscale) mode.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      WiFi-capable device with a web browser (PC, laptop, smartphone)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Inkplate runs as WiFi Access Point (AP+STA mode)
+ * - Set AP SSID and password in the sketch (ap_ssid, ap_password)
+ * - HTML page is provided via src/html.h (INDEX_HTML)
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 10.
+ * 2) On your phone/PC, connect to the Inkplate WiFi network (SSID/password shown on display).
+ * 3) Open the IP address shown on the Inkplate screen in a web browser.
+ * 4) Upload an image using the web page form.
+ * 5) The uploaded image is displayed on the e-paper screen.
+ *
+ * Expected output:
+ * - Inkplate display shows AP credentials and the local IP address.
+ * - Web page allows uploading an image and previewing the last upload.
+ * - Uploaded JPEG is rendered on the Inkplate display after upload completes.
+ *
+ * Notes:
+ * - Uploaded image data is stored in RAM; large uploads may fail due to memory limits.
+ * - This example renders the image in 3-bit (grayscale) mode.
+ * - Endpoints used:
+ *   - "/"          Serves upload page
+ *   - "/upload"    Receives file upload (HTTP POST)
+ *   - "/preview"   Shows browser preview of last uploaded image
+ *   - "/image.jpg" Serves the uploaded JPEG from RAM
+ *
+ * Docs:
+ * - Inkplate:   https://soldered.com/documentation/inkplate
+ * - Project:    https://soldered.com/documentation/inkplate/projects/image-uploader
+ *
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure correct board is selected
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
@@ -119,9 +162,9 @@ void showImageBuffer() {
   if (!imageBuf || imageLen == 0) return;
 
   display.clearDisplay();                     // clear existing content
-  display.setDisplayMode(INKPLATE_3BIT);      // ensure correct mode
+  display.selectDisplayMode(INKPLATE_3BIT);      // ensure correct mode
   // Draw JPEG from RAM: full-screen, no dithering
-  display.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
+  display.image.drawJpegFromBuffer(imageBuf, imageLen, 0, 0, true, false);
   display.display();                          // push to panel
 }
 

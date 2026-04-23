@@ -3,11 +3,11 @@
 const char sdCardTestStringLength = 100;
 const char *testString = {"This is some test string..."};
 
-const char *WSSID = {"Soldered-testingPurposes"};
-const char *WPASS = {"Testing443"};
+const char *WSSID = {"Soldered Electronics"};
+const char *WPASS = {"dasduino"};
 
 // Change this to your used slave device
-const uint8_t easyCDeviceAddress = 0x30;
+const uint8_t easyCDeviceAddress = 0x76;
 
 void testPeripheral()
 {    
@@ -21,9 +21,8 @@ void testPeripheral()
     display.einkOn();
 
     // Check if epaper PSU (TPS65186 EPD PMIC) is ok.
-    if (!checkI2C(0x48) || (display.readPowerGood() != PWR_GOOD_OK)) // Check if there was an error in communication
+    if (!checkI2C(0x48) || !display.isPowerGood()) // Check if there was an error in communication
     {
-        Serial.println("- TPS Fail!");
         failHandler();
     }
     display.println("- TPS65186: OK");
@@ -89,7 +88,6 @@ void testPeripheral()
         failHandler();
     }
 
-
     // Check I2C (easyc)
     // A slave must be connected via easyC address set in this file
     display.print("- I2C (easyC): ");
@@ -129,6 +127,7 @@ void testPeripheral()
     int wakeButtonState = digitalRead(GPIO_NUM_36);
     
     display.print("Press WAKEUP button within 30 seconds to finish testing... ");
+    Serial.println("Press wakeup");
     display.partialUpdate(0, 1);
 
     while (true)
@@ -298,18 +297,18 @@ int rtcCheck()
     if (_res != 0)
         return 0;
 
-    // Reset and re-init RTC.
-    display.rtcReset();
+    // reset and re-init RTC.
+    display.rtc.reset();
 
     // Set some time in epoch in RTC.
     uint32_t _epoch = 1640995200ULL;
-    display.rtcSetEpoch(_epoch);
+    display.rtc.setEpoch(_epoch);
 
     // Wait at least one and a half second
     delay(1500);
 
     // Read the epoch (if everything is ok, epoch from RTC should not be the same)
-    if (display.rtcGetEpoch() != _epoch)
+    if (display.rtc.getEpoch() != _epoch)
     {
         return 1;
     }

@@ -1,15 +1,58 @@
-/*
-   Inkplate6COLOR_Full_Screen_Colors example for Soldered Inkplate 6COLOR
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Simple Inkplate example showing all colors of the Inkplate.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   27 September 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_Full_Screen_Colors.ino
+ * @brief       Displays all supported Inkplate 6COLOR panel colors as vertical
+ *              full-screen bars.
+ *
+ * @details     This example demonstrates the basic color capabilities of the
+ *              Inkplate 6COLOR e-paper display. The sketch fills the screen
+ *              with vertical color bars representing each color supported by
+ *              the panel.
+ *
+ *              The display is divided into equal-width vertical regions and
+ *              filled sequentially using the Inkplate color constants. This
+ *              provides a quick visual reference for the available display
+ *              palette and confirms that the panel is functioning correctly.
+ *
+ *              The example is useful for testing a newly assembled board,
+ *              verifying panel color reproduction, or understanding the
+ *              available color set when designing UI layouts.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE.
+ * 2) Upload the sketch to the board.
+ * 3) After initialization, the display is filled with vertical color bars.
+ *
+ * Expected output:
+ * - Display: Full-screen vertical bars showing the Inkplate color palette:
+ *   black, white, green, blue, red, yellow, and orange.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - The display uses a full refresh to render the color bars.
+ * - This example performs a single update and does not change afterward.
+ * - Color e-paper refreshes are slower than monochrome displays and should
+ *   not be refreshed frequently in typical applications.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-09-27
+ * @license     GNU GPL V3
+ **************************************************/
 
 #include "Inkplate.h"
 

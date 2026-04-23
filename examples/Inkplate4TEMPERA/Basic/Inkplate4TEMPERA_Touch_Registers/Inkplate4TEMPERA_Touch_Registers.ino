@@ -1,18 +1,67 @@
-/*
-    Inkplate4TEMPERA_Touch_Registers.ino example for Soldered Inkplate 4 TEMPERA
-    For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-    Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-    Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example shows you advanced usage of the Inkplate 4TEMPERA touchscreen.
-    Once the code is uploaded, open Serial monitor at 115200 baud!
-    It will show raw data from the touch screen register,
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    12 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Touch_Registers.ino
+ * @brief       Reads and prints raw touchscreen controller register bytes over
+ *              Serial for advanced debugging on Inkplate 4 TEMPERA.
+ *
+ * @details     This example demonstrates low-level / advanced touchscreen
+ *              diagnostics by reading raw register data from the Inkplate 4
+ *              TEMPERA touchscreen controller. After initializing the display
+ *              and touchscreen, the sketch periodically checks whether the
+ *              touchscreen is responsive (available()). When available, it
+ *              reads a fixed register snapshot (8 bytes) into a buffer and
+ *              prints each register value to the Serial Monitor in binary
+ *              format.
+ *
+ *              To help correlate coordinates with the screen origin, the sketch
+ *              draws a small triangle marker and a "(0,0) position" label on
+ *              the display. The e-paper output is static; all ongoing debug
+ *              information is provided through Serial to avoid slow screen
+ *              refresh overhead.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 4 TEMPERA.
+ * 2) Open Serial Monitor at 115200 baud.
+ * 3) Every second, observe the printed register snapshot (8 bytes).
+ * 4) Touch the screen and watch how register values change with activity.
+ *
+ * Expected output:
+ * - Display: a triangle marker near the top-left corner and the text
+ *   "(0,0) position".
+ * - Serial Monitor: repeated blocks such as:
+ *   - Reg [0] .. Reg [7] printed in binary
+ *   - A separator line between snapshots
+ *
+ * Notes:
+ * - Display mode: 1-bit BW (INKPLATE_1BIT). The display is used only for the
+ *   static origin marker and label.
+ * - This is a raw-register debug tool. The meaning of individual bits depends
+ *   on the touchscreen controller and firmware; use this when developing or
+ *   troubleshooting low-level touch handling.
+ * - If touchscreen initialization fails, the sketch halts to avoid producing
+ *   misleading data.
+ * - For higher-level coordinate reporting, see the touchscreen serial or
+ *   drawing examples instead.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-07-12
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -43,7 +92,7 @@ void setup()
     display.display();
 
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -65,10 +114,10 @@ void setup()
 void loop()
 {
     // Periodically check if we can communicate to the touch screen
-    if (display.tsAvailable())
+    if (display.touchscreen.available())
     {
         // Read the raw data of the touch screen registers
-        display.tsGetRawData(touchRegs);
+        display.touchscreen.getRawData(touchRegs);
         for(int i = 0; i < 8; ++i)
         {
             Serial.print("Reg [");

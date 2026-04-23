@@ -1,18 +1,49 @@
-/*
-   Inkplate5_RTC_Alarm_With_Deep_Sleep example for Soldered Inkplate 5
-   For this example you will need only a USB-C cable and Inkplate 5.
-   Select "Soldered Inkplate5" from Tools -> Board menu.
-   Don't have "Soldered Inkplate5" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to use an RTC alarm interrupt with deep sleep.
-   Inkplate features an RTC chip with interrupt for alarm connected to GPIO39.
-   Inkplate board will wake up every 10 seconds, refresh the screen and go back to sleep.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   21 March 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate5_RTC_Alarm_With_Deep_Sleep.ino
+ * @brief       RTC alarm wake-up with deep sleep for Soldered Inkplate 5.
+ *
+ * @details     Demonstrates how to use the onboard RTC alarm interrupt to wake
+ *              the Inkplate 5 from ESP32 deep sleep. The RTC alarm is configured
+ *              to trigger periodically, waking the board, refreshing the
+ *              e-paper display with the current date and time, and then
+ *              returning the system back to low-power deep sleep mode.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 5
+ * - Hardware:   Inkplate 5, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate5
+ * - Serial settings: 115200 baud (optional, not required for output)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/5/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 5.
+ * 2) On first boot, the RTC time and date are initialized if not already set.
+ * 3) The current time and date are shown on the display.
+ * 4) The board enters deep sleep and wakes up every 10 seconds using the RTC alarm.
+ * 5) After each wake-up, the display is refreshed and the board goes back to sleep.
+ *
+ * Expected output:
+ * - Inkplate display shows the current weekday, date, and time.
+ * - Display refreshes automatically on every RTC alarm wake-up.
+ *
+ * Notes:
+ * - RTC alarm interrupt is connected to GPIO39 on Inkplate 5.
+ * - When using deep sleep, all application logic must be placed in setup().
+ * - loop() must remain empty when deep sleep is used.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-20
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE5
@@ -31,17 +62,17 @@ void setup()
     display.begin(); 
 
     // Clear alarm flag from any previous alarm
-    display.rtcClearAlarmFlag(); 
+    display.rtc.clearAlarmFlag(); 
 
     // Check if RTC is already set. If it's not, set a time and date
-    if (!display.rtcIsSet()) 
+    if (!display.rtc.isSet()) 
     {
         // display.setTime(hour, minute, sec);
-        display.rtcSetTime(6, 54, 00); // 24H mode, ex. 6:54:00
+        display.rtc.setTime(6, 54, 00); // 24H mode, ex. 6:54:00
         // display.setDate(weekday, day, month, yr);
-        display.rtcSetDate(2, 21, 3, 2023); // 0 for Sunday, 1 for Monday, ... for example Tuesday, 21.3.2023.
+        display.rtc.setDate(2, 21, 3, 2023); // 0 for Sunday, 1 for Monday, ... for example Tuesday, 21.3.2023.
 
-        // display.rtcSetEpoch(1679386177); // Or use epoch for setting the time and date
+        // display.rtc.setEpoch(1679386177); // Or use epoch for setting the time and date
     }
 
     // Display current time and date
@@ -49,7 +80,7 @@ void setup()
     display.display();
 
     // Set RTC alarm 10 seconds from now
-    display.rtcSetAlarmEpoch(display.rtcGetEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
+    display.rtc.setAlarmEpoch(display.rtc.getEpoch() + 10, RTC_ALARM_MATCH_DHHMMSS);
 
     // Enable wakup from deep sleep on gpio 39 where RTC interrupt is connected
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);
@@ -72,10 +103,10 @@ void printCurrentTime()
     display.setTextSize(3);
 
     // Get data from the RTC
-    display.rtcGetRtcData();
+    display.rtc.getRtcData();
 
     // Find a weekday and print its full name
-    switch (display.rtcGetWeekday())
+    switch (display.rtc.getWeekday())
     {
     case 0:
         display.print("Sunday, ");
@@ -101,17 +132,17 @@ void printCurrentTime()
     }
 
     // Print date and time
-    display.print(display.rtcGetDay());
+    display.print(display.rtc.getDay());
     display.print(".");
-    display.print(display.rtcGetMonth());
+    display.print(display.rtc.getMonth());
     display.print(".");
-    display.print(display.rtcGetYear());
+    display.print(display.rtc.getYear());
     display.print(". ");
-    print2Digits(display.rtcGetHour());
+    print2Digits(display.rtc.getHour());
     display.print(':');
-    print2Digits(display.rtcGetMinute());
+    print2Digits(display.rtc.getMinute());
     display.print(':');
-    print2Digits(display.rtcGetSecond());
+    print2Digits(display.rtc.getSecond());
 }
 
 // A function that prints 2 digits

@@ -1,18 +1,86 @@
-/*
-   Inkplate4TEMPERA_RTC_Calibration example for Soldered Inkplate 4 TEMPERA
-   For this example you will need USB cable and Inkplate 4TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to Calibrate RTC to be more precise and accurate.
-   If you have any issues with the time precision, in this way you can change the internal capacitor value, 
-   and set the clock offset. Please follow the instructions below carefully.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   24 July 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_RTC_Calibration.ino
+ * @brief       Calibrate the Inkplate 4TEMPERA RTC by selecting crystal load
+ *              capacitance and applying a clock offset, then display the time
+ *              with periodic partial/full refreshes.
+ *
+ * @details     This example demonstrates how to improve RTC accuracy on
+ *              Inkplate 4TEMPERA by configuring the PCF85063(A) real-time clock.
+ *              Two calibration mechanisms are shown:
+ *
+ *              1) Load capacitance selection:
+ *                 Some boards populate external load capacitors for the 32.768 kHz
+ *                 crystal. If you choose to use the RTC's internal capacitor
+ *                 setting instead, external capacitors must be removed. The
+ *                 sketch shows how to select an internal capacitor value
+ *                 (e.g., 7 pF or 12.5 pF) using setInternalCapacitor().
+ *
+ *              2) Clock offset correction:
+ *                 The RTC supports a programmable offset (in ppm-equivalent
+ *                 steps) applied periodically. setClockOffset(mode, value)
+ *                 configures how often the correction is applied (mode) and the
+ *                 signed correction magnitude (value).
+ *
+ *              After configuration, the sketch waits for a button press, sets
+ *              an initial time, and then reads the RTC once per second and
+ *              updates the e-paper display. To reduce flashing, it uses partial
+ *              updates most of the time and forces a full refresh after a
+ *              defined number of partial updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4TEMPERA
+ * - Hardware:   Inkplate 4TEMPERA, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate4TEMPERA
+ * - Serial settings (if relevant): none
+ * - Calibration settings (edit in sketch):
+ *   - Optional: display.rtc.setInternalCapacitor(RTC_7PF / RTC_12_5PF)
+ *   - Optional: display.rtc.setClockOffset(mode, value)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/4TEMPERA/quick-start-guide/
+ *
+ * How to use:
+ * 1) Decide whether you are using external crystal capacitors or the RTC's
+ *    internal capacitor setting:
+ *    - Using internal capacitor: remove external capacitors and enable
+ *      setInternalCapacitor(...).
+ *    - Using external capacitors: comment out setInternalCapacitor(...).
+ * 2) (Optional) Determine and set the clock offset:
+ *    - Best: measure the 32.768 kHz clock frequency and compute ppm deviation,
+ *      then choose mode and offset register value accordingly.
+ *    - Alternative: run without setClockOffset(), compare RTC time drift over
+ *      2–3 days, estimate frequency error, then compute and apply an offset.
+ * 3) Upload the sketch.
+ * 4) Press the wake button when prompted to start the RTC counter.
+ * 5) Observe the displayed time; adjust capacitor/offset values if needed and
+ *    re-upload.
+ *
+ * Expected output:
+ * - E-paper: A prompt to press the wake button, then a large HH:MM:SS time that
+ *   updates about once per second.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - The displayed seconds may appear to “skip” or look uneven because e-paper
+ *   refresh takes time; the RTC time itself continues accurately.
+ * - Partial update best practice: do a full refresh every 5–10 partial updates
+ *   to maintain image quality (this example enforces a threshold).
+ * - partialUpdate(false, true) keeps the e-paper power enabled for faster
+ *   successive updates (higher power usage).
+ * - RTC offset parameters are hardware-specific; refer to the PCF85063(A)
+ *   datasheet section on offset calibration for exact ppm/LSB behavior.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-04-27
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -49,9 +117,9 @@ void setup()
     //  - If you use an internal capacitor, you have to remove the external ones. 
     //  - If you use an external one, you don't have the next line of code. 
     // Here we setting internal capacitor value (7 pF):
-    // display.rtcSetInternalCapacitor(RTC_7PF); 
+    // display.rtc.setInternalCapacitor(RTC_7PF); 
     // Another option is 12.5 pF:
-    display.rtcSetInternalCapacitor(RTC_12_5PF);
+    display.rtc.setInternalCapacitor(RTC_12_5PF);
 
     // Set offset for RTC crystal
     // The first argument is a mode (0 or 1):
@@ -62,7 +130,7 @@ void setup()
     // decimal. For example: mode 0 (4.34 ppm), offset value 15 = + 65.1 ppm every 2 hours
     // See 8.2.3 in the datasheet for more details
     
-    display.rtcSetClockOffset(1, -63); 
+    display.rtc.setClockOffset(1, -63); 
 
     // How to calculate this offset?
     // 1. Measure the frequency on the clock pin of the RTC (let's call it fMeasured)
@@ -77,9 +145,9 @@ void setup()
     // If you don't have an oscilloscope or something to measure the frequency, here is a procedure for you. 
     // NOTE: This is a longer, but more precise method to calibrate RTC.
     // When you run for the first time to see how much rtc misses, 
-    // you MUST comment the display.rtcSetClockOffset() function above.
+    // you MUST comment the display.rtc.setClockOffset() function above.
     // Once again, if you are using external capacitor, you don't need neither 
-    // display.rtcSetInternalCapacitor(); so also comment this line.
+    // display.rtc.setInternalCapacitor(); so also comment this line.
 
     // First, upload the code to the Inkplate.
     // It would be best if you had a clock on the side (on a phone or computer).
@@ -110,7 +178,7 @@ void setup()
     }
 
     // Set the RTC to begin
-    display.rtcSetTime(hours, minutes, seconds);    // Send time to RTC
+    display.rtc.setTime(hours, minutes, seconds);    // Send time to RTC
 }
 
 void loop()
@@ -120,10 +188,10 @@ void loop()
     // sometimes seem wrong but that actual RTC time will be precise
     if ((unsigned long)(millis() - time1) > REFRESH_DELAY)
     {
-        display.rtcGetRtcData();           // Get the time and date from RTC
-        seconds = display.rtcGetSecond();  // Store senconds in a variable
-        minutes = display.rtcGetMinute();  // Store minutes in a variable
-        hours = display.rtcGetHour();      // Store hours in a variable
+        display.rtc.getRtcData();           // Get the time and date from RTC
+        seconds = display.rtc.getSecond();  // Store senconds in a variable
+        minutes = display.rtc.getMinute();  // Store minutes in a variable
+        hours = display.rtc.getHour();      // Store hours in a variable
 
         display.clearDisplay();             // Clear content in frame buffer
         display.setTextSize(5);             // Set text to be 5 times bigger than classic 5x7 px text

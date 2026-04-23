@@ -1,17 +1,66 @@
-/*
-   Inkplate6COLOR_RTC_Timer example for Soldered Inkplate 6COLOR
-   For this example you will need USB cable and Inkplate 6COLOR.
-   Select "Soldered Inkplate 6COLOR" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6COLOR" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use PCF85063A RTC Timer functionality.
-   This example will show how to set time and date, how to set up a timer, how to read time and how to print time on Inkplate using partial updates.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   19 May 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_RTC_Simple.ino
+ * @brief       Demonstrates basic RTC time/date setup and display on
+ *              Inkplate 6COLOR.
+ *
+ * @details     This example shows how to use the onboard PCF85063(A) real-time
+ *              clock on Inkplate 6COLOR for basic clock functionality. The
+ *              sketch resets the RTC, sets an initial time and date, reads the
+ *              current RTC values, and prints the formatted time and date on
+ *              the e-paper display.
+ *
+ *              After initialization, the example keeps the ESP32 awake and
+ *              refreshes the display once per minute using a millis()-based
+ *              timing interval. This demonstrates a simple polling workflow for
+ *              RTC-based time display without using alarms, interrupts, or deep
+ *              sleep.
+ *
+ *              This example is useful as a starting point for clocks, wall
+ *              displays, dashboards, and other projects that need basic RTC
+ *              timekeeping and periodic screen updates.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Edit the initial RTC time/date values in the sketch before upload
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE and upload the sketch.
+ * 2) Adjust the initial time/date values in the sketch if needed.
+ * 3) On startup, the sketch resets the RTC and writes the configured time/date.
+ * 4) The current time and date are read from the RTC and rendered on the
+ *    display.
+ * 5) The screen is refreshed automatically once per minute.
+ *
+ * Expected output:
+ * - Display: Current time in HH:MM:SS format followed by weekday and date.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - This example uses full display refreshes every 60 seconds.
+ * - display.rtc.reset() clears previous RTC state, so the configured time/date
+ *   is reapplied on every reset or power cycle.
+ * - This is a simple RTC polling example only. It does not demonstrate alarm,
+ *   interrupt, timer, or deep sleep behavior.
+ * - The PCF85063(A) RTC is suitable for general timekeeping, but persistence
+ *   depends on correct RTC setup and backup power conditions.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-02-20
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
@@ -38,7 +87,7 @@ int countdown_time = 60;
 void setup()
 {
     display.begin();        // Init Inkplate library (you should call this function ONLY ONCE)
-    display.rtcReset();           //  Reset RTC if there is some data in it
+    display.rtc.reset();           //  reset RTC if there is some data in it
     display.clearDisplay(); // Clear frame buffer of display
     display.display();      // Put clear image on display
     display.setTextSize(3); // Set text to be 4 times bigger than classic 5x7 px text
@@ -46,14 +95,14 @@ void setup()
 
     pinMode(39, INPUT_PULLUP); // Set RTC INT pin on ESP32 GPIO39 as input with pullup resistor enabled
 
-    display.rtcSetTime(hour, minutes, seconds);    // Send time to RTC
-    display.rtcSetDate(weekday, day, month, year); // Send date to RTC
+    display.rtc.setTime(hour, minutes, seconds);    // Send time to RTC
+    display.rtc.setDate(weekday, day, month, year); // Send date to RTC
 
     // Set up a timer
     /*   source_clock
      *       Inkplate::TIMER_CLOCK_4096HZ     -> clk = 4096Hz -> min timer = 244uS -> MAX timer = 62.256mS
      *       Inkplate::TIMER_CLOCK_64HZ       -> clk = 64Hz   -> min timer = 15.625mS -> MAX timer = 3.984s
-     *       Inkplate::TIMER_CLOCK_1HZ        -> clk = 1Hz    -> min timer = 1s -> MAX timer = 255s
+     *       RTC::TIMER_CLOCK_1HZ        -> clk = 1Hz    -> min timer = 1s -> MAX timer = 255s
      *       Inkplate::TIMER_CLOCK_1PER60HZ   -> clk = 1/60Hz -> min timer = 60s -> MAX timer = 4h15min
      *   value
      *       coundowntime in seconds
@@ -62,19 +111,19 @@ void setup()
      *   int_pulse
      *       true = interrupt generate a pulse; false = interrupt follows timer flag
      */
-    display.rtcTimerSet(Inkplate::TIMER_CLOCK_1HZ, countdown_time, true, false);
+    display.rtc.timerSet(RTC::TIMER_CLOCK_1HZ, countdown_time, true, false);
 }
 
 void loop()
 {
-    display.rtcGetRtcData();             // Get the time and date from RTC
-    seconds = display.rtcGetSecond();  // Store senconds in a variable
-    minutes = display.rtcGetMinute();  // Store minutes in a variable
-    hour = display.rtcGetHour();       // Store hours in a variable
-    day = display.rtcGetDay();         // Store day of month in a variable
-    weekday = display.rtcGetWeekday(); // Store day of week in a variable
-    month = display.rtcGetMonth();     // Store month in a variable
-    year = display.rtcGetYear();       // Store year in a variable
+    display.rtc.getRtcData();             // Get the time and date from RTC
+    seconds = display.rtc.getSecond();  // Store senconds in a variable
+    minutes = display.rtc.getMinute();  // Store minutes in a variable
+    hour = display.rtc.getHour();       // Store hours in a variable
+    day = display.rtc.getDay();         // Store day of month in a variable
+    weekday = display.rtc.getWeekday(); // Store day of week in a variable
+    month = display.rtc.getMonth();     // Store month in a variable
+    year = display.rtc.getYear();       // Store year in a variable
 
     display.clearDisplay();                                       // Clear content in frame buffer
     display.setCursor(60, 300);                                  // Set position of the text
@@ -108,10 +157,10 @@ void printTime(uint8_t _hour, uint8_t _minutes, uint8_t _seconds, uint8_t _day, 
     display.print('/');
     display.print(_year, DEC);
 
-    if (display.rtcCheckTimerFlag())  // Check if timer event has occurred
+    if (display.rtc.checkTimerFlag())  // Check if timer event has occurred
     {
-      display.rtcClearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
-      display.rtcDisableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
+      display.rtc.clearTimerFlag();  // It's recommended to clear timer flag after timer has occurred
+      display.rtc.disableTimer();    // Disable timer if you want to make it one time only. Is you want to be repeatable, comment this line
       display.setCursor(400, 400);  // Set new position for cursor
       display.print("Timer!");
     }

@@ -1,19 +1,75 @@
-/*
-    Inkplate4TEMPERA_News_API Example for Soldered Inkplate 4TEMPERA
-    This example demonstrates how to use the Inkplate 4TEMPERA to display news headlines and descriptions
-    fetched from the News API. You will need an API key from https://newsapi.org/ to use this example.
-
-    IMPORTANT:
-    - Update your WiFi credentials and API key in the "CHANGE HERE" section below.
-    - Ensure you have the ArduinoJSON library installed: https://arduinojson.org/
-    - Adjust the timezone as needed.
-
-    For more information, visit:
-    - Inkplate documentation: https://www.inkplate.io
-    - Support forums: https://forum.soldered.com/
-
-    Created by Soldered, 30.4.2025
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_News_API.ino
+ * @brief       Fetch news headlines from NewsAPI.org over WiFi, render a
+ *              "World News" layout, then deep sleep between updates.
+ *
+ * @details     This example connects Inkplate 4 TEMPERA to WiFi, synchronizes
+ *              time via NTP (using the configured timezone), and fetches news
+ *              data from NewsAPI.org using an API key. The response is parsed
+ *              (via helper code in src/Network.h and ArduinoJson) into a list of
+ *              news items, and the sketch renders a simple newspaper-style
+ *              screen: title, current date/time, and multiple headline/summary
+ *              boxes using custom fonts.
+ *
+ *              After updating the e-paper display, the ESP32 enters deep sleep
+ *              for a fixed interval. When it wakes, the ESP32 restarts from
+ *              setup(), fetches fresh news, and redraws the screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      WiFi (2.4 GHz), NewsAPI.org API key
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (recommended for debug/time output)
+ * - WiFi credentials / API keys / timezone:
+ *   - Set ssid and pass for your WiFi network.
+ *   - Set api_key_news to your NewsAPI.org API key.
+ *   - Set timeZone to your local offset (e.g., 2 for UTC+2).
+ * - Library dependency:
+ *   - ArduinoJson must be installed (used by the network/parser layer).
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Install ArduinoJson in the Arduino IDE Library Manager.
+ * 2) Create a NewsAPI.org account and generate an API key.
+ * 3) Enter WiFi SSID/password, API key, and timeZone in the "CHANGE HERE" block.
+ * 4) Upload the sketch.
+ * 5) The device fetches news, renders the page once, then sleeps. It wakes and
+ *    refreshes on the configured interval.
+ *
+ * Expected output:
+ * - E-paper: "World News" title, date and last update time, followed by a list
+ *   of headline boxes with descriptions (as provided by NewsAPI.org).
+ * - Serial: Current time printout and any network/debug output from the helper
+ *   layer (useful for troubleshooting).
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial update is not used; the layout is drawn
+ *   once and pushed with a full refresh (display()).
+ * - Deep sleep restarts the ESP32. loop() is not used after entering sleep.
+ * - API/network limits: NewsAPI.org enforces rate limits and plan restrictions.
+ *   If requests fail, check API limits, key validity, and WiFi stability.
+ * - Time handling: the sketch waits until NTP time is valid before rendering
+ *   date/time fields. Ensure timeZone matches your location.
+ * - RAM usage: JSON parsing and multiple custom fonts can consume significant
+ *   memory. If you experience instability, reduce the number of items fetched
+ *   or simplify fonts/layout.
+ * - HTTPS/TLS behavior depends on the implementation in src/Network.h. If the
+ *   code uses insecure TLS settings (e.g., setInsecure()), treat it as demo-only
+ *   and use proper certificate validation for production.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-04-30
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Ensure the correct board is selected in the Arduino IDE
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -42,7 +98,7 @@ char api_key_news[] = "YourNewsAPIKey"; // Replace with your News API key
 #include "Fonts/FreeSerifItalic24pt7b.h"
 
 // Create network and display objects
-Network network;
+NetworkFunctions network;
 Inkplate inkplate(INKPLATE_1BIT); // Use 1-bit grayscale mode for Inkplate 4TEMPERA
 
 // Constants for delays and refreshes

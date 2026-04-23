@@ -5,12 +5,11 @@
     May 5, 2025
     https://github.com/SolderedElectronics/Inkplate-Arduino-library/tree/master/examples/Inkplate5V2
 
-    For support, please reach over forums: forum.e-radionica.com/en
-    For more info about the product, please check: www.inkplate.io
+    For more info about the product, please check: https://docs.soldered.com/inkplate/
 
     This code is released under the GNU Lesser General Public License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html
     Please review the LICENSE file included with this example.
-    If you have any questions about licensing, please contact techsupport@e-radionica.com
+    If you have any questions about licensing, please contact assistance@soldered.com
     Distributed as-is; no warranty is given.
 */
 
@@ -48,7 +47,7 @@ struct news
 };
 
 // Network class to handle WiFi and API interactions
-class Network
+class NetworkFunctions
 {
   public:
     void setCredentials(const char *wifiSSID, const char *wifiPass, const char *apiKey);

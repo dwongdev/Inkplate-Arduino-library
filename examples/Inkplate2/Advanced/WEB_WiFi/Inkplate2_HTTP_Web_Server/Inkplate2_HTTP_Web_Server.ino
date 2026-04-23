@@ -1,22 +1,69 @@
-/*
-    Inkplate2_HTTP_Web_Server example for Soldered Inkplate 2
-    For this example you will need a micro USB cable, Inkplate 2 and a device with WiFi and Internet brower (PC, Laptop,
-    Smartphone, ...). Select "Soldered Inkplate2" from Tools -> Board menu. Don't have "Soldered Inkplate2" option?
-    Follow our tutorial and add it: https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example will show you how you can use Inkplate as a small and simple standlone Web Server.
-    You need to connect to Inkplate with WiFi and open IP address shown on Inkplate display.
-    After opening IP address, you will see text box where you can type some text and after that you press "Send to
-    display". Text will apper on Inkplate display! This is just simple example what you can do with it and of course,
-    you can create much more complex stuff.
-
-    HINT: You can change WiFi name and password of your Inkplate WIFi Access point by changing ssid and pass in #define
-    macros!
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    29 March 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_HTTP_Web_Server.ino
+ * @brief       Simple standalone HTTP web server: create a WiFi access point,
+ *              accept text from a browser, and render it on Inkplate 2.
+ *
+ * @details     This example turns Inkplate 2 into a small standalone web server
+ *              by starting the ESP32 in WiFi Access Point (AP) mode and serving
+ *              a minimal HTML page (stored in htmlCode.h). A client connects to
+ *              the Inkplate-hosted WiFi network, opens the shown IP address in
+ *              a browser, and submits a text string.
+ *
+ *              The submitted text is passed to the device via a URL route
+ *              (/string/{...}), then displayed on the e-paper screen. The
+ *              current AP SSID/password and the server IP address are also
+ *              printed on the display to guide the user.
+ *
+ *              The display runs in 1-bit mode with the Inkplate 2 tri-color
+ *              palette (black/white/red). The sketch uses full refresh updates
+ *              when showing instructions and when showing the submitted text.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      Phone/PC with WiFi + web browser
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - AP SSID/pass:   edit #define ssid / #define pass
+ * - Web server:     runs on port 80 (HTTP)
+ * - Serial Monitor: 115200 baud (optional)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 2.
+ * 2) On your phone/PC, connect to the WiFi network shown on the display
+ *    (default SSID "Inkplate", password "soldered").
+ * 3) Open a browser and navigate to the displayed address (http://<AP IP>/).
+ * 4) Enter text in the page and send it to the display.
+ * 5) The Inkplate updates the screen to show the received text.
+ *
+ * Expected output:
+ * - Display: instructions (AP SSID/password + IP address), then "User text"
+ *   and the submitted string (highlighted using the red color).
+ * - Browser: simple page served from Inkplate; submitting text triggers an
+ *   update on the device.
+ * - Serial Monitor: prints server start/IP and received user text (if opened).
+ *
+ * Notes:
+ * - Display mode is 1-bit with Inkplate 2 color palette (BLACK/WHITE/RED).
+ * - The device runs as an AP (no router required). Range and performance
+ *   depend on environment and client device.
+ * - Text is passed in the URL path; very long strings or special characters
+ *   may require encoding and can exceed typical URL length limits.
+ * - No authentication beyond the AP password is implemented; treat this as a
+ *   demo and avoid exposing it in untrusted environments.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-03-29
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2

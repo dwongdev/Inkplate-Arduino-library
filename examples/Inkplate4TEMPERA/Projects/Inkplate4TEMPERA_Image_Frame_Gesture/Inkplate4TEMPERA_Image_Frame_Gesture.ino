@@ -1,26 +1,70 @@
-/*
-   Inkplate4TEMPERA_Image_Frame_Gesture example for Soldered Inkplate 4 TEMPERA
-   For this example you will need a USB-C cable, Inkplate 4TEMPERA and a SD card loaded with images.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   You can open .bmp, .jpeg, or .png files that have a color depth of 1-bit (BW bitmap), 4-bit, 8-bit and
-   24 bit, but there are some limitations of the library. It will skip images that can't be drawn.
-   Make sure that the image has a resolution smaller than 600x600 or otherwise it won't fit on the screen.
-   Format your SD card in standard FAT file format.
-
-   NOTE: the maximum number of images on the SD card is 512 due to the limitations of the RTC memory.
-
-   This example will show you how you can make slideshow images from an SD card. Put your images on
-   the SD card in a file and specify the file path in the sketch. Images will cycle on gestures
-   LEFT and RIGHT on the APDS9960 gesture sensor, and the rest of the time, Inkplate will be in deep sleep,
-   making this example battery-friendly.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   2 Oct 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Image_Frame_Gesture.ino
+ * @brief       Battery-friendly SD card slideshow controlled by left/right
+ *              gestures using the APDS9960 sensor and deep sleep wake-up.
+ *
+ * @details     This example implements an image-frame slideshow on Inkplate 4
+ *              TEMPERA. Images are loaded from a specified folder on a FAT-
+ *              formatted microSD card and rendered to the e-paper display in
+ *              3-bit grayscale mode (INKPLATE_3BIT).
+ *
+ *              Navigation is controlled by the onboard APDS9960 gesture sensor:
+ *              a LEFT gesture advances to the next image and a RIGHT gesture
+ *              goes to the previous one. Between image changes, the ESP32 is
+ *              placed into deep sleep to reduce power consumption. The APDS9960
+ *              remains powered and configured so it can wake the ESP32 via an
+ *              interrupt chain (APDS9960 -> IO expander -> ESP32 GPIO).
+ *
+ *              To preserve state across deep sleep resets, the sketch stores the
+ *              image directory indices, file count, and current position in RTC
+ *              memory (RTC_DATA_ATTR). Due to RTC memory constraints, the image
+ *              list is limited to 512 entries.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable, microSD card
+ * - Extra:      microSD card (FAT/FAT32), image files on the card
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Set folderPath to the image directory on the SD card (must end with '/')
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Format a microSD card as FAT/FAT32.
+ * 2) Create a folder (e.g. /images/) and copy your images into it.
+ * 3) Set folderPath in the sketch to match your folder (must end with '/').
+ * 4) Upload the sketch and insert the SD card.
+ * 5) The current image is displayed; swipe LEFT/RIGHT over the APDS9960 sensor
+ *    area to change images.
+ *
+ * Expected output:
+ * - E-paper: One image displayed full-screen. LEFT/RIGHT gestures change the
+ *   image; the device sleeps between gestures for low power usage.
+ *
+ * Notes:
+ * - Display mode is 3-bit grayscale (8 levels). Partial update is not available
+ *   in grayscale mode; each image change uses a full refresh (display.display()).
+ * - Supported file types depend on the Inkplate image decoder. The sketch
+ *   attempts to open and draw images and will skip files it cannot render.
+ * - Image size: keep images within the display resolution (e.g. <= 600x600) to
+ *   avoid cropping or decode failures.
+ * - File limit: maximum of 512 images due to RTC memory allocation for
+ *   imageIndexes[].
+ * - Deep sleep restarts the ESP32 on every wake. RTC_DATA_ATTR variables retain
+ *   state, but normal RAM does not.
+ * - Gesture sensitivity is set to the lowest gain to reduce accidental triggers.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-10-02
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -108,7 +152,7 @@ void setup()
             case DIR_LEFT:
                 skip = false;        // Picture should be changed
                 currentImageIndex++; // Go to next picture
-                // Reset counter if it overflowed
+                // reset counter if it overflowed
                 if (currentImageIndex > numFiles - 1)
                     currentImageIndex = 0;
                 break;
@@ -154,7 +198,7 @@ void loop()
                 // Get name of the picture, create path and draw image on the screen
                 if (!displayImage())
                 {
-                    // Reset the loop if there is an error displaying the image
+                    // reset the loop if there is an error displaying the image
                     return;
                 }
 
@@ -238,8 +282,8 @@ void deepSleep()
     display.sdCardSleep();
 
     // First, configure the interrupt from APDS to the GPIO expander
-    display.pinModeIO(9, INPUT_PULLUP, IO_INT_ADDR);
-    display.setIntPin(9, IO_INT_ADDR);
+    display.expander1.pinMode(9, INPUT_PULLUP);
+    display.expander1.setIntPin(9);
 
     // Now, the internal GPIO expander will fire an interrupt on it's INT pin
     // On pin change of pin 9
@@ -251,7 +295,7 @@ void deepSleep()
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_34, LOW);
 
     // Just in case, wait until the APDS interrupt clears
-    while (!display.digitalReadIO(9, IO_INT_ADDR))
+    while (!display.expander1.digitalRead(9))
     {
         delay(10);
     }
@@ -296,7 +340,7 @@ bool displayImage()
     char *picturePath = strcat(path, pictureName);
 
     // Draw the image on the screen
-    if (!display.drawImage(picturePath, 0, 0, 1, 0))
+    if (!display.image.draw(picturePath, 0, 0, 1, 0))
     {
         // Close folder and file
         file.close();

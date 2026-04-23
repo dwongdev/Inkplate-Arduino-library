@@ -1,32 +1,94 @@
 /**
  **************************************************
  * @file        Inkplate6_Factory_Programming_VCOM.ino
+ * @brief       Factory utility for Inkplate 6: program panel VCOM, run hardware
+ *              self-tests, and expose peripheral-mode Serial commands.
  *
- * @brief       File for programming the Inkplate's VCOM
+ * @details     This sketch is intended for factory/production use on Inkplate 6
+ *              (including Inkplate6V2). It performs a first-boot provisioning
+ *              flow to validate hardware and program the e-paper VCOM voltage.
  *
- * @note        !WARNING! VCOM can only be set 100 times, so keep usage to a minimum.
- *              !WARNING! Use at your own risk.
+ *              First boot flow:
+ *              - Performs an I2C sanity check (GPIO expander reachability) and
+ *                runs peripheral tests (see test.h / test.cpp).
+ *              - Prompts the operator over Serial (115200 baud) to enter the
+ *                panel VCOM voltage (typically negative, range 0.0 to -5.0 V),
+ *                then programs it into EEPROM using setVcom().
+ *              - Shows a splash image and prints the programmed VCOM value on
+ *                the display.
  *
- *              Inkplate 6 does not support auto VCOM, it has to be set manually.
- *              The user will be prompted to enter VCOM via serial (baud 115200).
- *              VCOM ranges from 0.0 to -5.0.
+ *              Subsequent boots:
+ *              - Detects that VCOM was already programmed, enables the e-paper
+ *                power rails (einkOn()) and reads back the stored VCOM value.
+ *              - Enters "peripheral mode": a Serial-driven command loop that
+ *                forwards commands to the Inkplate peripheral interface (see
+ *                Peripheral.h).
  *
- *              Tests will also be done, to pass all tests:
- *              - Edit the WiFi information in test.cpp.
- *              - Connect a slave device via EasyC on address 0x30 (you may change this in test.cpp also).
- *                In the InkplateEasyCTester folder, you can find the code for uploading to Dasduino Core 
- *                or Dasduino ConnectPlus to convert Dasduino to an I2C slave device for testing an easyC connector
- *                if you don't have a device with address 0x30.
- *              - Insert a formatted microSD card (doesn't have to be empty)
- *              - Press wake button to finish testing
+ *              Display modes:
+ *              - Uses 1-bit (BW) for initialization and fast updates.
+ *              - Switches to 3-bit grayscale to draw the splash bitmap.
  *
- *License v3.0: https://www.gnu.org/licenses/lgpl-3.0.en.html Please review the
- *LICENSE file included with this example. If you have any questions about
- *licensing, please visit https://soldered.com/contact/ Distributed as-is; no
- *warranty is given.
+ * Requirements:
+ * - Board:      Soldered Inkplate 6
+ * - Hardware:   Inkplate 6 / Inkplate 6 V2, USB cable
+ * - Extra:      microSD card (formatted, any content), EasyC I2C slave device
+ *              for factory tests (see Notes)
  *
- * @authors     Soldered
- ***************************************************/
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6
+ * - Serial Monitor: 115200 baud
+ * - Factory tests (in test.cpp):
+ *   - Set WiFi credentials (if tests require network)
+ *   - Ensure an EasyC/I2C slave responds at the configured address (0x30 by
+ *     default; configurable in test.cpp)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) (Factory) Connect required test hardware:
+ *    - Insert a formatted microSD card.
+ *    - Connect an EasyC I2C slave device at the address expected by test.cpp
+ *      (0x30 by default). If you don't have one, flash the helper firmware from
+ *      the InkplateEasyCTester folder onto a compatible Dasduino board and use
+ *      it as the I2C slave.
+ * 2) Open Serial Monitor at 115200 baud.
+ * 3) Upload the sketch. On first startup it will:
+ *    - Run peripheral tests and print results to Serial.
+ *    - Prompt for VCOM voltage; enter the value (include the '-' sign when
+ *      required) until programming succeeds.
+ * 4) After the splash screen appears, the device stays in peripheral mode.
+ *    Send supported peripheral-mode commands over Serial (see Peripheral.h /
+ *    Inkplate peripheral-mode documentation).
+ *
+ * Expected output:
+ * - Serial Monitor: Test status messages, VCOM prompt, success/failure logs, and
+ *   peripheral-mode interaction.
+ * - E-paper: Splash/demo image with the programmed VCOM voltage printed near
+ *   the bottom.
+ *
+ * Notes:
+ * - Display mode switches between 1-bit (BW) and 3-bit grayscale; grayscale is
+ *   used only for rendering the splash image.
+ * - VCOM programming is limited: the panel VCOM can be programmed a finite
+ *   number of times (typically ~100 writes). Avoid repeated programming and use
+ *   only when necessary.
+ * - einkOn()/einkOff() control the e-paper power supply. They are intended for
+ *   controlled factory/service workflows. Do not toggle them repeatedly in
+ *   normal applications, as incorrect use may damage the display hardware.
+ * - Factory test requirements depend on test.cpp; missing WiFi credentials,
+ *   I2C slave, or microSD may cause tests to fail and stop the process.
+ * - Peripheral mode processes Serial input continuously; ensure your terminal
+ *   does not inject unexpected line endings or extra characters if commands are
+ *   strict.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2026
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_ESP32_DEV) && !defined(ARDUINO_INKPLATE6V2)
@@ -34,7 +96,6 @@
 #endif
 
 // Include needed libraries in the sketch
-#include "EEPROM.h"
 #include "Inkplate.h"
 #include "Wire.h"
 
@@ -64,14 +125,14 @@ void setup()
     pinMode(GPIO_NUM_36, INPUT);
 
     // Setting default value for safety
-    double vcomVoltage = -1.3;
+    double vcomVoltage = -2.35;
 
+    // Check for the first run of this code. If it is first run, check the I2C bus.
     bool isFirstStartup = (EEPROM.read(EEPROMaddress) != 170);
-
     if (isFirstStartup)
     {
-        // Try to ping first IO expander to test I2C
-        Wire.setTimeOut(3000);
+        // Try to ping first expander.
+        Wire.setTimeOut(1000);
         Wire.beginTransmission(IO_INT_ADDR);
         int result = Wire.endTransmission();
 
@@ -82,47 +143,47 @@ void setup()
         }
     }
 
-    // If I2C is OK, initialise the display
+    // Init the Inkplate library (after the check of the I2C bus).
     display.begin();
 
     if (isFirstStartup)
     {
         // Test all the peripherals
         testPeripheral();
-
-        do
+        
+        while (true)
         {
-            // Get the VCOM voltage from serial
-            uint8_t flag = getVCOMFromSerial(&vcomVoltage);
+          // Get VCOM voltage from serial from user
+          uint8_t flag = getVCOMFromSerial(&vcomVoltage);
 
-            // Show the user the entered VCOM voltage
-            Serial.print("Entered VCOM: ");
-            Serial.println(vcomVoltage);
-            display.print(vcomVoltage);
-            display.partialUpdate();
+          // Show the user the entered VCOM voltage
+          Serial.print("Entered VCOM: ");
+          Serial.println(vcomVoltage);
+          display.print(vcomVoltage);
+          display.partialUpdate();
 
-            if (vcomVoltage < -5.0 || vcomVoltage > 0.0)
-            {
-                Serial.println("VCOM out of range!");
-                display.print(" VCOM out of range!");
-                display.partialUpdate();
-            }
-
-        } while (vcomVoltage < -5.0 || vcomVoltage > 0.0);
-
-        // Write VCOM to EEPROM
-        display.pinModeInternal(IO_INT_ADDR, display.ioRegsInt, 6, INPUT_PULLUP);
-        writeVCOMToEEPROM(vcomVoltage);
-        EEPROM.write(EEPROMaddress, 170);
-        EEPROM.commit();
-
+          if (display.setVCOM(vcomVoltage))
+          {
+            Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
+            break;
+          }
+          else
+          {
+            Serial.println("ERROR");
+          }
+        }
+        
         display.selectDisplayMode(INKPLATE_3BIT);
     }
     else
     {
         Serial.println("VCOM already set!");
+        // *****************************************************
+        // Turn on power supply for epaper display. 
+        // WARNING: Do not call this method repeatedly as it 
+        //          can damage your display if used incorrectly!
+        // *****************************************************
         display.einkOn();
-        vcomVoltage = (double)(readReg(0x03) | ((uint16_t)((readReg(0x04) & 1) << 8))) / (-100);
     }
 
     memset(commandBuffer, 0, BUFFER_SIZE);
@@ -132,8 +193,7 @@ void setup()
 
 void loop()
 {
-    // Peripheral mode 
-    // More about peripheral mode: https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
+    // Peripheral mode
 
     if (Serial.available())
     {
@@ -151,106 +211,18 @@ void loop()
     run(commandBuffer, BUFFER_SIZE, &display);
 }
 
-// Functions that writes data in register over I2C communication
-void writeReg(uint8_t _reg, uint8_t _data)
-{
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    Wire.write(_data);
-    Wire.endTransmission();
-}
-
-// Functions that reads data from register over I2C communication
-uint8_t readReg(uint8_t _reg)
-{
-    Wire.beginTransmission(0x48);
-    Wire.write(_reg);
-    Wire.endTransmission(false);
-    Wire.requestFrom(0x48, 1);
-    return Wire.read();
-}
-
 // Print the initial image that remains on the screen
 void showSplashScreen(float vComVoltage)
 {
-    display.clean(0, 1);
     display.display();
     display.selectDisplayMode(INKPLATE_3BIT);
-    display.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
+    display.image.drawBitmap3Bit(0, 0, demo_image, demo_image_w, demo_image_h);
     display.setTextColor(0, 7);
     display.setTextSize(1);
-    display.setCursor(5, 583);
+    display.setCursor(5, 734);
     display.print(vComVoltage, 2);
     display.print("V");
     display.display();
-}
-
-// This function is corrected
-uint8_t writeVCOMToEEPROM(double v)
-{
-    int vcom = int(abs(v) * 100);
-    int vcomH = (vcom >> 8) & 1;
-    int vcomL = vcom & 0xFF;
-
-    // Set PCAL pin where TPS65186 INT pin is connectet to input pull up
-    display.pinModeInternal(IO_INT_ADDR, display.ioRegsInt, 6, INPUT_PULLUP);
-
-    // First power up TPS65186 so we can communicate with it
-    display.einkOn();
-
-    // Wait a little bit
-    delay(250);
-
-    // Send to TPS65186 first 8 bits of VCOM
-    writeReg(0x03, vcomL);
-
-    // Send new value of register to TPS
-    writeReg(0x04, vcomH);
-    delay(1);
-
-    // Program VCOM value to EEPROM
-    writeReg(0x04, vcomH | (1 << 6));
-
-    // Wait until EEPROM has been programmed
-    delay(100);
-    do
-    {
-        delay(1);
-    } while (display.digitalReadInternal(IO_INT_ADDR, display.ioRegsInt, 6));
-
-    // Clear Interrupt flag by reading INT1 register
-    readReg(0x07);
-
-    // Now, power off whole TPS
-    display.einkOff();
-
-    // Wait a little bit...
-    delay(1000);
-
-    // Power up TPS again
-    display.einkOn();
-
-    delay(10);
-
-    // Read VCOM valuse from registers
-    vcomL = readReg(0x03);
-    vcomH = readReg(0x04);
-
-    // Trun off the TPS65186 and wait a little bit
-    display.einkOff();
-    delay(100);
-
-    if (vcom != (vcomL | (vcomH << 8)))
-    {
-        Serial.println("\nVCOM EEPROM PROGRAMMING FAILED!\n");
-        return 0;
-    }
-    else
-    {
-        Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
-        return 1;
-    }
-    return 0;
 }
 
 // Prompt user to enter VCOM

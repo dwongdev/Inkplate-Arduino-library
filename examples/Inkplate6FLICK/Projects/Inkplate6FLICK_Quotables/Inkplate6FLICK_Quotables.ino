@@ -1,26 +1,69 @@
-/*
-    Inkplate6FLICK_Quotables example for Soldered Inkplate 6FLICK
-    For this example you will need only USB cable and Inkplate 6FLICK.
-    Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-    Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example shows you how to use simple API call without API key. Response
-    from server is in JSON format, so that will be shown too how it is used. What happens
-    here is basically ESP32 connects to WiFi and sends API call and server returns HTML
-    document containing one quote and some information about it, then using library ArduinoJSON
-    we extract only quote from JSON data and show it on Inkplate 6FLICK. After displaying quote
-    ESP32 goes to sleep and wakes up every 300 seconds to show new quote(you can change time interval).
-
-    IMPORTANT:
-    Make sure to change wifi credentials below
-    Also have ArduinoJSON installed in your Arduino libraries, download here: https://arduinojson.org/
-    You can deserialize JSON data easily using JSON assistant https://arduinojson.org/v6/assistant/
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    14 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Quotables.ino
+ * @brief       Fetch a random quote from the Quotables API over WiFi, display it
+ *              in 1-bit (BW) mode, then deep-sleep between updates.
+ *
+ * @details     This example connects Inkplate 6FLICK to WiFi and retrieves a
+ *              random quote (plus author) from the public Quotables service.
+ *              The API response is JSON; the sketch parses it (via helper code
+ *              in QuotablesNetwork.*) and renders only the quote text and the
+ *              author name on the e-paper display.
+ *
+ *              The quote is drawn inside a text box for wrapping, and the author
+ *              is right-aligned near the bottom of the screen. The display runs
+ *              in 1-bit (BW) mode (INKPLATE_1BIT) and uses a full refresh after
+ *              drawing the content.
+ *
+ *              After displaying a quote, the ESP32 enters deep sleep for a
+ *              configurable interval. Deep sleep restarts the ESP32 on wake, so
+ *              setup() runs again and a new quote is fetched each cycle.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Extra:      WiFi access (internet connection required)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6FLICK
+ * - Serial settings: 115200 baud (optional; used for debug output)
+ * - WiFi credentials: set ssid / pass
+ * - Update interval: adjust DELAY_S (default: 300 seconds)
+ * - ArduinoJson: required by the networking helper (install from arduinojson.org)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password in the sketch.
+ * 2) Install ArduinoJson if it is not already available in your environment.
+ * 3) Upload the sketch to Inkplate 6FLICK.
+ * 4) After boot, the device connects to WiFi, fetches a quote, displays it, and
+ *    deep-sleeps. It wakes periodically and repeats.
+ *
+ * Expected output:
+ * - Display: A wrapped quote in a large font and the author printed at the
+ *   bottom-right (prefixed with "-").
+ * - Serial Monitor: Connection status and retry dots while fetching data.
+ * - Error case: If WiFi fails, an error message is shown and the device sleeps
+ *   briefly before retrying.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). This example uses a full refresh after drawing.
+ * - Deep sleep restarts the ESP32 on wake; WiFi connection and API fetch occur
+ *   again each interval.
+ * - Network/API reliability: internet outages or service changes can prevent
+ *   retrieval; the sketch retries fetching until it succeeds.
+ * - Text length varies; very long quotes may wrap heavily or exceed the chosen
+ *   text box/font settings.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2024-03-14
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -30,8 +73,8 @@
 //---------- CHANGE HERE  -------------:
 
 // Put in your ssid and password
-char ssid[] = "";
-char pass[] = "";
+char ssid[] = "Soldered Electronics";
+char pass[] = "dasduino";
 
 //----------------------------------
 
@@ -39,17 +82,17 @@ char pass[] = "";
 #include "Inkplate.h"
 
 // Include fonts used
-#include "Fonts/FreeMonoBold12pt7b.h"
+
 
 #include "Fonts/FreeMonoBold24pt7b.h"
 
 // Our networking functions, declared in Network.cpp
-#include "Network.h"
+#include "QuotablesNetwork.h"
 #include "driver/rtc_io.h" // Include ESP32 library for RTC pin I/O (needed for rtc_gpio_isolate() function)
 #include <rom/rtc.h>       // Include ESP32 library for RTC (needed for rtc_get_reset_reason() function)
 
 // create object with all networking functions
-Network network;
+NetworkFunctions network;
 
 // create display object
 Inkplate display(INKPLATE_1BIT);

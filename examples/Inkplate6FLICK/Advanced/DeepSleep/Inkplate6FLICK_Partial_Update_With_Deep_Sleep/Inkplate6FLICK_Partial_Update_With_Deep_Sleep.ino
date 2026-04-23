@@ -1,24 +1,49 @@
-/*
-   Inkplate6FLICK_Partial_Update_With_Deep_Sleep example for Soldered Inkplate 6FLICK
-   For this example you will need only USB cable and Inkplate 6FLICK
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   In this example we will show how to use partial update of epaper screen with deep sleep functionality of ESP32.
-   This example is not same as Inkplate-basic_partial_update! Do not use Inkplate-basic_partial_update with deep sleep,
-   IT WON'T WORK! Reason why you have to use this method with deep sleep is down how partail update works. It saves
-   content from screen in RAM. By calling partialUpdate() function, code finds difference between what is currently on
-   screen and what will be written and sends only that. When deep sleep is used, all content form the RAM has been
-   deleted, so ESP32 doesn't know what is currently on the screen, so you have to "rewrite" what is currently on the
-   screen, preload that and then create new screen that will be updated with partial update. NOTE: Partial update is
-   only available on 1 Bit mode (BW) and it is not recommended to use it on first refresh after power up. It is
-   recommended to do a full refresh every 5-10 partial refresh to maintain good picture quality.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Partial_Update_With_Deep_Sleep.ino
+ * @brief       Partial e-paper update with deep sleep demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to combine partial e-paper screen updates with
+ *              ESP32 deep sleep on Inkplate 6FLICK. Because partial updates rely
+ *              on RAM-stored screen state, the example shows how to reconstruct
+ *              the previous screen content after waking from deep sleep before
+ *              applying a new partial refresh.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ * - Libraries:  Inkplate library
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) Device displays variables on screen.
+ * 3) ESP32 enters deep sleep for a defined interval (10 s by default).
+ * 4) After wake-up, screen is reconstructed and partially refreshed
+ *    with updated values.
+ *
+ * Expected output:
+ * - Two variables displayed on the e-paper screen.
+ * - Values update after each deep sleep cycle.
+ * - Reduced power consumption thanks to ESP32 deep sleep.
+ *
+ * Notes:
+ * - Partial update works only in 1-bit (black & white) mode.
+ * - After deep sleep, previous screen content must be recreated
+ *   before calling partialUpdate().
+ * - Periodic full refreshes are recommended to maintain image quality.
+ * - Avoid partial update immediately after power-on.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-26
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK
@@ -48,8 +73,7 @@ void setup()
     if (rtc_get_reset_reason(0) == DEEPSLEEP_RESET) // Check if ESP32 is reseted by deep sleep or power up / user manual
                                                     // reset (or some other reason)
     {
-        display
-            .preloadScreen(); // If is woken up by deep sleep, recreate whole screen to be same as was before deep sleep
+        display.preloadScreen(); // If is woken up by deep sleep, recreate whole screen to be same as was before deep sleep
         counter++;            // Update variable / variables
         decimal *= 1.23;
         display.clearDisplay();      // Clear everything in buffer

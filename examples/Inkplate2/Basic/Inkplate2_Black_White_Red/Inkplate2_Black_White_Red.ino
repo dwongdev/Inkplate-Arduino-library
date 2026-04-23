@@ -1,18 +1,69 @@
-/*
-    Inkplate2_Black_White_Red example for Soldered Inkplate 2
-    For this example you will need only USB cable and Inkplate 2.
-    Select "Soldered Inkplate2" from Tools -> Board menu.
-    Don't have "Soldered Inkplate2" option? Follow our tutorial and add it:
-    https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-    This example will show you how you can draw some simple graphics using
-    Adafruit GFX functions. Yes, Inkplate library is 100% compatible with GFX lib!
-    Learn more about Adafruit GFX: https://learn.adafruit.com/adafruit-gfx-graphics-library )
-
-    Want to learn more about Inkplate? Visit www.inkplate.io
-    Looking to get support? Write on our forums: https://forum.soldered.com/
-    30 March 2022 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate2_Black_White_Red.ino
+ * @brief       Adafruit GFX drawing showcase for Inkplate 2 tri-color palette
+ *              (black/white/red), including shapes, text, and rotation.
+ *
+ * @details     This example demonstrates a wide range of Adafruit GFX-compatible
+ *              drawing primitives on Inkplate 2 using the BLACK/WHITE/RED color
+ *              palette. The sketch renders a sequence of demonstrations, each
+ *              drawn into the framebuffer and then pushed to the panel with a
+ *              full refresh:
+ *              - Text with shadow
+ *              - Single pixels and random pixels
+ *              - Lines (including thick, horizontal, vertical, and random)
+ *              - Grids
+ *              - Rectangles (outlined/filled) and rounded rectangles
+ *              - Circles (outlined/filled)
+ *              - Triangles (outlined/filled)
+ *              - Ellipses (outlined/filled)
+ *              - Polygons (outlined/filled), including point sorting
+ *
+ *              A small helper (displayCurrentAction) prints a caption describing
+ *              the current demo step. At the end, the sketch enters an infinite
+ *              loop that rotates the screen (0/90/180/270 degrees) and redraws
+ *              text at each orientation.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 2
+ * - Hardware:   Inkplate 2, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate2
+ * - Demo delay:     set DELAY_MS
+ * - Serial settings: none
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Inkplate 2 in Tools and upload the sketch.
+ * 2) The display cycles through many drawing examples, pausing for DELAY_MS
+ *    between steps.
+ * 3) At the end, the sketch continuously rotates the display and redraws text.
+ *
+ * Expected output:
+ * - Display: sequential pages showing different graphics primitives and text,
+ *   with a small caption indicating the current action.
+ * - Final stage: the text "INKPLATE2" repeatedly redrawn with rotation changes.
+ *
+ * Notes:
+ * - Display mode is 1-bit with Inkplate 2 tri-color palette (BLACK/WHITE/RED).
+ * - This example uses full refresh (display()) for every step, so frequent
+ *   flashing is expected and updates may take noticeable time.
+ * - fillPolygon() can be slower than other primitives; complexity grows with
+ *   the number of vertices and the filled area.
+ * - Random drawing uses random() without an explicit seed, so patterns may
+ *   repeat between resets.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2022-03-30
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE2

@@ -1,20 +1,51 @@
-/*
-   Inkplate6FLICK_HTTPS_POST_Request example for Soldered Inkplate 6FLICK
-   For this example you will need USB cable, Inkplate 6FLICK and stable WiFi Internet connection.
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to a WiFi network and send a POST request via HTTPS.
-   We will use JSONPlaceholder fake API for testing to see responses when sending post requests.
-   For real API, you must specify the API key and maybe some more parameters to work correctly.
-   When you send a POST request, on the Serial Monitor you will see a response like on the real
-   API but data won't be written on the API.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_HTTPS_POST_Request.ino
+ * @brief       HTTPS POST request demo for Soldered Inkplate 6FLICK.
+ *
+ * @details     Demonstrates how to connect Inkplate 6FLICK to a Wi-Fi network
+ *              and send an HTTPS POST request. The example uses the
+ *              JSONPlaceholder test API to send JSON data and prints the HTTP
+ *              status code and server response to the Serial Monitor.
+ *              The Inkplate display shows basic instructions to open the
+ *              Serial Monitor for logs.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB cable
+ *
+ * Configuration:
+ * - Set ssid/pass to your Wi-Fi credentials
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6flick/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your Wi-Fi SSID and password in ssid/pass.
+ * 2) Upload the sketch to Inkplate 6FLICK.
+ * 3) Open Serial Monitor at 115200 baud.
+ * 4) The device sends an HTTPS POST request periodically and prints:
+ *    - HTTP status code
+ *    - Server response payload
+ *
+ * Expected output:
+ * - Inkplate display shows “HTTPS POST Request example” and a Serial Monitor hint.
+ * - Serial Monitor shows Wi-Fi connection info, HTTP status code, and JSON response.
+ *
+ * Notes:
+ * - This example uses client.setInsecure(), which disables certificate validation.
+ *   For production use, validate the server certificate or use certificate pinning.
+ * - JSONPlaceholder is a fake API for testing; it returns a response but does not
+ *   persist data like a real backend.
+ * - Modify the JSON payload and headers to match your real API requirements.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE6FLICK

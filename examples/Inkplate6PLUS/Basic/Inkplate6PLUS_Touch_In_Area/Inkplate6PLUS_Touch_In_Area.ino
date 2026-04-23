@@ -1,17 +1,46 @@
-/*
-   Inkplate6PLUS_Touch_In_Area example for Soldered Inkplate 6Plus
-   For this example you will need only USB cable and Inkplate 6Plus
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example shows you how to use Inkplate 6Plus touchscreen.
-   Once the code is uploaded, try to touch the rectangle on the screen :)
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Touch_In_Area.ino
+ * @brief       Touchscreen touch-in-area demo for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates how to use the Inkplate 6PLUS touchscreen by
+ *              detecting touches inside a defined rectangular area. A black
+ *              rectangle is drawn on the display; when the user touches inside
+ *              the rectangle, it moves to a new position. Partial updates are
+ *              used for fast redraws, with an occasional full refresh when the
+ *              rectangle position resets.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ *
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) After initialization, a black rectangle appears on the screen.
+ * 3) Touch inside the rectangle to move it diagonally across the display.
+ * 4) When it reaches the lower area, the rectangle resets to the start and a
+ *    full refresh is performed.
+ *
+ * Expected output:
+ * - Rectangle moves when touched inside its bounds.
+ * - Serial Monitor prints touchscreen init status.
+ *
+ * Notes:
+ * - Touch detection uses touchscreen.touchInArea(x, y, w, h).
+ * - Partial updates are used for faster movement; a full refresh is used on reset.
+ * - Touchscreen is initialized and powered on with touchscreen.init(true).
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ *
+ * @author      Soldered Electronics
+ * @date        2026-02-27
+ * @license     GNU GPL V3
+ **************************************************
+ */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
@@ -41,7 +70,7 @@ void setup()
     delay(3000);
     display.clearDisplay();
     // Init touchscreen and power it on after init (send false as argument to put it in deep sleep right after init)
-    if (display.tsInit(true))
+    if (display.touchscreen.init(true))
     {
         Serial.println("Touchscreen init ok");
     }
@@ -59,7 +88,7 @@ void setup()
 void loop()
 {
     //Touch in area checks if touch ocured in given coordinates
-    if(display.touchInArea(x_position, y_position, 100, 50))
+    if(display.touchscreen.touchInArea(x_position, y_position, 100, 50))
     {
         x_position += 100;
         y_position += 100;

@@ -1,23 +1,72 @@
-/*
-  Inkplate4TEMPERA OpenAI text prompt generator
-  Compatible with Soldered Inkplate 4TEMPERA -> https://soldered.com/documentation/inkplate/projects/OpenAI-text-prompt
-
-  For this example you will need only USB cable and Inkplate 4TEMPERA.
-  Select "Soldered Inkplate4TEMPERA" from Tools -> Board menu.
-  Don't have "e-radionica Inkplate4TEMPERA" or "Soldered Inkplate4TEMPERA" option? Follow our tutorial and add it:https://soldered.com/documentation/inkplate/4tempera/quick-start-guide/
-
-  Overview:
-  This example demonstrates how to fetch the temperature and weather, then with that information it creates a snarky prompt which is displayed 
-  on the Inkplate
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • location
-      • latitude
-      • longitude
-  - After creating an OpenAI API key, enter it in the openai_key variable
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_OpenAI_Text_Prompt.ino
+ * @brief       Fetch current weather, generate a witty text via OpenAI API,
+ *              display it on Inkplate 4 TEMPERA, then deep sleep.
+ *
+ * @details     This example connects Inkplate 4 TEMPERA to WiFi, fetches current
+ *              weather data (temperature, weather code, timestamp) from the
+ *              Open-Meteo API, and uses that data to build a short “snarky”
+ *              prompt. The prompt is sent to the OpenAI Chat Completions API,
+ *              and the returned text is rendered inside a textbox on the e-paper
+ *              display.
+ *
+ *              The display runs in 1-bit (BW) mode for faster updates and lower
+ *              memory usage. During WiFi connect, partial updates are used to
+ *              incrementally refresh the “connecting” status. After the final
+ *              message is drawn, the sketch sets an RTC alarm and enters deep
+ *              sleep. Waking from deep sleep restarts the ESP32 and the sketch
+ *              runs from setup() again.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      WiFi (2.4 GHz), OpenAI API key, internet access
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial Monitor: 115200 baud (recommended for debugging)
+ * - WiFi credentials / API keys / timezone (if relevant)
+ *   - Set ssid / password.
+ *   - Set openai_key (keep it private).
+ *   - Set location / latitude / longitude for accurate local weather.
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password.
+ * 2) Create an OpenAI API key and paste it into openai_key.
+ * 3) Set location, latitude, and longitude for your area.
+ * 4) Upload the sketch and open Serial Monitor (optional) to see request logs.
+ * 5) After it displays the generated text, the device goes to deep sleep and
+ *    wakes periodically based on the configured RTC alarm.
+ *
+ * Expected output:
+ * - E-paper: A generated short weather summary rendered in a text box.
+ * - Serial: WiFi status, raw API responses (debug), and error messages if any.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are used only for the WiFi
+ *   “progress dots”; the final text uses a full refresh (display.display()).
+ * - Deep sleep restarts the ESP32. loop() will not run after entering sleep.
+ * - RTC wake-up: the sketch sets an RTC alarm and enables EXT0 wake on GPIO 39.
+ *   Ensure your board wiring/config matches this wake source.
+ * - HTTPS warning: client.setInsecure() disables TLS certificate validation and
+ *   is for demo/testing only. For production, use proper certificate validation
+ *   or pinning for both Open-Meteo and OpenAI endpoints.
+ * - RAM usage: ArduinoJson parsing and storing full HTTP responses can be
+ *   memory-intensive. If you see instability, reduce payload sizes and avoid
+ *   excessive debug printing of raw responses.
+ * - API security: never commit API keys to public repos; rotate keys if exposed.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 
 #include <WiFiClientSecure.h>     // Secure WiFi client for HTTPS communication
@@ -89,7 +138,7 @@ void setup() {
   }
 
   // Set a wakeup alarm 30 seconds from now (RTC-based wakeup)
-  display.rtcSetAlarmEpoch(display.rtcGetEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
+  display.rtc.setAlarmEpoch(display.rtc.getEpoch() + SLEEP_DURATION_IN_MINS, RTC_ALARM_MATCH_DHHMMSS);
 
   // Configure ESP32 to wake up from deep sleep using RTC interrupt on GPIO 39
   esp_sleep_enable_ext0_wakeup(GPIO_NUM_39, 0);

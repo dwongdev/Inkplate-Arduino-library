@@ -1,19 +1,65 @@
-/*
-   Inkplate4TEMPERA_Pedometer example for Soldered Inkplate 4 TEMPERA
-   For this example you will need only a USB-C cable and Inkplate 4 TEMPERA.
-   Select "Soldered Inkplate 4 TEMPERA" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 4 TEMPERA" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This project will show you how to use the lsm6ds3 accelerometer/gyroscope as a pedometer.
-   It also shows a cool animation as you walk!
-
-   NOTE: it takes a couple steps for the pedometer to start counting each time you stop, this is expected
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   27 Aug 2023 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate4TEMPERA_Pedometer.ino
+ * @brief       Use the onboard LSM6DS3 accelerometer/gyroscope as a pedometer
+ *              and display step count with a simple walking animation.
+ *
+ * @details     This example configures the LSM6DS3 embedded pedometer feature
+ *              and continuously reads the internal step counter registers. When
+ *              the step count changes, the sketch updates the on-screen counter
+ *              and advances a small animation frame to provide visual feedback
+ *              while walking.
+ *
+ *              The display runs in 1-bit (BW) mode to enable partial updates
+ *              for faster, lower-flash refreshes. Most updates use
+ *              partialUpdate(false, true) to keep the e-paper power rails
+ *              enabled between updates (faster, but higher power). After all
+ *              animation frames have been shown, a full refresh is triggered to
+ *              maintain image quality.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 4 TEMPERA
+ * - Hardware:   Inkplate 4 TEMPERA, USB-C cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 4 TEMPERA
+ * - Serial settings (if relevant): none
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select the Inkplate 4 TEMPERA board and upload the sketch.
+ * 2) After boot, the screen shows "Start walking!" briefly.
+ * 3) Walk with the device; the step count updates when new steps are detected.
+ * 4) Watch the small animation advance as steps are counted.
+ *
+ * Expected output:
+ * - E-paper: "Steps taken: <number>" plus a small animated icon that changes
+ *   frames as you walk.
+ *
+ * Notes:
+ * - Display mode is 1-bit (BW). Partial updates are supported only in BW mode.
+ * - The LSM6DS3 pedometer is not instantaneous; it may require a few steps to
+ *   start counting after you resume walking. This is expected behavior of the
+ *   embedded algorithm/filtering.
+ * - partialUpdate(false, true) keeps the panel powered for faster successive
+ *   updates. For battery-focused designs, consider using leaveOn=false and/or
+ *   batching updates.
+ * - Full refresh is performed periodically (after a full animation cycle) to
+ *   reduce ghosting from repeated partial updates.
+ * - This example reads the LSM6DS3 step counter registers directly; resetting
+ *   embedded functions can clear the counter, so avoid reinitializing the sensor
+ *   unless you intend to reset the step count.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-08-27
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATE4TEMPERA
@@ -21,7 +67,7 @@
 #endif
 
 #include "Inkplate.h"          // Include Inkplate library to the sketch
-#include "Fonts\Inter16pt7b.h" // Include the font used for this sketch
+#include "Fonts/Inter16pt7b.h" // Include the font used for this sketch
 #include "animationFrames.h"   // Include the animation frames for the walking animation
 
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1-bit mode (BW)
@@ -121,7 +167,7 @@ void loop()
         display.print(stepsTaken);
 
         // Draw the next frame of the animation in the correct position
-        display.drawImage(frames[animationFrameIndex], 275, 240, 50, 50, BLACK, WHITE);
+        display.image.draw(frames[animationFrameIndex], 275, 240, 50, 50, BLACK, WHITE);
         animationFrameIndex++;
         // If all the frames of the animation are complete...
         if (animationFrameIndex == sizeof(frames) / sizeof(frames[0]))

@@ -1,21 +1,47 @@
-/*
-   Inkplate6PLUS_Read_Temperature example for Soldered Inkplate 6Plus
-   For this example you will need USB cable and Inkplate 6PLUS.
-   Select "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate 6Plus" or "Soldered Inkplate 6Plus" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to read temperature from on-board
-   temperature sensor which is part of TPS65186 e-paper PMIC.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   23 January 2023 by Soldered
-
-   In order to convert your images into a format compatible with Inkplate
-   use the Soldered Image Converter available at:
-   http://soldered.com/image-converter
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_Read_Temperature.ino
+ * @brief       On-board temperature sensor reading example for Soldered Inkplate 6PLUS.
+ *
+ * @details     Demonstrates how to read temperature data from the on-board
+ *              temperature sensor integrated inside the TPS65186 e-paper PMIC.
+ *              This sensor is intended primarily for internal compensation
+ *              and basic monitoring. It is a simple (basic) temperature sensor
+ *              and should not be considered highly accurate or suitable for
+ *              precise temperature measurements.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      None
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6PLUS.
+ * 2) The program reads the temperature from the onboard PMIC sensor.
+ * 3) The measured value can be displayed or printed to Serial.
+ *
+ * Expected output:
+ * - Approximate temperature reading reported by the TPS65186 sensor.
+ *
+ * Notes:
+ * - The TPS65186 PMIC includes a basic internal temperature sensor.
+ * - This sensor is not ultra-precise and is not a replacement for a
+ *   dedicated external temperature sensor.
+ * - Intended use is system monitoring and waveform compensation.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2023-01-23
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
@@ -42,7 +68,7 @@ void loop()
 {
     int temperature = display.readTemperature();            // Read temperature from on-board temperature sensor
     display.clearDisplay();                                 // Clear everything in frame buffer of e-paper display
-    display.drawImage(tempSymbol, 100, 100, 38, 79, BLACK); // Draw temperature symbol at position X=100, Y=100
+    display.image.draw(tempSymbol, 100, 100, 38, 79, BLACK); // Draw temperature symbol at position X=100, Y=100
     display.setCursor(150, 120);
     display.print(temperature, DEC); // Print temperature
     display.print('C');

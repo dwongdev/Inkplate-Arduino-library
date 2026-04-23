@@ -1,30 +1,71 @@
-/*
-   Inkplate6FLICK_Peripheral_Mode example for Soldered Inkplate 6FLICK
-   For this example you will need only a USB-C cable and Inkplate 6FLICK
-   Select "Soldered Inkplate 6FLICK" from Tools -> Board menu.
-   Don't have "Soldered Inkplate 6FLICK" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   Using this sketch, you don't have to program and control e-paper using Arduino code.
-   Instead, you can send UART command. This give you flexibility that you can use this Inkplate 6FLICK on any platform!
-
-   Because it uses UART, it's little bit slower and it's not recommended to send bunch of
-   drawPixel command to draw some image. Instead, load bitmaps and pictures on SD card and load image from SD.
-   If we missed some function, you can modify this and make yor own.
-   Also, every Inkplate comes with this peripheral mode right from the factory.
-
-   Learn more about Peripheral Mode:
-   https://inkplate.readthedocs.io/en/latest/peripheral-mode.html
-
-   UART settings are: 115200 baud, standard parity, ending with "\n\r" (both)
-   You can send commands via USB port or by directly connecting to ESP32 TX and RX pins.
-   Don't forget you need to send #L(1)* after each command to show it on the display
-   (equal to display.display()).
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   15 March 2024 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6FLICK_Peripheral_Mode.ino
+ * @brief       Runs Inkplate 6FLICK in “Peripheral Mode”, accepting UART commands
+ *              to control the e-paper display without custom Arduino drawing
+ *              code.
+ *
+ * @details     This example turns Inkplate 6FLICK into a serial-controlled display
+ *              peripheral. Instead of implementing graphics logic in the sketch
+ *              itself, an external host (PC, SBC, or another MCU) sends UART
+ *              commands to the ESP32, and the PeripheralMode library parses and
+ *              executes them on the Inkplate display.
+ *
+ *              The sketch initializes the Inkplate driver in 3-bit grayscale
+ *              mode (INKPLATE_3BIT), then starts the PeripheralMode singleton
+ *              with a configurable UART RX/TX pin mapping, serial buffer size,
+ *              and command timeout (defined in settings.h). In the main loop it
+ *              continuously reads and processes incoming serial data.
+ *
+ *              Because UART bandwidth is limited, sending many pixel-level
+ *              commands (e.g., drawPixel in large loops) is inefficient. For
+ *              image-heavy content, store bitmaps/images on the microSD card
+ *              and use commands that load and render files instead.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6FLICK
+ * - Hardware:   Inkplate 6FLICK, USB-C cable
+ * - Extra:      none (optional: microSD card for image file rendering)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6FLICK
+ * - Serial settings: 115200 baud, standard parity, line ending "\\n\\r"
+ *   (both NL & CR) as expected by the command parser
+ * - Adjust SERIAL_UART_RX_PIN, SERIAL_UART_TX_PIN, SERIAL_BUFFER_SIZE, and
+ *   SERIAL_TIMEOUT_MS in settings.h if needed
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6FLICK/quick-start-guide/
+ *
+ * How to use:
+ * 1) Upload the sketch to Inkplate 6FLICK.
+ * 2) Open a serial terminal at 115200 baud and wait for the device to print
+ *    "READY".
+ * 3) Send Peripheral Mode commands terminated with "\\n\\r".
+ * 4) For faster image updates, place image/bitmap files on a microSD card and
+ *    use commands that load and draw from SD instead of per-pixel drawing.
+ *
+ * Expected output:
+ * - Serial Monitor prints "READY" when initialization succeeds.
+ * - The display updates in response to valid UART commands sent by the host.
+ * - If initialization fails, an error message is printed and the sketch halts.
+ *
+ * Notes:
+ * - Display mode: 3-bit grayscale (INKPLATE_3BIT). Partial updates are not
+ *   supported in grayscale mode, so refresh operations performed by commands
+ *   are full refreshes.
+ * - Performance: UART command throughput is limited; prefer higher-level draw
+ *   operations (lines, rectangles, text, image-from-SD) over repeated pixels.
+ * - This sketch is commonly used as a “factory” firmware to allow Inkplate to
+ *   be driven from non-Arduino platforms via a simple serial protocol.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2024-04-15
+ * @license     GNU GPL V3
+ **************************************************/
 // Include Inkplate library.
 #include "Inkplate.h"
 

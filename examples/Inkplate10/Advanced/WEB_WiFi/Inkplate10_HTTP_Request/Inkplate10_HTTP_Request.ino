@@ -1,19 +1,49 @@
-/*
-   Inkplate10_HTTP_Web_Server example for Soldered Inkplate 10
-   For this example you will need USB cable, Inkplate 10 and stable WiFi Internet connection
-   Select "e-radionica Inkplate10" or "Soldered Inkplate10" from Tools -> Board menu.
-   Don't have "e-radionica Inkplate10" or "Soldered Inkplate10" option? Follow our tutorial and add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example will show you how to connect to WiFi network, get data from Internet and display that data on epaper.
-   This example is NOT on to how to parse HTML data from Internet - it will just print HTML on the screen.
-
-   In quotation marks you will need write your WiFi SSID and WiFi password in order to connect to your WiFi network.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Looking to get support? Write on our forums: https://forum.soldered.com/
-   11 February 2021 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate10_HTTP_Request.ino
+ * @brief       Simple HTTP web content fetch example for Soldered Inkplate 10.
+ *
+ * @details     Demonstrates how to connect Inkplate 10 to a WiFi network,
+ *              perform a basic HTTP request to retrieve data from the Internet,
+ *              and display the received content on the e-paper display.
+ *              This example does NOT parse HTML content; it simply prints the
+ *              raw HTTP response body on the screen.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 10
+ * - Hardware:   Inkplate 10, USB cable
+ * - Extra:      Stable WiFi Internet connection
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate10
+ * - Serial settings: 115200 baud (optional)
+ * - Enter your WiFi SSID and password in the sketch
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID and password in the sketch.
+ * 2) Upload the sketch to Inkplate 10.
+ * 3) The board connects to the WiFi network.
+ * 4) Data is fetched from a remote web server using HTTP.
+ * 5) The received content is printed on the e-paper display.
+ *
+ * Expected output:
+ * - Inkplate display shows raw text/HTML fetched from the web.
+ *
+ * Notes:
+ * - This example is intended to demonstrate basic HTTP communication only.
+ * - No HTML parsing or content extraction is performed.
+ * - Displaying large responses may require text size adjustments.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2021-02-11
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE10) && !defined(ARDUINO_INKPLATE10V2)
@@ -24,8 +54,8 @@
 #include <HTTPClient.h> //Include HTTP library to this sketch
 #include <WiFi.h>       //Include ESP32 WiFi library to our sketch
 
-#define ssid "" // Name of the WiFi network (SSID) that you want to connect Inkplate to
-#define pass "" // Password of that WiFi network
+#define ssid "Soldered Electronics" // Name of the WiFi network (SSID) that you want to connect Inkplate to
+#define pass "dasduino" // Password of that WiFi network
 
 Inkplate display(INKPLATE_1BIT); // Create an object on Inkplate library and also set library into 1 Bit mode (BW)
 

@@ -1,26 +1,69 @@
-/*
-  Inkplate6PLUS OpenMeteo Weather Station Example
-  Compatible with Soldered Inkplate 6 Plus -> https://soldered.com/documentation/inkplate/projects/open-meteo-weather-station
-
-  Getting Started with Inkplate:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate
-
-  Overview:
-  This example demonstrates how to fetch and display weather data from the OpenMeteo API
-  using the Inkplate 10 e-paper display.
-
-  Before You Start:
-  - Enter your WiFi credentials carefully (they are case-sensitive).
-  - Update the following variables for accurate local weather data:
-      • timeZone
-      • latitude
-      • longitude
-  Set your username and city with `myUsername` and `myCity` (for display only, not essential for the API).
-
-  Units:
-  By default, the app uses the metric system.
-  To switch to Imperial units, change the metricUnits to "bool metricUnits = false;"
-*/
+/**
+ **************************************************
+ * @file        Inkplate6PLUS_OpenMeteo_Weather_Station.ino
+ * @brief       Fetch weather data from the Open-Meteo API over WiFi, render a
+ *              weather-station style UI in 3-bit grayscale, then deep-sleep.
+ *
+ * @details     This example connects Inkplate 6PLUS to WiFi, synchronizes time
+ *              using NTP, and retrieves current weather data from the Open-Meteo
+ *              API for a configured latitude/longitude. The fetched data is
+ *              formatted into a weather dashboard UI (city/user label, last
+ *              update time, battery voltage, and weather metrics) using helper
+ *              classes from the project source (NetworkFunctions, WeatherData,
+ *              Gui).
+ *
+ *              The display runs in 3-bit grayscale mode (INKPLATE_3BIT) to allow
+ *              shaded UI elements. After drawing, the ESP32 enters deep sleep to
+ *              conserve power and wakes periodically using the timer. Deep sleep
+ *              restarts the ESP32 on wake, so setup() runs again each cycle.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6PLUS
+ * - Hardware:   Inkplate 6PLUS, USB cable
+ * - Extra:      WiFi access (internet connection required)
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
+ * - Serial settings: 115200 baud (optional; used for debugging)
+ * - WiFi credentials: set ssid / password
+ * - Location: set myCity (display only), latitude, longitude, and timeZone
+ * - Units: set metricUnits = true (metric) or false (imperial)
+ * - NTP: optionally change ntpServer
+ * - Update interval: TIME_TO_SLEEP (default: 30 minutes)
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/6PLUS/quick-start-guide/
+ *
+ * How to use:
+ * 1) Enter your WiFi SSID/password and set your location variables
+ *    (timeZone, latitude, longitude). Optionally set myUsername/myCity.
+ * 2) Upload the sketch to Inkplate 6PLUS.
+ * 3) On boot, the device connects to WiFi, syncs time, fetches weather data,
+ *    renders the dashboard, then deep-sleeps.
+ * 4) The device wakes automatically after TIME_TO_SLEEP and refreshes the data.
+ *
+ * Expected output:
+ * - Display: Weather dashboard UI showing current conditions for the configured
+ *   coordinates, plus battery voltage and update metadata.
+ * - Display (error cases): A WiFi error screen if connection fails, or an API
+ *   error screen if the Open-Meteo request fails.
+ * - Serial Monitor: Optional debug output.
+ *
+ * Notes:
+ * - Display mode is 3-bit grayscale (INKPLATE_3BIT). Grayscale updates are
+ *   slower and consume more energy than 1-bit BW.
+ * - Deep sleep restarts the ESP32 on wake; all initialization and network calls
+ *   repeat each refresh cycle.
+ * - Open-Meteo is accessed over the network; availability, latency, and API
+ *   changes can affect results.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #if !defined(ARDUINO_INKPLATE6PLUS) && !defined(ARDUINO_INKPLATE6PLUSV2)
@@ -47,8 +90,8 @@ const char* ntpServer = "pool.ntp.org";  // in case you want to use a different 
 
 // --- Device and Data Objects ---
 Inkplate inkplate(INKPLATE_3BIT); // Create Inkplate display object (3-bit mode for partial grayscale)
-Network network;                  // Network utility for weather fetching
-Network::UserInfo userInfo;       // Structure to hold user and device info (battery, last updated, etc.)
+NetworkFunctions network;                  // Network utility for weather fetching
+NetworkFunctions::UserInfo userInfo;       // Structure to hold user and device info (battery, last updated, etc.)
 WeatherData weatherData;          // Structure to hold fetched weather data
 Gui gui(inkplate);                // Drawing visuals and info
 

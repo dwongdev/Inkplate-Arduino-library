@@ -1,16 +1,60 @@
-/*
-   Inkplate6COLOR_Hello_World example for Soldered Inkplate 6COLOR
-
-   Select "Soldered Inkplate 6COLOR" from the Tools -> Board menu in Arduino IDE.
-   Don't see the "Soldered Inkplate 6COLOR" option? Follow this tutorial to add it:
-   https://soldered.com/learn/add-inkplate-6-board-definition-to-arduino-ide/
-
-   This example demonstrates the most basic usage: displaying "Hello World!" on the screen using the Inkplate 6COLOR library.
-
-   Want to learn more about Inkplate? Visit www.inkplate.io
-   Need support? Visit our forums: https://forum.soldered.com/
-   24 April 2025 by Soldered
-*/
+/**
+ **************************************************
+ * @file        Inkplate6COLOR_Hello_World.ino
+ * @brief       Displays a simple "Hello World!" message on Inkplate 6COLOR.
+ *
+ * @details     This example demonstrates the most basic workflow for using the
+ *              Inkplate 6COLOR library. The sketch initializes the display,
+ *              clears the framebuffer, prints a short text string, and then
+ *              refreshes the e-paper panel so the content becomes visible.
+ *
+ *              It introduces the fundamental drawing sequence used in most
+ *              Inkplate sketches:
+ *
+ *              1) Initialize the display with begin()
+ *              2) Draw content into the framebuffer
+ *              3) Trigger a display refresh with display()
+ *
+ *              This example is intended as a minimal starting point for
+ *              beginners who want to verify that their board and software
+ *              environment are working correctly.
+ *
+ * Requirements:
+ * - Board:      Soldered Inkplate 6COLOR
+ * - Hardware:   Inkplate 6COLOR, USB cable
+ * - Extra:      none
+ *
+ * Configuration:
+ * - Boards Manager -> Inkplate Boards -> Soldered Inkplate 6COLOR
+ * - Serial settings: not used in this example
+ *
+ * Don't have Inkplate Boards in Arduino Boards Manager?
+ * See https://docs.soldered.com/inkplate/10/quick-start-guide/
+ *
+ * How to use:
+ * 1) Select Soldered Inkplate 6COLOR in Arduino IDE.
+ * 2) Upload the sketch to the board.
+ * 3) After initialization, the text "Hello World!" appears on the display.
+ *
+ * Expected output:
+ * - Display: The message "Hello World!" printed near the top-left corner of
+ *   the screen using a large font.
+ *
+ * Notes:
+ * - Display mode: Inkplate 6COLOR color e-paper mode.
+ * - clearDisplay() only clears the internal framebuffer; the physical display
+ *   updates only when display() is called.
+ * - This example performs a single full refresh and does not update again.
+ * - Color e-paper refreshes are slower than monochrome displays and should
+ *   not be triggered unnecessarily in real applications.
+ *
+ * Docs:         https://docs.soldered.com/inkplate
+ * Support:      https://forum.soldered.com/
+ *
+ * @author      Soldered
+ * @date        2025-04-24
+ * @license     GNU GPL V3
+ **************************************************/
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
 #ifndef ARDUINO_INKPLATECOLOR
