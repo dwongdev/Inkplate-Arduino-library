@@ -80,8 +80,8 @@
 int timeZone = 2;
 
 // WiFi credentials (replace with your WiFi network details)
-char ssid[] = "Soldered Electronics";       // Replace with your WiFi SSID
-char pass[] = "dasduino";   // Replace with your WiFi password
+char ssid[] = "";       // Replace with your WiFi SSID
+char pass[] = "";   // Replace with your WiFi password
 
 // News API key (get one from https://newsapi.org/)
 char api_key_news[] = "0764e21041bc424c90071880e5f0607f"; // Replace with your News API key

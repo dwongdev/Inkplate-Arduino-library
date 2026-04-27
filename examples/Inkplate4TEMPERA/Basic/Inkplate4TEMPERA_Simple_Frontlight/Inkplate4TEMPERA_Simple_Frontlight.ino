@@ -69,7 +69,7 @@ void setup()
     Serial.begin(115200);    // Set up a serial communication of 115200 baud
     display.begin();         // Init Inkplate library
     display.frontlight.setState(true); // Enable frontlight circuit
-    display.frontlight.setState(b); // Set frontlight intensity
+    display.frontlight.setBrightness(b); // Set frontlight intensity
 }
 
 void loop()
@@ -98,13 +98,13 @@ void loop()
             {
                 for (int i = 0; i < 64; ++i)
                 {
-                    display.frontlight.setState(i);
+                    display.frontlight.setBrightness(i);
                     delay(30);
                 }
 
                 for (int i = 63; i >= 0; --i)
                 {
-                    display.frontlight.setState(i);
+                    display.frontlight.setBrightness(i);
                     delay(30);
                 }
             }
@@ -114,10 +114,11 @@ void loop()
 
         if (change) // If frontlight valuse has changed, update the intensity and show current value of frontlight
         {
-            display.frontlight.setState(b);
+            display.frontlight.setBrightness(b);
             Serial.print("Frontlight:");
             Serial.print(b, DEC);
             Serial.println("/63");
         }
     }
 }
+

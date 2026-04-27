@@ -39,8 +39,8 @@ WiFiClient client;
 #define POSTING_INTERVAL_IN_SESCS 20
 
 // Enter your WiFi credentials
-const char *ssid = "Soldered Electronics";
-const char *pass = "dasduino";
+const char *ssid = "";
+const char *pass = "";
 
 // ThingSpeak settings
 char *server = "api.thingspeak.com";

@@ -76,8 +76,8 @@ Inkplate display;
 // ---------------- CHANGE HERE ---------------------:
 
 // WiFi credentials
-const char *ssid = "Soldered Electronics"; // Your WiFi SSID
-const char *password = "dasduino"; // Your WiFi password
+const char *ssid = ""; // Your WiFi SSID
+const char *password = ""; // Your WiFi password
 
 // Define delay between 2 images in seconds
 #define SECS_BETWEEN_IMAGES 30

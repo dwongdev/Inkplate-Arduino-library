@@ -65,8 +65,8 @@ WiFiClient client;
 #define POSTING_INTERVAL_IN_SECS 20
 
 // WiFi credentials
-const char *ssid = "Soldered Electronics";
-const char *pass = "dasduino";
+const char *ssid = "";
+const char *pass = "";
 
 // Webhook.site settings
 const char *server = "webhook.site";

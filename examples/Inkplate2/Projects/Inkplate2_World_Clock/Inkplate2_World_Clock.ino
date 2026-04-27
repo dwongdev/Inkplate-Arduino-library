@@ -20,8 +20,8 @@
 NetworkFunctions network;
 Inkplate display;
 
-char ssid[] = "Soldered Electronics";
-char pass[] = "dasduino";
+char ssid[] = "";
+char pass[] = "";
 
 int hours;
 int minutes;

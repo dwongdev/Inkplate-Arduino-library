@@ -69,8 +69,8 @@
 
 #include "Inkplate.h"
 
-const char ssid[] = "Soldered Electronics";    // Your WiFi SSID
-const char *password = "dasduino"; // Your WiFi password
+const char ssid[] = "";    // Your WiFi SSID
+const char *password = ""; // Your WiFi password
 
 Inkplate display(INKPLATE_3BIT);
 

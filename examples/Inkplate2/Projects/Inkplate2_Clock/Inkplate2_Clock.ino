@@ -94,8 +94,8 @@ uint8_t MODE = 1;
 int timeZone = 2;
 
 // Put in your ssid and password
-char ssid[] = "Soldered Electronics";
-char pass[] = "dasduino";
+char ssid[] = "";
+char pass[] = "";
 #define DELAY_WIFI_RETRY_SECONDS 10
 //----------------------------------
 
