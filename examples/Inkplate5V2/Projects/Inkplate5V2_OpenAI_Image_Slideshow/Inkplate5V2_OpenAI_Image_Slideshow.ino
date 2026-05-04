@@ -86,8 +86,8 @@
 Image::Format imageFormat = Image::PNG;
 
 // WiFi credentials (replace with your own SSID and password)
-const char* ssid = "Stefan";
-const char* password = "granatir";
+const char* ssid = "your ssid";
+const char* password = "your password";
 
 // OpenAI API key (replace with your OpenAI API key)
 const char* openai_key = ""; 

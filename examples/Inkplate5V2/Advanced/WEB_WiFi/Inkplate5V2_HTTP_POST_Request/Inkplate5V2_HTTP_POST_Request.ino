@@ -65,12 +65,12 @@ WiFiClient client;
 #define POSTING_INTERVAL_IN_SECS 20
 
 // WiFi credentials
-const char *ssid = "Stefan";
-const char *pass = "granatir";
+const char *ssid = "your ssid";
+const char *pass = "your password";
 
 // Webhook.site settings
 const char *server = "webhook.site";
-const char *WEBHOOK_PATH = "http://webhook.site/79927188-abca-4497-b2eb-185155bf8f44"; // e.g. "/abcd-1234-efgh"
+const char *WEBHOOK_PATH = "your webhook api"; // e.g. "/abcd-1234-efgh"
 
 // Last connection time
 unsigned long lastConnectionTime = 0;
