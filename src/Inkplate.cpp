@@ -61,6 +61,8 @@ void Inkplate::begin()
     if (_beginDone == 1)
         return;
 
+    inkplateMutexInit();
+
     Wire.begin();
 
     // Init low level driver for EPD.

@@ -19,6 +19,7 @@ Arduino Uno (any 'duino should do)
 
 #include "Arduino.h"
 #include <Wire.h>
+#include "../../../../../system/inkplateSemaphore.h"
 #include "SparkFunBQ27441.h"
 #include "BQ27441_Definitions.h"
 
@@ -713,6 +714,7 @@ bool BQ27441::writeExtendedData(uint8_t classID, uint8_t offset, uint8_t *data, 
 int16_t BQ27441::i2cReadBytes(uint8_t subAddress, uint8_t *dest, uint8_t count)
 {
     int16_t timeout = BQ72441_I2C_TIMEOUT;
+    i2cStart();
     Wire.beginTransmission(_deviceAddress);
     Wire.write(subAddress);
     Wire.endTransmission(true);
@@ -724,12 +726,14 @@ int16_t BQ27441::i2cReadBytes(uint8_t subAddress, uint8_t *dest, uint8_t count)
         dest[i] = Wire.read();
     }
 
+    i2cEnd();
     return timeout;
 }
 
 // Write a specified number of bytes over I2C to a given subAddress
 uint16_t BQ27441::i2cWriteBytes(uint8_t subAddress, uint8_t *src, uint8_t count)
 {
+    i2cStart();
     Wire.beginTransmission(_deviceAddress);
     Wire.write(subAddress);
     for (int i = 0; i < count; i++)
@@ -738,6 +742,7 @@ uint16_t BQ27441::i2cWriteBytes(uint8_t subAddress, uint8_t *src, uint8_t count)
     }
     Wire.endTransmission(true);
 
+    i2cEnd();
     return true;
 }
 

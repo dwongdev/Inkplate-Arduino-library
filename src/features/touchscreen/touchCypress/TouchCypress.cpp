@@ -17,6 +17,7 @@
 
 #include "TouchCypress.h"
 #include "Inkplate.h"
+#include "../../../system/inkplateSemaphore.h"
 
 #ifdef ARDUINO_INKPLATE6FLICK
 
@@ -434,13 +435,16 @@ void Touch::setPowerState(uint8_t _s)
 uint8_t Touch::getPowerState()
 {
     // Send subaddress for System Info.
+    i2cStart();
     Wire.beginTransmission(CYPRESS_TOUCH_I2C_ADDR);
     Wire.write(CYPRESS_TOUCH_BASE_ADDR);
     Wire.endTransmission();
 
     // Fist byte represents current power mode.
     Wire.requestFrom(CYPRESS_TOUCH_I2C_ADDR, 1);
-    return Wire.read();
+    uint8_t result = Wire.read();
+    i2cEnd();
+    return result;
 }
 
 /**
@@ -711,8 +715,10 @@ bool Touch::ping(int _retries)
     for (int i = 0; i < _retries; i++)
     {
         // Ping the TSC (touchscreen controller) on I2C.
+        i2cStart();
         Wire.beginTransmission(CYPRESS_TOUCH_I2C_ADDR);
         _retValue = Wire.endTransmission();
+        i2cEnd();
 
         // Return value is 0? That means ACK, TSC found!
         if (_retValue == 0)
@@ -742,6 +748,7 @@ bool Touch::ping(int _retries)
 bool Touch::sendCommand(uint8_t _cmd)
 {
     // Init I2C communication.
+    i2cStart();
     Wire.beginTransmission(CYPRESS_TOUCH_I2C_ADDR);
 
     // I'm not sure about this?
@@ -755,7 +762,9 @@ bool Touch::sendCommand(uint8_t _cmd)
     delay(20);
 
     // Send to I2C!
-    return Wire.endTransmission() == 0 ? true : false;
+    bool result = Wire.endTransmission() == 0 ? true : false;
+    i2cEnd();
+    return result;
 }
 
 /**
@@ -777,6 +786,7 @@ bool Touch::sendCommand(uint8_t _cmd)
 bool Touch::readI2CRegs(uint8_t _cmd, uint8_t *_buffer, int _len)
 {
     // Init I2C communication!
+    i2cStart();
     Wire.beginTransmission(CYPRESS_TOUCH_I2C_ADDR);
 
     // Send command byte.
@@ -785,6 +795,7 @@ bool Touch::readI2CRegs(uint8_t _cmd, uint8_t *_buffer, int _len)
     // Write reg to the I2C! If I2C send has failed, return false.
     if (Wire.endTransmission() != 0)
     {
+        i2cEnd();
         return false;
     }
 
@@ -811,6 +822,7 @@ bool Touch::readI2CRegs(uint8_t _cmd, uint8_t *_buffer, int _len)
         // Update the lenght.
         _len -= _i2cLen;
     }
+    i2cEnd();
 
     // Everything went ok? Return true.
     return true;
@@ -835,6 +847,7 @@ bool Touch::readI2CRegs(uint8_t _cmd, uint8_t *_buffer, int _len)
 bool Touch::writeI2CRegs(uint8_t _cmd, uint8_t *_buffer, int _len)
 {
     // Init I2C communication!
+    i2cStart();
     Wire.beginTransmission(CYPRESS_TOUCH_I2C_ADDR);
 
     // Send command byte.
@@ -846,8 +859,10 @@ bool Touch::writeI2CRegs(uint8_t _cmd, uint8_t *_buffer, int _len)
     // Write reg to the I2C! If I2C send has failed, return false.
     if (Wire.endTransmission() != 0)
     {
+        i2cEnd();
         return false;
     }
+    i2cEnd();
 
     // Everything went ok? Return true.
     return true;

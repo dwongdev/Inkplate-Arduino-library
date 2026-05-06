@@ -1,4 +1,5 @@
 #include "TPS65186.h"
+#include "../../system/inkplateSemaphore.h"
 
 /**
  * @brief Initialise the PMIC: store pin references and program the power-up /
@@ -14,6 +15,7 @@ void TPS65186::begin(IOExpander *expander, uint8_t wakeupPin, uint8_t pwrupPin, 
 
     _expander->digitalWrite(_wakeupPin, HIGH, true);
     delay(1);
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(TPS65186_REG_UPSEQ0);
     Wire.write(0x1B); // Power up seq.
@@ -21,6 +23,7 @@ void TPS65186::begin(IOExpander *expander, uint8_t wakeupPin, uint8_t pwrupPin, 
     Wire.write(0x1B); // Power down seq.
     Wire.write(0x00); // Power down delay (6 ms per rail)
     Wire.endTransmission();
+    i2cEnd();
     delay(1);
     _expander->digitalWrite(_wakeupPin, LOW, true);
 }
@@ -31,10 +34,13 @@ void TPS65186::begin(IOExpander *expander, uint8_t wakeupPin, uint8_t pwrupPin, 
  */
 bool TPS65186::enableRails(bool enable)
 {
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(TPS65186_REG_ENABLE);
     Wire.write(enable ? 0x20 : 0x00);
-    return Wire.endTransmission() == 0;
+    bool result = Wire.endTransmission() == 0;
+    i2cEnd();
+    return result;
 }
 
 /**
@@ -52,15 +58,19 @@ bool TPS65186::powerUp(uint16_t timeout)
 
     enableRails(true);
 
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(TPS65186_REG_UPSEQ0);
     Wire.write(0xE4);
     Wire.endTransmission();
+    i2cEnd();
 
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(TPS65186_REG_DWNSEQ0);
     Wire.write(0x1B);
     Wire.endTransmission();
+    i2cEnd();
 
     _expander->digitalWrite(_pwrupPin, HIGH, true);
 
@@ -118,17 +128,21 @@ int8_t TPS65186::readTemperature()
         delay(5);
     }
 
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(TPS65186_REG_TMST1);
     Wire.write(0x80);
     Wire.endTransmission();
+    i2cEnd();
     delay(5);
 
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(TPS65186_REG_TEMP);
     Wire.endTransmission();
     Wire.requestFrom(TPS65186_I2C_ADDR, 1);
     temp = Wire.read();
+    i2cEnd();
 
     if (wakeForTemp)
     {
@@ -153,11 +167,14 @@ bool TPS65186::isPowerGood()
  */
 uint8_t TPS65186::readPowerGood()
 {
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(TPS65186_REG_PWRGOOD);
     Wire.endTransmission();
     Wire.requestFrom(TPS65186_I2C_ADDR, 1);
-    return Wire.read();
+    uint8_t result = Wire.read();
+    i2cEnd();
+    return result;
 }
 
 /**
@@ -165,10 +182,12 @@ uint8_t TPS65186::readPowerGood()
  */
 void TPS65186::writeReg(uint8_t reg, uint8_t data)
 {
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(reg);
     Wire.write(data);
     Wire.endTransmission();
+    i2cEnd();
 }
 
 /**
@@ -176,9 +195,12 @@ void TPS65186::writeReg(uint8_t reg, uint8_t data)
  */
 uint8_t TPS65186::readReg(uint8_t reg)
 {
+    i2cStart();
     Wire.beginTransmission(TPS65186_I2C_ADDR);
     Wire.write(reg);
     Wire.endTransmission(false);
     uint8_t got = Wire.requestFrom(TPS65186_I2C_ADDR, (uint8_t)1);
-    return got ? Wire.read() : 0xFF;
+    uint8_t result = got ? Wire.read() : 0xFF;
+    i2cEnd();
+    return result;
 }

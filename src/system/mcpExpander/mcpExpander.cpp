@@ -16,6 +16,7 @@
  ***************************************************/
 #if defined(ARDUINO_INKPLATE6) || defined(ARDUINO_INKPLATE10) || defined(ARDUINO_INKPLATE6PLUS)
 #include "mcpExpander.h"
+#include "../inkplateSemaphore.h"
 
 /**
  * @brief       begin function starts MCP23017 expander and reads registers.
@@ -29,8 +30,10 @@ bool IOExpander::begin(uint8_t _addr)
 {
     _ioExpanderI2CAddress = _addr;
 
+    i2cStart();
     Wire.beginTransmission(_ioExpanderI2CAddress);
     int error = Wire.endTransmission();
+    i2cEnd();
     if (error)
         return false;
 
@@ -54,6 +57,7 @@ bool IOExpander::begin(uint8_t _addr)
  */
 void IOExpander::readMCPRegisters()
 {
+    i2cStart();
     Wire.beginTransmission(_ioExpanderI2CAddress);
     Wire.write(0x00);
     Wire.endTransmission();
@@ -62,6 +66,7 @@ void IOExpander::readMCPRegisters()
     {
         _ioExpanderRegs[i] = Wire.read();
     }
+    i2cEnd();
 }
 
 /**
@@ -74,6 +79,7 @@ void IOExpander::readMCPRegisters()
  */
 void IOExpander::readMCPRegisters(uint8_t _regIndex, uint8_t _n)
 {
+    i2cStart();
     Wire.beginTransmission(_ioExpanderI2CAddress);
     Wire.write(regAddresses[_regIndex]);
     Wire.endTransmission();
@@ -82,6 +88,7 @@ void IOExpander::readMCPRegisters(uint8_t _regIndex, uint8_t _n)
     {
         _ioExpanderRegs[_regIndex + i] = Wire.read();
     }
+    i2cEnd();
 }
 
 /**
@@ -92,11 +99,13 @@ void IOExpander::readMCPRegisters(uint8_t _regIndex, uint8_t _n)
  */
 void IOExpander::readMCPRegister(uint8_t _regIndex)
 {
+    i2cStart();
     Wire.beginTransmission(_ioExpanderI2CAddress);
     Wire.write(regAddresses[_regIndex]);
     Wire.endTransmission();
     Wire.requestFrom(_ioExpanderI2CAddress, (uint8_t)1);
     _ioExpanderRegs[_regIndex] = Wire.read();
+    i2cEnd();
 }
 
 /**
@@ -104,6 +113,7 @@ void IOExpander::readMCPRegister(uint8_t _regIndex)
  */
 void IOExpander::updateMCPAllRegisters()
 {
+    i2cStart();
     Wire.beginTransmission(_ioExpanderI2CAddress);
     Wire.write(0x00);
     for (int i = 0; i < 22; i++)
@@ -111,6 +121,7 @@ void IOExpander::updateMCPAllRegisters()
         Wire.write(_ioExpanderRegs[i]);
     }
     Wire.endTransmission();
+    i2cEnd();
 }
 
 /**
@@ -123,10 +134,12 @@ void IOExpander::updateMCPAllRegisters()
  */
 void IOExpander::updateMCPRegister(uint8_t _regIndex, uint8_t _d)
 {
+    i2cStart();
     Wire.beginTransmission(_ioExpanderI2CAddress);
     Wire.write(regAddresses[_regIndex]);
     Wire.write(_d);
     Wire.endTransmission();
+    i2cEnd();
 }
 
 /**

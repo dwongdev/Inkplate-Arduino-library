@@ -2,6 +2,7 @@
 #ifdef ARDUINO_INKPLATE2
 #include "Inkplate2Driver.h"
 #include "Inkplate.h"
+#include "../../system/inkplateSemaphore.h"
 
 SPIClass epdSPI(VSPI);
 
@@ -84,6 +85,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 {
     if (!_beginDone)
     {
+
         // Allocate memory for frame buffer
         DMemory4Bit = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 4);
 
@@ -154,6 +156,7 @@ void EPDDriver::clearDisplay()
  */
 void EPDDriver::display(bool _leaveOn)
 {
+    displayStart();
     // Wake the panel and wait a bit
     // The refresh time is long anyway so this delay doesn't make much impact
     setPanelDeepSleep(false);
@@ -178,6 +181,7 @@ void EPDDriver::display(bool _leaveOn)
 
     // Go back to sleep
     setPanelDeepSleep(true);
+    displayEnd();
 }
 
 
@@ -225,9 +229,11 @@ void EPDDriver::sendCommand(uint8_t _command)
     digitalWrite(EPAPER_CS_PIN, LOW);
     digitalWrite(EPAPER_DC_PIN, LOW);
     delayMicroseconds(10);
+    spiStart();
     epdSPI.beginTransaction(epdSpiSettings);
     epdSPI.transfer(_command);
     epdSPI.endTransaction();
+    spiEnd();
     digitalWrite(EPAPER_CS_PIN, HIGH);
     delay(1);
 }
@@ -245,9 +251,11 @@ void EPDDriver::sendData(uint8_t *_data, int _n)
     digitalWrite(EPAPER_CS_PIN, LOW);
     digitalWrite(EPAPER_DC_PIN, HIGH);
     delayMicroseconds(10);
+    spiStart();
     epdSPI.beginTransaction(epdSpiSettings);
     epdSPI.writeBytes(_data, _n);
     epdSPI.endTransaction();
+    spiEnd();
     digitalWrite(EPAPER_CS_PIN, HIGH);
     delay(1);
 }
@@ -263,9 +271,11 @@ void EPDDriver::sendData(uint8_t _data)
     digitalWrite(EPAPER_CS_PIN, LOW);
     digitalWrite(EPAPER_DC_PIN, HIGH);
     delayMicroseconds(10);
+    spiStart();
     epdSPI.beginTransaction(epdSpiSettings);
     epdSPI.transfer(_data);
     epdSPI.endTransaction();
+    spiEnd();
     digitalWrite(EPAPER_CS_PIN, HIGH);
     delay(1);
 }

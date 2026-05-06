@@ -2,6 +2,7 @@
 #ifdef ARDUINO_INKPLATECOLOR
 #include "Inkplate6COLORDriver.h"
 #include "Inkplate.h"
+#include "../../system/inkplateSemaphore.h"
 
 SPIClass spi2(2);
 SdFat sd;
@@ -78,6 +79,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // buffer and clear frame buffer
     if (!_beginDone)
     {
+
         Wire.begin();
 
         // Save the given inkplate pointer for internal use
@@ -129,6 +131,7 @@ void EPDDriver::clearDisplay()
  */
 void EPDDriver::display(bool _leaveOn)
 {
+    displayStart();
     // Wake the panel back up
     setPanelDeepSleep(false);
 
@@ -141,9 +144,11 @@ void EPDDriver::display(bool _leaveOn)
     sendCommand(0x10);
     digitalWrite(EPAPER_DC_PIN, HIGH);
     digitalWrite(EPAPER_CS_PIN, LOW);
+    spiStart();
     epdSPI.beginTransaction(epdSpiSettings);
     epdSPI.writeBytes(DMemory4Bit, E_INK_WIDTH * E_INK_HEIGHT / 2);
     epdSPI.endTransaction();
+    spiEnd();
     digitalWrite(EPAPER_CS_PIN, HIGH);
 
     sendCommand(POWER_OFF_REGISTER);
@@ -159,6 +164,7 @@ void EPDDriver::display(bool _leaveOn)
 
     // Put the panel to sleep again
     setPanelDeepSleep(true);
+    displayEnd();
 }
 
 
@@ -249,12 +255,16 @@ void EPDDriver::resetPanel()
  */
 void EPDDriver::sendCommand(uint8_t _command)
 {
-    digitalWrite(EPAPER_DC_PIN, LOW);
     digitalWrite(EPAPER_CS_PIN, LOW);
+    digitalWrite(EPAPER_DC_PIN, LOW);
+    delayMicroseconds(10);
+    spiStart();
     epdSPI.beginTransaction(epdSpiSettings);
     epdSPI.transfer(_command);
     epdSPI.endTransaction();
+    spiEnd();
     digitalWrite(EPAPER_CS_PIN, HIGH);
+    delay(1);
 }
 
 /**
@@ -267,12 +277,16 @@ void EPDDriver::sendCommand(uint8_t _command)
  */
 void EPDDriver::sendData(uint8_t *_data, int _n)
 {
-    digitalWrite(EPAPER_DC_PIN, HIGH);
     digitalWrite(EPAPER_CS_PIN, LOW);
+    digitalWrite(EPAPER_DC_PIN, HIGH);
+    delayMicroseconds(10);
+    spiStart();
     epdSPI.beginTransaction(epdSpiSettings);
     epdSPI.writeBytes(_data, _n);
     epdSPI.endTransaction();
+    spiEnd();
     digitalWrite(EPAPER_CS_PIN, HIGH);
+    delay(1);
 }
 
 /**
@@ -283,12 +297,16 @@ void EPDDriver::sendData(uint8_t *_data, int _n)
  */
 void EPDDriver::sendData(uint8_t _data)
 {
-    digitalWrite(EPAPER_DC_PIN, HIGH);
     digitalWrite(EPAPER_CS_PIN, LOW);
+    digitalWrite(EPAPER_DC_PIN, HIGH);
+    delayMicroseconds(10);
+    spiStart();
     epdSPI.beginTransaction(epdSpiSettings);
     epdSPI.transfer(_data);
     epdSPI.endTransaction();
+    spiEnd();
     digitalWrite(EPAPER_CS_PIN, HIGH);
+    delay(1);
 }
 
 /**

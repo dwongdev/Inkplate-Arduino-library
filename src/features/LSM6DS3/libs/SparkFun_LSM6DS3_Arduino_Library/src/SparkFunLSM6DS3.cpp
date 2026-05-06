@@ -28,6 +28,7 @@ Distributed as-is; no warranty is given.
 // See SparkFunLSM6DS3.h for additional topology notes.
 
 #include "SparkFunLSM6DS3.h"
+#include "../../../../../system/inkplateSemaphore.h"
 
 //****************************************************************************//
 //
@@ -141,6 +142,7 @@ status_t LSM6DS3Core::readRegisterRegion(uint8_t *outputPointer, uint8_t offset,
     {
 
     case I2C_MODE:
+        i2cStart();
         Wire.beginTransmission(I2CAddress);
         Wire.write(offset);
         if (Wire.endTransmission() != 0)
@@ -159,6 +161,7 @@ status_t LSM6DS3Core::readRegisterRegion(uint8_t *outputPointer, uint8_t offset,
                 i++;
             }
         }
+        i2cEnd();
         break;
 
     case SPI_MODE:
@@ -214,6 +217,7 @@ status_t LSM6DS3Core::readRegister(uint8_t *outputPointer, uint8_t offset)
     {
 
     case I2C_MODE:
+        i2cStart();
         Wire.beginTransmission(I2CAddress);
         Wire.write(offset);
         if (Wire.endTransmission() != 0)
@@ -225,6 +229,7 @@ status_t LSM6DS3Core::readRegister(uint8_t *outputPointer, uint8_t offset)
         {
             result = Wire.read(); // receive a byte as a proper uint8_t
         }
+        i2cEnd();
         break;
 
     case SPI_MODE:
@@ -286,6 +291,7 @@ status_t LSM6DS3Core::writeRegister(uint8_t offset, uint8_t dataToWrite)
     switch (commInterface)
     {
     case I2C_MODE:
+        i2cStart();
         // Write the byte
         Wire.beginTransmission(I2CAddress);
         Wire.write(offset);
@@ -294,6 +300,7 @@ status_t LSM6DS3Core::writeRegister(uint8_t offset, uint8_t dataToWrite)
         {
             returnError = IMU_HW_ERROR;
         }
+        i2cEnd();
         break;
 
     case SPI_MODE:

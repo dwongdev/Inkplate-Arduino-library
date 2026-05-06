@@ -2,6 +2,7 @@
 #if defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 #include "Inkplate10Driver.h"
 #include "Inkplate.h"
+#include "../../system/inkplateSemaphore.h"
 
 SPIClass spi2(2);
 SdFat sd;
@@ -78,6 +79,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // If the driver was already initialized, skip current initialization
     if (_beginDone == 1)
         return 0;
+
 
     // Save the given inkplate pointer for internal use
     _inkplate = _inkplatePtr;
@@ -206,6 +208,7 @@ void EPDDriver::clearDisplay()
  */
 void EPDDriver::display(bool _leaveOn)
 {
+    displayStart();
     if (_displayMode == 0)
     {
         display1b(_leaveOn);
@@ -214,6 +217,7 @@ void EPDDriver::display(bool _leaveOn)
     {
         display3b(_leaveOn);
     }
+    displayEnd();
 }
 
 /**

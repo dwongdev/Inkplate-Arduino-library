@@ -18,6 +18,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include "../../../../../system/inkplateSemaphore.h"
 
 #include "SparkFun_APDS9960.h"
 
@@ -2342,13 +2343,15 @@ bool SparkFun_APDS9960::setGestureMode(uint8_t mode)
  */
 bool SparkFun_APDS9960::wireWriteByte(uint8_t val)
 {
+    i2cStart();
     Wire.beginTransmission(APDS9960_I2C_ADDR);
     Wire.write(val);
     if (Wire.endTransmission() != 0)
     {
+        i2cEnd();
         return false;
     }
-
+    i2cEnd();
     return true;
 }
 
@@ -2361,14 +2364,16 @@ bool SparkFun_APDS9960::wireWriteByte(uint8_t val)
  */
 bool SparkFun_APDS9960::wireWriteDataByte(uint8_t reg, uint8_t val)
 {
+    i2cStart();
     Wire.beginTransmission(APDS9960_I2C_ADDR);
     Wire.write(reg);
     Wire.write(val);
     if (Wire.endTransmission() != 0)
     {
+        i2cEnd();
         return false;
     }
-
+    i2cEnd();
     return true;
 }
 
@@ -2384,6 +2389,7 @@ bool SparkFun_APDS9960::wireWriteDataBlock(uint8_t reg, uint8_t *val, unsigned i
 {
     unsigned int i;
 
+    i2cStart();
     Wire.beginTransmission(APDS9960_I2C_ADDR);
     Wire.write(reg);
     for (i = 0; i < len; i++)
@@ -2392,9 +2398,10 @@ bool SparkFun_APDS9960::wireWriteDataBlock(uint8_t reg, uint8_t *val, unsigned i
     }
     if (Wire.endTransmission() != 0)
     {
+        i2cEnd();
         return false;
     }
-
+    i2cEnd();
     return true;
 }
 
@@ -2407,10 +2414,12 @@ bool SparkFun_APDS9960::wireWriteDataBlock(uint8_t reg, uint8_t *val, unsigned i
  */
 bool SparkFun_APDS9960::wireReadDataByte(uint8_t reg, uint8_t &val)
 {
+    i2cStart();
 
     /* Indicate which register we want to read from */
     if (!wireWriteByte(reg))
     {
+        i2cEnd();
         return false;
     }
 
@@ -2421,6 +2430,7 @@ bool SparkFun_APDS9960::wireReadDataByte(uint8_t reg, uint8_t &val)
         val = Wire.read();
     }
 
+    i2cEnd();
     return true;
 }
 
@@ -2436,9 +2446,12 @@ int SparkFun_APDS9960::wireReadDataBlock(uint8_t reg, uint8_t *val, unsigned int
 {
     unsigned char i = 0;
 
+    i2cStart();
+
     /* Indicate which register we want to read from */
     if (!wireWriteByte(reg))
     {
+        i2cEnd();
         return -1;
     }
 
@@ -2448,11 +2461,13 @@ int SparkFun_APDS9960::wireReadDataBlock(uint8_t reg, uint8_t *val, unsigned int
     {
         if (i >= len)
         {
+            i2cEnd();
             return -1;
         }
         val[i] = Wire.read();
         i++;
     }
 
+    i2cEnd();
     return i;
 }

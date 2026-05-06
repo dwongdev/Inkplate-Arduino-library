@@ -27,6 +27,7 @@
 #include "system/InkplateBoards.h"
 #include "system/NetworkController/NetworkController.h"
 #include "system/defines.h"
+#include "system/inkplateSemaphore.h"
 
 class Inkplate : public Graphics, public InkplateBoardClass, public NetworkController
 {
@@ -40,6 +41,15 @@ class Inkplate : public Graphics, public InkplateBoardClass, public NetworkContr
     void begin();
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void setRotation(uint8_t r);
+
+    // Bus mutex helpers — use in user FreeRTOS tasks that share I2C or SPI.
+    // Always call the matching unlock after the locked section.
+    inline void i2cLock()     { i2cStart();     }
+    inline void i2cUnlock()   { i2cEnd();       }
+    inline void spiLock()     { spiStart();     }
+    inline void spiUnlock()   { spiEnd();       }
+    inline void displayLock()   { displayStart(); }
+    inline void displayUnlock() { displayEnd();   }
 
 
   protected:

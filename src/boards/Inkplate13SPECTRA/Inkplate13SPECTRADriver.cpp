@@ -2,6 +2,7 @@
 #ifdef ARDUINO_INKPLATE13SPECTRA
 #include "Inkplate13SPECTRADriver.h"
 #include "Inkplate.h"
+#include "../../system/inkplateSemaphore.h"
 
 // SPI used for the MicroSd card
 SPIClass spi1(1);
@@ -80,6 +81,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // buffer and clear frame buffer
     if (!_beginDone)
     {
+
         setPanelPinsToLow();
 
         Wire.begin();
@@ -131,6 +133,7 @@ void EPDDriver::clearDisplay()
  */
 void EPDDriver::display(bool _leaveOn)
 {
+    displayStart();
 
     // Power up the screen (if is not already powered on).
     setPanelState(true);
@@ -142,6 +145,7 @@ void EPDDriver::display(bool _leaveOn)
     digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
 
     // Start SPI transaction and send the command to fill the EPD framebuffer with data.
+    spiStart();
     SPI.beginTransaction(epdSpiSettings);
     SPI.write(SPECTRA133_REGISTER_DTM);
 
@@ -151,6 +155,7 @@ void EPDDriver::display(bool _leaveOn)
         SPI.writeBytes(DMemory4Bit + (i * E_INK_WIDTH / 2), (E_INK_WIDTH / 4));
     }
     SPI.endTransaction();
+    spiEnd();
 
     // Send data in rows - now on slave (right side of the screen).
     digitalWrite(SPECTRA133_CS_M_PIN, HIGH);
@@ -158,6 +163,7 @@ void EPDDriver::display(bool _leaveOn)
     waitForBusy();
 
     // Start SPI transaction and send the command to fill the EPD framebuffer with data.
+    spiStart();
     SPI.beginTransaction(epdSpiSettings);
     SPI.write(SPECTRA133_REGISTER_DTM);
 
@@ -167,6 +173,7 @@ void EPDDriver::display(bool _leaveOn)
         SPI.writeBytes(DMemory4Bit + (i * E_INK_WIDTH / 2) + (E_INK_WIDTH / 4), (E_INK_WIDTH / 4));
     }
     SPI.endTransaction();
+    spiEnd();
 
     // Disable both drivers.
     digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
@@ -180,6 +187,7 @@ void EPDDriver::display(bool _leaveOn)
     // Disable power to the display (if needed).
     if (!_leaveOn)
         setPanelState(false);
+    displayEnd();
 }
 
 /**
@@ -196,6 +204,8 @@ void EPDDriver::display(bool _leaveOn)
  */
 void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool _leaveOn)
 {
+    displayStart();
+
     // Clip to the screen bounds for the current rotation.
     if (x < 0)
     {
@@ -212,7 +222,10 @@ void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool 
     if (y + h > _inkplate->height())
         h = _inkplate->height() - y;
     if (w <= 0 || h <= 0)
+    {
+        displayEnd();
         return;
+    }
 
     // Map user rectangle to panel-native rectangle.
     // Panel native: col = 0..E_INK_WIDTH-1 (1199), row = 0..E_INK_HEIGHT-1 (1599).
@@ -328,20 +341,25 @@ void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool 
             rEnd = 3;
         }
 
+        spiStart();
         SPI.beginTransaction(epdSpiSettings);
         digitalWrite(SPECTRA133_CS_M_PIN, LOW);
         SPI.write(SPECTRA133_REGISTER_CMD66);
         SPI.writeBytes(SPECTRA133_REGISTER_CMD66_V, sizeof(SPECTRA133_REGISTER_CMD66_V));
         digitalWrite(SPECTRA133_CS_M_PIN, HIGH);
         SPI.endTransaction();
+        spiEnd();
 
+        spiStart();
         SPI.beginTransaction(epdSpiSettings);
         digitalWrite(SPECTRA133_CS_M_PIN, LOW);
         SPI.write(SPECTRA133_REGISTER_PTLW);
         SPI.writeBytes(ptlwData, 9);
         digitalWrite(SPECTRA133_CS_M_PIN, HIGH);
         SPI.endTransaction();
+        spiEnd();
 
+        spiStart();
         SPI.beginTransaction(epdSpiSettings);
         digitalWrite(SPECTRA133_CS_M_PIN, LOW);
         SPI.write(SPECTRA133_REGISTER_DTM);
@@ -349,6 +367,7 @@ void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool 
             SPI.writeBytes(DMemory4Bit + row * (E_INK_WIDTH / 2) + memColOff, bytesPerRow);
         digitalWrite(SPECTRA133_CS_M_PIN, HIGH);
         SPI.endTransaction();
+        spiEnd();
     }
 
     // Slave chip
@@ -388,20 +407,25 @@ void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool 
             rEnd = 3;
         }
 
+        spiStart();
         SPI.beginTransaction(epdSpiSettings);
         digitalWrite(SPECTRA133_CS_S_PIN, LOW);
         SPI.write(SPECTRA133_REGISTER_CMD66);
         SPI.writeBytes(SPECTRA133_REGISTER_CMD66_V, sizeof(SPECTRA133_REGISTER_CMD66_V));
         digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
         SPI.endTransaction();
+        spiEnd();
 
+        spiStart();
         SPI.beginTransaction(epdSpiSettings);
         digitalWrite(SPECTRA133_CS_S_PIN, LOW);
         SPI.write(SPECTRA133_REGISTER_PTLW);
         SPI.writeBytes(ptlwData, 9);
         digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
         SPI.endTransaction();
+        spiEnd();
 
+        spiStart();
         SPI.beginTransaction(epdSpiSettings);
         digitalWrite(SPECTRA133_CS_S_PIN, LOW);
         SPI.write(SPECTRA133_REGISTER_DTM);
@@ -409,6 +433,7 @@ void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool 
             SPI.writeBytes(DMemory4Bit + row * (E_INK_WIDTH / 2) + memColOff, bytesPerRow);
         digitalWrite(SPECTRA133_CS_S_PIN, HIGH);
         SPI.endTransaction();
+        spiEnd();
     }
 
     // Both chips have received PTLW+DTM; trigger a coordinated refresh.
@@ -418,6 +443,7 @@ void EPDDriver::displayPartial(int16_t x, int16_t y, int16_t w, int16_t h, bool 
 
     if (!_leaveOn)
         setPanelState(false);
+    displayEnd();
 }
 
 /**
@@ -546,6 +572,7 @@ void EPDDriver::resetPanel()
 void EPDDriver::sendCommand(uint8_t _cmd, const uint8_t *_parameters, uint32_t _n, enum eSpectraChipID _chipId)
 {
     // Config the SPI.
+    spiStart();
     SPI.beginTransaction(epdSpiSettings);
 
     // Set the chip select pin to low as well.
@@ -563,6 +590,7 @@ void EPDDriver::sendCommand(uint8_t _cmd, const uint8_t *_parameters, uint32_t _
     }
 
     SPI.endTransaction();
+    spiEnd();
 
     // Release the chip select.
     if (_chipId & eChipIdSlave)

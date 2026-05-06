@@ -17,6 +17,7 @@
 #if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATE6PLUSV2) || defined(ARDUINO_INKPLATE4TEMPERA)
 #include "touchElan.h"
 #include "Inkplate.h"
+#include "../../../system/inkplateSemaphore.h"
 
 uint16_t _tsXResolution;
 uint16_t _tsYResolution;
@@ -94,9 +95,12 @@ void Touch::begin(Inkplate *inkplatePtr)
  */
 uint8_t Touch::tsWriteRegs(uint8_t _addr, const uint8_t *_buff, uint8_t _size)
 {
+    i2cStart();
     Wire.beginTransmission(_addr);
     Wire.write(_buff, _size);
-    return Wire.endTransmission();
+    uint8_t result = Wire.endTransmission();
+    i2cEnd();
+    return result;
 }
 
 /**
@@ -111,8 +115,10 @@ uint8_t Touch::tsWriteRegs(uint8_t _addr, const uint8_t *_buff, uint8_t _size)
  */
 void Touch::tsReadRegs(uint8_t _addr, uint8_t *_buff, uint8_t _size)
 {
+    i2cStart();
     Wire.requestFrom(_addr, _size);
     Wire.readBytes(_buff, _size);
+    i2cEnd();
 }
 
 /**
@@ -152,8 +158,10 @@ bool Touch::tsSoftwareReset()
         }
         if (timeout > 0)
             _tsFlag = true;
+        i2cStart();
         Wire.requestFrom(0x15, 4);
         Wire.readBytes(rb, 4);
+        i2cEnd();
         _tsFlag = false;
         if (!memcmp(rb, hello_packet, 4))
         {
@@ -220,8 +228,10 @@ void Touch::shutdown()
  */
 void Touch::getRawData(uint8_t *b)
 {
+    i2cStart();
     Wire.requestFrom(TOUCHSCREEN_ADDR, 8);
     Wire.readBytes(b, 8);
+    i2cEnd();
 }
 
 /**

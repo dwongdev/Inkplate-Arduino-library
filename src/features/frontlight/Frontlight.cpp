@@ -17,6 +17,7 @@
 
 #include "Frontlight.h"
 #include "Inkplate.h"
+#include "../../system/inkplateSemaphore.h"
 
 #if defined(ARDUINO_INKPLATE6PLUS) || defined(ARDUINO_INKPLATE6PLUSV2) || defined(ARDUINO_INKPLATE4TEMPERA) ||         \
     defined(ARDUINO_INKPLATE6FLICK)
@@ -32,10 +33,12 @@
  */
 void Frontlight::setBrightness(uint8_t _v)
 {
+    i2cStart();
     Wire.beginTransmission(0x5C >> 1);
     Wire.write(0);
     Wire.write(63 - (_v & 0b00111111));
     Wire.endTransmission();
+    i2cEnd();
 }
 
 /**
