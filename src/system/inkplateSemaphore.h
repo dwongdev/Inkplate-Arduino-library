@@ -27,9 +27,9 @@ extern SemaphoreHandle_t mutexDisplay;
 
 void inkplateMutexInit();
 
-#define i2cStart()     xSemaphoreTakeRecursive(mutexI2C,     portMAX_DELAY)
+#define i2cStart()     xSemaphoreTakeRecursive(mutexI2C, portMAX_DELAY)
 #define i2cEnd()       xSemaphoreGiveRecursive(mutexI2C)
-#define spiStart()     xSemaphoreTakeRecursive(mutexSPI,     portMAX_DELAY)
+#define spiStart()     xSemaphoreTakeRecursive(mutexSPI, portMAX_DELAY)
 #define spiEnd()       xSemaphoreGiveRecursive(mutexSPI)
 #define displayStart() xSemaphoreTakeRecursive(mutexDisplay, portMAX_DELAY)
 #define displayEnd()   xSemaphoreGiveRecursive(mutexDisplay)

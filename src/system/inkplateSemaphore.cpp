@@ -18,13 +18,13 @@
 
 #include "inkplateSemaphore.h"
 
-SemaphoreHandle_t mutexI2C      = NULL;
-SemaphoreHandle_t mutexSPI      = NULL;
-SemaphoreHandle_t mutexDisplay  = NULL;
+SemaphoreHandle_t mutexI2C = NULL;
+SemaphoreHandle_t mutexSPI = NULL;
+SemaphoreHandle_t mutexDisplay = NULL;
 
 void inkplateMutexInit()
 {
-    mutexI2C     = xSemaphoreCreateRecursiveMutex();
-    mutexSPI     = xSemaphoreCreateRecursiveMutex();
+    mutexI2C = xSemaphoreCreateRecursiveMutex();
+    mutexSPI = xSemaphoreCreateRecursiveMutex();
     mutexDisplay = xSemaphoreCreateRecursiveMutex();
 }
