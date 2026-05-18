@@ -88,10 +88,12 @@ class IOExpander
     void pinMode(uint8_t _pin, uint8_t _mode, bool _bypassCheck = false);
     void digitalWrite(uint8_t _pin, uint8_t _state, bool _bypassCheck = false);
     uint8_t digitalRead(uint8_t _pin, bool _bypassCheck = false);
-    void setIntPin(uint8_t _pin);
+    void setIntPin(uint8_t _pin, uint8_t _mode = CHANGE);
+    void setIntOutput(uint8_t _intPort, bool _mirroring, bool _openDrain, bool _polarity);
     void setPorts(uint16_t _d);
     void removeIntPin(uint8_t _pin);
     uint16_t getInt();
+    uint16_t getIntState();
     uint16_t getPorts();
     void blockPinUsage(uint8_t _pin);
     void unblockPinUsage(uint8_t _pin);
@@ -111,9 +113,11 @@ class IOExpander
     void pinModeInternal(uint8_t _pin, uint8_t _mode);
     void digitalWriteInternal(uint8_t _pin, uint8_t _state);
     uint8_t digitalReadInternal(uint8_t _pin);
-    void setIntPinInternal(uint8_t _pin);
+    void setIntPinInternal(uint8_t _pin, uint8_t _mode);
+    void setIntOutputInternal(uint8_t _intPort, bool _mirroring, bool _openDrain, bool _polarity);
     void removeIntPinInternal(uint8_t _pin);
     uint16_t getINTInternal();
+    uint16_t getINTStateInternal();
     void setPortsInternal(uint16_t _d);
     uint16_t getPortsInternal();
 

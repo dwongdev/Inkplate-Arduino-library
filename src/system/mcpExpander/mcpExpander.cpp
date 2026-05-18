@@ -197,14 +197,33 @@ uint8_t IOExpander::digitalRead(uint8_t _pin, bool _bypassCheck)
 }
 
 /**
- * @brief       setIntPin enables interrupt on change on IO Expander pin.
+ * @brief       setIntPin enables interrupt on IO Expander pin.
  *
  * @param       uint8_t _pin
  *              pin to set interrupt on
+ * @param       uint8_t _mode
+ *              interrupt mode: CHANGE, FALLING, or RISING
  */
-void IOExpander::setIntPin(uint8_t _pin)
+void IOExpander::setIntPin(uint8_t _pin, uint8_t _mode)
 {
-    setIntPinInternal(_pin);
+    setIntPinInternal(_pin, _mode);
+}
+
+/**
+ * @brief       setIntOutput configures the interrupt output pin behavior.
+ *
+ * @param       uint8_t _intPort
+ *              port whose IOCON to configure (MCP23017_INT_PORTA or MCP23017_INT_PORTB)
+ * @param       bool _mirroring
+ *              true = both INT pins mirror each other
+ * @param       bool _openDrain
+ *              true = INT pin is open-drain (overrides polarity)
+ * @param       bool _polarity
+ *              true = INT pin active high, false = active low
+ */
+void IOExpander::setIntOutput(uint8_t _intPort, bool _mirroring, bool _openDrain, bool _polarity)
+{
+    setIntOutputInternal(_intPort, _mirroring, _openDrain, _polarity);
 }
 
 /**
@@ -219,13 +238,23 @@ void IOExpander::removeIntPin(uint8_t _pin)
 }
 
 /**
- * @brief       getInt reads interrupt register state.
+ * @brief       getInt reads interrupt register state (INTF - which pins triggered).
  *
  * @return      returns interrupt registers state
  */
 uint16_t IOExpander::getInt()
 {
     return getINTInternal();
+}
+
+/**
+ * @brief       getIntState reads pin state captured at the moment interrupt fired (INTCAP).
+ *
+ * @return      captured GPIO state at interrupt time, both ports
+ */
+uint16_t IOExpander::getIntState()
+{
+    return getINTStateInternal();
 }
 
 /**
@@ -329,6 +358,9 @@ void IOExpander::digitalWriteInternal(uint8_t _pin, uint8_t _state)
     uint8_t _port = (_pin / 8) & 1;
     uint8_t _p = _pin % 8;
 
+    if (_ioExpanderRegs[MCP23017_IODIRA + _port] & (1 << _p))
+        return;
+
     _state ? (_ioExpanderRegs[MCP23017_GPIOA + _port] |= (1 << _p))
            : (_ioExpanderRegs[MCP23017_GPIOA + _port] &= ~(1 << _p));
     updateMCPRegister(MCP23017_GPIOA + _port, _ioExpanderRegs[MCP23017_GPIOA + _port]);
@@ -354,12 +386,16 @@ uint8_t IOExpander::digitalReadInternal(uint8_t _pin)
 }
 
 /**
- * @brief       setIntPinInternal enables interrupt on change for selected pin.
+ * @brief       setIntPinInternal enables interrupt for selected pin with configurable mode.
  *
  * @param       uint8_t _pin
  *              selected pin
+ * @param       uint8_t _mode
+ *              CHANGE: trigger on any change (INTCON compare disabled)
+ *              FALLING: trigger when pin goes low (compare against DEFVAL=1)
+ *              RISING: trigger when pin goes high (compare against DEFVAL=0)
  */
-void IOExpander::setIntPinInternal(uint8_t _pin)
+void IOExpander::setIntPinInternal(uint8_t _pin, uint8_t _mode)
 {
     if (_pin > 15)
         return;
@@ -367,11 +403,53 @@ void IOExpander::setIntPinInternal(uint8_t _pin)
     uint8_t _port = (_pin / 8) & 1;
     uint8_t _p = _pin % 8;
 
-    _ioExpanderRegs[MCP23017_INTCONA + _port] &= ~(1 << _p);
+    switch (_mode)
+    {
+    case CHANGE:
+        _ioExpanderRegs[MCP23017_INTCONA + _port] &= ~(1 << _p);
+        break;
+
+    case FALLING:
+        _ioExpanderRegs[MCP23017_INTCONA + _port] |= (1 << _p);
+        _ioExpanderRegs[MCP23017_DEFVALA + _port] |= (1 << _p);
+        break;
+
+    case RISING:
+        _ioExpanderRegs[MCP23017_INTCONA + _port] |= (1 << _p);
+        _ioExpanderRegs[MCP23017_DEFVALA + _port] &= ~(1 << _p);
+        break;
+
+    default:
+        return;
+    }
+
     _ioExpanderRegs[MCP23017_GPINTENA + _port] |= (1 << _p);
 
-    updateMCPRegister(MCP23017_INTCONA + _port, _ioExpanderRegs[MCP23017_INTCONA + _port]);
     updateMCPRegister(MCP23017_GPINTENA + _port, _ioExpanderRegs[MCP23017_GPINTENA + _port]);
+    updateMCPRegister(MCP23017_DEFVALA + _port, _ioExpanderRegs[MCP23017_DEFVALA + _port]);
+    updateMCPRegister(MCP23017_INTCONA + _port, _ioExpanderRegs[MCP23017_INTCONA + _port]);
+}
+
+/**
+ * @brief       setIntOutputInternal configures IOCON for the interrupt output pin.
+ *
+ * @param       uint8_t _intPort
+ *              MCP23017_INT_PORTA (0) or MCP23017_INT_PORTB (1)
+ * @param       bool _mirroring
+ *              true = INTA/INTB mirror each other
+ * @param       bool _openDrain
+ *              true = open-drain output (overrides polarity)
+ * @param       bool _polarity
+ *              true = active high, false = active low
+ */
+void IOExpander::setIntOutputInternal(uint8_t _intPort, bool _mirroring, bool _openDrain, bool _polarity)
+{
+    _intPort &= 1;
+    uint8_t &iocon = _ioExpanderRegs[MCP23017_IOCONA + _intPort];
+    iocon = (iocon & ~(1 << 6)) | (_mirroring << 6);
+    iocon = (iocon & ~(1 << 2)) | (_openDrain << 2);
+    iocon = (iocon & ~(1 << 1)) | (_polarity << 1);
+    updateMCPRegister(MCP23017_IOCONA + _intPort, iocon);
 }
 
 /**
@@ -400,6 +478,17 @@ uint16_t IOExpander::getINTInternal()
 {
     readMCPRegisters(MCP23017_INTFA, 2);
     return ((_ioExpanderRegs[MCP23017_INTFB] << 8) | _ioExpanderRegs[MCP23017_INTFA]);
+}
+
+/**
+ * @brief       getINTStateInternal reads captured GPIO state at the moment interrupt fired (INTCAP).
+ *
+ * @return      captured pin state of both ports at interrupt time
+ */
+uint16_t IOExpander::getINTStateInternal()
+{
+    readMCPRegisters(MCP23017_INTCAPA, 2);
+    return ((_ioExpanderRegs[MCP23017_INTCAPB] << 8) | _ioExpanderRegs[MCP23017_INTCAPA]);
 }
 
 /**

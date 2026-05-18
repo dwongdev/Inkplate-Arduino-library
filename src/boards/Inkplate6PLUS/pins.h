@@ -6,7 +6,7 @@
 #if defined(ARDUINO_INKPLATE6PLUSV2)
 #define IO_INT_ADDR 0x20
 #define IO_EXT_ADDR 0x21
-#else
+#elif defined(ARDUINO_INKPLATE6PLUS)
 #define IO_INT_ADDR 0x20
 #define IO_EXT_ADDR 0x22
 #endif
