@@ -99,7 +99,7 @@ class IOExpander
     void pinMode(uint8_t _pin, uint8_t _mode, bool _bypassCheck = false);
     void digitalWrite(uint8_t _pin, uint8_t _state, bool _bypassCheck = false);
     uint8_t digitalRead(uint8_t _pin, bool _bypassCheck = false);
-    void setIntPin(uint8_t _pin);
+    void setIntPin(uint8_t _pin, uint8_t _mode = CHANGE);
     void setPorts(uint16_t _d);
     void removeIntPin(uint8_t _pin);
     uint16_t getInt();
@@ -130,7 +130,7 @@ class IOExpander
 
     void digitalWriteInternal(uint8_t _pin, uint8_t _state);
     uint8_t digitalReadInternal(uint8_t _pin);
-    void setIntPinInternal(uint8_t _pin);
+    void setIntPinInternal(uint8_t _pin, uint8_t _mode);
     void removeIntPinInternal(uint8_t _pin);
     uint16_t getINTInternal();
     void setPortsInternal(uint16_t _d);
