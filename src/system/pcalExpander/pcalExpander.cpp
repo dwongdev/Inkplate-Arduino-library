@@ -355,7 +355,7 @@ void IOExpander::digitalWriteInternal(uint8_t _pin, uint8_t _state)
     _state &= 1;
 
     uint8_t _port = _pin / 8;
-    uint8_t _p    = _pin % 8;
+    uint8_t _p = _pin % 8;
 
     if (_ioExpanderRegs[PCAL6416A_CFGPORT0_ARRAY + _port] & (1 << _p))
         return;
@@ -404,12 +404,11 @@ void IOExpander::setIntPinInternal(uint8_t _pin, uint8_t _mode)
         return;
 
     uint8_t _port = _pin / 8;
-    uint8_t _p    = _pin % 8;
+    uint8_t _p = _pin % 8;
 
     // Unmask interrupt for this pin (0 = unmasked)
     _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port] &= ~(1 << _p);
-    updatePCALRegister(PCAL6416A_INTMSK_REG0_ARRAY + _port,
-                       _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port]);
+    updatePCALRegister(PCAL6416A_INTMSK_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port]);
 
     // For FALLING/RISING enable input latch so interrupt is held until input port read.
     // For CHANGE disable latch so interrupt clears when pin returns to original state.
@@ -418,8 +417,7 @@ void IOExpander::setIntPinInternal(uint8_t _pin, uint8_t _mode)
     else
         _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port] &= ~(1 << _p);
 
-    updatePCALRegister(PCAL6416A_INLAT_REG0_ARRAY + _port,
-                       _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port]);
+    updatePCALRegister(PCAL6416A_INLAT_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port]);
 }
 
 /**
@@ -435,17 +433,15 @@ void IOExpander::removeIntPinInternal(uint8_t _pin)
         return;
 
     uint8_t _port = _pin / 8;
-    uint8_t _p    = _pin % 8;
+    uint8_t _p = _pin % 8;
 
     // Mask interrupt (1 = masked)
     _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port] |= (1 << _p);
-    updatePCALRegister(PCAL6416A_INTMSK_REG0_ARRAY + _port,
-                       _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port]);
+    updatePCALRegister(PCAL6416A_INTMSK_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port]);
 
     // Disable input latch
     _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port] &= ~(1 << _p);
-    updatePCALRegister(PCAL6416A_INLAT_REG0_ARRAY + _port,
-                       _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port]);
+    updatePCALRegister(PCAL6416A_INLAT_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port]);
 }
 
 /**
