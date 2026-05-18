@@ -87,8 +87,8 @@ NetworkFunctions network; // Create network object for WiFi and HTTP functions
 RTC rtc; // RTC object for RTC functions
 
 // Write your SSID and password (needed to get the correct time from the Internet)
-char ssid[] = "Soldered Electronics";
-char pass[] = "dasduino";
+char ssid[] = "";
+char pass[] = "";
 
 // Adjust your time zone, 1 means UTC+1
 int timeZone = 1;

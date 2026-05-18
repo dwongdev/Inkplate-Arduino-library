@@ -72,7 +72,7 @@
 #include "picture2.h"
 #include "picture3.h"
 
-#define uS_TO_S_FACTOR 1000000 // Conversion factor for micro seconds to seconds
+#define uS_TO_S_FACTOR 1000000ULL // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP  20      // How long ESP32 will be in deep sleep (in seconds)
 
 const uint8_t *pictures[] = {pic1, pic2, pic3}; // This array holds address of every picture in the memory, so we can

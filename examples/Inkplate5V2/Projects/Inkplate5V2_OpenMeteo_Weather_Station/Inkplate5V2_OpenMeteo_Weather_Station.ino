@@ -81,8 +81,8 @@
 #include "src/includes.h" // Include necessary libraries and dependencies for Inkplate and networking
 
 // --- WiFi Configuration ---
-const char *ssid = "Stefan";
-const char *password = "granatir";
+const char *ssid = "your ssid";
+const char *password = "your password";
 
 // --- User and Location Info ---
 String myUsername = "Username"; // User's name to be displayed on screen
@@ -104,7 +104,7 @@ WeatherData weatherData;          // Structure to hold fetched weather data
 Gui gui(inkplate);                // Drawing visuals and info
 
 // --- Deep Sleep Configuration ---
-#define uS_TO_S_FACTOR 1000000 // Convert microseconds to seconds
+#define uS_TO_S_FACTOR 1000000ULL // Convert microseconds to seconds
 #define TIME_TO_SLEEP  1800    // Sleep time: 1800 seconds = 30 minutes
 
 // --- Main Setup: Runs Once on Boot ---

@@ -87,8 +87,8 @@
 
 
 // CREDENTIALS / SECRETS
-static const char* WIFI_SSID     = "Soldered Electronics";
-static const char* WIFI_PASSWORD = "dasduino";
+static const char* WIFI_SSID     = "";
+static const char* WIFI_PASSWORD = "";
 
 static const char* SPOTIFY_CLIENT_ID     = "your_spotify_client_id";
 static const char* SPOTIFY_CLIENT_SECRET = "your_spotify_client_secret";

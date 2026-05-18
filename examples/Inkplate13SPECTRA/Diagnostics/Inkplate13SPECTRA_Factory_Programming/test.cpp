@@ -6,8 +6,8 @@ static constexpr size_t sdCardTestStringLength = 100;
 // Keep this short so it always fits comfortably
 static const char *testString = "This is some test string...";
 
-static const char *WSSID = "Soldered Electronics";
-static const char *WPASS = "dasduino";
+static const char *WSSID = "";
+static const char *WPASS = "";
 
 // Change this to your used slave device
 static const uint8_t easyCDeviceAddress = 0x76;

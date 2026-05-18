@@ -94,8 +94,8 @@ uint8_t MODE = 1;
 int timeZone = 2;
 
 // Put in your ssid and password
-char ssid[] = "Soldered Electronics";
-char pass[] = "dasduino";
+char ssid[] = "";
+char pass[] = "";
 #define DELAY_WIFI_RETRY_SECONDS 10
 //----------------------------------
 
@@ -111,7 +111,7 @@ char pass[] = "dasduino";
 #include "includes/two.h"
 #include "includes/zero.h"
 
-#define uS_TO_S_FACTOR 1000000 // Conversion factor for micro seconds to seconds
+#define uS_TO_S_FACTOR 1000000ULL // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP  300     // How long ESP32 will be in deep sleep (in seconds)
 
 // Array for digital display 7 segment numbers bitmaps

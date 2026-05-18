@@ -100,8 +100,8 @@ Inkplate display;
 NetworkFunctions network;
 
 // Change to your wifi ssid and password
-char ssid[] = "Soldered Electronics";
-char pass[] = "dasduino";
+char ssid[] = "";
+char pass[] = "";
 
 // Change to your api key, if you don't have one, head over to:
 // https://openweathermap.org/guide , register and copy the key provided

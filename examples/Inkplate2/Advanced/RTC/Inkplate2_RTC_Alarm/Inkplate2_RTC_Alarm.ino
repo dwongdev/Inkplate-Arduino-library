@@ -72,8 +72,8 @@ Inkplate display; // Initialize Inkplate object
 NetworkFunctions network; // Create network object for WiFi and HTTP functions
 
 // Write your SSID and password (needed to get the correct time from the Internet)
-char ssid[] = "Soldered Electronics";
-char pass[] = "dasduino";
+char ssid[] = "";
+char pass[] = "";
 
 // Define a delay time of 40 seconds. It's around a minute if we add the refresh display time
 #define DELAY_TIME 40 * 1000

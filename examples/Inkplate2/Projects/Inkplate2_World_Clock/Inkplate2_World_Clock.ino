@@ -13,15 +13,15 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define uS_TO_S_FACTOR 1000000ULL
+#define uS_TO_S_FACTOR 1000000ULLULL
 #define TIME_TO_SLEEP  300
 #define DELAY_WIFI_RETRY_SECONDS 10
 
 NetworkFunctions network;
 Inkplate display;
 
-char ssid[] = "Soldered Electronics";
-char pass[] = "dasduino";
+char ssid[] = "";
+char pass[] = "";
 
 int hours;
 int minutes;

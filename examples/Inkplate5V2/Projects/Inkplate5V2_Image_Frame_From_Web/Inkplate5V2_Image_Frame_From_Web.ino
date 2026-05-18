@@ -59,8 +59,8 @@ Inkplate display(INKPLATE_3BIT);
 
 
 
-const char ssid[] = "Stefan";    // Your WiFi SSID
-const char *password = "granatir"; // Your WiFi password
+const char ssid[] = "your ssid";    // Your WiFi SSID
+const char *password = "your password"; // Your WiFi password
 
 void setup()
 {

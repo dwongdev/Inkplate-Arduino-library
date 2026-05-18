@@ -47,7 +47,7 @@ NetworkFunctions network(calendarID, apiKey);
 Gui gui(inkplate);
 
 // --- Deep Sleep Configuration ---
-#define uS_TO_S_FACTOR 1000000 // Convert microseconds to seconds
+#define uS_TO_S_FACTOR 1000000ULL // Convert microseconds to seconds
 #define TIME_TO_SLEEP 600      // Sleep time: 600 seconds = 10 minutes
 
 void setup()

@@ -188,14 +188,20 @@ uint8_t IOExpander::digitalRead(uint8_t _pin, bool _bypassCheck)
 }
 
 /**
- * @brief       setIntPin function enables interrupt on change on IO Expander pin.
+ * @brief       setIntPin enables interrupt on IO Expander pin.
  *
  * @param       uint8_t _pin
- *              pin to set interrupt mode to
+ *              pin to set interrupt on
+ * @param       uint8_t _mode
+ *              CHANGE (default): interrupt on any edge, latch disabled.
+ *              FALLING / RISING: interrupt on any edge (hardware limitation —
+ *              PCAL6416A has no edge-select registers), but input latch is
+ *              enabled so the interrupt is held until the input port is read,
+ *              preventing missed events on fast signals.
  */
-void IOExpander::setIntPin(uint8_t _pin)
+void IOExpander::setIntPin(uint8_t _pin, uint8_t _mode)
 {
-    setIntPinInternal(_pin);
+    setIntPinInternal(_pin, _mode);
 }
 
 /**
@@ -349,10 +355,13 @@ void IOExpander::digitalWriteInternal(uint8_t _pin, uint8_t _state)
     _state &= 1;
 
     uint8_t _port = _pin / 8;
-    _pin %= 8;
+    uint8_t _p = _pin % 8;
 
-    _state ? _ioExpanderRegs[PCAL6416A_OUTPORT0_ARRAY + _port] |= (1 << _pin)
-           : _ioExpanderRegs[PCAL6416A_OUTPORT0_ARRAY + _port] &= ~(1 << _pin);
+    if (_ioExpanderRegs[PCAL6416A_CFGPORT0_ARRAY + _port] & (1 << _p))
+        return;
+
+    _state ? _ioExpanderRegs[PCAL6416A_OUTPORT0_ARRAY + _port] |= (1 << _p)
+           : _ioExpanderRegs[PCAL6416A_OUTPORT0_ARRAY + _port] &= ~(1 << _p);
     updatePCALRegister(PCAL6416A_OUTPORT0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_OUTPORT0_ARRAY + _port]);
 }
 
@@ -378,23 +387,37 @@ uint8_t IOExpander::digitalReadInternal(uint8_t _pin)
 }
 
 /**
- * @brief       setIntPinInternal function sets Interrupt on selected pin
+ * @brief       setIntPinInternal enables interrupt for selected pin.
  *
- *              pointer to array that holds IO Exapnder registers
- * @param       uint8_t *_pin
+ * @param       uint8_t _pin
  *              selected pin
+ * @param       uint8_t _mode
+ *              CHANGE: unmask interrupt, disable input latch.
+ *              FALLING / RISING: unmask interrupt, enable input latch so the
+ *              interrupt is held until the input port register is read.
+ *              NOTE: PCAL6416A has no hardware edge-select — all modes trigger
+ *              on any input change. FALLING/RISING differ only in latch behavior.
  */
-void IOExpander::setIntPinInternal(uint8_t _pin)
+void IOExpander::setIntPinInternal(uint8_t _pin, uint8_t _mode)
 {
     if (_pin > 15)
         return;
 
     uint8_t _port = _pin / 8;
-    _pin %= 8;
+    uint8_t _p = _pin % 8;
 
-    _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port] &= ~(1 << _pin);
-
+    // Unmask interrupt for this pin (0 = unmasked)
+    _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port] &= ~(1 << _p);
     updatePCALRegister(PCAL6416A_INTMSK_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port]);
+
+    // For FALLING/RISING enable input latch so interrupt is held until input port read.
+    // For CHANGE disable latch so interrupt clears when pin returns to original state.
+    if (_mode == FALLING || _mode == RISING)
+        _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port] |= (1 << _p);
+    else
+        _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port] &= ~(1 << _p);
+
+    updatePCALRegister(PCAL6416A_INLAT_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port]);
 }
 
 /**
@@ -410,11 +433,15 @@ void IOExpander::removeIntPinInternal(uint8_t _pin)
         return;
 
     uint8_t _port = _pin / 8;
-    _pin %= 8;
+    uint8_t _p = _pin % 8;
 
-    _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port] |= (1 << _pin);
-
+    // Mask interrupt (1 = masked)
+    _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port] |= (1 << _p);
     updatePCALRegister(PCAL6416A_INTMSK_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INTMSK_REG0_ARRAY + _port]);
+
+    // Disable input latch
+    _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port] &= ~(1 << _p);
+    updatePCALRegister(PCAL6416A_INLAT_REG0_ARRAY + _port, _ioExpanderRegs[PCAL6416A_INLAT_REG0_ARRAY + _port]);
 }
 
 /**

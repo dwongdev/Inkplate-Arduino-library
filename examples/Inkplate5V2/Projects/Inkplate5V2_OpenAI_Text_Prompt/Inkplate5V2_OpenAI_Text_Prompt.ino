@@ -84,8 +84,8 @@
 #define SLEEP_DURATION_IN_MINS 30*60 
 
 // WiFi credentials
-const char* ssid = "Stefan";
-const char* password = "granatir";
+const char* ssid = "your ssid";
+const char* password = "your password";
 
 // OpenAI API key
 const char* openai_key = ""; 

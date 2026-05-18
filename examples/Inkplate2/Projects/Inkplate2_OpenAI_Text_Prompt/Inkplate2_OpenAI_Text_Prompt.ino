@@ -78,7 +78,7 @@
 
 // How long the device will stay in deep sleep (in minutes)
 #define SLEEP_DURATION_IN_MINS 30*60 
-#define uS_TO_S_FACTOR 1000000
+#define uS_TO_S_FACTOR 1000000ULL
 
 // WiFi credentials
 const char* ssid = "";
