@@ -4,7 +4,7 @@
 #if defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
-#if defined(ARDUINO_INKPLATE10V2) 
+#if defined(ARDUINO_INKPLATE10V2)
 #define IO_INT_ADDR 0x20
 #define IO_EXT_ADDR 0x21
 #elif defined(ARDUINO_INKPLATE10)
