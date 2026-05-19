@@ -36,6 +36,21 @@ bool IOExpander::begin(uint8_t _addr)
 
     readMCPRegisters();
 
+    // Configure the INT output for Inkplate-compatible defaults: active-HIGH
+    // polarity, push-pull driver, ports not mirrored. The MCP23017 power-on
+    // default for IOCON is 0x00 (INTPOL=0, active-LOW) which causes the INT
+    // pin to idle HIGH and only drive LOW on an interrupt — the inverse of
+    // what is wanted on the Inkplate boards (and on most host designs that
+    // use the ESP32's ESP_EXT1_WAKEUP_ANY_HIGH for deep-sleep wake). Without
+    // this step the host sees a permanently asserted wake line and exits
+    // deep sleep immediately every cycle.
+    //
+    // v11.0.1 restored the setIntOutput() API but did not call it from
+    // begin(). Setting a sensible default here means the library "just
+    // works" on Inkplate hardware without requiring application code to
+    // know about IOCON. Users with non-default wiring can still override by
+    // calling setIntOutput() after begin().
+    setIntOutput(MCP23017_INT_PORTB, MCP23017_INT_NO_MIRROR, MCP23017_INT_PUSHPULL, MCP23017_INT_ACTHIGH);
     // Snapshot the INTF and INTCAP values that we just read into the cache.
     // The bulk read in readMCPRegisters() returns registers 0x00..0x15
     // sequentially, so INTFA (0x0E) and INTFB (0x0F) are read BEFORE INTCAPA
