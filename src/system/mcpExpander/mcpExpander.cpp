@@ -47,7 +47,7 @@ bool IOExpander::begin(uint8_t _addr)
     // getIntState()). Save the pre-clear values into dedicated members so
     // application code can determine which expander pin caused a wake from
     // deep sleep after begin() has cleared the live latch.
-    _interruptFlagsAtBegin   = ((uint16_t)_ioExpanderRegs[15] << 8) | _ioExpanderRegs[14];
+    _interruptFlagsAtBegin = ((uint16_t)_ioExpanderRegs[15] << 8) | _ioExpanderRegs[14];
     _interruptCaptureAtBegin = ((uint16_t)_ioExpanderRegs[17] << 8) | _ioExpanderRegs[16];
 
 #ifdef IO_INT_ADDR
