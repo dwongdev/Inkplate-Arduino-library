@@ -36,6 +36,20 @@ bool IOExpander::begin(uint8_t _addr)
 
     readMCPRegisters();
 
+    // Snapshot the INTF and INTCAP values that we just read into the cache.
+    // The bulk read in readMCPRegisters() returns registers 0x00..0x15
+    // sequentially, so INTFA (0x0E) and INTFB (0x0F) are read BEFORE INTCAPA
+    // (0x10) and INTCAPB (0x11). On the MCP23017, reading INTCAP is what
+    // clears the INTF latch as a side effect. So the cache positions for
+    // INTF (14, 15) and INTCAP (16, 17) currently hold the pre-clear values
+    // captured at the moment of the most recent interrupt — but those cache
+    // positions can be overwritten by subsequent reads (e.g. getInt() or
+    // getIntState()). Save the pre-clear values into dedicated members so
+    // application code can determine which expander pin caused a wake from
+    // deep sleep after begin() has cleared the live latch.
+    _interruptFlagsAtBegin   = ((uint16_t)_ioExpanderRegs[15] << 8) | _ioExpanderRegs[14];
+    _interruptCaptureAtBegin = ((uint16_t)_ioExpanderRegs[17] << 8) | _ioExpanderRegs[16];
+
 #ifdef IO_INT_ADDR
     if (_addr == IO_INT_ADDR)
     {
@@ -242,6 +256,48 @@ uint16_t IOExpander::getInt()
 uint16_t IOExpander::getIntState()
 {
     return getINTStateInternal();
+}
+
+/**
+ * @brief       getInterruptFlagsAtBegin returns the value of the MCP23017's
+ *              INTFA/INTFB latch as it was at the moment begin() was called.
+ *
+ *              begin()'s bulk register read passes through INTCAP, which
+ *              clears the INTF latch as a side effect. After begin() returns,
+ *              calling getInt() reads the live INTF register, which is now 0
+ *              even if a wake-triggering interrupt was pending. This getter
+ *              returns the value that was captured BEFORE that clear happened
+ *              — useful for determining which pin triggered a wake from deep
+ *              sleep on hardware where the MCP is kept powered during sleep
+ *              (e.g. Inkplate 6 / 10).
+ *
+ * @return      INTFA in low byte, INTFB in high byte
+ */
+uint16_t IOExpander::getInterruptFlagsAtBegin()
+{
+    return _interruptFlagsAtBegin;
+}
+
+/**
+ * @brief       getInterruptCaptureAtBegin returns the value of the MCP23017's
+ *              INTCAPA/INTCAPB register as it was at the moment begin() was
+ *              called.
+ *
+ *              Pairing this with getInterruptFlagsAtBegin() lets callers
+ *              distinguish rising vs falling edges on each interrupt-enabled
+ *              pin even after begin() has cleared the latch.
+ *
+ *              The library's getIntState() also returns INTCAP but does so
+ *              via a fresh I2C read; that fresh value can be overwritten by
+ *              any subsequent interrupt event (e.g. capacitive noise during
+ *              application startup), whereas this snapshot is fixed at
+ *              begin() time.
+ *
+ * @return      INTCAPA in low byte, INTCAPB in high byte
+ */
+uint16_t IOExpander::getInterruptCaptureAtBegin()
+{
+    return _interruptCaptureAtBegin;
 }
 
 /**
