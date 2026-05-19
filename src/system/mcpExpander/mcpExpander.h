@@ -94,6 +94,8 @@ class IOExpander
     void removeIntPin(uint8_t _pin);
     uint16_t getInt();
     uint16_t getIntState();
+    uint16_t getInterruptFlagsAtBegin();
+    uint16_t getInterruptCaptureAtBegin();
     uint16_t getPorts();
     void blockPinUsage(uint8_t _pin);
     void unblockPinUsage(uint8_t _pin);
@@ -101,6 +103,12 @@ class IOExpander
 
   private:
     uint16_t _blockedPinsForUser = 0;
+    // INTF and INTCAP register values captured during begin()'s bulk read,
+    // BEFORE the same read clears the INTF latch as a side effect of passing
+    // through INTCAP. Lets callers determine which pin caused a wake from
+    // deep sleep after begin() has run.
+    uint16_t _interruptFlagsAtBegin = 0;
+    uint16_t _interruptCaptureAtBegin = 0;
 
     const uint8_t regAddresses[22] = {
         MCP23017_IODIRA,  MCP23017_IODIRB,  MCP23017_IPOLA,   MCP23017_IPOLB,   MCP23017_GPINTENA, MCP23017_GPINTENB,
