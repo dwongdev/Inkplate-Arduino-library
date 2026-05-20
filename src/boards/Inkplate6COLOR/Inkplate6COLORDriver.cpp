@@ -148,13 +148,13 @@ void EPDDriver::display(bool _leaveOn)
 
     sendCommand(POWER_OFF_REGISTER);
     while (!(digitalRead(EPAPER_BUSY_PIN)))
-        ; // Wait for busy high signal
+        delay(1); // Wait for busy high signal — yield so the RTOS can breathe
     sendCommand(DISPLAY_REF_REGISTER);
     while (!(digitalRead(EPAPER_BUSY_PIN)))
-        ; // Wait for busy high signal
+        delay(1); // Wait for busy high signal — yield so the RTOS can breathe
     sendCommand(0x02);
     while (digitalRead(EPAPER_BUSY_PIN))
-        ; // Wait for busy low signal
+        delay(1); // Wait for busy low signal — yield so the RTOS can breathe
     delay(200);
 
     // Put the panel to sleep again
@@ -220,13 +220,13 @@ void EPDDriver::clean()
 
     sendCommand(POWER_OFF_REGISTER);
     while (!(digitalRead(EPAPER_BUSY_PIN)))
-        ; // Wait for busy high signal
+        delay(1); // Wait for busy high signal — yield so the RTOS can breathe
     sendCommand(DISPLAY_REF_REGISTER);
     while (!(digitalRead(EPAPER_BUSY_PIN)))
-        ; // Wait for busy high signal
+        delay(1); // Wait for busy high signal — yield so the RTOS can breathe
     sendCommand(POWER_OFF_REGISTER);
     while (digitalRead(EPAPER_BUSY_PIN))
-        ; // Wait for busy low signal
+        delay(1); // Wait for busy low signal — yield so the RTOS can breathe
     delay(200);
 }
 
