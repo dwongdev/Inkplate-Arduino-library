@@ -6,11 +6,11 @@ static constexpr size_t sdCardTestStringLength = 100;
 // Keep this short so it always fits comfortably
 static const char *testString = "This is some test string...";
 
-static const char *WSSID = "";
-static const char *WPASS = "";
+static const char *WSSID = "Soldered-testingPurposes";
+static const char *WPASS = "Testing443";
 
 // Change this to your used slave device
-static const uint8_t easyCDeviceAddress = 0x76;
+static const uint8_t easyCDeviceAddress = 0x30;
 
 void testPeripheral()
 {
