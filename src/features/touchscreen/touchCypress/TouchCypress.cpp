@@ -341,7 +341,10 @@ bool Touch::getTouchData(struct cypressTouchData *_touchData)
     _touchData->y[1] = _regs[11] << 8 | _regs[12];
     _touchData->z[1] = _regs[13];
     _touchData->detectionType = _regs[8];
-    _touchData->fingers = _regs[2];
+
+    // Hardware can report spurious high finger counts (e.g. when palm-swiping).
+    // Clamp to 2 — the maximum the controller and all callers' arrays support.
+    _touchData->fingers = (_regs[2] > 2) ? 2 : _regs[2];
 
     // Everything went ok? Return true.
     return true;
