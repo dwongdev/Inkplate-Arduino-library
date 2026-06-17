@@ -64,10 +64,11 @@
 // Create object on Inkplate library and set library to work in monochrome mode
 Inkplate display(INKPLATE_1BIT);
 
-// We only store: provision marker + waveform number for UI / reselection.
-// Driver stores the actual VCOM and waveform data internally.
-int EEPROM_PROVISION_MARKER_ADDR = 0; // 170 => provisioned
-int EEPROM_WAVEFORM_NUM_ADDR     = 1; // 1..5
+// Provision marker and waveform number for factory flow.
+// Addresses 0-75 are occupied by the waveformData struct written by setWaveform();
+// the marker and waveform number must live beyond that range to avoid collisions.
+int EEPROM_PROVISION_MARKER_ADDR = 76; // 170 => provisioned
+int EEPROM_WAVEFORM_NUM_ADDR     = 77; // 1..5
 
 // Peripheral mode variables and arrays (kept from original)
 #define BUFFER_SIZE 1000

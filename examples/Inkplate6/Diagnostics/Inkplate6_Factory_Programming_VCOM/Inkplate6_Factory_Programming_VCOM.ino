@@ -165,6 +165,11 @@ void setup()
           if (display.setVCOM(vcomVoltage))
           {
             Serial.println("\nVCOM EEPROM PROGRAMMING OK\n");
+
+            // Mark the device as tested and provisioned so the tests
+            // don't run again on the next boot
+            EEPROM.write(EEPROMaddress, 170);
+            EEPROM.commit();
             break;
           }
           else
