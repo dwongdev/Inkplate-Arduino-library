@@ -201,6 +201,7 @@ void setup()
     memset(commandBuffer, 0, BUFFER_SIZE);
 
     // Print the initial image that remains on the screen
+    showSplashScreen(vcomVoltage);
 }
 
 void loop()

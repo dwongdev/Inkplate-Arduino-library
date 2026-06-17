@@ -4,11 +4,11 @@ const char sdCardTestStringLength = 100;
 const char *testString = {"This is some test string..."};
 
 // Change this to your WiFi
-const char *WSSID = {""};
-const char *WPASS = {""};
+const char *WSSID = {"Soldered-testingPurposes"};
+const char *WPASS = {"Testing443"};
 
 // Change this to your used slave device
-const uint8_t easyCDeviceAddress = 0x76;
+const uint8_t easyCDeviceAddress = 0x30;
 
 // Test all peripherals
 void testPeripheral()
