@@ -104,8 +104,7 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // Falls back to the compiled-in default if EEPROM data is absent or corrupt.
     EEPROM.begin(512);
     struct waveformData waveformEEPROM;
-    if (getWaveformFromEEPROM(&waveformEEPROM) &&
-        waveformEEPROM.waveformId >= INKPLATE10_WAVEFORM1 &&
+    if (getWaveformFromEEPROM(&waveformEEPROM) && waveformEEPROM.waveformId >= INKPLATE10_WAVEFORM1 &&
         waveformEEPROM.waveformId <= INKPLATE10_WAVEFORM5)
     {
         memcpy(waveform3Bit, waveformEEPROM.waveform, sizeof(waveform3Bit));
