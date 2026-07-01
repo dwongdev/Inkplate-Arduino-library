@@ -1165,8 +1165,8 @@ void EPDDriver::wakePeripheral(uint8_t _peripheral)
     if (_peripheral & INKPLATE_BME688)
     {
         // Wake BME
-        uint8_t bmeControlReg = bme688.readByte(BME_CONTROL_ADDR);
-        bme688.putData(BME_CONTROL_ADDR, bmeControlReg | 0x01);
+        uint8_t bmeControlReg = bme688.readReg(BME_CONTROL_ADDR);
+        bme688.writeReg(BME_CONTROL_ADDR, bmeControlReg | 0x01);
         bme688.begin();
     }
 
@@ -1207,9 +1207,9 @@ void EPDDriver::sleepPeripheral(uint8_t _peripheral)
     if (_peripheral & INKPLATE_BME688)
     {
         // Put BME in sleep mode
-        uint8_t bmeControlReg = bme688.readByte(BME_CONTROL_ADDR);
+        uint8_t bmeControlReg = bme688.readReg(BME_CONTROL_ADDR);
         bmeControlReg &= ~(0b00000011);
-        bme688.putData(BME_CONTROL_ADDR, bmeControlReg);
+        bme688.writeReg(BME_CONTROL_ADDR, bmeControlReg);
     }
 
     if (_peripheral & INKPLATE_APDS9960)
