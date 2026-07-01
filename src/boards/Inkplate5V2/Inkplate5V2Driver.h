@@ -105,8 +105,7 @@ class EPDDriver : public UtilI2S
 
     bool setWaveform(uint8_t *waveform, uint8_t numColors, uint8_t numPhases);
 
-    template <uint8_t C, uint8_t P>
-    bool setWaveform(uint8_t (&waveform)[C][P])
+    template <uint8_t C, uint8_t P> bool setWaveform(uint8_t (&waveform)[C][P])
     {
         return setWaveform((uint8_t *)waveform, C, P);
     }

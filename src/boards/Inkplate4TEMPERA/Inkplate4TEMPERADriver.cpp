@@ -137,15 +137,14 @@ void EPDDriver::calculateLUTs()
         {
             uint8_t ci = (uint8_t)(i & 0x0F);
             uint8_t ch = (uint8_t)((i >> 4) & 0x0F);
-            if (ci >= _waveformColors) ci = _waveformColors - 1;
-            if (ch >= _waveformColors) ch = _waveformColors - 1;
-            uint8_t z = (_waveform3Bit[ci * _waveformPhases + j] << 2) |
-                        (_waveform3Bit[ch * _waveformPhases + j]);
+            if (ci >= _waveformColors)
+                ci = _waveformColors - 1;
+            if (ch >= _waveformColors)
+                ch = _waveformColors - 1;
+            uint8_t z = (_waveform3Bit[ci * _waveformPhases + j] << 2) | (_waveform3Bit[ch * _waveformPhases + j]);
             GLUT[j * 256 + i] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
                                 (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
-            z = ((_waveform3Bit[ci * _waveformPhases + j] << 2) |
-                 (_waveform3Bit[ch * _waveformPhases + j]))
-                << 4;
+            z = ((_waveform3Bit[ci * _waveformPhases + j] << 2) | (_waveform3Bit[ch * _waveformPhases + j])) << 4;
             GLUT2[j * 256 + i] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
                                  (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
         }
@@ -878,8 +877,8 @@ uint8_t EPDDriver::initializeFramebuffers()
     _waveform3Bit = (uint8_t *)malloc(8 * _waveformPhases);
     GLUT = (uint32_t *)malloc(256 * _waveformPhases * sizeof(uint32_t));
     GLUT2 = (uint32_t *)malloc(256 * _waveformPhases * sizeof(uint32_t));
-    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL ||
-        _waveform3Bit == NULL || GLUT == NULL || GLUT2 == NULL)
+    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL || _waveform3Bit == NULL ||
+        GLUT == NULL || GLUT2 == NULL)
     {
         return 0;
     }
@@ -1264,7 +1263,7 @@ bool EPDDriver::setWaveform(uint8_t *waveform, uint8_t numColors, uint8_t numPha
     if (numColors != _waveformColors || numPhases != _waveformPhases)
     {
         uint8_t *newWf = (uint8_t *)malloc(numColors * numPhases);
-        uint32_t *newGLUT  = (uint32_t *)malloc(256 * numPhases * sizeof(uint32_t));
+        uint32_t *newGLUT = (uint32_t *)malloc(256 * numPhases * sizeof(uint32_t));
         uint32_t *newGLUT2 = (uint32_t *)malloc(256 * numPhases * sizeof(uint32_t));
         if (!newWf || !newGLUT || !newGLUT2)
         {
@@ -1277,7 +1276,7 @@ bool EPDDriver::setWaveform(uint8_t *waveform, uint8_t numColors, uint8_t numPha
         free(GLUT);
         free(GLUT2);
         _waveform3Bit = newWf;
-        GLUT  = newGLUT;
+        GLUT = newGLUT;
         GLUT2 = newGLUT2;
         _waveformColors = numColors;
         _waveformPhases = numPhases;
