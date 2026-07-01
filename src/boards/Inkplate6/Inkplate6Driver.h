@@ -21,6 +21,7 @@
 #include "waveforms.h"
 
 #include "../../graphics/Image/Image.h"
+#include "../../graphics/Gif/Gif.h"
 
 #include "Wire.h"
 
@@ -83,6 +84,7 @@ class EPDDriver : public UtilI2S
     RTC rtc;
 
     Image image;
+    Gif gif;
 
     uint8_t _beginDone = 0;
     uint8_t _displayMode;
@@ -95,12 +97,21 @@ class EPDDriver : public UtilI2S
     uint8_t *_partial;
     uint8_t *DMemory4Bit;
     uint8_t *_pBuffer;
-    uint8_t waveform3Bit[8][9] = WAVEFORM3BIT;
+    uint8_t *_waveform3Bit = nullptr;
+    uint8_t _waveformPhases = 9;
+    uint8_t _waveformColors = 8;
     uint16_t _partialUpdateLimiter = 10;
     uint16_t _partialUpdateCounter = 0;
     uint8_t _blockPartial = 1;
     int16_t _sdCardOk = 0;
 
+    bool setWaveform(uint8_t *waveform, uint8_t numColors, uint8_t numPhases);
+
+    template <uint8_t C, uint8_t P>
+    bool setWaveform(uint8_t (&waveform)[C][P])
+    {
+        return setWaveform((uint8_t *)waveform, C, P);
+    }
 
   private:
     void calculateLUTs();

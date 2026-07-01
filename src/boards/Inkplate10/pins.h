@@ -4,13 +4,8 @@
 #if defined(ARDUINO_INKPLATE10V2) || defined(ARDUINO_INKPLATE10)
 #include "soc/gpio_reg.h"
 #include "soc/gpio_struct.h"
-#if defined(ARDUINO_INKPLATE10V2)
 #define IO_INT_ADDR 0x20
 #define IO_EXT_ADDR 0x21
-#elif defined(ARDUINO_INKPLATE10)
-#define IO_INT_ADDR 0x20
-#define IO_EXT_ADDR 0x22
-#endif
 
 // Pin on the internal io expander which controls MOSFET for turning on and off the SD card
 #define SD_PMOS_PIN IO_PIN_B2 // 10
