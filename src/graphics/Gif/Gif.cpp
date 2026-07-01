@@ -180,7 +180,7 @@ bool Gif::drawGifFromWeb(const char *url, int x, int y, bool invert)
  *              false on open/decode error.
  */
 bool Gif::playGifFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool invert, bool loop,
-                             uint16_t fullRefreshEveryFrames)
+                            uint16_t fullRefreshEveryFrames)
 {
     if (!_inkplate)
         return false;

@@ -53,21 +53,21 @@ int AnimatedGIF::openFLASH(uint8_t *pData, int iDataSize, GIF_DRAW_CALLBACK *pfn
     return GIFInit(&_gif);
 } /* openFLASH() */
 #endif
-void AnimatedGIF::mergeTransparent(uint8_t *pSrc, uint8_t *pDst, uint8_t ucTrans, int iLen) 
+void AnimatedGIF::mergeTransparent(uint8_t *pSrc, uint8_t *pDst, uint8_t ucTrans, int iLen)
 {
-   GIF_mergeTransparent(pSrc, pDst, ucTrans, iLen);
+    GIF_mergeTransparent(pSrc, pDst, ucTrans, iLen);
 } /* mergeTransparent() */
 
 void AnimatedGIF::cookPixels(uint8_t *pSrc, uint8_t *pDst, int iTrans, int iLen, uint32_t *pPalette, uint16_t *pRGB565)
 {
-   GIF_cookPixels(pSrc, pDst, iTrans, iLen, pPalette, pRGB565);
+    GIF_cookPixels(pSrc, pDst, iTrans, iLen, pPalette, pRGB565);
 } /* cookPixels() */
 //
 // Returns the first comment block found (if any)
 //
 int AnimatedGIF::getComment(char *pDest)
 {
-int32_t iOldPos;
+    int32_t iOldPos;
 
     iOldPos = _gif.GIFFile.iPos; // keep old position
     (*_gif.pfnSeek)(&_gif.GIFFile, _gif.iCommentPos);
@@ -77,7 +77,7 @@ int32_t iOldPos;
     return (int)_gif.sCommentLen;
 } /* getComment() */
 
-//  
+//
 // Allocate a block of memory to hold the entire canvas (as 8-bpp)
 //
 int AnimatedGIF::allocFrameBuf(GIF_ALLOC_CALLBACK *pfnAlloc)
@@ -86,10 +86,13 @@ int AnimatedGIF::allocFrameBuf(GIF_ALLOC_CALLBACK *pfnAlloc)
     {
         // Allocate a little extra space for the current line
         // as RGB565 or RGB888
-        int iCanvasSize = _gif.iCanvasWidth * (_gif.iCanvasHeight+3);
-        if (pfnAlloc == nullptr) {
+        int iCanvasSize = _gif.iCanvasWidth * (_gif.iCanvasHeight + 3);
+        if (pfnAlloc == nullptr)
+        {
             _gif.pFrameBuffer = (unsigned char *)malloc(iCanvasSize);
-        } else {
+        }
+        else
+        {
             _gif.pFrameBuffer = (unsigned char *)(*pfnAlloc)(iCanvasSize);
         }
         if (_gif.pFrameBuffer == NULL)
@@ -109,9 +112,12 @@ int AnimatedGIF::allocTurboBuf(GIF_ALLOC_CALLBACK *pfnAlloc)
         // Allocate a little extra space for the current line
         // as RGB565 or RGB888
         int iTurboSize = TURBO_BUFFER_SIZE + (_gif.iCanvasWidth * _gif.iCanvasHeight);
-        if (pfnAlloc == nullptr) {
+        if (pfnAlloc == nullptr)
+        {
             _gif.pTurboBuffer = (unsigned char *)malloc(iTurboSize);
-        } else {
+        }
+        else
+        {
             _gif.pTurboBuffer = (unsigned char *)(*pfnAlloc)(iTurboSize);
         }
         if (_gif.pTurboBuffer == NULL)
@@ -125,7 +131,7 @@ int AnimatedGIF::allocTurboBuf(GIF_ALLOC_CALLBACK *pfnAlloc)
 //
 void AnimatedGIF::setFrameBuf(void *pFrameBuf)
 {
-    _gif.pFrameBuffer = (uint8_t*)pFrameBuf;
+    _gif.pFrameBuffer = (uint8_t *)pFrameBuf;
 }
 //
 // Set the Turbo buffer pointer
@@ -174,7 +180,7 @@ int AnimatedGIF::freeFrameBuf(GIF_FREE_CALLBACK *pfnFree)
 //
 // Return a pointer to the frame buffer (if it was allocated)
 //
-uint8_t * AnimatedGIF::getFrameBuf()
+uint8_t *AnimatedGIF::getFrameBuf()
 {
     return _gif.pFrameBuffer;
 } /* getFrameBuf() */
@@ -182,7 +188,7 @@ uint8_t * AnimatedGIF::getFrameBuf()
 //
 // Return a pointer to the Turbo buffer (if it was allocated)
 //
-uint8_t * AnimatedGIF::getTurboBuf()
+uint8_t *AnimatedGIF::getTurboBuf()
 {
     return _gif.pTurboBuffer;
 } /* getTurboBuf() */
@@ -223,7 +229,7 @@ int AnimatedGIF::getLoopCount()
 
 int AnimatedGIF::getInfo(GIFINFO *pInfo)
 {
-   return GIF_getInfo(&_gif, pInfo);
+    return GIF_getInfo(&_gif, pInfo);
 } /* getInfo() */
 
 int AnimatedGIF::getLastError()
@@ -239,7 +245,8 @@ int AnimatedGIF::open(const char *szFilename, GIF_DRAW_CALLBACK *pfnDraw)
 //
 // File (SD/MMC) based initialization
 //
-int AnimatedGIF::open(const char *szFilename, GIF_OPEN_CALLBACK *pfnOpen, GIF_CLOSE_CALLBACK *pfnClose, GIF_READ_CALLBACK *pfnRead, GIF_SEEK_CALLBACK *pfnSeek, GIF_DRAW_CALLBACK *pfnDraw)
+int AnimatedGIF::open(const char *szFilename, GIF_OPEN_CALLBACK *pfnOpen, GIF_CLOSE_CALLBACK *pfnClose,
+                      GIF_READ_CALLBACK *pfnRead, GIF_SEEK_CALLBACK *pfnSeek, GIF_DRAW_CALLBACK *pfnDraw)
 {
     _gif.iError = GIF_SUCCESS;
     _gif.pfnRead = pfnRead;
@@ -248,9 +255,10 @@ int AnimatedGIF::open(const char *szFilename, GIF_OPEN_CALLBACK *pfnOpen, GIF_CL
     _gif.pfnOpen = pfnOpen;
     _gif.pfnClose = pfnClose;
     _gif.GIFFile.fHandle = (*pfnOpen)(szFilename, &_gif.GIFFile.iSize);
-    if (_gif.GIFFile.fHandle == NULL) {
-       _gif.iError = GIF_FILE_NOT_OPEN;
-       return 0;
+    if (_gif.GIFFile.fHandle == NULL)
+    {
+        _gif.iError = GIF_FILE_NOT_OPEN;
+        return 0;
     }
     return GIFInit(&_gif);
 
@@ -270,11 +278,12 @@ void AnimatedGIF::reset()
 
 void AnimatedGIF::begin(unsigned char ucPaletteType)
 {
-uint8_t *p;
-uint32_t u32;
+    uint8_t *p;
+    uint32_t u32;
 
     memset(&_gif, 0, sizeof(_gif));
-    if (ucPaletteType != GIF_PALETTE_RGB565_LE && ucPaletteType != GIF_PALETTE_RGB565_BE && ucPaletteType != GIF_PALETTE_RGB888)
+    if (ucPaletteType != GIF_PALETTE_RGB565_LE && ucPaletteType != GIF_PALETTE_RGB565_BE &&
+        ucPaletteType != GIF_PALETTE_RGB888)
         _gif.iError = GIF_INVALID_PARAMETER;
     _gif.ucPaletteType = ucPaletteType;
     _gif.ucDrawType = GIF_DRAW_RAW; // assume RAW pixel handling
@@ -282,8 +291,9 @@ uint32_t u32;
     p = &_gif.ucLineBuf[0];
     u32 = (intptr_t)p;
     u32 &= 15; // align on 16-byte boundary
-    if (u32 > 0) {
-        p += (16-u32);
+    if (u32 > 0)
+    {
+        p += (16 - u32);
     }
     _gif.pLineBufAligned = p;
 } /* begin() */
@@ -291,16 +301,16 @@ uint32_t u32;
 // Play a single frame
 // returns:
 // 1 = good result and more frames exist
-// 0 = no more frames exist, a frame may or may not have been played: use getLastError() and look for GIF_SUCCESS to know if a frame was played
-// -1 = error
+// 0 = no more frames exist, a frame may or may not have been played: use getLastError() and look for GIF_SUCCESS to
+// know if a frame was played -1 = error
 int AnimatedGIF::playFrame(bool bSync, int *delayMilliseconds, void *pUser)
 {
-int rc;
-#if !defined( __MACH__ ) && !defined( __LINUX__ )
-long lTime = millis();
+    int rc;
+#if !defined(__MACH__) && !defined(__LINUX__)
+    long lTime = millis();
 #endif
 
-    if (_gif.GIFFile.iPos >= _gif.GIFFile.iSize-1) // no more data exists
+    if (_gif.GIFFile.iPos >= _gif.GIFFile.iSize - 1) // no more data exists
     {
         (*_gif.pfnSeek)(&_gif.GIFFile, 0); // seek to start
     }
@@ -309,9 +319,12 @@ long lTime = millis();
         _gif.pUser = pUser;
         if (_gif.iError == GIF_EMPTY_FRAME) // don't try to decode it
             return 0;
-        if (_gif.pTurboBuffer) {
+        if (_gif.pTurboBuffer)
+        {
             rc = DecodeLZWTurbo(&_gif, 0);
-        } else {
+        }
+        else
+        {
             rc = DecodeLZW(&_gif, 0);
         }
         if (rc != 0) // problem
@@ -325,7 +338,7 @@ long lTime = millis();
         // GIF_SUCCESS -> frame processed, GIF_EMPTY_FRAME -> no frame processed
         if (_gif.iError == GIF_EMPTY_FRAME)
         {
-	    if (delayMilliseconds)
+            if (delayMilliseconds)
                 *delayMilliseconds = 0;
             return 0;
         }
@@ -334,14 +347,13 @@ long lTime = millis();
     // Return 1 for more frames or 0 if this was the last frame
     if (bSync)
     {
-#if !defined( __MACH__ ) && !defined( __LINUX__ ) 
+#if !defined(__MACH__) && !defined(__LINUX__)
         lTime = millis() - lTime;
         if (lTime < _gif.iFrameDelay) // need to pause a bit
-           delay(_gif.iFrameDelay - lTime);
+            delay(_gif.iFrameDelay - lTime);
 #endif // __LINUX__
     }
     if (delayMilliseconds) // if not NULL, return the frame delay time
         *delayMilliseconds = _gif.iFrameDelay;
-    return (_gif.GIFFile.iPos < _gif.GIFFile.iSize-10);
+    return (_gif.GIFFile.iPos < _gif.GIFFile.iSize - 10);
 } /* playFrame() */
-
