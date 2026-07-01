@@ -1,40 +1,40 @@
 /**
-* Copyright (c) 2023 Bosch Sensortec GmbH. All rights reserved.
-*
-* BSD-3-Clause
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright
-*    notice, this list of conditions and the following disclaimer.
-*
-* 2. Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in the
-*    documentation and/or other materials provided with the distribution.
-*
-* 3. Neither the name of the copyright holder nor the names of its
-*    contributors may be used to endorse or promote products derived from
-*    this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-* COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*
-* @file       bme68x.c
-* @date       2023-02-07
-* @version    v4.4.8
-*
-*/
+ * Copyright (c) 2023 Bosch Sensortec GmbH. All rights reserved.
+ *
+ * BSD-3-Clause
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @file       bme68x.c
+ * @date       2023-02-07
+ * @version    v4.4.8
+ *
+ */
 
 #include "bme68x.h"
 #include <stdio.h>
@@ -94,7 +94,7 @@ static uint8_t calc_res_heat(uint16_t temp, const struct bme68x_dev *dev);
 static int8_t read_field_data(uint8_t index, struct bme68x_data *data, struct bme68x_dev *dev);
 
 /* This internal API is used to read all data fields of the sensor */
-static int8_t read_all_field_data(struct bme68x_data * const data[], struct bme68x_dev *dev);
+static int8_t read_all_field_data(struct bme68x_data *const data[], struct bme68x_dev *dev);
 
 /* This internal API is used to switch between SPI memory pages */
 static int8_t set_mem_page(uint8_t reg_addr, struct bme68x_dev *dev);
@@ -138,14 +138,14 @@ static int8_t analyze_sensor_data(const struct bme68x_data *data, uint8_t n_meas
 /******************************************************************************************/
 
 /* @brief This API reads the chip-id of the sensor which is the first step to
-* verify the sensor and also calibrates the sensor
-* As this API is the entry point, call this API before using other APIs.
-*/
+ * verify the sensor and also calibrates the sensor
+ * As this API is the entry point, call this API before using other APIs.
+ */
 int8_t bme68x_init(struct bme68x_dev *dev)
 {
     int8_t rslt;
 
-    (void) bme68x_soft_reset(dev);
+    (void)bme68x_soft_reset(dev);
 
     rslt = bme68x_get_regs(BME68X_REG_CHIP_ID, &dev->chip_id, 1, dev);
 
@@ -179,7 +179,7 @@ int8_t bme68x_set_regs(const uint8_t *reg_addr, const uint8_t *reg_data, uint32_
     int8_t rslt;
 
     /* Length of the temporary buffer is 2*(length of register)*/
-    uint8_t tmp_buff[BME68X_LEN_INTERLEAVE_BUFF] = { 0 };
+    uint8_t tmp_buff[BME68X_LEN_INTERLEAVE_BUFF] = {0};
     uint16_t index;
 
     /* Check for null pointer in the device structure*/
@@ -315,8 +315,8 @@ int8_t bme68x_set_conf(struct bme68x_conf *conf, struct bme68x_dev *dev)
     uint8_t current_op_mode;
 
     /* Register data starting from BME68X_REG_CTRL_GAS_1(0x71) up to BME68X_REG_CONFIG(0x75) */
-    uint8_t reg_array[BME68X_LEN_CONFIG] = { 0x71, 0x72, 0x73, 0x74, 0x75 };
-    uint8_t data_array[BME68X_LEN_CONFIG] = { 0 };
+    uint8_t reg_array[BME68X_LEN_CONFIG] = {0x71, 0x72, 0x73, 0x74, 0x75};
+    uint8_t data_array[BME68X_LEN_CONFIG] = {0};
 
     rslt = bme68x_get_op_mode(&current_op_mode, dev);
     if (rslt == BME68X_OK)
@@ -492,7 +492,7 @@ uint32_t bme68x_get_meas_dur(const uint8_t op_mode, struct bme68x_conf *conf, st
     int8_t rslt;
     uint32_t meas_dur = 0; /* Calculate in us */
     uint32_t meas_cycles;
-    uint8_t os_to_meas_cycles[6] = { 0, 1, 2, 4, 8, 16 };
+    uint8_t os_to_meas_cycles[6] = {0, 1, 2, 4, 8, 16};
 
     if (conf != NULL)
     {
@@ -541,8 +541,8 @@ int8_t bme68x_get_data(uint8_t op_mode, struct bme68x_data *data, uint8_t *n_dat
 {
     int8_t rslt;
     uint8_t i = 0, j = 0, new_fields = 0;
-    struct bme68x_data *field_ptr[3] = { 0 };
-    struct bme68x_data field_data[3] = { { 0 } };
+    struct bme68x_data *field_ptr[3] = {0};
+    struct bme68x_data field_data[3] = {{0}};
 
     field_ptr[0] = &field_data[0];
     field_ptr[1] = &field_data[1];
@@ -633,7 +633,7 @@ int8_t bme68x_set_heatr_conf(uint8_t op_mode, const struct bme68x_heatr_conf *co
     uint8_t nb_conv = 0;
     uint8_t hctrl, run_gas = 0;
     uint8_t ctrl_gas_data[2];
-    uint8_t ctrl_gas_addr[2] = { BME68X_REG_CTRL_GAS_0, BME68X_REG_CTRL_GAS_1 };
+    uint8_t ctrl_gas_addr[2] = {BME68X_REG_CTRL_GAS_0, BME68X_REG_CTRL_GAS_1};
 
     if (conf != NULL)
     {
@@ -687,7 +687,7 @@ int8_t bme68x_set_heatr_conf(uint8_t op_mode, const struct bme68x_heatr_conf *co
 int8_t bme68x_get_heatr_conf(const struct bme68x_heatr_conf *conf, struct bme68x_dev *dev)
 {
     int8_t rslt = BME68X_OK;
-    uint8_t data_array[10] = { 0 };
+    uint8_t data_array[10] = {0};
     uint8_t i;
 
     if ((conf != NULL) && (conf->heatr_dur_prof != NULL) && (conf->heatr_temp_prof != NULL))
@@ -729,7 +729,7 @@ int8_t bme68x_selftest_check(const struct bme68x_dev *dev)
     int8_t rslt;
     uint8_t n_fields;
     uint8_t i = 0;
-    struct bme68x_data data[BME68X_N_MEAS] = { { 0 } };
+    struct bme68x_data data[BME68X_N_MEAS] = {{0}};
     struct bme68x_dev t_dev;
     struct bme68x_conf conf;
     struct bme68x_heatr_conf heatr_conf;
@@ -888,9 +888,9 @@ static uint32_t calc_pressure(uint32_t pres_adc, const struct bme68x_dev *dev)
 
     var1 = ((int32_t)dev->calib.par_p9 * (int32_t)(((pressure_comp >> 3) * (pressure_comp >> 3)) >> 13)) >> 12;
     var2 = ((int32_t)(pressure_comp >> 2) * (int32_t)dev->calib.par_p8) >> 13;
-    var3 =
-        ((int32_t)(pressure_comp >> 8) * (int32_t)(pressure_comp >> 8) * (int32_t)(pressure_comp >> 8) *
-         (int32_t)dev->calib.par_p10) >> 17;
+    var3 = ((int32_t)(pressure_comp >> 8) * (int32_t)(pressure_comp >> 8) * (int32_t)(pressure_comp >> 8) *
+            (int32_t)dev->calib.par_p10) >>
+           17;
     pressure_comp = (int32_t)(pressure_comp) + ((var1 + var2 + var3 + ((int32_t)dev->calib.par_p7 << 7)) >> 4);
 
     /*lint -restore */
@@ -913,11 +913,11 @@ static uint32_t calc_humidity(uint16_t hum_adc, const struct bme68x_dev *dev)
     temp_scaled = (((int32_t)dev->calib.t_fine * 5) + 128) >> 8;
     var1 = (int32_t)(hum_adc - ((int32_t)((int32_t)dev->calib.par_h1 * 16))) -
            (((temp_scaled * (int32_t)dev->calib.par_h3) / ((int32_t)100)) >> 1);
-    var2 =
-        ((int32_t)dev->calib.par_h2 *
-         (((temp_scaled * (int32_t)dev->calib.par_h4) / ((int32_t)100)) +
-          (((temp_scaled * ((temp_scaled * (int32_t)dev->calib.par_h5) / ((int32_t)100))) >> 6) / ((int32_t)100)) +
-          (int32_t)(1 << 14))) >> 10;
+    var2 = ((int32_t)dev->calib.par_h2 *
+            (((temp_scaled * (int32_t)dev->calib.par_h4) / ((int32_t)100)) +
+             (((temp_scaled * ((temp_scaled * (int32_t)dev->calib.par_h5) / ((int32_t)100))) >> 6) / ((int32_t)100)) +
+             (int32_t)(1 << 14))) >>
+           10;
     var3 = var1 * var2;
     var4 = (int32_t)dev->calib.par_h6 << 7;
     var4 = ((var4) + ((temp_scaled * (int32_t)dev->calib.par_h7) / ((int32_t)100))) >> 4;
@@ -945,16 +945,14 @@ static uint32_t calc_gas_resistance_low(uint16_t gas_res_adc, uint8_t gas_range,
     int64_t var3;
     uint32_t calc_gas_res;
     uint32_t lookup_table1[16] = {
-        UINT32_C(2147483647), UINT32_C(2147483647), UINT32_C(2147483647), UINT32_C(2147483647), UINT32_C(2147483647),
-        UINT32_C(2126008810), UINT32_C(2147483647), UINT32_C(2130303777), UINT32_C(2147483647), UINT32_C(2147483647),
-        UINT32_C(2143188679), UINT32_C(2136746228), UINT32_C(2147483647), UINT32_C(2126008810), UINT32_C(2147483647),
-        UINT32_C(2147483647)
-    };
-    uint32_t lookup_table2[16] = {
-        UINT32_C(4096000000), UINT32_C(2048000000), UINT32_C(1024000000), UINT32_C(512000000), UINT32_C(255744255),
-        UINT32_C(127110228), UINT32_C(64000000), UINT32_C(32258064), UINT32_C(16016016), UINT32_C(8000000), UINT32_C(
-            4000000), UINT32_C(2000000), UINT32_C(1000000), UINT32_C(500000), UINT32_C(250000), UINT32_C(125000)
-    };
+        UINT32_C(2147483647), UINT32_C(2147483647), UINT32_C(2147483647), UINT32_C(2147483647),
+        UINT32_C(2147483647), UINT32_C(2126008810), UINT32_C(2147483647), UINT32_C(2130303777),
+        UINT32_C(2147483647), UINT32_C(2147483647), UINT32_C(2143188679), UINT32_C(2136746228),
+        UINT32_C(2147483647), UINT32_C(2126008810), UINT32_C(2147483647), UINT32_C(2147483647)};
+    uint32_t lookup_table2[16] = {UINT32_C(4096000000), UINT32_C(2048000000), UINT32_C(1024000000), UINT32_C(512000000),
+                                  UINT32_C(255744255),  UINT32_C(127110228),  UINT32_C(64000000),   UINT32_C(32258064),
+                                  UINT32_C(16016016),   UINT32_C(8000000),    UINT32_C(4000000),    UINT32_C(2000000),
+                                  UINT32_C(1000000),    UINT32_C(500000),     UINT32_C(250000),     UINT32_C(125000)};
 
     /*lint -save -e704 */
     var1 = (int64_t)((1340 + (5 * (int64_t)dev->calib.range_sw_err)) * ((int64_t)lookup_table1[gas_range])) >> 16;
@@ -1023,9 +1021,9 @@ static float calc_temperature(uint32_t temp_adc, struct bme68x_dev *dev)
     var1 = ((((float)temp_adc / 16384.0f) - ((float)dev->calib.par_t1 / 1024.0f)) * ((float)dev->calib.par_t2));
 
     /* calculate var2 data */
-    var2 =
-        (((((float)temp_adc / 131072.0f) - ((float)dev->calib.par_t1 / 8192.0f)) *
-          (((float)temp_adc / 131072.0f) - ((float)dev->calib.par_t1 / 8192.0f))) * ((float)dev->calib.par_t3 * 16.0f));
+    var2 = (((((float)temp_adc / 131072.0f) - ((float)dev->calib.par_t1 / 8192.0f)) *
+             (((float)temp_adc / 131072.0f) - ((float)dev->calib.par_t1 / 8192.0f))) *
+            ((float)dev->calib.par_t3 * 16.0f));
 
     /* t_fine value*/
     dev->calib.t_fine = (var1 + var2);
@@ -1083,10 +1081,9 @@ static float calc_humidity(uint16_t hum_adc, const struct bme68x_dev *dev)
     temp_comp = ((dev->calib.t_fine) / 5120.0f);
     var1 = (float)((float)hum_adc) -
            (((float)dev->calib.par_h1 * 16.0f) + (((float)dev->calib.par_h3 / 2.0f) * temp_comp));
-    var2 = var1 *
-           ((float)(((float)dev->calib.par_h2 / 262144.0f) *
-                    (1.0f + (((float)dev->calib.par_h4 / 16384.0f) * temp_comp) +
-                     (((float)dev->calib.par_h5 / 1048576.0f) * temp_comp * temp_comp))));
+    var2 = var1 * ((float)(((float)dev->calib.par_h2 / 262144.0f) *
+                           (1.0f + (((float)dev->calib.par_h4 / 16384.0f) * temp_comp) +
+                            (((float)dev->calib.par_h5 / 1048576.0f) * temp_comp * temp_comp))));
     var3 = (float)dev->calib.par_h6 / 16384.0f;
     var4 = (float)dev->calib.par_h7 / 2097152.0f;
     calc_hum = var2 + ((var3 + (var4 * temp_comp)) * var2 * var2);
@@ -1111,12 +1108,10 @@ static float calc_gas_resistance_low(uint16_t gas_res_adc, uint8_t gas_range, co
     float var3;
     float gas_res_f = gas_res_adc;
     float gas_range_f = (1U << gas_range); /*lint !e790 / Suspicious truncation, integral to float */
-    const float lookup_k1_range[16] = {
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, -0.8f, 0.0f, 0.0f, -0.2f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f
-    };
-    const float lookup_k2_range[16] = {
-        0.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.7f, 0.0f, -0.8f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f
-    };
+    const float lookup_k1_range[16] = {0.0f, 0.0f, 0.0f,  0.0f,  0.0f, -1.0f, 0.0f, -0.8f,
+                                       0.0f, 0.0f, -0.2f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f};
+    const float lookup_k2_range[16] = {0.0f,  0.0f, 0.0f, 0.0f, 0.1f, 0.7f, 0.0f, -0.8f,
+                                       -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
     var1 = (1340.0f + (5.0f * dev->calib.range_sw_err));
     var2 = (var1) * (1.0f + lookup_k1_range[gas_range] / 100.0f);
@@ -1161,11 +1156,9 @@ static uint8_t calc_res_heat(uint16_t temp, const struct bme68x_dev *dev)
     var3 = ((float)dev->calib.par_gh3 / (1024.0f));
     var4 = (var1 * (1.0f + (var2 * (float)temp)));
     var5 = (var4 + (var3 * (float)dev->amb_temp));
-    res_heat =
-        (uint8_t)(3.4f *
-                  ((var5 * (4 / (4 + (float)dev->calib.res_heat_range)) *
-                    (1 / (1 + ((float)dev->calib.res_heat_val * 0.002f)))) -
-                   25));
+    res_heat = (uint8_t)(3.4f * ((var5 * (4 / (4 + (float)dev->calib.res_heat_range)) *
+                                  (1 / (1 + ((float)dev->calib.res_heat_val * 0.002f)))) -
+                                 25));
 
     return res_heat;
 }
@@ -1200,7 +1193,7 @@ static uint8_t calc_gas_wait(uint16_t dur)
 static int8_t read_field_data(uint8_t index, struct bme68x_data *data, struct bme68x_dev *dev)
 {
     int8_t rslt = BME68X_OK;
-    uint8_t buff[BME68X_LEN_FIELD] = { 0 };
+    uint8_t buff[BME68X_LEN_FIELD] = {0};
     uint8_t gas_range_l, gas_range_h;
     uint32_t adc_temp;
     uint32_t adc_pres;
@@ -1210,10 +1203,8 @@ static int8_t read_field_data(uint8_t index, struct bme68x_data *data, struct bm
 
     while ((tries) && (rslt == BME68X_OK))
     {
-        rslt = bme68x_get_regs(((uint8_t)(BME68X_REG_FIELD0 + (index * BME68X_LEN_FIELD_OFFSET))),
-                               buff,
-                               (uint16_t)BME68X_LEN_FIELD,
-                               dev);
+        rslt = bme68x_get_regs(((uint8_t)(BME68X_REG_FIELD0 + (index * BME68X_LEN_FIELD_OFFSET))), buff,
+                               (uint16_t)BME68X_LEN_FIELD, dev);
         if (!data)
         {
             rslt = BME68X_E_NULL_PTR;
@@ -1286,17 +1277,17 @@ static int8_t read_field_data(uint8_t index, struct bme68x_data *data, struct bm
 }
 
 /* This internal API is used to read all data fields of the sensor */
-static int8_t read_all_field_data(struct bme68x_data * const data[], struct bme68x_dev *dev)
+static int8_t read_all_field_data(struct bme68x_data *const data[], struct bme68x_dev *dev)
 {
     int8_t rslt = BME68X_OK;
-    uint8_t buff[BME68X_LEN_FIELD * 3] = { 0 };
+    uint8_t buff[BME68X_LEN_FIELD * 3] = {0};
     uint8_t gas_range_l, gas_range_h;
     uint32_t adc_temp;
     uint32_t adc_pres;
     uint16_t adc_hum;
     uint16_t adc_gas_res_low, adc_gas_res_high;
     uint8_t off;
-    uint8_t set_val[30] = { 0 }; /* idac, res_heat, gas_wait */
+    uint8_t set_val[30] = {0}; /* idac, res_heat, gas_wait */
     uint8_t i;
 
     if (!data[0] && !data[1] && !data[2])
@@ -1306,7 +1297,7 @@ static int8_t read_all_field_data(struct bme68x_data * const data[], struct bme6
 
     if (rslt == BME68X_OK)
     {
-        rslt = bme68x_get_regs(BME68X_REG_FIELD0, buff, (uint32_t) BME68X_LEN_FIELD * 3, dev);
+        rslt = bme68x_get_regs(BME68X_REG_FIELD0, buff, (uint32_t)BME68X_LEN_FIELD * 3, dev);
     }
 
     if (rslt == BME68X_OK)
@@ -1322,15 +1313,13 @@ static int8_t read_all_field_data(struct bme68x_data * const data[], struct bme6
         data[i]->meas_index = buff[off + 1];
 
         /* read the raw data from the sensor */
-        adc_pres =
-            (uint32_t) (((uint32_t) buff[off + 2] * 4096) | ((uint32_t) buff[off + 3] * 16) |
-                        ((uint32_t) buff[off + 4] / 16));
-        adc_temp =
-            (uint32_t) (((uint32_t) buff[off + 5] * 4096) | ((uint32_t) buff[off + 6] * 16) |
-                        ((uint32_t) buff[off + 7] / 16));
-        adc_hum = (uint16_t) (((uint32_t) buff[off + 8] * 256) | (uint32_t) buff[off + 9]);
-        adc_gas_res_low = (uint16_t) ((uint32_t) buff[off + 13] * 4 | (((uint32_t) buff[off + 14]) / 64));
-        adc_gas_res_high = (uint16_t) ((uint32_t) buff[off + 15] * 4 | (((uint32_t) buff[off + 16]) / 64));
+        adc_pres = (uint32_t)(((uint32_t)buff[off + 2] * 4096) | ((uint32_t)buff[off + 3] * 16) |
+                              ((uint32_t)buff[off + 4] / 16));
+        adc_temp = (uint32_t)(((uint32_t)buff[off + 5] * 4096) | ((uint32_t)buff[off + 6] * 16) |
+                              ((uint32_t)buff[off + 7] / 16));
+        adc_hum = (uint16_t)(((uint32_t)buff[off + 8] * 256) | (uint32_t)buff[off + 9]);
+        adc_gas_res_low = (uint16_t)((uint32_t)buff[off + 13] * 4 | (((uint32_t)buff[off + 14]) / 64));
+        adc_gas_res_high = (uint16_t)((uint32_t)buff[off + 15] * 4 | (((uint32_t)buff[off + 16]) / 64));
         gas_range_l = buff[off + 14] & BME68X_GAS_RANGE_MSK;
         gas_range_h = buff[off + 16] & BME68X_GAS_RANGE_MSK;
         if (dev->variant_id == BME68X_VARIANT_GAS_HIGH)
@@ -1478,70 +1467,70 @@ static int8_t set_conf(const struct bme68x_heatr_conf *conf, uint8_t op_mode, ui
     uint8_t shared_dur;
     uint8_t write_len = 0;
     uint8_t heater_dur_shared_addr = BME68X_REG_SHD_HEATR_DUR;
-    uint8_t rh_reg_addr[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    uint8_t rh_reg_data[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    uint8_t gw_reg_addr[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    uint8_t gw_reg_data[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    uint8_t rh_reg_addr[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    uint8_t rh_reg_data[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    uint8_t gw_reg_addr[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    uint8_t gw_reg_data[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     switch (op_mode)
     {
-        case BME68X_FORCED_MODE:
-            rh_reg_addr[0] = BME68X_REG_RES_HEAT0;
-            rh_reg_data[0] = calc_res_heat(conf->heatr_temp, dev);
-            gw_reg_addr[0] = BME68X_REG_GAS_WAIT0;
-            gw_reg_data[0] = calc_gas_wait(conf->heatr_dur);
-            (*nb_conv) = 0;
-            write_len = 1;
+    case BME68X_FORCED_MODE:
+        rh_reg_addr[0] = BME68X_REG_RES_HEAT0;
+        rh_reg_data[0] = calc_res_heat(conf->heatr_temp, dev);
+        gw_reg_addr[0] = BME68X_REG_GAS_WAIT0;
+        gw_reg_data[0] = calc_gas_wait(conf->heatr_dur);
+        (*nb_conv) = 0;
+        write_len = 1;
+        break;
+    case BME68X_SEQUENTIAL_MODE:
+        if ((!conf->heatr_dur_prof) || (!conf->heatr_temp_prof))
+        {
+            rslt = BME68X_E_NULL_PTR;
             break;
-        case BME68X_SEQUENTIAL_MODE:
-            if ((!conf->heatr_dur_prof) || (!conf->heatr_temp_prof))
-            {
-                rslt = BME68X_E_NULL_PTR;
-                break;
-            }
+        }
 
-            for (i = 0; i < conf->profile_len; i++)
-            {
-                rh_reg_addr[i] = BME68X_REG_RES_HEAT0 + i;
-                rh_reg_data[i] = calc_res_heat(conf->heatr_temp_prof[i], dev);
-                gw_reg_addr[i] = BME68X_REG_GAS_WAIT0 + i;
-                gw_reg_data[i] = calc_gas_wait(conf->heatr_dur_prof[i]);
-            }
+        for (i = 0; i < conf->profile_len; i++)
+        {
+            rh_reg_addr[i] = BME68X_REG_RES_HEAT0 + i;
+            rh_reg_data[i] = calc_res_heat(conf->heatr_temp_prof[i], dev);
+            gw_reg_addr[i] = BME68X_REG_GAS_WAIT0 + i;
+            gw_reg_data[i] = calc_gas_wait(conf->heatr_dur_prof[i]);
+        }
 
-            (*nb_conv) = conf->profile_len;
-            write_len = conf->profile_len;
+        (*nb_conv) = conf->profile_len;
+        write_len = conf->profile_len;
+        break;
+    case BME68X_PARALLEL_MODE:
+        if ((!conf->heatr_dur_prof) || (!conf->heatr_temp_prof))
+        {
+            rslt = BME68X_E_NULL_PTR;
             break;
-        case BME68X_PARALLEL_MODE:
-            if ((!conf->heatr_dur_prof) || (!conf->heatr_temp_prof))
-            {
-                rslt = BME68X_E_NULL_PTR;
-                break;
-            }
+        }
 
-            if (conf->shared_heatr_dur == 0)
-            {
-                rslt = BME68X_W_DEFINE_SHD_HEATR_DUR;
-            }
+        if (conf->shared_heatr_dur == 0)
+        {
+            rslt = BME68X_W_DEFINE_SHD_HEATR_DUR;
+        }
 
-            for (i = 0; i < conf->profile_len; i++)
-            {
-                rh_reg_addr[i] = BME68X_REG_RES_HEAT0 + i;
-                rh_reg_data[i] = calc_res_heat(conf->heatr_temp_prof[i], dev);
-                gw_reg_addr[i] = BME68X_REG_GAS_WAIT0 + i;
-                gw_reg_data[i] = (uint8_t) conf->heatr_dur_prof[i];
-            }
+        for (i = 0; i < conf->profile_len; i++)
+        {
+            rh_reg_addr[i] = BME68X_REG_RES_HEAT0 + i;
+            rh_reg_data[i] = calc_res_heat(conf->heatr_temp_prof[i], dev);
+            gw_reg_addr[i] = BME68X_REG_GAS_WAIT0 + i;
+            gw_reg_data[i] = (uint8_t)conf->heatr_dur_prof[i];
+        }
 
-            (*nb_conv) = conf->profile_len;
-            write_len = conf->profile_len;
-            shared_dur = calc_heatr_dur_shared(conf->shared_heatr_dur);
-            if (rslt == BME68X_OK)
-            {
-                rslt = bme68x_set_regs(&heater_dur_shared_addr, &shared_dur, 1, dev);
-            }
+        (*nb_conv) = conf->profile_len;
+        write_len = conf->profile_len;
+        shared_dur = calc_heatr_dur_shared(conf->shared_heatr_dur);
+        if (rslt == BME68X_OK)
+        {
+            rslt = bme68x_set_regs(&heater_dur_shared_addr, &shared_dur, 1, dev);
+        }
 
-            break;
-        default:
-            rslt = BME68X_W_DEFINE_OP_MODE;
+        break;
+    default:
+        rslt = BME68X_W_DEFINE_OP_MODE;
     }
 
     if (rslt == BME68X_OK)
@@ -1779,10 +1768,8 @@ static int8_t get_calib_data(struct bme68x_dev *dev)
 
     if (rslt == BME68X_OK)
     {
-        rslt = bme68x_get_regs(BME68X_REG_COEFF3,
-                               &coeff_array[BME68X_LEN_COEFF1 + BME68X_LEN_COEFF2],
-                               BME68X_LEN_COEFF3,
-                               dev);
+        rslt = bme68x_get_regs(BME68X_REG_COEFF3, &coeff_array[BME68X_LEN_COEFF1 + BME68X_LEN_COEFF2],
+                               BME68X_LEN_COEFF3, dev);
     }
 
     if (rslt == BME68X_OK)
@@ -1813,9 +1800,8 @@ static int8_t get_calib_data(struct bme68x_dev *dev)
         dev->calib.par_p10 = (uint8_t)(coeff_array[BME68X_IDX_P10]);
 
         /* Humidity related coefficients */
-        dev->calib.par_h1 =
-            (uint16_t)(((uint16_t)coeff_array[BME68X_IDX_H1_MSB] << 4) |
-                       (coeff_array[BME68X_IDX_H1_LSB] & BME68X_BIT_H1_DATA_MSK));
+        dev->calib.par_h1 = (uint16_t)(((uint16_t)coeff_array[BME68X_IDX_H1_MSB] << 4) |
+                                       (coeff_array[BME68X_IDX_H1_LSB] & BME68X_BIT_H1_DATA_MSK));
         dev->calib.par_h2 =
             (uint16_t)(((uint16_t)coeff_array[BME68X_IDX_H2_MSB] << 4) | ((coeff_array[BME68X_IDX_H2_LSB]) >> 4));
         dev->calib.par_h3 = (int8_t)coeff_array[BME68X_IDX_H3];

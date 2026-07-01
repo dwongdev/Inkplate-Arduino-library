@@ -49,15 +49,14 @@
 
 #include "bme68x/bme68x.h"
 
-#define BME68X_ERROR            INT8_C(-1)
-#define BME68X_WARNING          INT8_C(1)
+#define BME68X_ERROR   INT8_C(-1)
+#define BME68X_WARNING INT8_C(1)
 
 #ifdef ARDUINO
 /**
  * Datatype working as an interface descriptor
  */
-typedef union
-{
+typedef union {
     struct
     {
         TwoWire *wireobj;
@@ -72,11 +71,11 @@ typedef union
 #endif
 
 /** Datatype to keep consistent with camel casing */
-typedef struct bme68x_data          bme68xData;
-typedef struct bme68x_dev           bme68xDev;
-typedef enum   bme68x_intf          bme68xIntf;
-typedef struct bme68x_conf          bme68xConf;
-typedef struct bme68x_heatr_conf    bme68xHeatrConf;
+typedef struct bme68x_data bme68xData;
+typedef struct bme68x_dev bme68xDev;
+typedef enum bme68x_intf bme68xIntf;
+typedef struct bme68x_conf bme68xConf;
+typedef struct bme68x_heatr_conf bme68xHeatrConf;
 
 #ifdef ARDUINO
 /**
@@ -109,7 +108,7 @@ int8_t bme68xI2cRead(uint8_t regAddr, uint8_t *regData, uint32_t length, void *i
 
 class Bme68x
 {
-public:
+  public:
     /** Stores the BME68x sensor APIs error code after an execution */
     int8_t status;
 
@@ -126,9 +125,9 @@ public:
      * @param idleTask : Delay or Idle function
      * @param intfPtr : Pointer to the interface descriptor
      */
-    void begin(bme68xIntf intf, bme68x_read_fptr_t read, bme68x_write_fptr_t write,
-            bme68x_delay_us_fptr_t idleTask, void *intfPtr);
-            
+    void begin(bme68xIntf intf, bme68x_read_fptr_t read, bme68x_write_fptr_t write, bme68x_delay_us_fptr_t idleTask,
+               void *intfPtr);
+
 #ifdef ARDUINO
     /**
      * @brief Function to initialize the sensor based on the Wire library
@@ -277,17 +276,17 @@ public:
      * @return Number of new fields remaining
      */
     uint8_t getData(bme68xData &data);
-	
-	 /**
+
+    /**
      * @brief Function to get whole sensor data
      * @return Sensor data
      */
-    bme68xData* getAllData(void);
+    bme68xData *getAllData(void);
 
     /**
-	 * @brief Function to get the BME68x heater configuration
-	 */
-    const bme68xHeatrConf& getHeaterConfiguration(void);
+     * @brief Function to get the BME68x heater configuration
+     */
+    const bme68xHeatrConf &getHeaterConfiguration(void);
 
     /**
      * @brief Function to retrieve the sensor's unique ID
@@ -314,7 +313,7 @@ public:
     String statusString(void);
 #endif
 
-private:
+  private:
     /** Datatype to keep consistent with camel casing
      * Datastructure to hold sensor settings
      */

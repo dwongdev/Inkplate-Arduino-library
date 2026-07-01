@@ -14,8 +14,8 @@
 #include "BME680-SOLDERED.h"
 #include "../../system/inkplateSemaphore.h"
 
-static const uint16_t HEATER_TEMP_DEG  = 320;
-static const uint16_t HEATER_DUR_MS    = 150;
+static const uint16_t HEATER_TEMP_DEG = 320;
+static const uint16_t HEATER_DUR_MS = 150;
 
 bool BME680::begin()
 {
@@ -98,10 +98,10 @@ void BME680::readSensorData(float &temp, float &humidity, float &pressure, float
     i2cStart();
     readData(data);
     i2cEnd();
-    temp     = data.temperature;
+    temp = data.temperature;
     humidity = data.humidity;
     pressure = data.pressure / 100.0f;
-    gas      = data.gas_resistance / 100.0f;
+    gas = data.gas_resistance / 100.0f;
 }
 
 float BME680::calculateAltitude(float pressure)
