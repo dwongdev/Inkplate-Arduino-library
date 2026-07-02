@@ -2,7 +2,7 @@
    Inkplate13SPECTRA_Full_Screen_Colors example for Soldered Inkplate 6COLOR
    Select "Soldered Inkplate 13SPECTRA" from Tools -> Board menu.
    Don't have "Soldered Inkplate 13SPECTRA" option? Follow our tutorial and add it:
-   [LINK PLACEHOLDER]
+   https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
    Simple Inkplate example showing all colors of the Inkplate.
 

@@ -8,7 +8,7 @@
 
     This example will show you how you can use Inkplate 13SPECTRA to random images in the root sdcard folder.
 
-    Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+    Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
     21 January 2026 by Soldered Electronics
 */
 

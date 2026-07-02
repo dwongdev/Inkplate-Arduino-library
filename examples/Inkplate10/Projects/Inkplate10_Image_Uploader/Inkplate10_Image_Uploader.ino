@@ -43,8 +43,8 @@
  *   - "/image.jpg" Serves the uploaded JPEG from RAM
  *
  * Docs:
- * - Inkplate:   https://soldered.com/documentation/inkplate
- * - Project:    https://soldered.com/documentation/inkplate/projects/image-uploader
+ * - Inkplate:   https://docs.soldered.com/inkplate
+ * - Project:    https://docs.soldered.com/inkplate/projects/image-uploader
  *
  * Support:      https://forum.soldered.com/
  *

@@ -9,7 +9,7 @@
   In this example we will show how to use PCF85063A RTC Timer functionality.
   This example will show how to set time and date, how to set up a timer, how to read time and how to print time on Inkplate using partial updates.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   2 February 2026 by Soldered Electronics
 */
 

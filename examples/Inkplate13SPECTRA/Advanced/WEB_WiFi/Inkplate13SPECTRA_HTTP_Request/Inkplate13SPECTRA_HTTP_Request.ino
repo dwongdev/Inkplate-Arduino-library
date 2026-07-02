@@ -11,7 +11,7 @@
 
   In quotation marks you will need to write your WiFi SSID and WiFi password in order to connect to your WiFi network.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   21 January 2026 by Soldered Electronics
 */
 

@@ -9,7 +9,7 @@
   This example will show you how you can use Inkplate 13SPECTRA to display map data.
   This example gets html data from crowdsource campaing and displays them on Inkplate screen.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   21 January 2026 by Soldered Electronics
 */
 

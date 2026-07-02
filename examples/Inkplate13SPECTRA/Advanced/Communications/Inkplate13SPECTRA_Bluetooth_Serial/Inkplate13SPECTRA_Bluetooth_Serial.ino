@@ -14,7 +14,7 @@
   On the Serial Monitor, you will see what the phone sends while in the app you will see what the Inkplate
   sends over the Serial Monitor.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   21 January 2026 by Soldered Electronics
 */
 

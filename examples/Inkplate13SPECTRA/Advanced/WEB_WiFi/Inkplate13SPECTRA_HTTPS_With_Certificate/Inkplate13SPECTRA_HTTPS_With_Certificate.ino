@@ -13,7 +13,7 @@
   certificate for the website that will be validated upon conncection and
   display that image on e-paper display.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   21 January 2026 by Soldered Electronics
 */
 

@@ -3,7 +3,7 @@
    For this example you will need only a micro USB cable, Inkplate 13SPECTRA and a SD card.
    Select "Soldered Inkplate 13SPECTRA" from Tools -> Board menu.
    Don't have "Soldered Inkplate 13SPECTRA" option? Follow our tutorial and add it:
-   [LINK PLACEHOLDER]
+   https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
    This example will show you how to write in .txt files.
    NOTE: Open the Serial monitor at 115200 baud to see what happens.

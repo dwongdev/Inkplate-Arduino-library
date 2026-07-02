@@ -10,7 +10,7 @@
    have to connect one side of 330 Ohm resistor to P1-7, then other side to anode of LED and finally, cathode pin
    of LED to GND.
 
-   Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    21 January 2026 by Soldered Electronics
 */
 

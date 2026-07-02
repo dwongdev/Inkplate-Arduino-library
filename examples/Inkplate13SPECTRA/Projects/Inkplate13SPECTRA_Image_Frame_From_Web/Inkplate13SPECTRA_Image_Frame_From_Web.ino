@@ -3,7 +3,7 @@
     For this example you will need only USB cable and Inkplate 13.
     Select "Soldered Inkplate 13" from Tools -> Board menu.
     Don't have "Soldered Inkplate 13" option? Follow our tutorial and add it:
-    [LINK PLACEHOLDER]
+    https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
     This example shows how you can set inkplate to show random pictures from web.
 
