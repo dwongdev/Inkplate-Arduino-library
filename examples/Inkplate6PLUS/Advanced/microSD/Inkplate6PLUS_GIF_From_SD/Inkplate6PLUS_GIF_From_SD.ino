@@ -12,7 +12,7 @@
  * Requirements:
  * - Board:      Soldered Inkplate 6PLUS
  * - Hardware:   Inkplate 6PLUS, USB cable, microSD card
- * - Extra:      SD card containing a GIF file named "giftest.gif"
+ * - Extra:      SD card containing a GIF file named "cat_gif.gif"
  *
  * Configuration:
  * - Boards Manager -> Inkplate Boards -> Soldered Inkplate6PLUS
@@ -23,13 +23,13 @@
  *
  * How to use:
  * 1) Copy a GIF file to the root of a FAT-formatted SD card and rename it
- *    to "giftest.gif".
+ *    to "cat_gif.gif".
  * 2) Insert the SD card into the Inkplate.
  * 3) Upload the sketch to Inkplate 6PLUS.
  * 4) The GIF plays back on the e-paper screen.
  *
  * Expected output:
- * - "giftest.gif" loops forever on the display, top left corner at (0, 0).
+ * - "cat_gif.gif" loops forever on the display, centered on the screen.
  *
  * Notes:
  * - Partial update (and therefore GIF playback) only works in INKPLATE_1BIT
@@ -37,9 +37,12 @@
  * - e-paper partial refresh takes far longer than a typical GIF frame delay
  *   (tens to hundreds of ms per refresh vs ~100ms/frame in the file), so
  *   actual playback speed is limited by the panel, not by the GIF itself.
- * - The driver forces a full refresh every 60 partial updates by default to clear
- *   partial-update ghosting; change the last argument of playGifFromSd() to
- *   tune that, or pass 0 to disable forced full refreshes entirely.
+ * - The driver forces a full refresh every N partial updates (fullRefreshEveryFrames
+ *   argument, defaults to 20 here) to clear partial-update ghosting; pass 0 to disable
+ *   forced full refreshes entirely.
+ * - leaveOn (last argument, defaults to true) keeps the panel powered between frames
+ *   instead of power-cycling it on every partialUpdate() call; pass false to power the
+ *   panel down after each frame instead.
  *
  * Docs:         https://docs.soldered.com/inkplate
  * Support:      https://forum.soldered.com/
@@ -69,9 +72,9 @@ void setup()
     // Init SD card. Display if SD card is init properly or not.
     if (display.sdCardInit())
     {
-        // Play "giftest.gif" from the SD card root, top left corner at (0, 0).
+        // Play "cat_gif.gif" from the SD card root, centered on the screen.
         // loop = true: keep replaying the file forever (until reset/power-cycled).
-        if (!display.gif.playGifFromSd("giftest.gif", 0, 0, false, true))
+        if (!display.gif.playGifFromSd("cat_gif.gif", E_INK_WIDTH / 2 - 125, E_INK_HEIGHT / 2 - 125, false, true, 20, true))
         {
             // If something failed (missing file, unsupported/corrupt GIF), write an error message on the screen.
             display.setTextColor(BLACK);

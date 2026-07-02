@@ -176,11 +176,16 @@ bool Gif::drawGifFromWeb(const char *url, int x, int y, bool invert)
  *              every N partialUpdate() calls to clear partial-update
  *              ghosting. Pass 0 to never force a full refresh.
  *
+ * @param       leaveOn
+ *              Forwarded to partialUpdate(): if true (default), panel power
+ *              is left on between frames instead of being switched off and
+ *              back on for every single frame.
+ *
  * @return      true if playback ran to completion/was stopped cleanly,
  *              false on open/decode error.
  */
 bool Gif::playGifFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool invert, bool loop,
-                            uint16_t fullRefreshEveryFrames)
+                            uint16_t fullRefreshEveryFrames, bool leaveOn)
 {
     if (!_inkplate)
         return false;
@@ -200,7 +205,7 @@ bool Gif::playGifFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool invert
         if (rc == -1)
             break;
 
-        _inkplate->partialUpdate();
+        _inkplate->partialUpdate(false, leaveOn);
 
         if (frameDelayMs > 0)
             delay(frameDelayMs);
@@ -217,7 +222,8 @@ bool Gif::playGifFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool invert
  * @return      true if playback ran to completion/was stopped cleanly,
  *              false if the file could not be read or decoded.
  */
-bool Gif::playGifFromSd(const char *fileName, int x, int y, bool invert, bool loop, uint16_t fullRefreshEveryFrames)
+bool Gif::playGifFromSd(const char *fileName, int x, int y, bool invert, bool loop, uint16_t fullRefreshEveryFrames,
+                        bool leaveOn)
 {
     SdFile dat;
     if (!dat.open(fileName, O_RDONLY))
@@ -244,7 +250,7 @@ bool Gif::playGifFromSd(const char *fileName, int x, int y, bool invert, bool lo
     }
     dat.close();
 
-    const bool ret = playGifFromBuffer(buf, total, x, y, invert, loop, fullRefreshEveryFrames);
+    const bool ret = playGifFromBuffer(buf, total, x, y, invert, loop, fullRefreshEveryFrames, leaveOn);
     free(buf);
     return ret;
 }
@@ -257,7 +263,8 @@ bool Gif::playGifFromSd(const char *fileName, int x, int y, bool invert, bool lo
  * @return      true if playback ran to completion/was stopped cleanly,
  *              false if the file could not be downloaded or decoded.
  */
-bool Gif::playGifFromWeb(const char *url, int x, int y, bool invert, bool loop, uint16_t fullRefreshEveryFrames)
+bool Gif::playGifFromWeb(const char *url, int x, int y, bool invert, bool loop, uint16_t fullRefreshEveryFrames,
+                         bool leaveOn)
 {
     int32_t defaultLen = E_INK_WIDTH * E_INK_HEIGHT * 4;
     uint8_t *buf = NULL;
@@ -270,7 +277,7 @@ bool Gif::playGifFromWeb(const char *url, int x, int y, bool invert, bool loop, 
     if (!buf)
         return false;
 
-    const bool ret = playGifFromBuffer(buf, defaultLen, x, y, invert, loop, fullRefreshEveryFrames);
+    const bool ret = playGifFromBuffer(buf, defaultLen, x, y, invert, loop, fullRefreshEveryFrames, leaveOn);
     free(buf);
     return ret;
 }

@@ -50,11 +50,11 @@ class Gif
     // ghosting. Default of 60 matches the driver's own documented recommendation
     // (60-80) for best image quality; pass 0 to disable forced full refreshes.
     bool playGifFromBuffer(uint8_t *buf, int32_t len, int x, int y, bool invert = false, bool loop = true,
-                           uint16_t fullRefreshEveryFrames = 60);
+                           uint16_t fullRefreshEveryFrames = 60, bool leaveOn = true);
     bool playGifFromSd(const char *fileName, int x, int y, bool invert = false, bool loop = true,
-                       uint16_t fullRefreshEveryFrames = 20);
+                       uint16_t fullRefreshEveryFrames = 20, bool leaveOn = true);
     bool playGifFromWeb(const char *url, int x, int y, bool invert = false, bool loop = true,
-                        uint16_t fullRefreshEveryFrames = 20);
+                        uint16_t fullRefreshEveryFrames = 20, bool leaveOn = true);
 
     // Call from a button press / ISR-set flag to break out of a running playGif*() call.
     void stop();

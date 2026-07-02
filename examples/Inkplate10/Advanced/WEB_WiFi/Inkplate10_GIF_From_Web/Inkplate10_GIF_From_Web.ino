@@ -27,7 +27,7 @@
  * 4) The board connects to WiFi, downloads the GIF, and loops it forever.
  *
  * Expected output:
- * - The GIF from gifUrl plays on the display, top left corner at (0, 0),
+ * - The GIF from gifUrl plays on the display, centered on the screen,
  *   looping until reset/power-cycled.
  *
  * Notes:
@@ -37,6 +37,9 @@
  *   functions in this library) - make sure the file is small enough to fit.
  * - e-paper partial refresh takes far longer than a typical GIF frame delay,
  *   so actual playback speed is limited by the panel, not by the file.
+ * - leaveOn (last argument, defaults to true) keeps the panel powered between frames
+ *   instead of power-cycling it on every partialUpdate() call; pass false to power the
+ *   panel down after each frame instead.
  *
  * Docs:         https://docs.soldered.com/inkplate
  * Support:      https://forum.soldered.com/
@@ -88,8 +91,8 @@ void setup()
 
     display.clearDisplay();
 
-    // Download and play the GIF, looping forever, top left corner at (0, 0).
-    if (!display.gif.playGifFromWeb(gifUrl, 0, 0, false, true))
+    // Download and play the GIF, looping forever, centered on the screen.
+    if (!display.gif.playGifFromWeb(gifUrl, E_INK_WIDTH / 2 - 125, E_INK_HEIGHT / 2 - 125, false, true, 20, true))
     {
         // If something failed (bad URL, download error, unsupported/corrupt GIF), write an error on the screen.
         display.setTextColor(BLACK);
