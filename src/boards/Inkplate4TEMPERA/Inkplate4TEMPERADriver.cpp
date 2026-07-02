@@ -55,7 +55,7 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
     }
     else
     {
-        color &= 0x0F;
+        color &= 7;
         int x = x0 / 2;
         int x_sub = x0 % 2;
         uint8_t temp;
@@ -131,20 +131,14 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 void EPDDriver::calculateLUTs()
 {
     // Fill up the pixel to EPD LUT for 3 bit mode.
-    for (int j = 0; j < _waveformPhases; ++j)
+    for (int j = 0; j < 9; ++j)
     {
         for (uint32_t i = 0; i < 256; ++i)
         {
-            uint8_t ci = (uint8_t)(i & 0x0F);
-            uint8_t ch = (uint8_t)((i >> 4) & 0x0F);
-            if (ci >= _waveformColors)
-                ci = _waveformColors - 1;
-            if (ch >= _waveformColors)
-                ch = _waveformColors - 1;
-            uint8_t z = (_waveform3Bit[ci * _waveformPhases + j] << 2) | (_waveform3Bit[ch * _waveformPhases + j]);
+            uint8_t z = (waveform3Bit[i & 0x07][j] << 2) | (waveform3Bit[(i >> 4) & 0x07][j]);
             GLUT[j * 256 + i] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
                                 (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
-            z = ((_waveform3Bit[ci * _waveformPhases + j] << 2) | (_waveform3Bit[ch * _waveformPhases + j])) << 4;
+            z = ((waveform3Bit[i & 0x07][j] << 2) | (waveform3Bit[(i >> 4) & 0x07][j])) << 4;
             GLUT2[j * 256 + i] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
                                  (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
         }
@@ -261,7 +255,7 @@ void IRAM_ATTR EPDDriver::display3b(bool _leaveOn)
     clean(0, 15);
     clean(1, 15);
     clean(0, 15);
-    for (int k = 0; k < _waveformPhases; ++k)
+    for (int k = 0; k < 8; ++k)
     {
         uint8_t *dp = DMemory4Bit + E_INK_WIDTH * E_INK_HEIGHT / 2;
 
@@ -869,20 +863,17 @@ void EPDDriver::gpioInit()
 uint8_t EPDDriver::initializeFramebuffers()
 {
     // Initialize all the framebuffers
-    static const uint8_t _defaultWaveform[8][9] = WAVEFORM3BIT;
     DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _partial = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _pBuffer = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 4);
     DMemory4Bit = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 2);
-    _waveform3Bit = (uint8_t *)malloc(8 * _waveformPhases);
-    GLUT = (uint32_t *)malloc(256 * _waveformPhases * sizeof(uint32_t));
-    GLUT2 = (uint32_t *)malloc(256 * _waveformPhases * sizeof(uint32_t));
-    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL || _waveform3Bit == NULL ||
-        GLUT == NULL || GLUT2 == NULL)
+    GLUT = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
+    GLUT2 = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
+    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL || GLUT == NULL ||
+        GLUT2 == NULL)
     {
         return 0;
     }
-    memcpy(_waveform3Bit, _defaultWaveform, 8 * _waveformPhases);
     // Set all the framebuffers to White at start
     memset(DMemoryNew, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
     memset(_partial, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
@@ -1177,8 +1168,8 @@ void EPDDriver::wakePeripheral(uint8_t _peripheral)
     if (_peripheral & INKPLATE_BME688)
     {
         // Wake BME
-        uint8_t bmeControlReg = bme688.readByte(BME_CONTROL_ADDR);
-        bme688.putData(BME_CONTROL_ADDR, bmeControlReg | 0x01);
+        uint8_t bmeControlReg = bme688.readReg(BME_CONTROL_ADDR);
+        bme688.writeReg(BME_CONTROL_ADDR, bmeControlReg | 0x01);
         bme688.begin();
     }
 
@@ -1219,9 +1210,9 @@ void EPDDriver::sleepPeripheral(uint8_t _peripheral)
     if (_peripheral & INKPLATE_BME688)
     {
         // Put BME in sleep mode
-        uint8_t bmeControlReg = bme688.readByte(BME_CONTROL_ADDR);
+        uint8_t bmeControlReg = bme688.readReg(BME_CONTROL_ADDR);
         bmeControlReg &= ~(0b00000011);
-        bme688.putData(BME_CONTROL_ADDR, bmeControlReg);
+        bme688.writeReg(BME_CONTROL_ADDR, bmeControlReg);
     }
 
     if (_peripheral & INKPLATE_APDS9960)
@@ -1253,38 +1244,6 @@ void EPDDriver::blockGpioPins()
     expander1.blockPinUsage(OE);
     expander1.blockPinUsage(GMOD);
     expander1.blockPinUsage(SPV);
-}
-
-bool EPDDriver::setWaveform(uint8_t *waveform, uint8_t numColors, uint8_t numPhases)
-{
-    if (numColors == 0 || numColors > 16 || numPhases == 0 || numPhases > 16)
-        return false;
-
-    if (numColors != _waveformColors || numPhases != _waveformPhases)
-    {
-        uint8_t *newWf = (uint8_t *)malloc(numColors * numPhases);
-        uint32_t *newGLUT = (uint32_t *)malloc(256 * numPhases * sizeof(uint32_t));
-        uint32_t *newGLUT2 = (uint32_t *)malloc(256 * numPhases * sizeof(uint32_t));
-        if (!newWf || !newGLUT || !newGLUT2)
-        {
-            free(newWf);
-            free(newGLUT);
-            free(newGLUT2);
-            return false;
-        }
-        free(_waveform3Bit);
-        free(GLUT);
-        free(GLUT2);
-        _waveform3Bit = newWf;
-        GLUT = newGLUT;
-        GLUT2 = newGLUT2;
-        _waveformColors = numColors;
-        _waveformPhases = numPhases;
-    }
-
-    memcpy(_waveform3Bit, waveform, numColors * numPhases);
-    calculateLUTs();
-    return true;
 }
 
 #endif

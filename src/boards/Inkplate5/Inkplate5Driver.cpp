@@ -63,7 +63,7 @@ void EPDDriver::writePixelInternal(int16_t x, int16_t y, uint16_t color)
     else
     {
         // If 3 bit mode is used, constrain the color value (only 8 possible colors are available).
-        color &= 0x0F;
+        color &= 7;
 
         // Divide by two to find a byte
         int x = x0 >> 1;
@@ -136,20 +136,14 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
 void EPDDriver::calculateLUTs()
 {
     // Fill up the pixel to EPD LUT for 3 bit mode.
-    for (int i = 0; i < _waveformPhases; ++i)
+    for (int i = 0; i < 9; ++i)
     {
         for (uint32_t j = 0; j < 256; ++j)
         {
-            uint8_t ci = (uint8_t)(j & 0x0F);
-            uint8_t ch = (uint8_t)((j >> 4) & 0x0F);
-            if (ci >= _waveformColors)
-                ci = _waveformColors - 1;
-            if (ch >= _waveformColors)
-                ch = _waveformColors - 1;
-            uint8_t z = (_waveform3Bit[ci * _waveformPhases + i] << 2) | (_waveform3Bit[ch * _waveformPhases + i]);
+            uint8_t z = (waveform3Bit[j & 0x07][i] << 2) | (waveform3Bit[(j >> 4) & 0x07][i]);
             GLUT[i * 256 + j] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
                                 (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
-            z = ((_waveform3Bit[ci * _waveformPhases + i] << 2) | (_waveform3Bit[ch * _waveformPhases + i])) << 4;
+            z = ((waveform3Bit[j & 0x07][i] << 2) | (waveform3Bit[(j >> 4) & 0x07][i])) << 4;
             GLUT2[i * 256 + j] = ((z & B00000011) << 4) | (((z & B00001100) >> 2) << 18) |
                                  (((z & B00010000) >> 4) << 23) | (((z & B11100000) >> 5) << 25);
         }
@@ -275,7 +269,7 @@ void IRAM_ATTR EPDDriver::display3b(bool _leaveOn)
     clean(2, 1);
 
     // Send everything to the display. There are 9 waveform phases to get the needed graycale.
-    for (int k = 0; k < _waveformPhases; ++k)
+    for (int k = 0; k < 9; ++k)
     {
         // Set the start of the pointer to the end of the framebuffer
         uint8_t *dp = DMemory4Bit + E_INK_WIDTH * E_INK_HEIGHT / 2;
@@ -925,20 +919,17 @@ void EPDDriver::gpioInit()
 uint8_t EPDDriver::initializeFramebuffers()
 {
     // Initialize all the framebuffers
-    static const uint8_t _defaultWaveform[8][9] = WAVEFORM3BIT;
     DMemoryNew = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _partial = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 8);
     _pBuffer = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 4);
     DMemory4Bit = (uint8_t *)ps_malloc(E_INK_WIDTH * E_INK_HEIGHT / 2);
-    _waveform3Bit = (uint8_t *)malloc(8 * _waveformPhases);
-    GLUT = (uint32_t *)malloc(256 * _waveformPhases * sizeof(uint32_t));
-    GLUT2 = (uint32_t *)malloc(256 * _waveformPhases * sizeof(uint32_t));
-    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL || _waveform3Bit == NULL ||
-        GLUT == NULL || GLUT2 == NULL)
+    GLUT = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
+    GLUT2 = (uint32_t *)malloc(256 * 9 * sizeof(uint32_t));
+    if (DMemoryNew == NULL || _partial == NULL || _pBuffer == NULL || DMemory4Bit == NULL || GLUT == NULL ||
+        GLUT2 == NULL)
     {
         return 0;
     }
-    memcpy(_waveform3Bit, _defaultWaveform, 8 * _waveformPhases);
     // Set all the framebuffers to White at start
     memset(DMemoryNew, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
     memset(_partial, 0, E_INK_WIDTH * E_INK_HEIGHT / 8);
@@ -1278,38 +1269,6 @@ void EPDDriver::blockGpioPins()
     expander1.blockPinUsage(OE);
     expander1.blockPinUsage(GMOD);
     expander1.blockPinUsage(SPV);
-}
-
-bool EPDDriver::setWaveform(uint8_t *waveform, uint8_t numColors, uint8_t numPhases)
-{
-    if (numColors == 0 || numColors > 16 || numPhases == 0 || numPhases > 16)
-        return false;
-
-    if (numColors != _waveformColors || numPhases != _waveformPhases)
-    {
-        uint8_t *newWf = (uint8_t *)malloc(numColors * numPhases);
-        uint32_t *newGLUT = (uint32_t *)malloc(256 * numPhases * sizeof(uint32_t));
-        uint32_t *newGLUT2 = (uint32_t *)malloc(256 * numPhases * sizeof(uint32_t));
-        if (!newWf || !newGLUT || !newGLUT2)
-        {
-            free(newWf);
-            free(newGLUT);
-            free(newGLUT2);
-            return false;
-        }
-        free(_waveform3Bit);
-        free(GLUT);
-        free(GLUT2);
-        _waveform3Bit = newWf;
-        GLUT = newGLUT;
-        GLUT2 = newGLUT2;
-        _waveformColors = numColors;
-        _waveformPhases = numPhases;
-    }
-
-    memcpy(_waveform3Bit, waveform, numColors * numPhases);
-    calculateLUTs();
-    return true;
 }
 
 #endif
