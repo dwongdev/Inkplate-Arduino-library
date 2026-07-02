@@ -3,7 +3,7 @@
   Compatible with Soldered Inkplate 13 SPECTRA
 
   Getting Started:
-  For setup and documentation, visit: https://soldered.com/documentation/inkplate/
+  For setup and documentation, visit: https://docs.soldered.com/inkplate/
 
   Overview:
   This example demonstrates how to fetch and display weather data from the OpenMeteo API

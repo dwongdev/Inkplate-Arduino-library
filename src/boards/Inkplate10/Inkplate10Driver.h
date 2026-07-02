@@ -21,6 +21,7 @@
 #include "waveforms.h"
 
 #include "../../graphics/Image/Image.h"
+#include "../../graphics/Gif/Gif.h"
 
 #include "Wire.h"
 
@@ -94,6 +95,7 @@ class EPDDriver
 #endif
 
     Image image;
+    Gif gif;
 
     uint8_t _beginDone = 0;
     uint8_t _displayMode;

@@ -24,7 +24,7 @@ There are many examples in the library that demonstrate how to use any of the In
 
 ### Documentation
 
-Find Inkplate documentation [here](https://soldered.com/documentation/inkplate). 
+Find Inkplate documentation [here](https://docs.soldered.com/inkplate). 
 
 ### Soldered Image Converter
 

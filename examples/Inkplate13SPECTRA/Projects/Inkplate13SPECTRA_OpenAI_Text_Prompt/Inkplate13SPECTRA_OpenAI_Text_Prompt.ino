@@ -4,7 +4,7 @@
 
   For this example you will need only USB cable and Inkplate 13SPECTRA.
   Select "Soldered Inkplate13SPECTRA" from Tools -> Board menu.
-  Don't have "Soldered Inkplate13SPECTRA" option? Follow our tutorial and add it: https://soldered.com/documentation/inkplate/13SPECTRA/quick-start-guide/
+  Don't have "Soldered Inkplate13SPECTRA" option? Follow our tutorial and add it: https://docs.soldered.com/inkplate/13SPECTRA/quick-start-guide/
 
   Overview:
   This example demonstrates how to fetch the temperature and weather, then with that information it creates a snarky prompt which is displayed 

@@ -48,8 +48,8 @@
  * - Designed for low-power, always-on wall or desk calendar use.
  *
  * Docs:
- * - Inkplate:   https://soldered.com/documentation/inkplate
- * - Project:    https://soldered.com/documentation/inkplate/projects/GoogleCalendar
+ * - Inkplate:   https://docs.soldered.com/inkplate
+ * - Project:    https://docs.soldered.com/inkplate/projects/GoogleCalendar
  * - Google API: https://developers.google.com/calendar
  *
  * Support:      https://forum.soldered.com/

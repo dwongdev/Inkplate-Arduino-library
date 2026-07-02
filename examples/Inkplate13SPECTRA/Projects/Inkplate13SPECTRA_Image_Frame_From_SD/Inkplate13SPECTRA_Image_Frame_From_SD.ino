@@ -3,7 +3,7 @@
    For this example you will need a micro USB cable, Inkplate 13SPECTRA and a SD card loaded with images.
    Select "Soldered Inkplate 13SPECTRA" or "Soldered Inkplate 13SPECTRA" from Tools -> Board menu.
    Don't have "Soldered Inkplate 13SPECTRA" or "Soldered Inkplate 13SPECTRA" option? Follow our tutorial and add it:
-   [LINK PLACEHOLDER]
+   https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
    You can open .bmp, .jpeg, or .png files that have a color depth of 1-bit (BW bitmap), 4-bit, 8-bit and
    24 bit, but there are some limitations of the library. It will skip images that can't be drawn.

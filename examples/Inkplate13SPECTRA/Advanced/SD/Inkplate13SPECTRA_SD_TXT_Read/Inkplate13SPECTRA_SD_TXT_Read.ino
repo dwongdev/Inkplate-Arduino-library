@@ -4,7 +4,7 @@
    loaded with text.txt file that can be found inside folder of this example.
    Select "Soldered Inkplate 13SPECTRA" from Tools -> Board menu.
    Don't have "Soldered Inkplate 13SPECTRA" option? Follow our tutorial and add it:
-   [LINK PLACEHOLDER]
+   https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
    
    You can open your own .txt file, but in order to this example works properly it should
    not have more than 200 chars and you should name it text.txt

@@ -3,7 +3,7 @@
 
    Select "Soldered Inkplate 13SPECTRA" from the Tools -> Board menu in Arduino IDE.
    Don't see the "Soldered Inkplate 13SPECTRA" option? Follow this tutorial to add it:
-   [LINK PLACEHOLDER]
+   https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
    This example demonstrates the most basic usage: displaying "Hello World!" on the screen using the Inkplate 13SPECTRA library.
 

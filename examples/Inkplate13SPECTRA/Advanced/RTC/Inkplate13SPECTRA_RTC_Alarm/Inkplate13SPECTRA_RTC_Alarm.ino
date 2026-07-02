@@ -9,7 +9,7 @@
   In this example we will show how to use basic alarm and clock functions of PCF85063 RTC on Inkplate board.
   This example will show how to set time and date, how to set alarm, how to read time and how to print time on Inkplate.
   
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   2 February 2026 by Soldered Electronics
 */
 

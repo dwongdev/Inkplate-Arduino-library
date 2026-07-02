@@ -18,7 +18,7 @@
 
   When you send a POST request, open your channel and you will see the graph where is your sent data.
 
-Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
 21 January 2026 by Soldered Electronics
 */
 

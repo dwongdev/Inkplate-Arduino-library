@@ -21,6 +21,7 @@
 #include "waveforms.h"
 
 #include "../../graphics/Image/Image.h"
+#include "../../graphics/Gif/Gif.h"
 
 #include "Wire.h"
 
@@ -80,6 +81,7 @@ class EPDDriver
     RTC rtc;
 
     Image image;
+    Gif gif;
 
     Touch touchscreen;
 
@@ -102,7 +104,6 @@ class EPDDriver
     uint8_t _blockPartial = 1;
     int16_t _sdCardOk = 0;
     uint8_t pwrMode = INKPLATE_NORMAL_PWR_MODE;
-
 
   private:
     void calculateLUTs();

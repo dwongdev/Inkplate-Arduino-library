@@ -14,7 +14,7 @@
 
    NOTE: Open the Serial Monitor at 115200 baud rate to see what's happening!
 
-   Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+   Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
    21 January 2026 by Soldered Electronics
 */
 

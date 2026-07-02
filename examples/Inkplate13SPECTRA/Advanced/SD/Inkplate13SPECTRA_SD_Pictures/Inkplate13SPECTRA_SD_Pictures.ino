@@ -4,7 +4,7 @@
    images that can be found inside folder of this example.
    Select "e-radionica Inkplate 13SPECTRA" or "Soldered Inkplate 13SPECTRA" from Tools -> Board menu.
    Don't have "e-radionica Inkplate 13SPECTRA" or "Soldered Inkplate 13SPECTRA" option? Follow our tutorial and add it:
-   [LINK PLACEHOLDER]
+   https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
    You can open .bmp, .jpeg or .png files (but there are some limitations by the library) that have
    color depth of 1 bit (BW bitmap), 4 bit, 8 bit and 24 bit AND have resoluton smaller than 600x448

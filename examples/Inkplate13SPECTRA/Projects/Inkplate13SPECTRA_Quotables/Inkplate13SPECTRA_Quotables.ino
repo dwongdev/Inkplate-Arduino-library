@@ -18,7 +18,7 @@
     Also have ArduinoJSON installed in your Arduino libraries, download here: https://arduinojson.org/
     You can deserialize JSON data easily using JSON assistant https://arduinojson.org/v6/assistant/
 
-    Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+    Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
     21 January 2026 by Soldered Electronics
 */
 

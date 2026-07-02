@@ -89,6 +89,9 @@ int EPDDriver::initDriver(Inkplate *_inkplatePtr)
     // Initialize the image processing functionalities
     image.begin(_inkplatePtr);
 
+    // Initialize the GIF playback functionalities
+    gif.begin(_inkplatePtr);
+
     // Initialize the GPIOs
     gpioInit();
 

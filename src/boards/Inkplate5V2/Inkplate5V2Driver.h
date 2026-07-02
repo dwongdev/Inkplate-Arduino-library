@@ -21,6 +21,7 @@
 #include "waveforms.h"
 
 #include "../../graphics/Image/Image.h"
+#include "../../graphics/Gif/Gif.h"
 
 #include "Wire.h"
 
@@ -81,6 +82,7 @@ class EPDDriver : public UtilI2S
     RTC rtc;
 
     Image image;
+    Gif gif;
 
     uint8_t _beginDone = 0;
     uint8_t _displayMode;
@@ -98,7 +100,6 @@ class EPDDriver : public UtilI2S
     uint16_t _partialUpdateCounter = 0;
     uint8_t _blockPartial = 1;
     int16_t _sdCardOk = 0;
-
 
   private:
     void calculateLUTs();

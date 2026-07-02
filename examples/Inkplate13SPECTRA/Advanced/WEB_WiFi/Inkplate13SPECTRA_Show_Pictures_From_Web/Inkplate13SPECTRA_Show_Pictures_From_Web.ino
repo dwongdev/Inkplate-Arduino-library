@@ -12,7 +12,7 @@
    This example will show you how you can download a .bmp file (picture) from the web and
    display that image on e-paper display.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   21 January 2026 by Soldered Electronics
 */
 

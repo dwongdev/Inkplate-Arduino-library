@@ -3,7 +3,7 @@
   For this example you will need only USB cable and Inkplate 13SPECTRA
   Select "Soldered Inkplate 13SPECTRA" from Tools ->Board menu.
   Don't have "Soldered Inkplate 13SPECTRA" option? Follow our tutorial and add it:
-  [LINK PLACEHOLDER]
+  https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
   This example will show you how to use RTC alarm interrupt with deep sleep.
   Inkplate features RTC chip with interrupt for alarm connected to GPIO18

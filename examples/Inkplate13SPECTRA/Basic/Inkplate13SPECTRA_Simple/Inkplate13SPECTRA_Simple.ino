@@ -2,7 +2,7 @@
    Inkplate13SPECTRA_Simple example for Soldered Inkplate 13SPECTRA
    Select "Soldered Inkplate 13SPECTRA" from Tools -> Board menu.
    Don't have "Soldered Inkplate 13SPECTRA" option? Follow our tutorial and add it:
-   [LINK PLACEHOLDER]
+   https://docs.soldered.com/inkplate/13spectra/quick-start-guide/
 
    Simple Inkplate example showing drawing functionalities of the Inkplate 13SPECTRA library.
 

@@ -9,7 +9,7 @@
   Example shows how to use basic clock functions of PCF85063A RTC on Inkplate board.
   This example will show how to set time and date, how to read time and how to print time on Inkplate.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   2 February 2026 by Soldered Electronics
 */
 

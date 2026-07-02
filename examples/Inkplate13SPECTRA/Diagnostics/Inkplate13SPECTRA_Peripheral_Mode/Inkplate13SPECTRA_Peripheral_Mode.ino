@@ -18,7 +18,7 @@
   Don't forget you need to send #L(1)* after each command to show it on the display
   (equal to inkplate.display()).
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   21 January 2026 by Soldered Electronics
 */
 

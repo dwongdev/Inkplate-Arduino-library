@@ -9,7 +9,7 @@
   This example will show you how to display JPG image using HTTPClient.
   Make sure that you entered WiFi credentials and change the image link if you want any other image.
 
-  Want to learn more about Inkplate? Visit https://soldered.com/documentation/inkplate/
+  Want to learn more about Inkplate? Visit https://docs.soldered.com/inkplate/
   21 January 2026 by Soldered Electronics
 */
 
